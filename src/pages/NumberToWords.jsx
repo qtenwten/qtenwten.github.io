@@ -120,6 +120,29 @@ function NumberToWords() {
     return names[curr] || 'копеек'
   }
 
+  const pluralizeMinor = (number, curr) => {
+    const minorForms = {
+      RUB: { one: 'копейка', few: 'копейки', many: 'копеек' },
+      USD: { one: 'цент', few: 'цента', many: 'центов' },
+      EUR: { one: 'цент', few: 'цента', many: 'центов' },
+      KZT: { one: 'тиын', few: 'тиына', many: 'тиынов' },
+      CNY: { one: 'фэнь', few: 'фэня', many: 'фэней' },
+      UAH: { one: 'копейка', few: 'копейки', many: 'копеек' },
+      BYN: { one: 'копейка', few: 'копейки', many: 'копеек' },
+      UZS: { one: 'тийин', few: 'тийина', many: 'тийинов' }
+    }
+
+    const forms = minorForms[curr] || minorForms.RUB
+    const num = parseInt(number)
+    const mod10 = num % 10
+    const mod100 = num % 100
+
+    if (mod100 >= 11 && mod100 <= 19) return forms.many
+    if (mod10 === 1) return forms.one
+    if (mod10 >= 2 && mod10 <= 4) return forms.few
+    return forms.many
+  }
+
   const formatNumber = (num) => {
     const parsed = parseFloat(num)
     if (isNaN(parsed)) return num
@@ -164,7 +187,6 @@ function NumberToWords() {
     const formattedDisplay = separator === ',' ? formatted.replace('.', ',') : formatted
     const symbol = getCurrencySymbol(currency)
     const currName = getCurrencyName(currency)
-    const minorName = getMinorName(currency)
 
     const variants = []
 
@@ -206,13 +228,13 @@ function NumberToWords() {
     // 3. Прописью с цифровыми копейками
     variants.push({
       label: 'Строчными (копейки цифрами)',
-      text: `${withoutMinor} ${minorPartStr} ${minorName}`
+      text: `${withoutMinor} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}`
     })
 
     // 4. С заглавной и цифровыми копейками
     variants.push({
       label: 'С заглавной (копейки цифрами)',
-      text: `${capitalizeFirst(withoutMinor)} ${minorPartStr} ${minorName}`
+      text: `${capitalizeFirst(withoutMinor)} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}`
     })
 
     // Если есть налог
@@ -249,13 +271,13 @@ function NumberToWords() {
       // 9. Цифры в скобках
       variants.push({
         label: 'Цифры в скобках прописью',
-        text: `${intPart} (${withoutMinor}) ${currName} ${minorPartStr} ${minorName}, в том числе НДС - ${result.details.tax} (${taxText})`
+        text: `${intPart} (${withoutMinor}) ${currName} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}, в том числе НДС - ${result.details.tax} (${taxText})`
       })
 
       // 10. С заглавной цифры в скобках
       variants.push({
         label: 'С заглавной, цифры в скобках',
-        text: `${intPart} (${capitalizeFirst(withoutMinor)}) ${currName} ${minorPartStr} ${minorName}`
+        text: `${intPart} (${capitalizeFirst(withoutMinor)}) ${currName} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}`
       })
 
       // 11. Полный формат с цифровыми копейками
@@ -277,13 +299,13 @@ function NumberToWords() {
       }
       variants.push({
         label: 'Полный формат',
-        text: `${formattedDisplay} ${symbol} (${capitalizeFirst(withoutMinor)} ${minorPartStr} ${minorName}), в т.ч. НДС ${taxRate}% ${result.details.tax} ${symbol} (${capitalizeFirst(taxWithoutMinor)} ${taxMinorPart} ${minorName})`
+        text: `${formattedDisplay} ${symbol} (${capitalizeFirst(withoutMinor)} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}), в т.ч. НДС ${taxRate}% ${result.details.tax} ${symbol} (${capitalizeFirst(taxWithoutMinor)} ${taxMinorPart} ${pluralizeMinor(taxMinorPartNum, currency)})`
       })
 
       // 12. Включая НДС
       variants.push({
         label: 'Включая НДС',
-        text: `${formattedDisplay} ${symbol} (${withoutMinor}) ${currName} ${minorPartStr} ${minorName}, включая НДС (${taxRate}%) в сумме ${result.details.tax} ${symbol} (${taxText})`
+        text: `${formattedDisplay} ${symbol} (${withoutMinor}) ${currName} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}, включая НДС (${taxRate}%) в сумме ${result.details.tax} ${symbol} (${taxText})`
       })
     } else {
       // Без налога - дополнительные варианты
@@ -299,12 +321,12 @@ function NumberToWords() {
 
       variants.push({
         label: 'Цифры в скобках',
-        text: `${intPart} (${withoutMinor}) ${currName} ${minorPartStr} ${minorName}`
+        text: `${intPart} (${withoutMinor}) ${currName} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}`
       })
 
       variants.push({
         label: 'С заглавной, цифры в скобках',
-        text: `${intPart} (${capitalizeFirst(withoutMinor)}) ${currName} ${minorPartStr} ${minorName}`
+        text: `${intPart} (${capitalizeFirst(withoutMinor)}) ${currName} ${minorPartStr} ${pluralizeMinor(minorPart, currency)}`
       })
     }
 
