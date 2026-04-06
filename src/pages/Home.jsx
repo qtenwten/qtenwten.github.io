@@ -19,6 +19,13 @@ const tools = [
     description: 'Добавить, убрать или рассчитать НДС'
   },
   {
+    id: 'compound-interest',
+    path: '/compound-interest',
+    icon: '📈',
+    title: 'Сложные проценты',
+    description: 'Расчет доходности инвестиций'
+  },
+  {
     id: 'random-number',
     path: '/random-number',
     icon: '🎲',

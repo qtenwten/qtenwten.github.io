@@ -19,6 +19,10 @@ const routeConfig = {
     name: 'Калькулятор времени',
     category: 'Калькуляторы'
   },
+  '/compound-interest': {
+    name: 'Сложные проценты',
+    category: 'Калькуляторы'
+  },
   '/random-number': {
     name: 'Генератор чисел',
     category: 'Генераторы'

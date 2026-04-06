@@ -13,6 +13,11 @@ const tools = [
     description: 'Расчет налога на добавленную стоимость'
   },
   {
+    path: '/compound-interest',
+    title: 'Сложные проценты',
+    description: 'Расчет доходности инвестиций'
+  },
+  {
     path: '/random-number',
     title: 'Генератор чисел',
     description: 'Случайные числа в диапазоне'
