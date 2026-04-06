@@ -12,6 +12,8 @@ const Calculator = lazy(() => import('./pages/Calculator'))
 const TimeCalculator = lazy(() => import('./pages/TimeCalculator'))
 const CompoundInterest = lazy(() => import('./pages/CompoundInterest'))
 const SEOAudit = lazy(() => import('./pages/SEOAudit'))
+const MetaTagsGenerator = lazy(() => import('./pages/MetaTagsGenerator'))
+const SEOAuditPro = lazy(() => import('./pages/SEOAuditPro'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -41,6 +43,8 @@ function App() {
           <Route path="/time-calculator" element={<TimeCalculator />} />
           <Route path="/compound-interest" element={<CompoundInterest />} />
           <Route path="/seo-audit" element={<SEOAudit />} />
+          <Route path="/meta-tags-generator" element={<MetaTagsGenerator />} />
+          <Route path="/seo-audit-pro" element={<SEOAuditPro />} />
         </Routes>
       </Suspense>
       <Footer />

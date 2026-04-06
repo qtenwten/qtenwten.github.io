@@ -18,9 +18,14 @@ const tools = [
     description: 'Расчет доходности инвестиций'
   },
   {
-    path: '/seo-audit',
-    title: 'SEO Аудит',
-    description: 'Анализ SEO оптимизации сайта'
+    path: '/seo-audit-pro',
+    title: 'SEO-аудит PRO',
+    description: 'Профессиональный анализ сайтов'
+  },
+  {
+    path: '/meta-tags-generator',
+    title: 'Генератор мета-тегов',
+    description: 'Создание SEO тегов'
   },
   {
     path: '/random-number',

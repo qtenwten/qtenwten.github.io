@@ -33,6 +33,16 @@ const routeConfig = {
     category: 'Инструменты',
     categorySlug: 'tools'
   },
+  '/seo-audit-pro': {
+    name: 'SEO-аудит PRO',
+    category: 'Инструменты',
+    categorySlug: 'tools'
+  },
+  '/meta-tags-generator': {
+    name: 'Генератор мета-тегов',
+    category: 'Инструменты',
+    categorySlug: 'tools'
+  },
   '/random-number': {
     name: 'Генератор чисел',
     category: 'Генераторы',

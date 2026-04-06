@@ -29,11 +29,19 @@ const tools = [
     category: 'calculators'
   },
   {
-    id: 'seo-audit',
-    path: '/seo-audit',
-    icon: '🔍',
-    title: 'SEO Аудит',
-    description: 'Анализ SEO оптимизации сайта',
+    id: 'seo-audit-pro',
+    path: '/seo-audit-pro',
+    icon: '🚀',
+    title: 'SEO-аудит PRO',
+    description: 'Профессиональный анализ любых сайтов',
+    category: 'tools'
+  },
+  {
+    id: 'meta-tags-generator',
+    path: '/meta-tags-generator',
+    icon: '🏷️',
+    title: 'Мета-теги',
+    description: 'Генератор SEO мета-тегов',
     category: 'tools'
   },
   {
