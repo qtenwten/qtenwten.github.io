@@ -278,14 +278,24 @@ function NumberToWords() {
 
         <div className="field">
           <label htmlFor="number">Введите сумму:</label>
-          <input
-            ref={inputRef}
-            id="number"
-            type="text"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder={separator === ',' ? '1234,56' : '1234.56'}
-          />
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              ref={inputRef}
+              id="number"
+              type="text"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder={separator === ',' ? '1234,56' : '1234.56'}
+              style={{ flex: 1 }}
+            />
+            <button
+              onClick={handleClear}
+              className="secondary"
+              style={{ minWidth: '100px' }}
+            >
+              Сброс
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
@@ -392,12 +402,6 @@ function NumberToWords() {
             ))}
           </>
         )}
-
-        <div className="btn-group" style={{ marginTop: '1.5rem' }}>
-          <button onClick={handleClear} className="secondary">
-            Очистить
-          </button>
-        </div>
 
         <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Как пользоваться конвертером числа прописью</h2>
