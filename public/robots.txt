@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Host: qsen.ru
 
 Sitemap: https://qsen.ru/sitemap.xml
