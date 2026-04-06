@@ -14,14 +14,6 @@ function SEOAuditPro() {
       return
     }
 
-    // Validate URL format
-    try {
-      new URL(url)
-    } catch {
-      setError('Введите корректный URL (например: https://example.com)')
-      return
-    }
-
     setLoading(true)
     setError('')
     setResult(null)
@@ -41,7 +33,7 @@ function SEOAuditPro() {
       const analysis = analyzeData(data)
       setResult(analysis)
     } catch (err) {
-      setError('Ошибка при анализе сайта. Проверьте URL и попробуйте снова.')
+      setError(err.message || 'Ошибка при анализе сайта. Проверьте URL и попробуйте снова.')
     } finally {
       setLoading(false)
     }
