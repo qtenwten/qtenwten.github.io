@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import SEO from '../components/SEO'
 import './Home.css'
 
@@ -9,63 +9,77 @@ const tools = [
     path: '/number-to-words',
     icon: '🔢',
     title: 'Число прописью',
-    description: 'Конвертация числа в текст (рубли, евро, доллары)'
+    description: 'Конвертация числа в текст (рубли, евро, доллары)',
+    category: 'converters'
   },
   {
     id: 'vat-calculator',
     path: '/vat-calculator',
     icon: '💰',
     title: 'НДС калькулятор',
-    description: 'Добавить, убрать или рассчитать НДС'
+    description: 'Добавить, убрать или рассчитать НДС',
+    category: 'calculators'
   },
   {
     id: 'compound-interest',
     path: '/compound-interest',
     icon: '📈',
     title: 'Сложные проценты',
-    description: 'Расчет доходности инвестиций'
+    description: 'Расчет доходности инвестиций',
+    category: 'calculators'
   },
   {
     id: 'random-number',
     path: '/random-number',
     icon: '🎲',
     title: 'Случайные числа',
-    description: 'Генератор случайных чисел в диапазоне'
+    description: 'Генератор случайных чисел в диапазоне',
+    category: 'generators'
   },
   {
     id: 'calculator',
     path: '/calculator',
     icon: '🧮',
     title: 'Калькулятор',
-    description: 'Базовые операции и проценты'
+    description: 'Базовые операции и проценты',
+    category: 'calculators'
   },
   {
     id: 'time-calculator',
     path: '/time-calculator',
     icon: '⏰',
     title: 'Калькулятор времени',
-    description: 'Сложение, вычитание и разница времени'
+    description: 'Сложение, вычитание и разница времени',
+    category: 'calculators'
   }
 ]
 
 function Home() {
   const [search, setSearch] = useState('')
   const [filteredTools, setFilteredTools] = useState(tools)
+  const [searchParams] = useSearchParams()
+  const categoryFilter = searchParams.get('category')
 
   useEffect(() => {
-    if (search.trim() === '') {
-      setFilteredTools(tools)
-    } else {
+    let result = tools
+
+    // Фильтр по категории из URL
+    if (categoryFilter) {
+      result = result.filter(tool => tool.category === categoryFilter)
+    }
+
+    // Фильтр по поиску
+    if (search.trim() !== '') {
       const query = search.toLowerCase()
-      setFilteredTools(
-        tools.filter(
-          tool =>
-            tool.title.toLowerCase().includes(query) ||
-            tool.description.toLowerCase().includes(query)
-        )
+      result = result.filter(
+        tool =>
+          tool.title.toLowerCase().includes(query) ||
+          tool.description.toLowerCase().includes(query)
       )
     }
-  }, [search])
+
+    setFilteredTools(result)
+  }, [search, categoryFilter])
 
   return (
     <>
