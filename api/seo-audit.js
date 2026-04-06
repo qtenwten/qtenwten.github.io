@@ -10,26 +10,31 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const url = req.method === 'POST' ? req.body.url : req.query.url;
+  const url = req.method === 'POST' ? req.body?.url : req.query.url;
 
   if (!url) {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
 
   try {
-    // Validate URL
-    new URL(url);
+    // Validate and normalize URL
+    let targetUrl = url.trim();
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      targetUrl = 'https://' + targetUrl;
+    }
+
+    const urlObj = new URL(targetUrl);
 
     // Fetch HTML
-    const response = await fetch(url, {
+    const response = await fetch(targetUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       },
       timeout: 10000
     });
 
     if (!response.ok) {
-      return res.status(400).json({ error: `Failed to fetch URL: ${response.status}` });
+      return res.status(400).json({ error: `Failed to fetch URL: ${response.status} ${response.statusText}` });
     }
 
     const html = await response.text();
@@ -39,6 +44,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json(result);
   } catch (error) {
+    console.error('SEO Audit Error:', error);
     return res.status(500).json({ error: error.message || 'Failed to analyze URL' });
   }
 }
