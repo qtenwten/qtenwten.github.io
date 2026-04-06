@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
+import RelatedTools from '../components/RelatedTools'
 import { generateRandomNumbers } from '../utils/randomGenerator'
 
 function RandomNumber() {
@@ -159,6 +160,8 @@ function RandomNumber() {
             тестовых данных или статистических исследований.
           </p>
         </div>
+
+        <RelatedTools currentPath="/random-number" />
       </div>
     </>
   )

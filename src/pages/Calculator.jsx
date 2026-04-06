@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
+import RelatedTools from '../components/RelatedTools'
 import { calculate, calculatePercentage } from '../utils/calculator'
 
 function Calculator() {
@@ -195,6 +196,8 @@ function Calculator() {
             История сохраняет все ваши вычисления.
           </p>
         </div>
+
+        <RelatedTools currentPath="/calculator" />
       </div>
     </>
   )

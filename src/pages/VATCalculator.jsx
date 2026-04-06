@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
+import RelatedTools from '../components/RelatedTools'
 import { addVAT, removeVAT, calculateVAT } from '../utils/vatCalculator'
 
 function VATCalculator() {
@@ -167,6 +168,8 @@ function VATCalculator() {
             что размер налога составит 2000 рублей.
           </p>
         </div>
+
+        <RelatedTools currentPath="/vat-calculator" />
       </div>
     </>
   )

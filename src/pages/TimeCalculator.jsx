@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
+import RelatedTools from '../components/RelatedTools'
 import { addTime, subtractTime, timeUntil } from '../utils/timeCalculator'
 
 function TimeCalculator() {
@@ -174,6 +175,8 @@ function TimeCalculator() {
             осталось до этого момента. Обновляется в реальном времени.
           </p>
         </div>
+
+        <RelatedTools currentPath="/time-calculator" />
       </div>
     </>
   )

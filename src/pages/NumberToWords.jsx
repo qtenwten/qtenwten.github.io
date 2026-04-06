@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
+import RelatedTools from '../components/RelatedTools'
 import { numberToWords } from '../utils/numberToWords'
 
 function NumberToWords() {
@@ -436,6 +437,8 @@ function NumberToWords() {
             с копейками прописью или цифрами - на ваш выбор.
           </p>
         </div>
+
+        <RelatedTools currentPath="/number-to-words" />
       </div>
     </>
   )
