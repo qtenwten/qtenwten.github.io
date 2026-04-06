@@ -28,6 +28,11 @@ const routeConfig = {
     category: 'Калькуляторы',
     categorySlug: 'calculators'
   },
+  '/seo-audit': {
+    name: 'SEO Аудит',
+    category: 'Инструменты',
+    categorySlug: 'tools'
+  },
   '/random-number': {
     name: 'Генератор чисел',
     category: 'Генераторы',

@@ -11,6 +11,7 @@ const RandomNumber = lazy(() => import('./pages/RandomNumber'))
 const Calculator = lazy(() => import('./pages/Calculator'))
 const TimeCalculator = lazy(() => import('./pages/TimeCalculator'))
 const CompoundInterest = lazy(() => import('./pages/CompoundInterest'))
+const SEOAudit = lazy(() => import('./pages/SEOAudit'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -39,6 +40,7 @@ function App() {
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/time-calculator" element={<TimeCalculator />} />
           <Route path="/compound-interest" element={<CompoundInterest />} />
+          <Route path="/seo-audit" element={<SEOAudit />} />
         </Routes>
       </Suspense>
       <Footer />

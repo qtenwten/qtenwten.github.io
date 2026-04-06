@@ -18,6 +18,11 @@ const tools = [
     description: 'Расчет доходности инвестиций'
   },
   {
+    path: '/seo-audit',
+    title: 'SEO Аудит',
+    description: 'Анализ SEO оптимизации сайта'
+  },
+  {
     path: '/random-number',
     title: 'Генератор чисел',
     description: 'Случайные числа в диапазоне'

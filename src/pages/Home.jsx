@@ -29,6 +29,14 @@ const tools = [
     category: 'calculators'
   },
   {
+    id: 'seo-audit',
+    path: '/seo-audit',
+    icon: '🔍',
+    title: 'SEO Аудит',
+    description: 'Анализ SEO оптимизации сайта',
+    category: 'tools'
+  },
+  {
     id: 'random-number',
     path: '/random-number',
     icon: '🎲',
