@@ -1,0 +1,32 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#grad)"/>
+
+  <!-- Main content -->
+  <text x="600" y="220" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="white" text-anchor="middle">
+    QSEN.RU
+  </text>
+
+  <text x="600" y="300" font-family="Arial, sans-serif" font-size="36" fill="rgba(255,255,255,0.9)" text-anchor="middle">
+    Онлайн калькуляторы и инструменты
+  </text>
+
+  <!-- Icons row -->
+  <text x="300" y="420" font-size="60" text-anchor="middle">🔢</text>
+  <text x="450" y="420" font-size="60" text-anchor="middle">💰</text>
+  <text x="600" y="420" font-size="60" text-anchor="middle">📈</text>
+  <text x="750" y="420" font-size="60" text-anchor="middle">🚀</text>
+  <text x="900" y="420" font-size="60" text-anchor="middle">🧮</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="28" fill="rgba(255,255,255,0.8)" text-anchor="middle">
+    Быстро • Бесплатно • Без регистрации
+  </text>
+</svg>

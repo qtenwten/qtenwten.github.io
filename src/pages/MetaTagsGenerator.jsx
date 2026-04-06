@@ -103,6 +103,7 @@ function MetaTagsGenerator() {
         title="Генератор мета-тегов для SEO - Яндекс и Google"
         description="Создавайте мета-теги и ключевые слова для продвижения сайта в Яндексе и Google. Генератор Open Graph и Twitter Cards."
         path="/meta-tags-generator"
+        keywords="генератор мета-тегов, мета-теги, SEO теги, Open Graph, Twitter Cards, keywords, description"
       />
 
       <div className="tool-container">
