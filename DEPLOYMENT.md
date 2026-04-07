@@ -11,12 +11,12 @@
   - kayden.ns.cloudflare.com
 
 ### Хостинг
-- **Платформа:** Vercel
-- **Аккаунт:** arsenytroitsky01-8691
-- **Project ID:** prj_LKTlPULEInvS0zrzvycgGWxz8E6G
-- **Название проекта:** utility-tools-site
-- **Production URL:** https://qsen.ru
-- **Vercel URL:** https://utility-tools-site-pi.vercel.app
+- **Платформа:** Cloudflare Pages
+- **Production URL:** https://qsen-cv8.pages.dev
+- **Custom Domain:** qsen.ru (настраивается)
+- **Build command:** npm run build
+- **Build output directory:** dist
+- **Node version:** 18
 
 ### GitHub
 - **Репозиторий:** https://github.com/qtenwten/qsen.git
@@ -25,12 +25,8 @@
 
 ### Cloudflare DNS записи
 ```
-Type: CNAME, Name: qsen.ru (@), Target: cname.vercel-dns.com, Proxy: Enabled
-Type: CNAME, Name: www, Target: cname.vercel-dns.com, Proxy: Enabled
-Type: CNAME, Name: _domainconnect, Target: _domainconnect.vercel-dns.com, Proxy: Enabled
-Type: CAA, Name: qsen.ru, Value: 0 issue sectigo.com
-Type: CAA, Name: qsen.ru, Value: 0 issue pki.goog
-Type: CAA, Name: qsen.ru, Value: 0 issue letsencrypt.org
+Type: CNAME, Name: qsen.ru (@), Target: qsen-cv8.pages.dev, Proxy: Enabled
+Type: CNAME, Name: www, Target: qsen-cv8.pages.dev, Proxy: Enabled
 Type: TXT, Name: qsen.ru, Value: "yandex-verification: 5edd40b97e956d2c"
 ```
 
