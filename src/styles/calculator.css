@@ -1,0 +1,501 @@
+.calculator-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.calculator-container > div[style*="marginTop"] {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Header */
+.calc-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.calc-header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+}
+
+.calc-header p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Mode Switcher */
+.mode-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.mode-switcher button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.mode-icon {
+  font-size: 1.2rem;
+}
+
+.mode-label {
+  font-weight: 500;
+}
+
+/* Workspace */
+.calc-workspace {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.calc-workspace.mode-calculator {
+  grid-template-columns: 1fr;
+}
+
+.calc-workspace.mode-graph {
+  grid-template-columns: 1fr;
+  max-width: 900px;
+}
+
+.calc-workspace.mode-split {
+  grid-template-columns: 500px 1fr;
+  max-width: 1200px;
+}
+
+.calc-section {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 968px) {
+  .calc-workspace.mode-split {
+    grid-template-columns: 1fr;
+  }
+
+  .calc-workspace {
+    max-width: 100%;
+  }
+}
+
+/* Calculator Panel - Compact Casio Style */
+.calc-panel {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calc-screen {
+  background: #e8f0e8;
+  border: 2px solid #999;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.calc-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  font-family: 'Courier New', monospace;
+  color: #000;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  height: 2rem;
+  line-height: 2rem;
+}
+
+.calc-preview {
+  font-size: 1.1rem;
+  color: #2e7d32;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.calc-error {
+  font-size: 0.9rem;
+  color: #d32f2f;
+  text-align: right;
+  font-weight: 500;
+  height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.calc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.calc-grid-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+}
+
+.calc-key {
+  padding: 0.6rem 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+  background: #fff;
+  color: #000;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calc-key:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.calc-key:active {
+  transform: scale(0.95);
+}
+
+.calc-key.num {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.calc-key.op {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.calc-key.func {
+  background: #fff3e0;
+  color: #e65100;
+  font-weight: 600;
+}
+
+.calc-key.equals {
+  background: var(--primary);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.calc-key.equals:hover {
+  background: var(--primary-hover);
+}
+
+/* Graph Panel */
+.graph-panel {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.graph-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.graph-input-field {
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+}
+
+.graph-input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.graph-error {
+  font-size: 0.9rem;
+  color: var(--error);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.graph-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem;
+  background: var(--bg);
+  border-radius: 6px;
+}
+
+.range-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.range-control label {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.range-control input {
+  width: 80px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.95rem;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+}
+
+.graph-canvas {
+  height: 450px;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-placeholder {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.graph-placeholder div:first-child {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.3;
+}
+
+.graph-placeholder p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* History Panel */
+.history-panel {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-header h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.history-header button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.history-item:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  transform: translateX(4px);
+}
+
+.history-item:hover .history-expr,
+.history-item:hover .history-result {
+  color: white;
+}
+
+.history-expr {
+  font-weight: 500;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+}
+
+.history-result {
+  color: var(--success);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.history-type {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .calculator-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .calc-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .calc-header p {
+    font-size: 0.85rem;
+  }
+
+  .mode-switcher {
+    flex-direction: row;
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .mode-switcher button {
+    width: auto;
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: auto;
+  }
+
+  .mode-icon {
+    font-size: 1rem;
+  }
+
+  .mode-label {
+    font-size: 0.85rem;
+  }
+
+  .calc-workspace {
+    max-width: 100%;
+    gap: 1rem;
+  }
+
+  .calc-workspace.mode-calculator {
+    max-width: 100%;
+  }
+
+  .calc-panel {
+    padding: 1rem;
+  }
+
+  .calc-screen {
+    height: 100px;
+    padding: 0.75rem;
+  }
+
+  .calc-key {
+    min-height: 48px;
+    font-size: 1rem;
+    padding: 0.5rem 0.2rem;
+  }
+
+  .calc-key.num {
+    font-size: 1.15rem;
+  }
+
+  .calc-key.op {
+    font-size: 1.15rem;
+  }
+
+  .calc-input {
+    font-size: 1.3rem;
+  }
+
+  .calc-preview {
+    font-size: 1rem;
+  }
+
+  .graph-panel {
+    padding: 1rem;
+  }
+
+  .graph-canvas {
+    height: 300px;
+  }
+
+  .range-control input {
+    width: 60px;
+  }
+
+  .history-panel {
+    padding: 1rem;
+  }
+}
