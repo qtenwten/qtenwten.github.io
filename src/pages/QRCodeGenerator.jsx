@@ -253,53 +253,68 @@ function QRCodeGenerator() {
         </div>
 
         <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Как создать QR-код онлайн</h2>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{t('qrCodeGenerator.info.howToTitle')}</h2>
           <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
-            Бесплатный генератор QR-кодов позволяет создать QR-код для любых данных за несколько секунд.
-            Выберите тип данных, введите информацию, настройте внешний вид и скачайте готовый QR-код в PNG формате.
+            {t('qrCodeGenerator.info.howToDescription')}
+          </p>
+          <ol style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
+            <li>{t('qrCodeGenerator.info.howToSteps.step1')}</li>
+            <li>{t('qrCodeGenerator.info.howToSteps.step2')}</li>
+            <li>{t('qrCodeGenerator.info.howToSteps.step3')}</li>
+          </ol>
+          <p style={{ marginBottom: '1.5rem', color: 'var(--text)' }}>
+            {t('qrCodeGenerator.info.howToNote')}
           </p>
 
-          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Типы QR-кодов:</h3>
+          <h2 style={{ fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem' }}>{t('qrCodeGenerator.info.mainTitle')}</h2>
+          <p style={{ marginBottom: '1.5rem', color: 'var(--text)' }}>
+            {t('qrCodeGenerator.info.mainDescription')}
+          </p>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('qrCodeGenerator.info.purposesTitle')}</h3>
+          <p style={{ marginBottom: '0.5rem', color: 'var(--text)' }}>{t('qrCodeGenerator.info.purposesDescription')}</p>
           <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
-            <li><strong>Текст</strong> - любой текст или сообщение</li>
-            <li><strong>Ссылка</strong> - URL сайта или веб-страницы</li>
-            <li><strong>Email</strong> - адрес электронной почты</li>
-            <li><strong>Телефон</strong> - номер телефона для быстрого звонка</li>
-            <li><strong>SMS</strong> - номер для отправки SMS</li>
-            <li><strong>WiFi</strong> - данные для подключения к WiFi сети</li>
+            <li>{t('qrCodeGenerator.info.purposesList.text')}</li>
+            <li>{t('qrCodeGenerator.info.purposesList.link')}</li>
+            <li>{t('qrCodeGenerator.info.purposesList.email')}</li>
+            <li>{t('qrCodeGenerator.info.purposesList.phone')}</li>
+            <li>{t('qrCodeGenerator.info.purposesList.sms')}</li>
+            <li>{t('qrCodeGenerator.info.purposesList.wifi')}</li>
+          </ul>
+          <p style={{ marginTop: '1rem', marginBottom: '1.5rem', color: 'var(--text)' }}>
+            {t('qrCodeGenerator.info.purposesNote')}
+          </p>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('qrCodeGenerator.info.featuresTitle')}</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>{t('qrCodeGenerator.info.featuresList.free')}</li>
+            <li>{t('qrCodeGenerator.info.featuresList.colors')}</li>
+            <li>{t('qrCodeGenerator.info.featuresList.styles')}</li>
+            <li>{t('qrCodeGenerator.info.featuresList.size')}</li>
+            <li>{t('qrCodeGenerator.info.featuresList.download')}</li>
+            <li>{t('qrCodeGenerator.info.featuresList.instant')}</li>
           </ul>
 
-          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Возможности генератора:</h3>
-          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
-            <li>Создание QR-кода онлайн бесплатно без регистрации</li>
-            <li>Настройка цвета QR-кода и фона</li>
-            <li>Выбор стиля: квадраты, точки или скругленные углы</li>
-            <li>Регулировка размера от 128x128 до 400x400 пикселей</li>
-            <li>Скачивание в PNG формате высокого качества</li>
-            <li>Мгновенная генерация без задержек</li>
-          </ul>
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('qrCodeGenerator.info.stepsTitle')}</h3>
+          <ol style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>{t('qrCodeGenerator.info.stepsList.step1')}</li>
+            <li>{t('qrCodeGenerator.info.stepsList.step2')}</li>
+            <li>{t('qrCodeGenerator.info.stepsList.step3')}</li>
+            <li>{t('qrCodeGenerator.info.stepsList.step4')}</li>
+          </ol>
 
-          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Популярные запросы:</h3>
-          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
-            <li>Генератор QR кодов онлайн бесплатно</li>
-            <li>Создать QR код для ссылки</li>
-            <li>QR код генератор с логотипом</li>
-            <li>Генератор QR кода для WiFi</li>
-            <li>Как создать QR код бесплатно</li>
-          </ul>
-
-          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Примеры использования:</h3>
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('qrCodeGenerator.info.useCasesTitle')}</h3>
           <p style={{ color: 'var(--text)', lineHeight: '1.8' }}>
-            <strong>Для бизнеса:</strong> Создайте QR-код со ссылкой на ваш сайт, меню ресторана,
-            прайс-лист или контактную информацию. Разместите на визитках, флаерах или вывесках.
+            <strong>{t('qrCodeGenerator.info.business')}</strong><br />
+            {t('qrCodeGenerator.info.businessDescription')}
           </p>
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
-            <strong>Для WiFi:</strong> Сгенерируйте QR-код с данными WiFi сети. Гости смогут
-            подключиться к интернету, просто отсканировав код камерой телефона.
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '1rem' }}>
+            <strong>{t('qrCodeGenerator.info.wifi')}</strong><br />
+            {t('qrCodeGenerator.info.wifiDescription')}
           </p>
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
-            <strong>Для мероприятий:</strong> Создайте QR-коды для регистрации участников,
-            ссылок на программу мероприятия или контактов организаторов.
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '1rem' }}>
+            <strong>{t('qrCodeGenerator.info.events')}</strong><br />
+            {t('qrCodeGenerator.info.eventsDescription')}
           </p>
         </div>
 

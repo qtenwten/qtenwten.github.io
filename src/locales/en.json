@@ -297,7 +297,53 @@
   },
   "qrCodeGenerator": {
     "title": "QR Code Generator",
-    "subtitle": "Create QR codes online"
+    "subtitle": "Create QR codes online",
+    "info": {
+      "howToTitle": "How to Create a QR Code Online",
+      "howToDescription": "To create a QR code online for free, follow these simple steps:",
+      "howToSteps": {
+        "step1": "Choose the QR code type (link, text, WiFi, etc.)",
+        "step2": "Enter your data",
+        "step3": "Click \"Generate QR Code\" and download the result"
+      },
+      "howToNote": "Our QR code generator works instantly and requires no registration.",
+      "mainTitle": "QR Code Generator Online — Create QR Codes for Free",
+      "mainDescription": "Use our online QR code generator to quickly and easily create QR codes for any type of data. The tool allows you to generate a QR code in seconds: choose the type, enter your data, customize the design, and download the result.",
+      "purposesTitle": "Create QR Codes for Different Purposes",
+      "purposesDescription": "You can generate QR codes for:",
+      "purposesList": {
+        "text": "text or messages",
+        "link": "website links (URLs)",
+        "email": "email",
+        "phone": "phone numbers",
+        "sms": "SMS",
+        "wifi": "WiFi networks"
+      },
+      "purposesNote": "Our QR code generator is perfect for business, personal use, and events.",
+      "featuresTitle": "QR Code Generator Features",
+      "featuresList": {
+        "free": "Create QR codes online for free without registration",
+        "colors": "Customize QR code and background colors",
+        "styles": "Choose styles: square, dots, or rounded corners",
+        "size": "Adjust size (from 128×128 to 400×400)",
+        "download": "Download high-quality PNG files",
+        "instant": "Instant generation with no delays"
+      },
+      "stepsTitle": "How to Generate a QR Code",
+      "stepsList": {
+        "step1": "Select the QR code type",
+        "step2": "Enter your data (link, text, WiFi, etc.)",
+        "step3": "Customize the appearance",
+        "step4": "Click \"Generate QR Code\" and download it"
+      },
+      "useCasesTitle": "Use Cases",
+      "business": "For business:",
+      "businessDescription": "Create QR codes linking to your website, restaurant menu, price list, or contact details. Use them on business cards, packaging, or ads.",
+      "wifi": "For WiFi:",
+      "wifiDescription": "Generate a QR code for WiFi access. Users can connect instantly without typing a password.",
+      "events": "For events:",
+      "eventsDescription": "Create QR codes for registration, event programs, or organizer contacts."
+    }
   },
   "urlShortener": {
     "title": "URL Shortener",
