@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import QRCodeStyling from 'qr-code-styling'
+import QRCode from 'qrcode'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 
@@ -7,12 +7,10 @@ function QRCodeGenerator() {
   const [qrType, setQrType] = useState('text')
   const [qrValue, setQrValue] = useState('')
   const [qrSize, setQrSize] = useState(256)
-  const [qrStyle, setQrStyle] = useState('squares')
   const [qrColor, setQrColor] = useState('#000000')
   const [qrBgColor, setQrBgColor] = useState('#ffffff')
   const [useTranslit, setUseTranslit] = useState(false)
   const qrRef = useRef(null)
-  const qrCodeRef = useRef(null)
 
   const qrTypes = [
     { id: 'text', label: 'Текст', placeholder: 'Введите текст' },
@@ -23,73 +21,50 @@ function QRCodeGenerator() {
     { id: 'wifi', label: 'WiFi', placeholder: 'SSID:password:WPA' }
   ]
 
-  const qrStyles = [
-    { id: 'squares', label: '⬛ Квадраты', icon: '⬛' },
-    { id: 'dots', label: '⚫ Точки', icon: '⚫' },
-    { id: 'rounded', label: '🔘 Скругленные', icon: '🔘' }
-  ]
-
-  const qrPresets = [
-    { name: 'Классический', fg: '#000000', bg: '#ffffff' },
-    { name: 'Синий', fg: '#2196F3', bg: '#E3F2FD' },
-    { name: 'Зеленый', fg: '#4CAF50', bg: '#E8F5E9' },
-    { name: 'Красный', fg: '#F44336', bg: '#FFEBEE' },
-    { name: 'Фиолетовый', fg: '#9C27B0', bg: '#F3E5F5' },
-    { name: 'Оранжевый', fg: '#FF9800', bg: '#FFF3E0' }
-  ]
-
   useEffect(() => {
     if (!qrValue.trim()) return
 
-    const dotsType = qrStyle === 'dots' ? 'dots' : qrStyle === 'rounded' ? 'rounded' : 'square'
-    const cornersType = qrStyle === 'rounded' ? 'extra-rounded' : 'square'
+    const canvas = document.createElement('canvas')
 
-    qrCodeRef.current = new QRCodeStyling({
+    // Настройки для qrcode с поддержкой UTF-8
+    const options = {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      quality: 1,
+      margin: 1,
       width: qrSize,
-      height: qrSize,
-      data: formatValue(),
-      margin: 10,
-      qrOptions: {
-        typeNumber: 0,
-        mode: 'Byte',
-        errorCorrectionLevel: 'H'
-      },
-      imageOptions: {
-        hideBackgroundDots: true,
-        imageSize: 0.4,
-        margin: 0
-      },
-      dotsOptions: {
-        color: qrColor,
-        type: dotsType
-      },
-      backgroundOptions: {
-        color: qrBgColor
-      },
-      cornersSquareOptions: {
-        color: qrColor,
-        type: cornersType
-      },
-      cornersDotOptions: {
-        color: qrColor,
-        type: dotsType
+      color: {
+        dark: qrColor,
+        light: qrBgColor
+      }
+    }
+
+    QRCode.toCanvas(canvas, formatValue(), options, (error) => {
+      if (error) {
+        console.error('QR Code generation error:', error)
+        return
+      }
+
+      if (qrRef.current) {
+        qrRef.current.innerHTML = ''
+        qrRef.current.appendChild(canvas)
       }
     })
-
-    if (qrRef.current) {
-      qrRef.current.innerHTML = ''
-      qrCodeRef.current.append(qrRef.current)
-    }
-  }, [qrValue, qrSize, qrStyle, qrColor, qrBgColor, qrType, useTranslit])
+  }, [qrValue, qrSize, qrColor, qrBgColor, qrType, useTranslit])
 
   // Показываем QR в реальном времени
   const shouldShowQR = qrValue.trim() !== ''
 
   const handleDownload = () => {
-    if (qrCodeRef.current) {
-      qrCodeRef.current.download({
-        name: 'qrcode',
-        extension: 'png'
+    const canvas = qrRef.current?.querySelector('canvas')
+    if (canvas) {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'qrcode.png'
+        link.click()
+        URL.revokeObjectURL(url)
       })
     }
   }
@@ -220,23 +195,6 @@ function QRCodeGenerator() {
                 value={qrSize}
                 onChange={(e) => setQrSize(Number(e.target.value))}
               />
-            </div>
-
-            <div className="field">
-              <label>Стиль QR-кода</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                {qrStyles.map(style => (
-                  <button
-                    key={style.id}
-                    className={qrStyle === style.id ? '' : 'secondary'}
-                    style={{ padding: '0.75rem', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}
-                    onClick={() => setQrStyle(style.id)}
-                  >
-                    <span style={{ fontSize: '1.5rem' }}>{style.icon}</span>
-                    <span>{style.label.split(' ')[1]}</span>
-                  </button>
-                ))}
-              </div>
             </div>
 
             <div className="field">
