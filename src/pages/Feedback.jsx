@@ -19,16 +19,12 @@ function Feedback() {
     const TELEGRAM_BOT_TOKEN = '8609094298:AAGQEDJwuFpml6tqrStaD_rjtd1Tkp1KOQw'
     const TELEGRAM_CHAT_ID = '461685582'
 
-    const text = `🔔 Новое сообщение с сайта QSEN.RU
-
-👤 Имя: ${formData.name}
-
-💬 Сообщение:
-${formData.message}`
+    const text = `🔔 Новое сообщение с сайта QSEN.RU\n\n👤 Имя: ${formData.name}\n\n💬 Сообщение:\n${formData.message}`
 
     const payload = {
       chat_id: TELEGRAM_CHAT_ID,
-      text: text
+      text: text,
+      parse_mode: 'HTML'
     }
 
     console.log('Sending payload:', payload)
