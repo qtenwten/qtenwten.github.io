@@ -1,0 +1,21 @@
+{
+  "name": "QSEN.RU - Онлайн калькуляторы",
+  "short_name": "QSEN",
+  "description": "Бесплатные онлайн калькуляторы и SEO инструменты",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity", "finance"],
+  "lang": "ru",
+  "dir": "ltr"
+}

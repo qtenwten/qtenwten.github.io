@@ -17,6 +17,7 @@
     <meta property="og:locale" content="ru_RU" />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Онлайн калькуляторы и конвертеры - Бесплатные инструменты</title>
 
     <!-- JSON-LD -->
@@ -42,6 +43,21 @@
     </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration)
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error)
+            })
+        })
+      }
+    </script>
 
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">

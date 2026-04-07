@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
+import LineChart from '../components/LineChart'
 import { calculateCompoundInterest, formatNumber } from '../utils/compoundInterest'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 
@@ -158,30 +158,7 @@ function CompoundInterest() {
 
             <div style={{ marginTop: '2rem', background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
               <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>График роста капитала</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={result.chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="year"
-                    label={{ value: 'Годы', position: 'insideBottom', offset: -5 }}
-                  />
-                  <YAxis
-                    label={{ value: 'Сумма (₽)', angle: -90, position: 'insideLeft' }}
-                    tickFormatter={(value) => new Intl.NumberFormat('ru-RU', { notation: 'compact' }).format(value)}
-                  />
-                  <Tooltip
-                    formatter={(value) => formatNumber(value) + ' ₽'}
-                    labelFormatter={(label) => `Год ${label}`}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="amount"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
-                    dot={{ fill: 'var(--primary)' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <LineChart data={result.chartData} width={600} height={300} />
             </div>
           </>
         )}

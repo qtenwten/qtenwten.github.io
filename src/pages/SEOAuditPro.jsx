@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
+import { seoAuditCache } from '../utils/apiCache'
 
 function SEOAuditPro() {
   const [url, setUrl] = useState('')
@@ -32,6 +33,16 @@ function SEOAuditPro() {
       return
     }
 
+    // Check cache first
+    const cacheKey = url.trim().toLowerCase()
+    const cachedResult = seoAuditCache.get(cacheKey)
+
+    if (cachedResult) {
+      const analysis = analyzeData(cachedResult)
+      setResult(analysis)
+      return
+    }
+
     setLoading(true)
     setError('')
     setResult(null)
@@ -47,6 +58,9 @@ function SEOAuditPro() {
         setError(data.error || 'Ошибка при анализе сайта')
         return
       }
+
+      // Cache the result
+      seoAuditCache.set(cacheKey, data)
 
       const analysis = analyzeData(data)
       setResult(analysis)

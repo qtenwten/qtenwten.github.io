@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App'
 import './styles/index.css'
+import { errorMonitor } from './utils/errorMonitor'
+
+// Initialize error monitoring
+errorMonitor.init()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
