@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
@@ -5,6 +6,7 @@ import RelatedTools from '../components/RelatedTools'
 import { addTime, subtractTime, timeUntil } from '../utils/timeCalculator'
 
 function TimeCalculator() {
+  const { t, language } = useLanguage()
   const [mode, setMode] = useState('add')
   const [time1, setTime1] = useState('')
   const [time2, setTime2] = useState('')
@@ -57,7 +59,7 @@ function TimeCalculator() {
       <SEO
         title="Калькулятор времени - Сложение и вычитание времени онлайн"
         description="Калькулятор времени онлайн. Сложить время, вычесть время, рассчитать разницу. Формат часы:минуты:секунды. Быстрый расчет."
-        path="/time-calculator"
+        path={`/${language}/timeCalculator`}
         keywords="калькулятор времени, сложение времени, вычитание времени, разница времени, калькулятор часов и минут"
       />
 
@@ -177,7 +179,7 @@ function TimeCalculator() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/time-calculator" />
+        <RelatedTools currentPath={`/${language}/timeCalculator`} />
       </div>
     </>
   )

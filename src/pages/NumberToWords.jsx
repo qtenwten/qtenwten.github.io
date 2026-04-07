@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
@@ -6,6 +7,7 @@ import { numberToWords } from '../utils/numberToWords'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 
 function NumberToWords() {
+  const { t, language } = useLanguage()
   const [number, setNumber] = useState('')
   const [currency, setCurrency] = useState('RUB')
   const [withMinor, setWithMinor] = useState(true)
@@ -343,7 +345,7 @@ function NumberToWords() {
       <SEO
         title="Сумма прописью онлайн с НДС - Число прописью для договора"
         description="Перевод суммы прописью онлайн для договоров и счетов. Число прописью с НДС 20%, НДФЛ. Рубли, доллары, евро. Все форматы для документов."
-        path="/number-to-words"
+        path={`/${language}/numberToWords`}
         keywords="сумма прописью, число прописью, прописью онлайн, сумма прописью с НДС, число прописью для договора, конвертер числа в текст"
       />
 
@@ -518,7 +520,7 @@ function NumberToWords() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/number-to-words" />
+        <RelatedTools currentPath={`/${language}/numberToWords`} />
       </div>
     </>
   )

@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
+import { useLanguage } from '../contexts/LanguageContext'
+import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import './Feedback.css'
 
 function Feedback() {
+  const { t, language } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     message: ''
@@ -27,8 +29,6 @@ function Feedback() {
       parse_mode: 'HTML'
     }
 
-    console.log('Sending payload:', payload)
-
     try {
       const response = await fetch(
         `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -42,17 +42,14 @@ function Feedback() {
       )
 
       const data = await response.json()
-      console.log('Telegram response:', data)
 
       if (data.ok) {
         setStatus('success')
         setFormData({ name: '', message: '' })
       } else {
-        console.error('Telegram error:', data)
         setStatus('error')
       }
     } catch (error) {
-      console.error('Fetch error:', error)
       setStatus('error')
     } finally {
       setLoading(false)
@@ -68,18 +65,18 @@ function Feedback() {
 
   return (
     <>
-      <Helmet>
-        <title>Обратная связь - QSEN.RU</title>
-        <meta name="description" content="Свяжитесь с нами! Оставьте свои пожелания, предложения или сообщите о проблемах на сайте QSEN.RU" />
-        <link rel="canonical" href="https://qsen.ru/feedback" />
-      </Helmet>
+      <SEO
+        title={t('feedback.title')}
+        description={t('feedback.subtitle')}
+        path={`/${language}/feedback`}
+      />
 
       <div className="container">
         <div className="feedback-page">
           <div className="feedback-header">
-            <h1>Обратная связь</h1>
+            <h1>{t('feedback.title')}</h1>
             <p className="feedback-subtitle">
-              Мы ценим ваше мнение! Напишите нам свои пожелания, предложения по улучшению сайта или сообщите о проблемах.
+              {t('feedback.subtitle')}
             </p>
           </div>
 
@@ -128,7 +125,7 @@ function Feedback() {
           </form>
         </div>
 
-        <RelatedTools currentPath="/feedback" />
+        <RelatedTools currentPath={`/${language}/feedback`} />
       </div>
     </>
   )

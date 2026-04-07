@@ -1,9 +1,11 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import { seoAuditCache } from '../utils/apiCache'
 
 function SEOAuditPro() {
+  const { t, language } = useLanguage()
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -206,7 +208,7 @@ function SEOAuditPro() {
       <SEO
         title="SEO-аудитор сайтов PRO - Анализ как в Яндекс Вебмастер"
         description="Профессиональный анализ SEO сайта: мета-теги, заголовки, изображения и структура страниц. Работает с любыми сайтами."
-        path="/seo-audit-pro"
+        path={`/${language}/seoAuditPro`}
         keywords="SEO аудит, анализ сайта, проверка SEO, SEO анализ онлайн, аудит сайта, Яндекс Вебмастер"
       />
 
@@ -418,7 +420,7 @@ function SEOAuditPro() {
           </ul>
         </div>
 
-        <RelatedTools currentPath="/seo-audit-pro" />
+        <RelatedTools currentPath={`/${language}/seoAuditPro`} />
       </div>
     </>
   )

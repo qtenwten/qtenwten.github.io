@@ -1,9 +1,11 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 
 function URLShortener() {
+  const { t, language } = useLanguage()
   const [longUrl, setLongUrl] = useState('')
   const [shortUrl, setShortUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -83,7 +85,7 @@ function URLShortener() {
       <SEO
         title="Сокращатель ссылок онлайн - Короткие ссылки бесплатно"
         description="Бесплатный сокращатель ссылок онлайн. Создайте короткую ссылку для соцсетей, SMS, email. Быстро и без регистрации."
-        path="/url-shortener"
+        path={`/${language}/urlShortener`}
         keywords="сокращатель ссылок, короткие ссылки, сократить ссылку онлайн, url shortener, короткая ссылка"
       />
 
@@ -199,7 +201,7 @@ function URLShortener() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/url-shortener" />
+        <RelatedTools currentPath={`/${language}/urlShortener`} />
       </div>
     </>
   )

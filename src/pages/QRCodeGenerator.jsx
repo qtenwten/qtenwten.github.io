@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef } from 'react'
 import QRCode from 'qrcode'
 import SEO from '../components/SEO'
@@ -5,6 +6,7 @@ import RelatedTools from '../components/RelatedTools'
 import './QRCodeGenerator.css'
 
 function QRCodeGenerator() {
+  const { t, language } = useLanguage()
   const [qrType, setQrType] = useState('text')
   const [qrValue, setQrValue] = useState('')
   const [qrSize, setQrSize] = useState(256)
@@ -113,7 +115,7 @@ function QRCodeGenerator() {
       <SEO
         title="Генератор QR-кодов онлайн бесплатно - Создать QR код"
         description="Бесплатный генератор QR-кодов онлайн. Создайте QR-код для ссылки, текста, email, телефона, WiFi. Настройка цвета и стиля. Скачать в PNG."
-        path="/qr-code-generator"
+        path={`/${language}/qrCodeGenerator`}
         keywords="генератор qr кода, создать qr код онлайн, qr код генератор бесплатно, qr code generator, генератор qr кодов"
       />
 
@@ -301,7 +303,7 @@ function QRCodeGenerator() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/qr-code-generator" />
+        <RelatedTools currentPath={`/${language}/qrCodeGenerator`} />
       </div>
     </>
   )

@@ -1,9 +1,11 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import { analyzeSEO } from '../utils/seoAudit'
 
 function SEOAudit() {
+  const { t, language } = useLanguage()
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -55,7 +57,7 @@ function SEOAudit() {
       <SEO
         title="SEO Аудит сайта онлайн - Проверка SEO оптимизации"
         description="Бесплатный инструмент для SEO аудита сайта. Проверка meta-тегов, заголовков, изображений и Open Graph."
-        path="/seo-audit"
+        path={`/${language}/seoAudit`}
       />
 
       <div className="tool-container">
@@ -228,7 +230,7 @@ function SEOAudit() {
           </ul>
         </div>
 
-        <RelatedTools currentPath="/seo-audit" />
+        <RelatedTools currentPath={`/${language}/seoAudit`} />
       </div>
     </>
   )

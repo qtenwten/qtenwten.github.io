@@ -1,9 +1,11 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 
 function MetaTagsGenerator() {
+  const { t, language } = useLanguage()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [keywords, setKeywords] = useState('')
@@ -116,7 +118,7 @@ function MetaTagsGenerator() {
       <SEO
         title="Генератор мета-тегов для SEO - Яндекс и Google"
         description="Создавайте мета-теги и ключевые слова для продвижения сайта в Яндексе и Google. Генератор Open Graph и Twitter Cards."
-        path="/meta-tags-generator"
+        path={`/${language}/metaTagsGenerator`}
         keywords="генератор мета-тегов, мета-теги, SEO теги, Open Graph, Twitter Cards, keywords, description"
       />
 
@@ -297,7 +299,7 @@ function MetaTagsGenerator() {
           </ul>
         </div>
 
-        <RelatedTools currentPath="/meta-tags-generator" />
+        <RelatedTools currentPath={`/${language}/metaTagsGenerator`} />
       </div>
     </>
   )

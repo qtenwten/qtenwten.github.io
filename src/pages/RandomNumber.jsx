@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
@@ -6,6 +7,7 @@ import { generateRandomNumbers } from '../utils/randomGenerator'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 
 function RandomNumber() {
+  const { t, language } = useLanguage()
   const [min, setMin] = useState('1')
   const [max, setMax] = useState('100')
   const [count, setCount] = useState('1')
@@ -51,7 +53,7 @@ function RandomNumber() {
       <SEO
         title="Генератор случайных чисел от 1 до 100 - Рандомайзер онлайн"
         description="Генератор случайных чисел от 1 до 100, от 1 до 1000. Уникальные числа без повторений. Рандомайзер для лотереи и розыгрышей."
-        path="/random-number"
+        path={`/${language}/randomNumber`}
         keywords="генератор случайных чисел, рандомайзер, случайное число, генератор чисел онлайн, random number generator"
       />
 
@@ -166,7 +168,7 @@ function RandomNumber() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/random-number" />
+        <RelatedTools currentPath={`/${language}/randomNumber`} />
       </div>
     </>
   )

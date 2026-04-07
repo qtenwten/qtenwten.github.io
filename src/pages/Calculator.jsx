@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
@@ -8,6 +9,7 @@ import HistoryPanel from '../components/calculator/HistoryPanel'
 import '../styles/calculator.css'
 
 function Calculator() {
+  const { t, language } = useLanguage()
   const [mode, setMode] = useState('calculator')
   const [history, setHistory] = useState([])
 
@@ -38,7 +40,7 @@ function Calculator() {
       <SEO
         title="Graph Calculator - Инженерный калькулятор с графиками функций"
         description="Современный онлайн калькулятор с построением графиков. Инженерные функции: sin, cos, tan, log, sqrt. Построение графиков функций в реальном времени."
-        path="/calculator"
+        path={`/${language}/calculator`}
         keywords="калькулятор онлайн, инженерный калькулятор, график функции онлайн, построить график, калькулятор с графиками"
       />
 
@@ -117,7 +119,7 @@ function Calculator() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/calculator" />
+        <RelatedTools currentPath={`/${language}/calculator`} />
       </div>
     </>
   )

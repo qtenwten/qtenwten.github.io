@@ -1,3 +1,4 @@
+import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
@@ -7,6 +8,7 @@ import { calculateCompoundInterest, formatNumber } from '../utils/compoundIntere
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 
 function CompoundInterest() {
+  const { t, language } = useLanguage()
   const [principal, setPrincipal] = useState('10000')
   const [rate, setRate] = useState('7')
   const [years, setYears] = useState('10')
@@ -57,7 +59,7 @@ function CompoundInterest() {
       <SEO
         title="Калькулятор сложных процентов - Расчет доходности инвестиций"
         description="Калькулятор сложных процентов с ежемесячными взносами. Рассчитайте рост капитала и доходность инвестиций онлайн."
-        path="/compound-interest"
+        path={`/${language}/compoundInterest`}
         keywords="сложные проценты, калькулятор инвестиций, доходность инвестиций, капитализация процентов, расчет процентов онлайн"
       />
 
@@ -212,7 +214,7 @@ function CompoundInterest() {
           </p>
         </div>
 
-        <RelatedTools currentPath="/compound-interest" />
+        <RelatedTools currentPath={`/${language}/compoundInterest`} />
       </div>
     </>
   )
