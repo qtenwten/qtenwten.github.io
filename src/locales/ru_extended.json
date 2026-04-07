@@ -1,0 +1,46 @@
+{
+  "numberToWords": {
+    "title": "Число прописью онлайн",
+    "subtitle": "Конвертация числа в текст прописью"
+  },
+  "calculator": {
+    "title": "Калькулятор онлайн",
+    "subtitle": "Простой и удобный калькулятор"
+  },
+  "timeCalculator": {
+    "title": "Калькулятор времени онлайн",
+    "subtitle": "Сложение и вычитание времени"
+  },
+  "compoundInterest": {
+    "title": "Калькулятор сложных процентов",
+    "subtitle": "Расчет доходности инвестиций"
+  },
+  "randomNumber": {
+    "title": "Генератор случайных чисел",
+    "subtitle": "Генерация случайных чисел в диапазоне"
+  },
+  "qrCodeGenerator": {
+    "title": "Генератор QR-кодов",
+    "subtitle": "Создание QR-кодов онлайн"
+  },
+  "urlShortener": {
+    "title": "Сокращатель ссылок",
+    "subtitle": "Создание коротких ссылок"
+  },
+  "metaTagsGenerator": {
+    "title": "Генератор мета-тегов",
+    "subtitle": "Создание SEO мета-тегов"
+  },
+  "seoAudit": {
+    "title": "SEO-аудит сайта",
+    "subtitle": "Анализ SEO параметров"
+  },
+  "seoAuditPro": {
+    "title": "SEO-аудит PRO",
+    "subtitle": "Профессиональный анализ сайта"
+  },
+  "feedback": {
+    "title": "Обратная связь",
+    "subtitle": "Напишите нам"
+  }
+}

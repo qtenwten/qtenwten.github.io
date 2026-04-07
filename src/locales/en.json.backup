@@ -206,49 +206,5 @@
       "totalWithVAT": "Total",
       "amountLabel": "Amount"
     }
-  },
-  "numberToWords": {
-    "title": "Number to Words Online",
-    "subtitle": "Convert numbers to text"
-  },
-  "calculator": {
-    "title": "Calculator Online",
-    "subtitle": "Simple and convenient calculator"
-  },
-  "timeCalculator": {
-    "title": "Time Calculator Online",
-    "subtitle": "Add and subtract time"
-  },
-  "compoundInterest": {
-    "title": "Compound Interest Calculator",
-    "subtitle": "Calculate investment returns"
-  },
-  "randomNumber": {
-    "title": "Random Number Generator",
-    "subtitle": "Generate random numbers in range"
-  },
-  "qrCodeGenerator": {
-    "title": "QR Code Generator",
-    "subtitle": "Create QR codes online"
-  },
-  "urlShortener": {
-    "title": "URL Shortener",
-    "subtitle": "Create short links"
-  },
-  "metaTagsGenerator": {
-    "title": "Meta Tags Generator",
-    "subtitle": "Create SEO meta tags"
-  },
-  "seoAudit": {
-    "title": "SEO Audit",
-    "subtitle": "Analyze SEO parameters"
-  },
-  "seoAuditPro": {
-    "title": "SEO Audit PRO",
-    "subtitle": "Professional website analysis"
-  },
-  "feedback": {
-    "title": "Feedback",
-    "subtitle": "Contact us"
   }
 }
