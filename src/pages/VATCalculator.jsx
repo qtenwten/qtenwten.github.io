@@ -134,6 +134,46 @@ function VATCalculator() {
           </button>
         </div>
 
+        <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Как пользоваться калькулятором НДС</h2>
+          <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
+            Онлайн калькулятор НДС позволяет быстро рассчитать налог на добавленную стоимость.
+            Выберите операцию, введите сумму и получите точный расчет с детализацией.
+          </p>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Возможности калькулятора:</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>Добавить НДС к сумме - расчет итоговой стоимости с налогом</li>
+            <li>Убрать НДС из суммы - выделение налога из общей стоимости</li>
+            <li>Рассчитать НДС - вычисление размера налога от суммы</li>
+            <li>Поддержка ставок: 5%, 10%, 18%, 19%, 20%</li>
+            <li>Автоматический расчет при изменении параметров</li>
+          </ul>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Популярные запросы:</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>Калькулятор НДС 20 процентов онлайн</li>
+            <li>Как выделить НДС из суммы</li>
+            <li>Расчет НДС 18 процентов</li>
+            <li>Калькулятор НДС с суммы</li>
+            <li>Убрать НДС из стоимости</li>
+          </ul>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Примеры использования:</h3>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8' }}>
+            <strong>Добавить НДС:</strong> Если товар стоит 10000 рублей без НДС, калькулятор покажет,
+            что с НДС 20% итоговая цена составит 12000 рублей (НДС = 2000 рублей).
+          </p>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+            <strong>Убрать НДС:</strong> Если счет на 12000 рублей включает НДС 20%, калькулятор выделит
+            сумму без налога 10000 рублей и размер НДС 2000 рублей.
+          </p>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+            <strong>Рассчитать НДС:</strong> Введите сумму 10000 рублей и ставку 20%, чтобы узнать,
+            что размер налога составит 2000 рублей.
+          </p>
+        </div>
+
         <RelatedTools currentPath={`/${language}/vat-calculator`} />
       </div>
     </>
