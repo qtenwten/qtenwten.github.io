@@ -168,22 +168,22 @@
       "excludeCharsPlaceholder": "For example: {}[]"
     },
     "info": {
-      "title": "Secure Password Generator",
-      "description": "Our generator uses a cryptographically secure algorithm (crypto.getRandomValues) to create strong passwords. All passwords are generated locally in your browser and are never sent to a server.",
-      "recommendations": "Usage recommendations:",
+      "title": "Secure Password Generator Online",
+      "description": "Our online password generator uses the cryptographically secure crypto.getRandomValues algorithm to create strong and random passwords. All passwords are generated locally in your browser without being sent to any server, ensuring maximum privacy and security.",
+      "recommendations": "Which password to choose",
       "recommendationsList": {
-        "banking": "For banking and finance: minimum 16 characters, all character types",
-        "email": "For email and social media: minimum 12 characters, letters and numbers",
-        "wifi": "For WiFi: minimum 16 characters, no similar characters",
-        "games": "For games and forums: minimum 10 characters"
+        "banking": "For banks, payment systems, and financial services — use passwords with 16+ characters including letters, numbers, and special symbols",
+        "email": "For email and social networks — 12+ characters with letters and numbers",
+        "wifi": "For WiFi and routers — 16+ characters without similar symbols (e.g., O/0, l/1)",
+        "games": "For games, forums, and websites — 10+ characters"
       },
-      "securityTips": "Security tips:",
+      "securityTips": "Secure password rules",
       "securityTipsList": {
         "unique": "Use a unique password for each site",
-        "noPersonal": "Don't use personal information in passwords",
+        "noPersonal": "Don't use your name, birth date, or other personal information",
         "manager": "Store passwords in a password manager",
-        "twoFactor": "Enable two-factor authentication where possible",
-        "change": "Change passwords every 3-6 months for important accounts"
+        "twoFactor": "Enable two-factor authentication (2FA)",
+        "change": "Regularly update important passwords every 3–6 months"
       }
     }
   },
