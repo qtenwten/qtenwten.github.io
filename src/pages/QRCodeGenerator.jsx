@@ -105,7 +105,9 @@ function QRCodeGenerator() {
         const [ssid, password, security] = qrValue.split(':')
         return `WIFI:T:${security || 'WPA'};S:${ssid};P:${password};;`
       case 'text':
-        // Для текста с кириллицей используем data URI с UTF-8
+        // Для кириллицы добавляем UTF-8 BOM
+        return '\uFEFF' + qrValue
+      case 'url':
         return qrValue
       default:
         return qrValue
