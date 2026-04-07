@@ -297,7 +297,33 @@
   },
   "qrCodeGenerator": {
     "title": "QR Code Generator",
-    "subtitle": "Create QR codes online",
+    "subtitle": "Create and customize QR codes for free",
+    "typeLabel": "QR Code Type",
+    "types": {
+      "text": "Text",
+      "url": "Link",
+      "email": "Email",
+      "phone": "Phone",
+      "sms": "SMS",
+      "wifi": "WiFi"
+    },
+    "placeholders": {
+      "text": "Enter text",
+      "url": "https://example.com",
+      "email": "example@mail.com",
+      "phone": "+1 (999) 123-45-67",
+      "sms": "+1 (999) 123-45-67",
+      "wifi": "SSID:password:WPA"
+    },
+    "dataLabel": "Data for QR code",
+    "wifiFormat": "Format: SSID:password:type (WPA/WEP/nopass)",
+    "sizeLabel": "Size",
+    "colorsLabel": "QR Code Colors",
+    "qrColor": "QR Color",
+    "bgColor": "Background Color",
+    "downloadButton": "📥 Download PNG",
+    "scanText": "Scan with phone camera",
+    "emptyState": "Enter data on the left to create a QR code",
     "info": {
       "howToTitle": "How to Create a QR Code Online",
       "howToDescription": "To create a QR code online for free, follow these simple steps:",

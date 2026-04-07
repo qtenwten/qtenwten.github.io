@@ -296,8 +296,34 @@
     "subtitle": "Генерация случайных чисел в диапазоне"
   },
   "qrCodeGenerator": {
-    "title": "Генератор QR-кодов",
-    "subtitle": "Создание QR-кодов онлайн",
+    "title": "Генератор QR-кодов онлайн",
+    "subtitle": "Создайте и настройте QR-код бесплатно",
+    "typeLabel": "Тип QR-кода",
+    "types": {
+      "text": "Текст",
+      "url": "Ссылка",
+      "email": "Email",
+      "phone": "Телефон",
+      "sms": "SMS",
+      "wifi": "WiFi"
+    },
+    "placeholders": {
+      "text": "Введите текст",
+      "url": "https://example.com",
+      "email": "example@mail.com",
+      "phone": "+7 (999) 123-45-67",
+      "sms": "+7 (999) 123-45-67",
+      "wifi": "SSID:пароль:WPA"
+    },
+    "dataLabel": "Данные для QR-кода",
+    "wifiFormat": "Формат: SSID:пароль:тип (WPA/WEP/nopass)",
+    "sizeLabel": "Размер",
+    "colorsLabel": "Цвета QR-кода",
+    "qrColor": "Цвет QR",
+    "bgColor": "Цвет фона",
+    "downloadButton": "📥 Скачать PNG",
+    "scanText": "Отсканируйте камерой телефона",
+    "emptyState": "Введите данные слева, чтобы создать QR-код",
     "info": {
       "howToTitle": "Как создать QR-код онлайн",
       "howToDescription": "Чтобы создать QR код онлайн бесплатно, выполните 3 простых шага:",

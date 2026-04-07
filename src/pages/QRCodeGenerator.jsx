@@ -16,12 +16,12 @@ function QRCodeGenerator() {
   const qrRef = useRef(null)
 
   const qrTypes = [
-    { id: 'text', label: 'Текст', placeholder: 'Введите текст' },
-    { id: 'url', label: 'Ссылка', placeholder: 'https://example.com' },
-    { id: 'email', label: 'Email', placeholder: 'example@mail.com' },
-    { id: 'phone', label: 'Телефон', placeholder: '+7 (999) 123-45-67' },
-    { id: 'sms', label: 'SMS', placeholder: '+7 (999) 123-45-67' },
-    { id: 'wifi', label: 'WiFi', placeholder: 'SSID:password:WPA' }
+    { id: 'text', label: t('qrCodeGenerator.types.text'), placeholder: t('qrCodeGenerator.placeholders.text') },
+    { id: 'url', label: t('qrCodeGenerator.types.url'), placeholder: t('qrCodeGenerator.placeholders.url') },
+    { id: 'email', label: t('qrCodeGenerator.types.email'), placeholder: t('qrCodeGenerator.placeholders.email') },
+    { id: 'phone', label: t('qrCodeGenerator.types.phone'), placeholder: t('qrCodeGenerator.placeholders.phone') },
+    { id: 'sms', label: t('qrCodeGenerator.types.sms'), placeholder: t('qrCodeGenerator.placeholders.sms') },
+    { id: 'wifi', label: t('qrCodeGenerator.types.wifi'), placeholder: t('qrCodeGenerator.placeholders.wifi') }
   ]
 
   useEffect(() => {
@@ -120,14 +120,14 @@ function QRCodeGenerator() {
       />
 
       <div className="tool-container">
-        <h1>Генератор QR-кодов онлайн</h1>
-        <p>Создайте и настройте QR-код бесплатно</p>
+        <h1>{t('qrCodeGenerator.title')}</h1>
+        <p>{t('qrCodeGenerator.subtitle')}</p>
 
         <div className="qr-generator-layout">
           {/* Левая колонка - настройки */}
           <div>
             <div className="field">
-              <label>Тип QR-кода</label>
+              <label>{t('qrCodeGenerator.typeLabel')}</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {qrTypes.map(type => (
                   <button
@@ -146,7 +146,7 @@ function QRCodeGenerator() {
             </div>
 
             <div className="field">
-              <label htmlFor="qrValue">Данные для QR-кода</label>
+              <label htmlFor="qrValue">{t('qrCodeGenerator.dataLabel')}</label>
               <textarea
                 id="qrValue"
                 value={qrValue}
@@ -157,13 +157,13 @@ function QRCodeGenerator() {
               />
               {qrType === 'wifi' && (
                 <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
-                  Формат: SSID:пароль:тип (WPA/WEP/nopass)
+                  {t('qrCodeGenerator.wifiFormat')}
                 </small>
               )}
             </div>
 
             <div className="field">
-              <label htmlFor="qrSize">Размер: {qrSize}x{qrSize} px</label>
+              <label htmlFor="qrSize">{t('qrCodeGenerator.sizeLabel')}: {qrSize}x{qrSize} px</label>
               <input
                 id="qrSize"
                 type="range"
@@ -176,10 +176,10 @@ function QRCodeGenerator() {
             </div>
 
             <div className="field">
-              <label>Цвета QR-кода</label>
+              <label>{t('qrCodeGenerator.colorsLabel')}</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label htmlFor="qrColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>Цвет QR</label>
+                  <label htmlFor="qrColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>{t('qrCodeGenerator.qrColor')}</label>
                   <input
                     id="qrColor"
                     type="color"
@@ -189,7 +189,7 @@ function QRCodeGenerator() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="qrBgColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>Цвет фона</label>
+                  <label htmlFor="qrBgColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>{t('qrCodeGenerator.bgColor')}</label>
                   <input
                     id="qrBgColor"
                     type="color"
@@ -223,10 +223,10 @@ function QRCodeGenerator() {
                   width: '100%'
                 }}></div>
                 <button onClick={handleDownload} style={{ width: '100%', maxWidth: '300px' }}>
-                  📥 Скачать PNG
+                  {t('qrCodeGenerator.downloadButton')}
                 </button>
                 <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 0 }}>
-                  Отсканируйте камерой телефона
+                  {t('qrCodeGenerator.scanText')}
                 </p>
               </div>
             ) : (
@@ -245,7 +245,7 @@ function QRCodeGenerator() {
               }}>
                 <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>📱</div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', margin: 0 }}>
-                  Введите данные слева,<br />чтобы создать QR-код
+                  {t('qrCodeGenerator.emptyState')}
                 </p>
               </div>
             )}
