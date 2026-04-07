@@ -105,8 +105,15 @@ function QRCodeGenerator() {
         const [ssid, password, security] = qrValue.split(':')
         return `WIFI:T:${security || 'WPA'};S:${ssid};P:${password};;`
       case 'text':
-        // Для кириллицы добавляем UTF-8 BOM
-        return '\uFEFF' + qrValue
+        // Для кириллицы используем data URI с явным UTF-8
+        // Это гарантирует правильное отображение на всех устройствах
+        const hasNonLatin = /[^\x00-\x7F]/.test(qrValue)
+        if (hasNonLatin) {
+          // Кодируем в base64 для надежности
+          const encoded = btoa(unescape(encodeURIComponent(qrValue)))
+          return `data:text/plain;charset=utf-8;base64,${encoded}`
+        }
+        return qrValue
       case 'url':
         return qrValue
       default:
