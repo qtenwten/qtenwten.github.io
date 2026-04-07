@@ -58,6 +58,11 @@ const routeConfig = {
     category: 'Генераторы',
     categorySlug: 'generators'
   },
+  '/password-generator': {
+    name: 'Генератор паролей',
+    category: 'Генераторы',
+    categorySlug: 'generators'
+  },
   '/feedback': {
     name: 'Обратная связь',
     category: 'Инструменты',

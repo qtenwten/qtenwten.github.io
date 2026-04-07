@@ -53,6 +53,14 @@ const tools = [
     category: 'generators'
   },
   {
+    id: 'password-generator',
+    path: '/password-generator',
+    icon: '🔐',
+    title: 'Генератор паролей',
+    description: 'Создание надежных паролей онлайн',
+    category: 'generators'
+  },
+  {
     id: 'meta-tags-generator',
     path: '/meta-tags-generator',
     icon: '🏷️',

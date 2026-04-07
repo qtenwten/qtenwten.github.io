@@ -39,6 +39,12 @@ const tools = [
     description: 'Короткие ссылки бесплатно'
   },
   {
+    path: '/password-generator',
+    icon: '🔐',
+    title: 'Генератор паролей',
+    description: 'Надежные пароли онлайн'
+  },
+  {
     path: '/meta-tags-generator',
     icon: '🏷️',
     title: 'Генератор мета-тегов',
