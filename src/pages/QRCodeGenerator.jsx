@@ -26,7 +26,6 @@ function QRCodeGenerator() {
 
     const canvas = document.createElement('canvas')
 
-    // Настройки для qrcode с поддержкой UTF-8
     const options = {
       errorCorrectionLevel: 'H',
       type: 'image/png',
@@ -165,22 +164,6 @@ function QRCodeGenerator() {
                 <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
                   Формат: SSID:пароль:тип (WPA/WEP/nopass)
                 </small>
-              )}
-              {qrType === 'text' && /[а-яА-ЯёЁ]/.test(qrValue) && (
-                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-                    <input
-                      type="checkbox"
-                      checked={useTranslit}
-                      onChange={(e) => setUseTranslit(e.target.checked)}
-                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                    />
-                    <span>Транслитерация (кириллица → латиница)</span>
-                  </label>
-                  <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block', marginLeft: '26px' }}>
-                    ⚠️ Многие QR-сканеры не поддерживают кириллицу. Рекомендуем включить транслитерацию.
-                  </small>
-                </div>
               )}
             </div>
 
