@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
@@ -10,6 +10,7 @@ function MetaTagsGenerator() {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [image, setImage] = useState('')
+  const saveTimeoutRef = useRef(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('metaTagsGenerator')
@@ -25,14 +26,27 @@ function MetaTagsGenerator() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('metaTagsGenerator', JSON.stringify({
-      title,
-      description,
-      keywords,
-      author,
-      url,
-      image
-    }))
+    // Debounce localStorage saves to avoid excessive writes
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem('metaTagsGenerator', JSON.stringify({
+        title,
+        description,
+        keywords,
+        author,
+        url,
+        image
+      }))
+    }, 1000)
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
   }, [title, description, keywords, author, url, image])
 
   const generateMetaTags = () => {

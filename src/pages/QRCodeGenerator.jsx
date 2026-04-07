@@ -76,12 +76,6 @@ function QRCodeGenerator() {
     }
   }, [qrValue, qrSize, qrStyle, qrColor, qrBgColor, qrType])
 
-  const handleGenerate = () => {
-    if (qrValue.trim()) {
-      setShowQR(true)
-    }
-  }
-
   // Показываем QR в реальном времени
   const shouldShowQR = qrValue.trim() !== ''
 
@@ -136,7 +130,6 @@ function QRCodeGenerator() {
                       onClick={() => {
                         setQrType(type.id)
                         setQrValue('')
-                        setShowQR(false)
                       }}
                     >
                       {type.label}

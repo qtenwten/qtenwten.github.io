@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
@@ -334,7 +334,9 @@ function NumberToWords() {
     return variants
   }
 
-  const variants = result ? generateVariants() : []
+  const variants = useMemo(() => {
+    return result ? generateVariants() : []
+  }, [result, number, currency, taxMode, taxRate, separator, withMinor])
 
   return (
     <>

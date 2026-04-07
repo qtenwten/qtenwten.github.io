@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Breadcrumbs from './components/Breadcrumbs'
+import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 
 const NumberToWords = lazy(() => import('./pages/NumberToWords'))
@@ -28,7 +29,7 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Header />
       <ScrollToTop />
       <div className="container">
@@ -50,7 +51,7 @@ function App() {
         </Routes>
       </Suspense>
       <Footer />
-    </>
+    </ErrorBoundary>
   )
 }
 
