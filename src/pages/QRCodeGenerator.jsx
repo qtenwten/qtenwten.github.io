@@ -107,168 +107,195 @@ function QRCodeGenerator() {
   return (
     <>
       <SEO
-        title="Генератор QR-кодов онлайн - Бесплатно"
-        description="Создайте QR-код для текста, ссылки, email, телефона или WiFi. Скачайте в PNG формате. Быстро и бесплатно."
+        title="Генератор QR-кодов онлайн бесплатно - Создать QR код"
+        description="Бесплатный генератор QR-кодов онлайн. Создайте QR-код для ссылки, текста, email, телефона, WiFi. Настройка цвета и стиля. Скачать в PNG."
         path="/qr-code-generator"
-        keywords="генератор qr кода, создать qr код, qr код онлайн, qr code generator"
+        keywords="генератор qr кода, создать qr код онлайн, qr код генератор бесплатно, qr code generator, генератор qr кодов"
       />
 
       <div className="tool-container">
-        <h1>Генератор QR-кодов</h1>
-        <p>Создайте QR-код для любых данных</p>
+        <h1>Генератор QR-кодов онлайн</h1>
+        <p>Создайте и настройте QR-код бесплатно</p>
 
-        <div className="field">
-          <label>Тип QR-кода</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-            {qrTypes.map(type => (
-              <button
-                key={type.id}
-                className={qrType === type.id ? '' : 'secondary'}
-                style={{ padding: '0.75rem', fontSize: '0.9rem' }}
-                onClick={() => {
-                  setQrType(type.id)
-                  setQrValue('')
-                }}
-              >
-                {type.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+          {/* Левая колонка - настройки */}
+          <div>
+            <div className="field">
+              <label>Тип QR-кода</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                {qrTypes.map(type => (
+                  <button
+                    key={type.id}
+                    className={qrType === type.id ? '' : 'secondary'}
+                    style={{ padding: '0.75rem', fontSize: '0.85rem' }}
+                    onClick={() => {
+                      setQrType(type.id)
+                      setQrValue('')
+                    }}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div className="field">
-          <label htmlFor="qrValue">Данные для QR-кода</label>
-          <textarea
-            id="qrValue"
-            value={qrValue}
-            onChange={(e) => setQrValue(e.target.value)}
-            placeholder={qrTypes.find(t => t.id === qrType)?.placeholder}
-            rows={qrType === 'text' ? 4 : 2}
-            autoFocus
-          />
-          {qrType === 'wifi' && (
-            <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
-              Формат: SSID:пароль:тип_шифрования (WPA/WEP/nopass)
-            </small>
-          )}
-        </div>
+            <div className="field">
+              <label htmlFor="qrValue">Данные для QR-кода</label>
+              <textarea
+                id="qrValue"
+                value={qrValue}
+                onChange={(e) => setQrValue(e.target.value)}
+                placeholder={qrTypes.find(t => t.id === qrType)?.placeholder}
+                rows={qrType === 'text' ? 4 : 2}
+                autoFocus
+              />
+              {qrType === 'wifi' && (
+                <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
+                  Формат: SSID:пароль:тип (WPA/WEP/nopass)
+                </small>
+              )}
+            </div>
 
-        <div className="field">
-          <label htmlFor="qrSize">Размер: {qrSize}x{qrSize} px</label>
-          <input
-            id="qrSize"
-            type="range"
-            min="128"
-            max="400"
-            step="16"
-            value={qrSize}
-            onChange={(e) => setQrSize(Number(e.target.value))}
-          />
-        </div>
-
-        <div className="field">
-          <label>Стиль QR-кода</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-            {qrStyles.map(style => (
-              <button
-                key={style.id}
-                className={qrStyle === style.id ? '' : 'secondary'}
-                style={{ padding: '0.75rem', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}
-                onClick={() => setQrStyle(style.id)}
-              >
-                <span style={{ fontSize: '1.5rem' }}>{style.icon}</span>
-                <span>{style.label.split(' ')[1]}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="field">
-          <label>Цветовая схема</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-            {qrPresets.map((preset, idx) => (
-              <button
-                key={idx}
-                className="secondary"
-                style={{
-                  background: preset.bg,
-                  color: preset.fg,
-                  border: `2px solid ${preset.fg}`,
-                  padding: '0.75rem',
-                  fontSize: '0.85rem',
-                  fontWeight: '600'
-                }}
-                onClick={() => {
-                  setQrColor(preset.fg)
-                  setQrBgColor(preset.bg)
-                }}
-              >
-                {preset.name}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div>
-              <label htmlFor="qrColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Цвет QR</label>
+            <div className="field">
+              <label htmlFor="qrSize">Размер: {qrSize}x{qrSize} px</label>
               <input
-                id="qrColor"
-                type="color"
-                value={qrColor}
-                onChange={(e) => setQrColor(e.target.value)}
-                style={{ width: '100%', height: '50px', cursor: 'pointer' }}
+                id="qrSize"
+                type="range"
+                min="128"
+                max="400"
+                step="16"
+                value={qrSize}
+                onChange={(e) => setQrSize(Number(e.target.value))}
               />
             </div>
-            <div>
-              <label htmlFor="qrBgColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Фон</label>
-              <input
-                id="qrBgColor"
-                type="color"
-                value={qrBgColor}
-                onChange={(e) => setQrBgColor(e.target.value)}
-                style={{ width: '100%', height: '50px', cursor: 'pointer' }}
-              />
+
+            <div className="field">
+              <label>Стиль QR-кода</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                {qrStyles.map(style => (
+                  <button
+                    key={style.id}
+                    className={qrStyle === style.id ? '' : 'secondary'}
+                    style={{ padding: '0.75rem', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}
+                    onClick={() => setQrStyle(style.id)}
+                  >
+                    <span style={{ fontSize: '1.5rem' }}>{style.icon}</span>
+                    <span>{style.label.split(' ')[1]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Цвета QR-кода</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="qrColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>Цвет QR</label>
+                  <input
+                    id="qrColor"
+                    type="color"
+                    value={qrColor}
+                    onChange={(e) => setQrColor(e.target.value)}
+                    style={{ width: '100%', height: '50px', cursor: 'pointer', border: '2px solid var(--border)', borderRadius: '8px' }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="qrBgColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>Цвет фона</label>
+                  <input
+                    id="qrBgColor"
+                    type="color"
+                    value={qrBgColor}
+                    onChange={(e) => setQrBgColor(e.target.value)}
+                    style={{ width: '100%', height: '50px', cursor: 'pointer', border: '2px solid var(--border)', borderRadius: '8px' }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {shouldShowQR && (
-          <>
-            <div className="result-box success" style={{ textAlign: 'center' }}>
-              <div ref={qrRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}></div>
-              <button onClick={handleDownload} style={{ width: '100%' }}>
-                📥 Скачать PNG
-              </button>
-              <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 0 }}>
-                Отсканируйте камерой телефона или скачайте изображение
-              </p>
-            </div>
-          </>
-        )}
+          {/* Правая колонка - результат */}
+          <div>
+            {shouldShowQR ? (
+              <div className="result-box success" style={{ textAlign: 'center', minHeight: '400px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div ref={qrRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}></div>
+                <button onClick={handleDownload} style={{ width: '100%' }}>
+                  📥 Скачать PNG
+                </button>
+                <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 0 }}>
+                  Отсканируйте камерой телефона
+                </p>
+              </div>
+            ) : (
+              <div style={{
+                background: 'var(--bg-secondary)',
+                border: '2px dashed var(--border)',
+                borderRadius: '8px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
+                minHeight: '400px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>📱</div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', margin: 0 }}>
+                  Введите данные слева,<br />чтобы создать QR-код
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
         <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Возможности генератора</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-            <div>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎨</div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Кастомизация</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>Выбирайте цвета и стили QR-кода</p>
-            </div>
-            <div>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔗</div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Любые данные</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>Текст, ссылки, контакты, WiFi пароли</p>
-            </div>
-            <div>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📱</div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Высокое качество</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>Векторная графика, четкое изображение</p>
-            </div>
-            <div>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⚡</div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Мгновенно</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>Генерация за секунду, без регистрации</p>
-            </div>
-          </div>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Как создать QR-код онлайн</h2>
+          <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
+            Бесплатный генератор QR-кодов позволяет создать QR-код для любых данных за несколько секунд.
+            Выберите тип данных, введите информацию, настройте внешний вид и скачайте готовый QR-код в PNG формате.
+          </p>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Типы QR-кодов:</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li><strong>Текст</strong> - любой текст или сообщение</li>
+            <li><strong>Ссылка</strong> - URL сайта или веб-страницы</li>
+            <li><strong>Email</strong> - адрес электронной почты</li>
+            <li><strong>Телефон</strong> - номер телефона для быстрого звонка</li>
+            <li><strong>SMS</strong> - номер для отправки SMS</li>
+            <li><strong>WiFi</strong> - данные для подключения к WiFi сети</li>
+          </ul>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Возможности генератора:</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>Создание QR-кода онлайн бесплатно без регистрации</li>
+            <li>Настройка цвета QR-кода и фона</li>
+            <li>Выбор стиля: квадраты, точки или скругленные углы</li>
+            <li>Регулировка размера от 128x128 до 400x400 пикселей</li>
+            <li>Скачивание в PNG формате высокого качества</li>
+            <li>Мгновенная генерация без задержек</li>
+          </ul>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Популярные запросы:</h3>
+          <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+            <li>Генератор QR кодов онлайн бесплатно</li>
+            <li>Создать QR код для ссылки</li>
+            <li>QR код генератор с логотипом</li>
+            <li>Генератор QR кода для WiFi</li>
+            <li>Как создать QR код бесплатно</li>
+          </ul>
+
+          <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Примеры использования:</h3>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8' }}>
+            <strong>Для бизнеса:</strong> Создайте QR-код со ссылкой на ваш сайт, меню ресторана,
+            прайс-лист или контактную информацию. Разместите на визитках, флаерах или вывесках.
+          </p>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+            <strong>Для WiFi:</strong> Сгенерируйте QR-код с данными WiFi сети. Гости смогут
+            подключиться к интернету, просто отсканировав код камерой телефона.
+          </p>
+          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+            <strong>Для мероприятий:</strong> Создайте QR-коды для регистрации участников,
+            ссылок на программу мероприятия или контактов организаторов.
+          </p>
         </div>
 
         <RelatedTools currentPath="/qr-code-generator" />
