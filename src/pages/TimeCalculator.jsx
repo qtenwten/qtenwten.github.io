@@ -64,7 +64,7 @@ function TimeCalculator() {
       />
 
       <div className="tool-container">
-        <h1>⏰ Калькулятор времени</h1>
+        <h1><span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: '0.5rem' }}>schedule</span>Калькулятор времени</h1>
         <p>Сложение, вычитание и разница времени</p>
 
         <div className="field">

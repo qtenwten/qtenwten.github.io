@@ -58,7 +58,7 @@ function RandomNumber() {
       />
 
       <div className="tool-container">
-        <h1>🎲 Генератор случайных чисел</h1>
+        <h1><span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: '0.5rem' }}>casino</span>Генератор случайных чисел</h1>
         <p>Генерация случайных чисел в заданном диапазоне</p>
 
         <div className="field">

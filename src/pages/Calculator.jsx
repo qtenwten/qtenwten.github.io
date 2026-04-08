@@ -46,11 +46,11 @@ function Calculator() {
 
       <div className="calculator-container">
         <div className="calc-header">
-          <h1>Graph Calculator</h1>
-          <p>Инженерный калькулятор с построением графиков функций</p>
+          <h1>{t('calculator.title')}</h1>
+          <p>{t('calculator.subtitle')}</p>
         </div>
 
-        <ModeSwitcher mode={mode} setMode={setMode} />
+        <ModeSwitcher mode={mode} setMode={setMode} t={t} />
 
         <div className={`calc-workspace mode-${mode}`}>
           {(mode === 'calculator' || mode === 'split') && (

@@ -15,6 +15,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
+  min-height: 60px;
 }
 
 .header-search-box {
@@ -69,6 +70,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  min-height: 42px;
+  justify-content: center;
 }
 
 .logo-subtitle {

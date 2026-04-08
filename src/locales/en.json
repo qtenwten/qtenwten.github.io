@@ -314,8 +314,13 @@
     }
   },
   "calculator": {
-    "title": "Calculator Online",
-    "subtitle": "Simple and convenient calculator"
+    "title": "Graph Calculator",
+    "subtitle": "Engineering calculator with function graphing",
+    "modes": {
+      "calculator": "Calculator",
+      "graph": "Graph",
+      "both": "Both"
+    }
   },
   "timeCalculator": {
     "title": "Time Calculator Online",

@@ -254,7 +254,7 @@ function QRCodeGenerator() {
                 alignItems: 'center',
                 overflow: 'hidden'
               }}>
-                <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>📱</div>
+                <span className="material-symbols-outlined" style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>qr_code</span>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', margin: 0 }}>
                   {t('qrCodeGenerator.emptyState')}
                 </p>

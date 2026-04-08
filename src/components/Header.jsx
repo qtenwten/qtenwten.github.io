@@ -25,16 +25,14 @@ function Header({ searchValue, onSearchChange }) {
           </div>
         </Link>
 
-        {isHomePage && (
-          <div className="header-search-box">
-            <input
-              type="text"
-              placeholder={t('common.search')}
-              value={searchValue}
-              onChange={(e) => onSearchChange(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="header-search-box">
+          <input
+            type="text"
+            placeholder={t('common.search')}
+            value={searchValue || ''}
+            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+          />
+        </div>
 
         <LanguageSwitcher />
       </div>
