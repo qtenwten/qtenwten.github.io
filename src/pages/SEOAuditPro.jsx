@@ -226,6 +226,7 @@ function SEOAuditPro() {
             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
             placeholder="https://example.com"
             autoFocus
+            autoComplete="off"
           />
         </div>
 

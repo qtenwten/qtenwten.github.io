@@ -14,13 +14,8 @@ function VATCalculator() {
   const [result, setResult] = useState(null)
 
   useEffect(() => {
-    const saved = localStorage.getItem('vatCalculator')
-    if (saved) {
-      const data = JSON.parse(saved)
-      setAmount(data.amount || '')
-      setRate(data.rate || 20)
-      setMode(data.mode || 'add')
-    }
+    // Очищаем localStorage при загрузке страницы
+    localStorage.removeItem('vatCalculator')
   }, [])
 
   useEffect(() => {
@@ -82,6 +77,7 @@ function VATCalculator() {
             onKeyDown={handleNumberKeyDown}
             placeholder="10000"
             autoFocus
+            autoComplete="off"
           />
         </div>
 

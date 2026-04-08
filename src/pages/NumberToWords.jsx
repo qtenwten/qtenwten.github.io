@@ -19,16 +19,8 @@ function NumberToWords() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    const saved = localStorage.getItem('numberToWords')
-    if (saved) {
-      const data = JSON.parse(saved)
-      setNumber(data.number || '')
-      setCurrency(data.currency || 'RUB')
-      setWithMinor(data.withMinor !== false)
-      setTaxMode(data.taxMode || 'none')
-      setTaxRate(data.taxRate || 20)
-      setSeparator(data.separator || '.')
-    }
+    // Очищаем localStorage при загрузке страницы
+    localStorage.removeItem('numberToWords')
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -365,6 +357,7 @@ function NumberToWords() {
               onKeyDown={handleNumberKeyDown}
               placeholder={separator === ',' ? '1234,56' : '1234.56'}
               style={{ flex: 1, minWidth: 0 }}
+              autoComplete="off"
             />
             <button
               onClick={handleClear}

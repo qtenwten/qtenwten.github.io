@@ -32,6 +32,7 @@ function ScrollToTop() {
 
 function App() {
   const [homeSearch, setHomeSearch] = useState('')
+  const location = useLocation()
 
   return (
     <ErrorBoundary>
@@ -41,9 +42,10 @@ function App() {
         <Breadcrumbs />
       </div>
       <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Загрузка...</div>}>
-        <Routes>
-          {/* Редирект с корня на /ru */}
-          <Route path="/" element={<Navigate to="/ru" replace />} />
+        <div key={location.pathname} className="page-transition-wrapper">
+          <Routes location={location}>
+            {/* Редирект с корня на /ru */}
+            <Route path="/" element={<Navigate to="/ru" replace />} />
 
           {/* Русская версия */}
           <Route path="/ru" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
@@ -92,6 +94,7 @@ function App() {
           <Route path="/feedback" element={<Navigate to="/ru/feedback" replace />} />
           <Route path="/password-generator" element={<Navigate to="/ru/password-generator" replace />} />
         </Routes>
+        </div>
       </Suspense>
       <Footer />
     </ErrorBoundary>
