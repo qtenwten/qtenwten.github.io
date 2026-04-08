@@ -4,9 +4,8 @@ import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import './Home.css'
 
-function Home() {
+function Home({ searchValue, onSearchChange }) {
   const { t, language } = useLanguage()
-  const [search, setSearch] = useState('')
   const [filteredTools, setFilteredTools] = useState([])
   const [searchParams] = useSearchParams()
   const categoryFilter = searchParams.get('category')
@@ -111,8 +110,8 @@ function Home() {
     }
 
     // Фильтр по поиску
-    if (search.trim() !== '') {
-      const query = search.toLowerCase()
+    if (searchValue && searchValue.trim() !== '') {
+      const query = searchValue.toLowerCase()
       result = result.filter(
         tool =>
           t(tool.titleKey).toLowerCase().includes(query) ||
@@ -121,7 +120,19 @@ function Home() {
     }
 
     setFilteredTools(result)
-  }, [search, categoryFilter, language])
+  }, [searchValue, categoryFilter, language])
+
+  // Группировка инструментов по категориям
+  const groupedTools = filteredTools.reduce((acc, tool) => {
+    if (!acc[tool.category]) {
+      acc[tool.category] = []
+    }
+    acc[tool.category].push(tool)
+    return acc
+  }, {})
+
+  // Порядок отображения категорий
+  const categoryOrder = ['generators', 'calculators', 'converters', 'tools']
 
   return (
     <>
@@ -134,36 +145,47 @@ function Home() {
 
       <div className="home">
         <div className="container">
-          <div className="hero">
-            <h1>{t('home.title')}</h1>
-            <p>{t('home.subtitle')}</p>
-
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder={t('common.search')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoFocus
-              />
-            </div>
-          </div>
-
-          <div className="tools-grid">
-            {filteredTools.length > 0 ? (
-              filteredTools.map(tool => (
-                <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
-                  <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
-                  <h2>{t(tool.titleKey)}</h2>
-                  <p>{t(tool.descriptionKey)}</p>
-                </Link>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>{t('common.noResults')}</p>
+          {filteredTools.length > 0 ? (
+            searchValue && searchValue.trim() !== '' ? (
+              // Показываем все результаты поиска без категорий
+              <div className="tools-grid">
+                {filteredTools.map(tool => (
+                  <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
+                    <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
+                    <h3>{t(tool.titleKey)}</h3>
+                    <p>{t(tool.descriptionKey)}</p>
+                  </Link>
+                ))}
               </div>
-            )}
-          </div>
+            ) : (
+              // Показываем по категориям в сетке 2x2
+              <div className="categories-grid">
+                {categoryOrder.map(category => {
+                  const categoryTools = groupedTools[category]
+                  if (!categoryTools || categoryTools.length === 0) return null
+
+                  return (
+                    <div key={category} className="category-section">
+                      <h2 className="category-title">{t(`categories.${category}`)}</h2>
+                      <div className="tools-grid">
+                        {categoryTools.map(tool => (
+                          <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
+                            <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
+                            <h3>{t(tool.titleKey)}</h3>
+                            <p>{t(tool.descriptionKey)}</p>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          ) : (
+            <div className="no-results">
+              <p>{t('common.noResults')}</p>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -13,6 +13,42 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1.5rem;
+}
+
+.header-search-box {
+  flex: 1;
+  max-width: 400px;
+  position: relative;
+}
+
+.header-search-box::before {
+  content: 'search';
+  font-family: 'Material Symbols Outlined';
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-search-box input {
+  font-size: 0.875rem;
+  padding: 0.6rem 0.875rem 0.6rem 2.75rem !important;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+
+.header-search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
 }
 
 .logo {
@@ -24,6 +60,19 @@
   font-weight: 600;
   font-size: 1.25rem;
   transition: opacity 0.2s;
+}
+
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.logo-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1;
 }
 
 .logo:hover {

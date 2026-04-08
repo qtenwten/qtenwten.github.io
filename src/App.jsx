@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -31,9 +31,11 @@ function ScrollToTop() {
 }
 
 function App() {
+  const [homeSearch, setHomeSearch] = useState('')
+
   return (
     <ErrorBoundary>
-      <Header />
+      <Header searchValue={homeSearch} onSearchChange={setHomeSearch} />
       <ScrollToTop />
       <div className="container">
         <Breadcrumbs />
@@ -44,7 +46,7 @@ function App() {
           <Route path="/" element={<Navigate to="/ru" replace />} />
 
           {/* Русская версия */}
-          <Route path="/ru" element={<Home />} />
+          <Route path="/ru" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
           <Route path="/ru/number-to-words" element={<NumberToWords />} />
           <Route path="/ru/vat-calculator" element={<VATCalculator />} />
           <Route path="/ru/random-number" element={<RandomNumber />} />
@@ -60,7 +62,7 @@ function App() {
           <Route path="/ru/password-generator" element={<PasswordGenerator />} />
 
           {/* Английская версия */}
-          <Route path="/en" element={<Home />} />
+          <Route path="/en" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
           <Route path="/en/number-to-words" element={<NumberToWords />} />
           <Route path="/en/vat-calculator" element={<VATCalculator />} />
           <Route path="/en/random-number" element={<RandomNumber />} />
