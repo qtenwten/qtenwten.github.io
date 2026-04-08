@@ -21,7 +21,7 @@ function Header({ searchValue, onSearchChange }) {
           <span className="material-symbols-outlined logo-icon">construction</span>
           <div className="logo-wrapper">
             <span className="logo-text">Utility Tools</span>
-            {isHomePage && <span className="logo-subtitle">{t('home.title')}</span>}
+            <span className="logo-subtitle">{t('home.title')}</span>
           </div>
         </Link>
 
