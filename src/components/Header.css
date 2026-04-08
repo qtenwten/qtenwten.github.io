@@ -60,6 +60,8 @@
   font-weight: 600;
   font-size: 1.25rem;
   transition: opacity 0.2s;
+  min-width: 280px;
+  flex-shrink: 0;
 }
 
 .logo-wrapper {
