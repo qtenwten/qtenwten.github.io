@@ -37,7 +37,13 @@ function URLShortener() {
       return
     }
 
-    if (!isValidUrl(longUrl)) {
+    // Добавляем https:// если протокол не указан
+    let urlToShorten = longUrl.trim()
+    if (!urlToShorten.match(/^https?:\/\//i)) {
+      urlToShorten = 'https://' + urlToShorten
+    }
+
+    if (!isValidUrl(urlToShorten)) {
       setError(t('urlShortener.errorInvalid'))
       return
     }
@@ -45,8 +51,12 @@ function URLShortener() {
     setLoading(true)
 
     try {
-      // Используем is.gd API - бесплатный сервис без регистрации
-      const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`)
+      const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(urlToShorten)}`)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (data.shorturl) {
@@ -54,7 +64,7 @@ function URLShortener() {
 
         // Сохраняем в историю
         const newHistory = [
-          { long: longUrl, short: data.shorturl, date: new Date().toISOString() },
+          { long: urlToShorten, short: data.shorturl, date: new Date().toISOString() },
           ...history.slice(0, 9) // Храним последние 10
         ]
         setHistory(newHistory)
@@ -63,6 +73,7 @@ function URLShortener() {
         setError(data.errormessage || t('urlShortener.errorFailed'))
       }
     } catch (err) {
+      console.error('URL Shortener error:', err)
       setError(t('urlShortener.errorFailed'))
     } finally {
       setLoading(false)
@@ -133,19 +144,21 @@ function URLShortener() {
         {history.length > 0 && (
           <>
             <h2 style={{ marginTop: '2rem' }}>{t('urlShortener.historyTitle')}</h2>
-            <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {history.map((item, index) => (
                 <div key={index} style={{
-                  padding: '1rem 0',
-                  borderBottom: index < history.length - 1 ? '1px solid var(--border)' : 'none'
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  padding: '1rem'
                 }}>
-                  <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
                     {new Date(item.date).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
                   </div>
-                  <div style={{ marginBottom: '0.25rem', wordBreak: 'break-all' }}>
+                  <div style={{ marginBottom: '0.75rem', wordBreak: 'break-all', textAlign: 'center' }}>
                     <strong>{t('urlShortener.historyLong')}</strong> {item.long}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                     <strong>{t('urlShortener.historyShort')}</strong>
                     <a href={item.short} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
                       {item.short}
@@ -154,7 +167,7 @@ function URLShortener() {
                   </div>
                 </div>
               ))}
-              <button onClick={handleClearHistory} className="secondary" style={{ marginTop: '1rem', width: '100%' }}>
+              <button onClick={handleClearHistory} className="secondary" style={{ width: '100%' }}>
                 {t('urlShortener.clearHistory')}
               </button>
             </div>
