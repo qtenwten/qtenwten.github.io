@@ -390,6 +390,14 @@
   },
   "feedback": {
     "title": "Feedback",
-    "subtitle": "Contact us"
+    "subtitle": "Contact us",
+    "nameLabel": "Your name",
+    "namePlaceholder": "How should we address you?",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Describe your suggestion or issue...",
+    "submitButton": "Send message",
+    "sending": "Sending...",
+    "successMessage": "✅ Thank you! Your message has been sent successfully.",
+    "errorMessage": "❌ Sending error. Please try again later."
   }
 }

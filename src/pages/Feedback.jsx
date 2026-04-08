@@ -82,7 +82,7 @@ function Feedback() {
 
           <form onSubmit={handleSubmit} className="feedback-form">
             <div className="form-group">
-              <label htmlFor="name">Ваше имя</label>
+              <label htmlFor="name">{t('feedback.nameLabel')}</label>
               <input
                 type="text"
                 id="name"
@@ -90,12 +90,12 @@ function Feedback() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                placeholder="Как к вам обращаться?"
+                placeholder={t('feedback.namePlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">Сообщение</label>
+              <label htmlFor="message">{t('feedback.messageLabel')}</label>
               <textarea
                 id="message"
                 name="message"
@@ -103,23 +103,23 @@ function Feedback() {
                 onChange={handleChange}
                 required
                 rows="6"
-                placeholder="Опишите ваше предложение или проблему..."
+                placeholder={t('feedback.messagePlaceholder')}
               />
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Отправка...' : 'Отправить сообщение'}
+              {loading ? t('feedback.sending') : t('feedback.submitButton')}
             </button>
 
             {status === 'success' && (
               <div className="alert alert-success">
-                ✅ Спасибо! Ваше сообщение успешно отправлено.
+                {t('feedback.successMessage')}
               </div>
             )}
 
             {status === 'error' && (
               <div className="alert alert-error">
-                ❌ Ошибка отправки. Попробуйте позже.
+                {t('feedback.errorMessage')}
               </div>
             )}
           </form>
