@@ -55,7 +55,7 @@
   color: var(--text);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 3px solid var(--primary);
+  border-bottom: 1px solid var(--primary);
   text-align: center;
 }
 
