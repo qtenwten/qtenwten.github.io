@@ -85,3 +85,26 @@
 .logo-icon {
   font-size: 1.5rem;
 }
+
+@media (max-width: 768px) {
+  .header-content {
+    gap: 1rem;
+  }
+
+  .logo {
+    min-width: auto;
+    flex: 1;
+  }
+
+  .header-search-box {
+    display: none;
+  }
+
+  .logo-text {
+    font-size: 1.1rem;
+  }
+
+  .logo-subtitle {
+    font-size: 0.7rem;
+  }
+}
