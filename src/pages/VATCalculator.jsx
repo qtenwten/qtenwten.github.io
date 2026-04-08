@@ -63,7 +63,7 @@ function VATCalculator() {
           />
           {t('vatCalculator.title')}
         </h1>
-        <p>{t('vatCalculator.subtitle')}</p>
+        <p style={{ textAlign: 'center' }}>{t('vatCalculator.subtitle')}</p>
 
         <div className="field">
           <label htmlFor="amount">{t('vatCalculator.amount')}</label>
