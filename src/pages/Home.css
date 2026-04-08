@@ -49,7 +49,7 @@
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.25rem;
   margin-top: 1.5rem;
 }
@@ -75,9 +75,21 @@
 }
 
 .tool-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 0.75rem;
   color: var(--primary);
+  background: rgba(79, 70, 229, 0.08);
+  border-radius: 12px;
+  padding: 0.75rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15),
+              0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(79, 70, 229, 0.1);
+  border-bottom: 3px solid #10b981;
 }
 
 .tool-card h2 {

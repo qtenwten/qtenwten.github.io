@@ -8,6 +8,7 @@ function Feedback() {
   const { t, language } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     message: ''
   })
   const [status, setStatus] = useState('')
@@ -21,7 +22,7 @@ function Feedback() {
     const TELEGRAM_BOT_TOKEN = '8609094298:AAGQEDJwuFpml6tqrStaD_rjtd1Tkp1KOQw'
     const TELEGRAM_CHAT_ID = '461685582'
 
-    const text = `🔔 Новое сообщение с сайта QSEN.RU\n\n👤 Имя: ${formData.name}\n\n💬 Сообщение:\n${formData.message}`
+    const text = `🔔 Новое сообщение с сайта QSEN.RU\n\n👤 Имя: ${formData.name}\n📧 Email: ${formData.email}\n\n💬 Сообщение:\n${formData.message}`
 
     const payload = {
       chat_id: TELEGRAM_CHAT_ID,
@@ -45,7 +46,7 @@ function Feedback() {
 
       if (data.ok) {
         setStatus('success')
-        setFormData({ name: '', message: '' })
+        setFormData({ name: '', email: '', message: '' })
       } else {
         setStatus('error')
       }
@@ -91,6 +92,19 @@ function Feedback() {
                 onChange={handleChange}
                 required
                 placeholder={t('feedback.namePlaceholder')}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">{t('feedback.emailLabel')}</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder={t('feedback.emailPlaceholder')}
               />
             </div>
 

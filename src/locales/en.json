@@ -393,6 +393,8 @@
     "subtitle": "Contact us",
     "nameLabel": "Your name",
     "namePlaceholder": "How should we address you?",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
     "messageLabel": "Message",
     "messagePlaceholder": "Describe your suggestion or issue...",
     "submitButton": "Send message",

@@ -393,6 +393,8 @@
     "subtitle": "Напишите нам",
     "nameLabel": "Ваше имя",
     "namePlaceholder": "Как к вам обращаться?",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
     "messageLabel": "Сообщение",
     "messagePlaceholder": "Опишите ваше предложение или проблему...",
     "submitButton": "Отправить сообщение",
