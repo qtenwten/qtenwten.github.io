@@ -156,7 +156,7 @@ button.secondary:hover {
 }
 
 .field {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   width: 100%;
 }
 
@@ -222,7 +222,7 @@ button.secondary:hover {
   }
 
   .tool-container {
-    padding: 1.5rem 1rem;
+    padding: 0.5rem 1rem 1.5rem;
   }
 
   .btn-group {

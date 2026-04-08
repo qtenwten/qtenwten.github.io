@@ -9,7 +9,7 @@ import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 function VATCalculator() {
   const { t, language } = useLanguage()
   const [amount, setAmount] = useState('')
-  const [rate, setRate] = useState(20)
+  const [rate, setRate] = useState(22)
   const [mode, setMode] = useState('add')
   const [result, setResult] = useState(null)
 
@@ -51,21 +51,19 @@ function VATCalculator() {
       />
 
       <div className="tool-container">
-        <h1>{t('vatCalculator.title')}</h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img
+            src="/bull-icon.png"
+            alt="Bull icon"
+            style={{
+              marginRight: '0.5rem',
+              width: '2rem',
+              height: '2rem'
+            }}
+          />
+          {t('vatCalculator.title')}
+        </h1>
         <p>{t('vatCalculator.subtitle')}</p>
-
-        <div className="field">
-          <label htmlFor="mode">{t('vatCalculator.operation')}</label>
-          <select
-            id="mode"
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-          >
-            <option value="add">{t('vatCalculator.operations.add')}</option>
-            <option value="remove">{t('vatCalculator.operations.remove')}</option>
-            <option value="calculate">{t('vatCalculator.operations.calculate')}</option>
-          </select>
-        </div>
 
         <div className="field">
           <label htmlFor="amount">{t('vatCalculator.amount')}</label>
@@ -82,12 +80,26 @@ function VATCalculator() {
         </div>
 
         <div className="field">
+          <label htmlFor="mode">{t('vatCalculator.operation')}</label>
+          <select
+            id="mode"
+            value={mode}
+            onChange={(e) => setMode(e.target.value)}
+          >
+            <option value="add">{t('vatCalculator.operations.add')}</option>
+            <option value="remove">{t('vatCalculator.operations.remove')}</option>
+            <option value="calculate">{t('vatCalculator.operations.calculate')}</option>
+          </select>
+        </div>
+
+        <div className="field">
           <label htmlFor="rate">{t('vatCalculator.rate')}</label>
           <select
             id="rate"
             value={rate}
             onChange={(e) => setRate(Number(e.target.value))}
           >
+            <option value="22">22%</option>
             <option value="20">20%</option>
             <option value="19">19%</option>
             <option value="18">18%</option>
@@ -97,27 +109,27 @@ function VATCalculator() {
         </div>
 
         {result && (
-          <div className="result-box success">
+          <div className="result-box success" style={{ padding: '1rem' }}>
             {mode === 'add' && (
               <>
-                <p><strong>{t('vatCalculator.result.withoutVAT')}:</strong> {result.original} ₽</p>
-                <p><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
-                <p><strong>{t('vatCalculator.result.total')}:</strong> {result.total} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.withoutVAT')}:</strong> {result.original} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.total')}:</strong> {result.total} ₽</p>
                 <CopyButton text={`${t('vatCalculator.result.withoutVAT')}: ${result.original} ₽\n${t('vatCalculator.result.vat')}: ${result.vat} ₽\n${t('vatCalculator.result.totalWithVAT')}: ${result.total} ₽`} />
               </>
             )}
             {mode === 'remove' && (
               <>
-                <p><strong>{t('vatCalculator.result.withVAT')}:</strong> {result.total} ₽</p>
-                <p><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
-                <p><strong>{t('vatCalculator.result.withoutVAT')}:</strong> {result.original} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.withVAT')}:</strong> {result.total} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.withoutVAT')}:</strong> {result.original} ₽</p>
                 <CopyButton text={`${t('vatCalculator.result.withVAT')}: ${result.total} ₽\n${t('vatCalculator.result.vat')}: ${result.vat} ₽\n${t('vatCalculator.result.withoutVAT')}: ${result.original} ₽`} />
               </>
             )}
             {mode === 'calculate' && (
               <>
-                <p><strong>{t('vatCalculator.result.amountLabel')}:</strong> {result.amount} ₽</p>
-                <p><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.amountLabel')}:</strong> {result.amount} ₽</p>
+                <p style={{ margin: '0.25rem 0' }}><strong>{t('vatCalculator.result.vat')} ({rate}%):</strong> {result.vat} ₽</p>
                 <CopyButton text={`${t('vatCalculator.result.amountLabel')}: ${result.amount} ₽\n${t('vatCalculator.result.vat')}: ${result.vat} ₽`} />
               </>
             )}
