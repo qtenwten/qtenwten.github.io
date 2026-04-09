@@ -31,12 +31,10 @@
   padding-left: 0;
 }
 
-.categories-grid,
-.tools-grid,
-.home > .container > .tools-grid {
+.categories-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
 
 .category-section {
@@ -61,6 +59,13 @@
   text-align: center;
 }
 
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 0;
+}
+
 .tool-card {
   background: var(--bg);
   border: 2px solid var(--border);
@@ -74,8 +79,30 @@
   align-items: center;
   text-align: center;
   gap: 1rem;
-  aspect-ratio: 1 / 1;
-  justify-content: space-between;
+  min-height: 140px;
+  justify-content: flex-start;
+}
+
+.tool-card h2,
+.tool-card h3 {
+  font-size: 1.125rem;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  min-height: 3em;
+}
+
+.tool-card p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.9rem;
+  min-height: 3.6em;
+}
+
+/* Стили для поисковой выдачи */
+.home > .container > .tools-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
 .tool-card:hover {
@@ -86,7 +113,7 @@
 
 .tool-icon {
   font-size: 2.5rem;
-  margin-bottom: 0;
+  margin-bottom: 0.75rem;
   color: var(--primary);
   background: rgba(79, 70, 229, 0.08);
   border-radius: 12px;
@@ -103,17 +130,23 @@
 .tool-card h2,
 .tool-card h3 {
   font-size: 1.125rem;
-  margin: 0;
+  margin-bottom: 0;
   font-weight: 500;
   letter-spacing: 0.02em;
-  line-height: 1.3;
+  min-height: 3em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .tool-card p {
   color: var(--text-secondary);
-  margin: 0;
+  margin: -0.5rem 0 0 0;
   font-size: 0.9rem;
-  line-height: 1.4;
+  min-height: 3.6em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .no-results {
@@ -121,4 +154,44 @@
   text-align: center;
   padding: 3rem;
   color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .category-title {
+    font-size: 1.1rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home > .container > .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tool-card h2,
+  .tool-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .tool-card {
+    padding: 1rem;
+  }
+
+  .tool-icon {
+    font-size: 2rem;
+  }
+
+  .tool-card p {
+    font-size: 0.8rem;
+  }
 }
