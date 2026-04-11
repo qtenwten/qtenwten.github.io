@@ -9,6 +9,9 @@
 }
 
 .footer-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
   background: var(--card-bg);
@@ -17,10 +20,18 @@
 }
 
 .feedback-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   font-size: 1.1rem;
   color: var(--text);
   margin-bottom: 1rem;
   font-weight: 500;
+}
+
+.feedback-icon {
+  flex-shrink: 0;
 }
 
 .feedback-button {

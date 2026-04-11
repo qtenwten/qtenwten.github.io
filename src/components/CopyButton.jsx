@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
+import Icon from './Icon'
 
 function CopyButton({ text, className = '' }) {
   const { t } = useLanguage()
@@ -23,12 +24,12 @@ function CopyButton({ text, className = '' }) {
     >
       {copied ? (
         <>
-          <span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '0.25rem', fontSize: '1.2rem'}}>check</span>
+          <Icon name="check" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
           {t('common.copied')}
         </>
       ) : (
         <>
-          <span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '0.25rem', fontSize: '1.2rem'}}>content_copy</span>
+          <Icon name="content_copy" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
           {t('common.copy')}
         </>
       )}

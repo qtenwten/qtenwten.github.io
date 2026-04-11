@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import Icon from './Icon'
 import './Footer.css'
 
 function Footer() {
@@ -10,7 +11,7 @@ function Footer() {
       <div className="container">
         <div className="footer-feedback">
           <p className="feedback-text">
-            <span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '0.25rem'}}>lightbulb</span>
+            <Icon name="lightbulb" size={18} className="feedback-icon" />
             {t('footer.feedback')}
           </p>
           <Link to={`/${language}/feedback`} className="feedback-button">{t('footer.writeUs')}</Link>

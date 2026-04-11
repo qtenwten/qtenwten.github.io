@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
+import Icon from '../components/Icon'
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator'
 import './PasswordGenerator.css'
 
@@ -107,7 +108,7 @@ function PasswordGenerator() {
               className="toggle-visibility"
               title={showPassword ? t('passwordGenerator.hide') : t('passwordGenerator.show')}
             >
-              <span className="material-symbols-outlined">{showPassword ? 'visibility' : 'visibility_off'}</span>
+              <Icon name={showPassword ? 'visibility' : 'visibility_off'} size={22} />
             </button>
           </div>
 
@@ -128,7 +129,7 @@ function PasswordGenerator() {
 
           <div className="password-actions">
             <button onClick={handleGenerate} className="btn-primary">
-              <span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '0.25rem', fontSize: '1.2rem'}}>refresh</span>
+              <Icon name="refresh" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
               {t('passwordGenerator.generate')}
             </button>
             <CopyButton text={password} />

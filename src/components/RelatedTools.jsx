@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import Icon from './Icon'
 import './RelatedTools.css'
 
 function RelatedTools({ currentPath }) {
@@ -86,7 +87,7 @@ function RelatedTools({ currentPath }) {
       <div className="tools-grid">
         {otherTools.map(tool => (
           <Link key={tool.path} to={`/${language}${tool.path}`} className="tool-card">
-            <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
+            <Icon name={tool.icon} className="tool-icon" />
             <h3>{t(tool.titleKey)}</h3>
             <p>{t(tool.descriptionKey)}</p>
           </Link>

@@ -1,3 +1,5 @@
+import Icon from '../Icon'
+
 function ModeSwitcher({ mode, setMode, t }) {
   const modes = [
     { id: 'calculator', label: t('calculator.modes.calculator'), icon: 'calculate' },
@@ -13,7 +15,7 @@ function ModeSwitcher({ mode, setMode, t }) {
           onClick={() => setMode(m.id)}
           className={mode === m.id ? 'active' : 'secondary'}
         >
-          <span className="material-symbols-outlined mode-icon">{m.icon}</span>
+          <Icon name={m.icon} className="mode-icon" />
           <span className="mode-label">{m.label}</span>
         </button>
       ))}

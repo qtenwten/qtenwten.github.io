@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
+import Icon from '../components/Icon'
 import { generateRandomNumbers } from '../utils/randomGenerator'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
@@ -153,7 +154,7 @@ function RandomNumber() {
       />
 
       <div className="tool-container">
-        <h1><span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: '0.5rem' }}>casino</span>{copy.title}</h1>
+        <h1><Icon name="casino" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />{copy.title}</h1>
         <p>{copy.subtitle}</p>
 
         <div className="field">

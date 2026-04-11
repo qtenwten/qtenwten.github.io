@@ -140,21 +140,9 @@
                 addLog('JS bundle failed: ' + e.message, 'ERROR');
             }
 
-            // Test fonts
-            try {
-                const fontResponse = await fetch('/fonts/material-icons.css');
-                if (fontResponse.ok) {
-                    document.getElementById('fonts-test').textContent = '✓ Loaded';
-                    document.getElementById('fonts-test').className = 'success';
-                    addLog('Fonts loaded successfully');
-                } else {
-                    throw new Error(`Status: ${fontResponse.status}`);
-                }
-            } catch (e) {
-                document.getElementById('fonts-test').textContent = '✗ Failed: ' + e.message;
-                document.getElementById('fonts-test').className = 'error';
-                addLog('Fonts failed: ' + e.message, 'ERROR');
-            }
+            document.getElementById('fonts-test').textContent = '✓ Not required';
+            document.getElementById('fonts-test').className = 'success';
+            addLog('External icon fonts are no longer required');
         }
 
         testResources();

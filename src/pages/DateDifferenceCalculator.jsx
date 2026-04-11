@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
+import Icon from '../components/Icon'
 import { calculateDateDifference, calculateTimeDifference, calculateCountdown, formatDateDifference, formatTimeDifference } from '../utils/dateDifference'
 
 function DateDifferenceCalculator() {
@@ -157,9 +158,7 @@ function DateDifferenceCalculator() {
 
       <div className="tool-container">
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span className="material-symbols-outlined" style={{ marginRight: '0.5rem' }}>
-            calendar_month
-          </span>
+          <Icon name="calendar_month" size={24} style={{ marginRight: '0.5rem' }} />
           {t('dateDifference.title')}
         </h1>
         <p style={{ textAlign: 'center' }}>{t('dateDifference.subtitle')}</p>

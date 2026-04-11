@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import Icon from './Icon'
 import './Header.css'
 
 function Header({ searchValue, onSearchChange }) {
@@ -18,7 +19,7 @@ function Header({ searchValue, onSearchChange }) {
     <header className="header">
       <div className="container header-content">
         <Link to={`/${language}/`} className="logo" onClick={handleLogoClick}>
-          <span className="material-symbols-outlined logo-icon">construction</span>
+          <Icon name="construction" className="logo-icon" />
           <div className="logo-wrapper">
             <span className="logo-text">Utility Tools</span>
             <span className="logo-subtitle">{t('home.title')}</span>

@@ -2,6 +2,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
+import Icon from '../components/Icon'
 import './QRCodeGenerator.css'
 
 function QRCodeGenerator() {
@@ -268,7 +269,7 @@ function QRCodeGenerator() {
                 alignItems: 'center',
                 overflow: 'hidden'
               }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>qr_code</span>
+                <Icon name="qr_code" size={64} style={{ marginBottom: '1rem', opacity: 0.3 }} />
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', margin: 0 }}>
                   {t('qrCodeGenerator.emptyState')}
                 </p>

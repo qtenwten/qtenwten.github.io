@@ -11,17 +11,17 @@
 }
 
 .header-content {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 400px) minmax(0, 1fr);
   align-items: center;
   gap: 1.5rem;
   min-height: 60px;
 }
 
 .header-search-box {
-  flex: 1;
-  max-width: 400px;
+  width: 100%;
   position: relative;
+  justify-self: center;
 }
 
 .header-search-box input {
@@ -51,6 +51,11 @@
   transition: opacity 0.2s;
   min-width: 280px;
   flex-shrink: 0;
+  justify-self: start;
+}
+
+.language-switcher {
+  justify-self: end;
 }
 
 .logo-wrapper {
@@ -73,11 +78,13 @@
 }
 
 .logo-icon {
-  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 @media (max-width: 768px) {
   .header-content {
+    display: flex;
     gap: 1rem;
   }
 

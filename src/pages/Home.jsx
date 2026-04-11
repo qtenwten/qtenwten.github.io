@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
+import Icon from '../components/Icon'
 import './Home.css'
 
 function Home({ searchValue, onSearchChange }) {
@@ -151,7 +152,7 @@ function Home({ searchValue, onSearchChange }) {
               <div className="tools-grid">
                 {filteredTools.map(tool => (
                   <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
-                    <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
+                    <Icon name={tool.icon} className="tool-icon" />
                     <h3>{t(tool.titleKey)}</h3>
                     <p>{t(tool.descriptionKey)}</p>
                   </Link>
@@ -170,7 +171,7 @@ function Home({ searchValue, onSearchChange }) {
                       <div className="tools-grid">
                         {categoryTools.map(tool => (
                           <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
-                            <span className="material-symbols-outlined tool-icon">{tool.icon}</span>
+                            <Icon name={tool.icon} className="tool-icon" />
                             <h3>{t(tool.titleKey)}</h3>
                             <p>{t(tool.descriptionKey)}</p>
                           </Link>
