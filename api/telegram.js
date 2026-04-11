@@ -47,11 +47,11 @@ export default async function handler(req, res) {
 
     const data = await response.json()
 
-    if (data.ok) {
-      return res.status(200).json({ success: true })
-    } else {
-      return res.status(500).json({ error: 'Telegram API error', details: data })
-    }
+      if (data.ok) {
+        return res.status(200).json({ success: true, ok: true })
+      } else {
+        return res.status(500).json({ error: 'Telegram API error', details: data })
+      }
   } catch (error) {
     return res.status(500).json({ error: 'Server error', details: error.message })
   }

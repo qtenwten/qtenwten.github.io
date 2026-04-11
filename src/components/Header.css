@@ -24,9 +24,7 @@
   position: relative;
 }
 
-.header-search-box::before {
-  content: "\e8b6";
-  font-family: 'Material Symbols Outlined';
+.header-search-icon {
   position: absolute;
   left: 0.75rem;
   top: 50%;

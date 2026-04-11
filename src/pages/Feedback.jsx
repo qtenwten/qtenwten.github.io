@@ -30,7 +30,7 @@ function Feedback() {
 
       const data = await response.json()
 
-      if (data.ok) {
+      if (response.ok && (data.success || data.ok)) {
         setStatus('success')
         setFormData({ name: '', email: '', message: '' })
       } else {
