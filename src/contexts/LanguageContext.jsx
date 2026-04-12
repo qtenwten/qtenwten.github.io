@@ -75,16 +75,22 @@ export function LanguageProvider({ children }) {
       const currentPath = location.pathname
       const currentLang = currentPath.split('/')[1]
 
+      if (currentLang === newLang) return
+
+      const nextUrlState = {
+        localeSwitch: true,
+        scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
+      }
+
       // Если текущий путь начинается с языка, заменяем его
       if (currentLang === 'ru' || currentLang === 'en') {
         const newPath = currentPath.replace(`/${currentLang}`, `/${newLang}`)
-        navigate(`${newPath}${location.search}${location.hash}`)
+        navigate(`${newPath}${location.search}${location.hash}`, { state: nextUrlState })
       } else {
         // Если языка нет в пути, добавляем новый язык
-        navigate(`/${newLang}${currentPath}${location.search}${location.hash}`)
+        navigate(`/${newLang}${currentPath}${location.search}${location.hash}`, { state: nextUrlState })
       }
 
-      setLanguage(newLang)
       safeSetItem('language', newLang)
     } catch (error) {
       console.error('Error changing language:', error)

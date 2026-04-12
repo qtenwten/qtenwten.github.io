@@ -32,43 +32,43 @@
   "tools": {
     "numberToWords": {
       "title": "Сумма прописью",
-      "description": "Сумма прописью онлайн для счетов, договоров и актов"
+      "description": "Для счетов, договоров и актов"
     },
     "vatCalculator": {
       "title": "НДС калькулятор",
-      "description": "Калькулятор НДС онлайн: выделить, начислить и рассчитать налог"
+      "description": "Выделить, начислить и посчитать НДС"
     },
     "compoundInterest": {
       "title": "Калькулятор сложных процентов",
-      "description": "Расчет сложных процентов с капитализацией и пополнением"
+      "description": "Рост вклада и инвестиций с капитализацией"
     },
     "seoAuditPro": {
       "title": "SEO-аудит PRO",
-      "description": "SEO-аудит сайта онлайн: мета-теги, заголовки и структура"
+      "description": "Проверка title, H1, description и структуры"
     },
     "qrCodeGenerator": {
       "title": "Генератор QR-кодов",
-      "description": "Создать QR-код онлайн для ссылки, Wi-Fi, телефона и текста"
+      "description": "QR-код для ссылки, Wi-Fi, телефона и текста"
     },
     "urlShortener": {
       "title": "Сокращатель ссылок",
-      "description": "Сократить ссылку онлайн и получить короткий URL"
+      "description": "Короткая ссылка за пару секунд"
     },
     "passwordGenerator": {
       "title": "Генератор паролей",
-      "description": "Генератор надежных паролей онлайн с настройкой длины"
+      "description": "Надёжный пароль с настройкой длины"
     },
     "metaTagsGenerator": {
       "title": "Генератор мета-тегов",
-      "description": "Генератор мета-тегов для title, description и Open Graph"
+      "description": "Title, description и Open Graph"
     },
     "randomNumber": {
       "title": "Генератор случайных чисел",
-      "description": "Генератор случайных чисел онлайн без повторений"
+      "description": "Случайные числа без повторений"
     },
     "calculator": {
       "title": "Графический калькулятор",
-      "description": "Графический калькулятор онлайн для формул и функций"
+      "description": "Формулы и графики онлайн"
     },
     "timeCalculator": {
       "title": "Калькулятор времени",
@@ -76,7 +76,7 @@
     },
     "dateDifference": {
       "title": "Дни между датами",
-      "description": "Калькулятор дней между датами и времени до события"
+      "description": "Разница дат и обратный отсчёт"
     }
   },
   "breadcrumbs": {

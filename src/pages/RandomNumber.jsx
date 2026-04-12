@@ -168,9 +168,16 @@ function RandomNumber() {
         keywords={copy.seo.keywords}
       />
 
-      <div className="tool-container">
-        <h1><Icon name="casino" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />{copy.title}</h1>
-        <p>{copy.subtitle}</p>
+      <div className="tool-container random-number-page">
+        <section className="random-number-hero" aria-labelledby="random-number-heading">
+          <h1 id="random-number-heading" className="random-number-hero__title">
+            <span className="random-number-hero__title-wrap">
+              <Icon name="casino" size={22} className="random-number-hero__icon" />
+              <span className="random-number-hero__title-text">{copy.title}</span>
+            </span>
+          </h1>
+          <p className="random-number-hero__subtitle">{copy.subtitle}</p>
+        </section>
 
         <div className="field">
           <label htmlFor="min">{copy.min}</label>

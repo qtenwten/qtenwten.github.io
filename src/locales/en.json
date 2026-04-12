@@ -32,43 +32,43 @@
   "tools": {
     "numberToWords": {
       "title": "Number to Words Converter",
-      "description": "Convert numbers into words for invoices, contracts, and payment documents."
+      "description": "Amounts in words for invoices"
     },
     "vatCalculator": {
       "title": "VAT Calculator",
-      "description": "Calculate VAT online, add tax, remove tax, or extract VAT from a total."
+      "description": "Add, remove, extract VAT"
     },
     "compoundInterest": {
       "title": "Compound Interest Calculator",
-      "description": "Estimate savings and investment growth with compounding and recurring deposits."
+      "description": "Growth with compounding"
     },
     "seoAuditPro": {
       "title": "SEO Audit Tool",
-      "description": "Run a full on-page SEO audit for titles, headings, metadata, and structure."
+      "description": "Titles, headings, metadata"
     },
     "qrCodeGenerator": {
       "title": "QR Code Generator",
-      "description": "Create QR codes online for URLs, Wi-Fi, email, phone numbers, and text."
+      "description": "QR for links, Wi-Fi, text"
     },
     "urlShortener": {
       "title": "URL Shortener",
-      "description": "Turn long URLs into short, shareable links in seconds."
+      "description": "Short links instantly"
     },
     "passwordGenerator": {
       "title": "Password Generator",
-      "description": "Generate strong passwords online with custom length and character sets."
+      "description": "Strong passwords with settings"
     },
     "metaTagsGenerator": {
       "title": "Meta Tags Generator",
-      "description": "Create title tags, meta descriptions, and Open Graph tags fast."
+      "description": "Title, description, OG tags"
     },
     "randomNumber": {
       "title": "Random Number Generator",
-      "description": "Generate random numbers online with custom ranges and optional no-repeat mode."
+      "description": "Random numbers in range"
     },
     "calculator": {
       "title": "Graphing Calculator",
-      "description": "Use a graphing calculator online for formulas, functions, and quick math."
+      "description": "Plot and solve functions"
     },
     "timeCalculator": {
       "title": "Time Calculator",
@@ -76,7 +76,7 @@
     },
     "dateDifference": {
       "title": "Date Difference Calculator",
-      "description": "Calculate days between dates, time gaps, and countdowns to events."
+      "description": "Days between dates"
     }
   },
   "breadcrumbs": {

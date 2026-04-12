@@ -338,12 +338,19 @@ select:focus {
 }
 
 button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
   padding: 0.9rem 1.35rem;
   font-size: 1rem;
   font-weight: 600;
   border: 1px solid transparent;
   border-radius: 14px;
   cursor: pointer;
+  min-height: 52px;
+  line-height: 1.2;
+  text-align: center;
   transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-fast) ease, border-color var(--transition-fast) ease, color var(--transition-fast) ease, opacity var(--transition-fast) ease;
   background: var(--primary);
   color: white;
@@ -381,7 +388,14 @@ button:disabled {
   display: flex;
   gap: 0.85rem;
   flex-wrap: wrap;
+  align-items: stretch;
   margin-top: 0.25rem;
+}
+
+.btn-group > button,
+.btn-group > a {
+  min-width: clamp(10rem, 18vw, 12rem);
+  justify-content: center;
 }
 
 .field {

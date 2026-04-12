@@ -586,8 +586,13 @@ function DateDifferenceCalculator() {
 
       <ToolPageShell className="date-diff-page">
         <ToolPageHero
-          eyebrow={copy.eyebrow}
-          title={<><Icon name="calendar_month" size={24} className="tool-inline-icon" />{copy.title}</>}
+          className="date-diff-hero"
+          title={(
+            <span className="date-diff-title">
+              <Icon name="calendar_month" size={22} className="date-diff-title__icon" />
+              <span className="date-diff-title__text">{copy.title}</span>
+            </span>
+          )}
           subtitle={copy.subtitle}
           note={copy.intro}
         />
@@ -597,9 +602,21 @@ function DateDifferenceCalculator() {
             <div className="field">
               <label>{copy.modeLabel}</label>
               <div className="date-diff-mode-switcher">
-                <button type="button" className={mode === 'days' ? '' : 'secondary'} onClick={() => handleModeChange('days')}>{copy.modeDays}</button>
-                <button type="button" className={mode === 'time' ? '' : 'secondary'} onClick={() => handleModeChange('time')}>{copy.modeTime}</button>
-                <button type="button" className={mode === 'countdown' ? '' : 'secondary'} onClick={() => handleModeChange('countdown')}>{copy.modeCountdown}</button>
+                <button type="button" className={mode === 'days' ? '' : 'secondary'} onClick={() => handleModeChange('days')}>
+                  <span className="date-diff-mode-label">
+                    <span className="date-diff-mode-label__text">{copy.modeDays}</span>
+                  </span>
+                </button>
+                <button type="button" className={mode === 'time' ? '' : 'secondary'} onClick={() => handleModeChange('time')}>
+                  <span className="date-diff-mode-label">
+                    <span className="date-diff-mode-label__text">{copy.modeTime}</span>
+                  </span>
+                </button>
+                <button type="button" className={mode === 'countdown' ? '' : 'secondary'} onClick={() => handleModeChange('countdown')}>
+                  <span className="date-diff-mode-label">
+                    <span className="date-diff-mode-label__text">{copy.modeCountdown}</span>
+                  </span>
+                </button>
               </div>
             </div>
 

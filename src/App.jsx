@@ -7,6 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import RouteSkeleton from './components/RouteSkeleton'
 import PageTransition from './components/PageTransition'
 import { useLanguage } from './contexts/LanguageContext'
+import './pages/RandomNumber.css'
 import { LEGACY_ROUTE_REDIRECTS, ROUTE_REGISTRY } from './config/routeRegistry'
 import {
   Home,
@@ -28,12 +29,60 @@ import {
   preloadLikelyRoutes,
 } from './routes/lazyPages'
 
-function ScrollToTop() {
-  const { pathname } = useLocation()
+function normalizeLocalePath(pathname) {
+  const normalizedPath = pathname.replace(/^\/(ru|en)(?=\/|$)/, '')
+  return normalizedPath || '/'
+}
+
+function clampScrollPosition(scrollY) {
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+  return Math.min(Math.max(scrollY, 0), maxScroll)
+}
+
+function ScrollManager() {
+  const location = useLocation()
+  const logicalPath = normalizeLocalePath(location.pathname)
+  const previousLogicalPathRef = useRef(logicalPath)
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    const isLocaleSwitch = location.state?.localeSwitch === true && previousLogicalPathRef.current === logicalPath
+    const isHashNavigation = Boolean(location.hash)
+    let frameId = 0
+    let cancelled = false
+
+    const restoreLocaleScroll = (targetScrollY, attempt = 0) => {
+      if (cancelled) return
+
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+
+      if (maxScroll >= targetScrollY || attempt >= 12) {
+        window.scrollTo(0, clampScrollPosition(targetScrollY))
+        return
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        restoreLocaleScroll(targetScrollY, attempt + 1)
+      })
+    }
+
+    if (isLocaleSwitch) {
+      const savedScrollY = typeof location.state?.scrollY === 'number' ? location.state.scrollY : window.scrollY
+
+      restoreLocaleScroll(savedScrollY)
+    } else if (!isHashNavigation) {
+      window.scrollTo(0, 0)
+    }
+
+    previousLogicalPathRef.current = logicalPath
+
+    return () => {
+      cancelled = true
+
+      if (frameId) {
+        window.cancelAnimationFrame(frameId)
+      }
+    }
+  }, [location.key, location.hash, location.state, logicalPath])
 
   return null
 }
@@ -42,6 +91,8 @@ function App() {
   const { language } = useLanguage()
   const [homeSearch, setHomeSearch] = useState('')
   const location = useLocation()
+  const pageTransitionKey = normalizeLocalePath(location.pathname)
+  const previousFocusLogicalPathRef = useRef(pageTransitionKey)
   const mainRef = useRef(null)
   const hasMountedRef = useRef(false)
 
@@ -58,17 +109,26 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const isLocaleSwitch = location.state?.localeSwitch === true && previousFocusLogicalPathRef.current === pageTransitionKey
+
     if (!hasMountedRef.current) {
       hasMountedRef.current = true
+      previousFocusLogicalPathRef.current = pageTransitionKey
       return
     }
 
     if (!mainRef.current) return
 
+    previousFocusLogicalPathRef.current = pageTransitionKey
+
+    if (isLocaleSwitch) {
+      return
+    }
+
     window.requestAnimationFrame(() => {
       mainRef.current?.focus({ preventScroll: true })
     })
-  }, [location.pathname])
+  }, [location.pathname, location.state, pageTransitionKey])
 
   const componentMap = {
     Home,
@@ -94,46 +154,46 @@ function App() {
         {language === 'en' ? 'Skip to content' : 'Перейти к содержимому'}
       </a>
       <Header searchValue={homeSearch} onSearchChange={setHomeSearch} />
-      <ScrollToTop />
+      <ScrollManager />
       <main id="main-content" ref={mainRef} className="app-main" tabIndex="-1">
         <div className="container">
           <Breadcrumbs />
         </div>
-        <Suspense fallback={<RouteSkeleton />}> 
-          <PageTransition routeKey={location.pathname}>
-          <Routes location={location}>
-            {/* Корень остаётся dev/runtime fallback, production redirect генерируется статически */}
-            <Route path="/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
+        <Suspense fallback={<RouteSkeleton />}>
+          <PageTransition key={pageTransitionKey}>
+            <Routes location={location}>
+              {/* Корень остаётся dev/runtime fallback, production redirect генерируется статически */}
+              <Route path="/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
 
-            {/* Home */}
-            <Route path="/ru" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
-            <Route path="/ru/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
-            <Route path="/en" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
-            <Route path="/en/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
+              {/* Home */}
+              <Route path="/ru" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
+              <Route path="/ru/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
+              <Route path="/en" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
+              <Route path="/en/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
 
-            {ROUTE_REGISTRY.map((route) => {
-              const Component = componentMap[route.componentKey]
-              return (
-                <Route key={`ru-${route.path}`} path={`/ru${route.path}`} element={<Component />} />
-              )
-            })}
+              {ROUTE_REGISTRY.map((route) => {
+                const Component = componentMap[route.componentKey]
+                return (
+                  <Route key={`ru-${route.path}`} path={`/ru${route.path}`} element={<Component />} />
+                )
+              })}
 
-            {ROUTE_REGISTRY.map((route) => {
-              const Component = componentMap[route.componentKey]
-              return (
-                <Route key={`en-${route.path}`} path={`/en${route.path}`} element={<Component />} />
-              )
-            })}
+              {ROUTE_REGISTRY.map((route) => {
+                const Component = componentMap[route.componentKey]
+                return (
+                  <Route key={`en-${route.path}`} path={`/en${route.path}`} element={<Component />} />
+                )
+              })}
 
-            {/* Редиректы со старых URL без языка на /ru */}
-            {Object.entries(LEGACY_ROUTE_REDIRECTS).map(([fromPath, toPath]) => (
-              <Route key={fromPath} path={fromPath} element={<Navigate to={toPath} replace />} />
-            ))}
+              {/* Редиректы со старых URL без языка на /ru */}
+              {Object.entries(LEGACY_ROUTE_REDIRECTS).map(([fromPath, toPath]) => (
+                <Route key={fromPath} path={fromPath} element={<Navigate to={toPath} replace />} />
+              ))}
 
-            <Route path="/ru/*" element={<NotFound />} />
-            <Route path="/en/*" element={<NotFound />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="/ru/*" element={<NotFound />} />
+              <Route path="/en/*" element={<NotFound />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </PageTransition>
         </Suspense>
       </main>

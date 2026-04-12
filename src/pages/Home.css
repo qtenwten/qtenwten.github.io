@@ -8,12 +8,23 @@
   text-align: center;
 }
 
+.home-hero h1 {
+  font-size: clamp(1.15rem, 1rem + 0.9vw, 1.45rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.45rem;
+}
+
 .home-hero p {
-  min-height: 3.5em;
+  font-size: clamp(0.82rem, 0.76rem + 0.3vw, 0.95rem);
+  line-height: 1.55;
+  max-width: 34rem;
+  min-height: 3.2em;
   margin-bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-inline: auto;
 }
 
 .search-box {
@@ -110,7 +121,7 @@
   color: var(--text-secondary);
   margin: 0;
   font-size: 0.9rem;
-  min-height: 0;
+  min-height: calc(2 * 1.6em);
 }
 
 /* Стили для поисковой выдачи */
@@ -169,8 +180,8 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .no-results {
@@ -221,7 +232,7 @@
 
   .tool-card p {
     font-size: 0.8rem;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }

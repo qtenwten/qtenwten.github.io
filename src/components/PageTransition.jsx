@@ -1,6 +1,6 @@
-function PageTransition({ routeKey, children }) {
+function PageTransition({ children }) {
   return (
-    <div className="page-transition-wrapper" key={routeKey}>
+    <div className="page-transition-wrapper">
       {children}
     </div>
   )

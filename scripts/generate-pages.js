@@ -26,6 +26,16 @@ function replaceOrInsert(html, pattern, replacement, anchorPattern) {
   return html.replace(anchorPattern, `${replacement}\n$&`)
 }
 
+function getRandomNumberSubtitle(language) {
+  return language === 'ru'
+    ? 'Рандомайзер для розыгрышей, выборки и случайного выбора чисел'
+    : 'Generate random numbers online for raffles, games, sampling, and quick picks'
+}
+
+function buildRandomNumberPrerenderRoot(page) {
+  return `<div id="root"><div class="tool-container random-number-page"><section class="random-number-hero" aria-labelledby="random-number-heading"><h1 id="random-number-heading" class="random-number-hero__title"><span class="random-number-hero__title-wrap"><svg aria-hidden="true" class="random-number-hero__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1"></circle><circle cx="15.5" cy="8.5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="8.5" cy="15.5" r="1"></circle><circle cx="15.5" cy="15.5" r="1"></circle></svg><span class="random-number-hero__title-text">${escapeHtml(page.h1)}</span></span></h1><p class="random-number-hero__subtitle">${escapeHtml(getRandomNumberSubtitle(page.language))}</p></section></div></div>`
+}
+
 function buildStructuredData({ language, title, description, url }) {
   return JSON.stringify({
     '@context': 'https://schema.org',
@@ -106,10 +116,18 @@ function injectSeo(template, page) {
   )
 
   html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${structuredData}</script>`)
-  html = html.replace(
-    /<div id="root"><\/div>/,
-    `<div id="root"><div><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div></div>`
-  )
+  const isHomePage = page.path === '/'
+    || /^\/?(?:ru|en)\/?$/.test(page.path)
+    || /^\/?(?:ru|en)\/?$/.test(page.route)
+  const isRandomNumberPage = page.path === '/random-number'
+
+  const prerenderRoot = isHomePage
+    ? `<div id="root"><div class="home"><div class="container"><section class="home-hero" aria-labelledby="home-heading"><h1 id="home-heading">${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></section></div></div></div>`
+    : isRandomNumberPage
+      ? buildRandomNumberPrerenderRoot(page)
+    : `<div id="root"><div><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div></div>`
+
+  html = html.replace(/<div id="root"><\/div>/, prerenderRoot)
 
   return html
 }

@@ -148,8 +148,8 @@ function PasswordGenerator() {
 
         <div className="settings-panel">
           <div className="field">
-            <label htmlFor="length">
-              {t('passwordGenerator.length')}: <strong>{length}</strong> {t('passwordGenerator.symbols')}
+            <label htmlFor="length" className="length-label">
+              {t('passwordGenerator.length')}: <span className="length-value">{length}</span> {t('passwordGenerator.symbols')}
             </label>
             <input
               id="length"
