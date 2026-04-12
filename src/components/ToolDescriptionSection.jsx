@@ -19,7 +19,7 @@ export function ToolFaq({ title = 'FAQ', items = [] }) {
   }
 
   return (
-    <div>
+    <section className="tool-description-faq-block">
       <h3>{title}</h3>
       <div className="tool-description-faq">
         {items.map((item) => (
@@ -29,7 +29,7 @@ export function ToolFaq({ title = 'FAQ', items = [] }) {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 

@@ -9,6 +9,14 @@
   gap: 1rem;
 }
 
+.number-to-words-options-grid .field {
+  margin-bottom: 0;
+}
+
+.number-to-words-options-grid .field label {
+  min-height: calc(2 * 1.3em);
+}
+
 .number-to-words-result-stack {
   display: grid;
   gap: 1rem;
@@ -135,6 +143,10 @@
 @media (max-width: 768px) {
   .number-to-words-options-grid {
     grid-template-columns: 1fr;
+  }
+
+  .number-to-words-options-grid .field label {
+    min-height: 0;
   }
 
   .number-to-words-input-row {

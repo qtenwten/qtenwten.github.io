@@ -156,12 +156,14 @@ function VATCalculator() {
           <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--text)' }}>
             {t('vatCalculator.info.title')}
           </h2>
-          <p style={{ marginBottom: '2rem', color: 'var(--text)', lineHeight: '1.8', fontSize: '1.05rem' }}>
-            {t('vatCalculator.info.description')}
-          </p>
-          <p style={{ marginBottom: '2rem', color: 'var(--text)', lineHeight: '1.8' }}>
-            {t('vatCalculator.info.subtitle')}
-          </p>
+          <div className="tool-description-lead">
+            <p style={{ marginBottom: '2rem', color: 'var(--text)', lineHeight: '1.8', fontSize: '1.05rem' }}>
+              {t('vatCalculator.info.description')}
+            </p>
+            <p style={{ marginBottom: '2rem', color: 'var(--text)', lineHeight: '1.8' }}>
+              {t('vatCalculator.info.subtitle')}
+            </p>
+          </div>
 
           <h2 style={{ fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text)' }}>
             {t('vatCalculator.info.featuresTitle')}
@@ -188,18 +190,19 @@ function VATCalculator() {
           <h3 style={{ fontSize: '1.3rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text)' }}>
             {t('vatCalculator.info.examplesTitle')}
           </h3>
+          <div className="tool-description-paragraph-stack">
+            <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
+              <strong>{t('vatCalculator.operations.add')}:</strong> {t('vatCalculator.info.addExample')}
+            </p>
 
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
-            <strong>{t('vatCalculator.operations.add')}:</strong> {t('vatCalculator.info.addExample')}
-          </p>
+            <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
+              <strong>{t('vatCalculator.operations.remove')}:</strong> {t('vatCalculator.info.removeExample')}
+            </p>
 
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
-            <strong>{t('vatCalculator.operations.remove')}:</strong> {t('vatCalculator.info.removeExample')}
-          </p>
-
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
-            <strong>{t('vatCalculator.operations.calculate')}:</strong> {t('vatCalculator.info.calculateExample')}
-          </p>
+            <p style={{ color: 'var(--text)', lineHeight: '1.8', marginBottom: '1rem' }}>
+              <strong>{t('vatCalculator.operations.calculate')}:</strong> {t('vatCalculator.info.calculateExample')}
+            </p>
+          </div>
 
           <h3 style={{ fontSize: '1.3rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text)' }}>
             {t('vatCalculator.info.keywordsTitle')}

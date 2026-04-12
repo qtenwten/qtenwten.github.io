@@ -248,9 +248,11 @@ function RandomNumber() {
 
         <ToolDescriptionSection>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{copy.infoTitle}</h2>
-          <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
-            {copy.infoDescription}
-          </p>
+          <div className="tool-description-lead">
+            <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
+              {copy.infoDescription}
+            </p>
+          </div>
 
           <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{copy.featuresTitle}</h3>
           <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
@@ -263,15 +265,17 @@ function RandomNumber() {
           </ul>
 
           <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{copy.examplesTitle}</h3>
-          <p style={{ color: 'var(--text)', lineHeight: '1.8' }}>
-            <strong>{copy.lotteryLabel}</strong> {copy.lotteryText}
-          </p>
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
-            <strong>{copy.gamesLabel}</strong> {copy.gamesText}
-          </p>
-          <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
-            <strong>{copy.sampleLabel}</strong> {copy.sampleText}
-          </p>
+          <div className="tool-description-paragraph-stack">
+            <p style={{ color: 'var(--text)', lineHeight: '1.8' }}>
+              <strong>{copy.lotteryLabel}</strong> {copy.lotteryText}
+            </p>
+            <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+              <strong>{copy.gamesLabel}</strong> {copy.gamesText}
+            </p>
+            <p style={{ color: 'var(--text)', lineHeight: '1.8', marginTop: '0.5rem' }}>
+              <strong>{copy.sampleLabel}</strong> {copy.sampleText}
+            </p>
+          </div>
 
           <ToolFaq title={copy.faqTitle} items={copy.faq || []} />
         </ToolDescriptionSection>

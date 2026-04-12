@@ -239,21 +239,23 @@ function URLShortener() {
             {t('urlShortener.whereTitle')}
           </h3>
 
-          <p>
-            <strong>{t('urlShortener.whereSocial')}</strong> {t('urlShortener.whereSocialDesc')}
-          </p>
+          <div className="tool-description-paragraph-stack">
+            <p>
+              <strong>{t('urlShortener.whereSocial')}</strong> {t('urlShortener.whereSocialDesc')}
+            </p>
 
-          <p>
-            <strong>{t('urlShortener.whereSms')}</strong> {t('urlShortener.whereSmsDesc')}
-          </p>
+            <p>
+              <strong>{t('urlShortener.whereSms')}</strong> {t('urlShortener.whereSmsDesc')}
+            </p>
 
-          <p>
-            <strong>{t('urlShortener.whereEmail')}</strong> {t('urlShortener.whereEmailDesc')}
-          </p>
+            <p>
+              <strong>{t('urlShortener.whereEmail')}</strong> {t('urlShortener.whereEmailDesc')}
+            </p>
 
-          <p>
-            <strong>{t('urlShortener.wherePrint')}</strong> {t('urlShortener.wherePrintDesc')}
-          </p>
+            <p>
+              <strong>{t('urlShortener.wherePrint')}</strong> {t('urlShortener.wherePrintDesc')}
+            </p>
+          </div>
 
           <h3 className="tool-help-subheading">
             {t('urlShortener.popularTitle')}
