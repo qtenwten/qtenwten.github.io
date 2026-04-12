@@ -561,7 +561,9 @@
     "submitButton": "Send message",
     "sending": "Sending...",
     "successMessage": "✅ Thank you! Your message has been sent successfully.",
-    "errorMessage": "❌ Sending error. Please try again later."
+    "errorMessage": "❌ Could not send your message. Please try again later.",
+    "emptyMessage": "Please enter a message before sending.",
+    "invalidEmail": "Please enter a valid email address."
   },
   "dateDifference": {
     "title": "Date Difference Calculator",

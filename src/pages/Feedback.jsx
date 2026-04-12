@@ -4,40 +4,93 @@ import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import './Feedback.css'
 
+const FEEDBACK_WORKER_URL = 'https://apifeedback.qten.workers.dev/'
+
+async function readWorkerResponse(response) {
+  const responseText = await response.text()
+
+  try {
+    return responseText ? JSON.parse(responseText) : {}
+  } catch {
+    const error = new Error('Invalid JSON response')
+    error.code = 'INVALID_JSON'
+    error.status = response.status
+    throw error
+  }
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 function Feedback() {
   const { t, language } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    website: ''
   })
   const [status, setStatus] = useState('')
+  const [statusMessage, setStatusMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (loading) {
+      return
+    }
+
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      message: formData.message.trim(),
+      source: window.location.href,
+      website: formData.website || ''
+    }
+
+    if (!payload.message) {
+      setStatus('error')
+      setStatusMessage(t('feedback.emptyMessage'))
+      return
+    }
+
+    if (payload.email && !isValidEmail(payload.email)) {
+      setStatus('error')
+      setStatusMessage(t('feedback.invalidEmail'))
+      return
+    }
+
     setLoading(true)
     setStatus('')
+    setStatusMessage('')
 
     try {
-      const response = await fetch('/api/telegram', {
+      const response = await fetch(FEEDBACK_WORKER_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
+      const data = await readWorkerResponse(response)
 
-      if (response.ok && (data.success || data.ok)) {
-        setStatus('success')
-        setFormData({ name: '', email: '', message: '' })
-      } else {
-        setStatus('error')
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Failed to send message')
       }
+
+      setStatus('success')
+      setStatusMessage(t('feedback.successMessage'))
+      setFormData({ name: '', email: '', message: '', website: '' })
     } catch (error) {
       setStatus('error')
+      setStatusMessage(
+        error.code === 'INVALID_JSON'
+          ? t('feedback.errorMessage')
+          : (error.message || t('feedback.errorMessage'))
+      )
     } finally {
       setLoading(false)
     }
@@ -66,7 +119,7 @@ function Feedback() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="feedback-form">
+          <form onSubmit={handleSubmit} className="feedback-form">
             <div className="form-group">
               <label htmlFor="name">{t('feedback.nameLabel')}</label>
               <input
@@ -106,19 +159,32 @@ function Feedback() {
               />
             </div>
 
+            <div className="feedback-honeypot" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                tabIndex="-1"
+                autoComplete="off"
+              />
+            </div>
+
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? t('feedback.sending') : t('feedback.submitButton')}
             </button>
 
             {status === 'success' && (
               <div className="alert alert-success">
-                {t('feedback.successMessage')}
+                {statusMessage || t('feedback.successMessage')}
               </div>
             )}
 
             {status === 'error' && (
               <div className="alert alert-error">
-                {t('feedback.errorMessage')}
+                {statusMessage || t('feedback.errorMessage')}
               </div>
             )}
           </form>
