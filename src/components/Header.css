@@ -1,7 +1,7 @@
 .header {
   background-color: var(--header-bg);
   background-image: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 0;
   padding: 0.95rem 0;
   position: sticky;
   top: 0;
@@ -11,11 +11,27 @@
   will-change: auto;
   transition: border-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-fast) ease;
   backface-visibility: hidden;
+  isolation: isolate;
+  background-clip: padding-box;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: transparent;
+  pointer-events: none;
 }
 
 .header.is-scrolled {
-  border-bottom-color: var(--border);
   box-shadow: var(--header-shadow);
+}
+
+.header.is-scrolled::after {
+  background: var(--border);
 }
 
 .header a,

@@ -1,13 +1,27 @@
 .footer {
   margin-top: auto;
   flex-shrink: 0;
+  position: relative;
   padding: 2rem 0 1.5rem;
-  border-top: 1px solid var(--border);
+  border-top: 0;
   background-color: var(--header-bg);
   background-image: none;
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.875rem;
+  isolation: isolate;
+  background-clip: padding-box;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
 }
 
 .footer a,
