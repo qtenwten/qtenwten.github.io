@@ -20,7 +20,7 @@ function Breadcrumbs() {
   if (config?.breadcrumbMode === 'home-current') {
     const breadcrumbs = [
       { name: t('breadcrumbs.home'), url: `https://qsen.ru/${language}/`, path: `/${language}/` },
-      { name: t(config.nameKey), url: `https://qsen.ru${pathname}`, path: null }
+      { name: t(config.titleKey), url: `https://qsen.ru${pathname}`, path: null }
     ]
 
     const structuredData = {
@@ -49,7 +49,7 @@ function Breadcrumbs() {
             </li>
             <li className="breadcrumbs-separator" aria-hidden="true">→</li>
             <li className="breadcrumbs-item">
-              <span className="breadcrumbs-current" aria-current="page">{t(config.nameKey)}</span>
+              <span className="breadcrumbs-current" aria-current="page">{t(config.titleKey)}</span>
             </li>
           </ol>
         </nav>
