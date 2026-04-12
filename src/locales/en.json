@@ -410,13 +410,37 @@
     "dataLabel": "Data for QR code",
     "wifiFormat": "Format: SSID:password:type (WPA/WEP/nopass)",
     "sizeLabel": "Size",
+    "themeLabel": "Visual theme",
+    "themes": {
+      "classic": "Classic",
+      "soft": "Soft",
+      "panda": "Panda (decorative)"
+    },
+    "moduleStyleLabel": "Module style",
+    "moduleStyles": {
+      "square": "Square",
+      "rounded": "Rounded",
+      "dots": "Dots"
+    },
+    "markerStyleLabel": "Corner marker style",
+    "markerStyles": {
+      "square": "Classic",
+      "rounded": "Rounded"
+    },
     "colorsLabel": "QR Code Colors",
     "qrColor": "QR Color",
     "bgColor": "Background Color",
+    "logoLabel": "Center logo (optional)",
+    "logoHint": "Use a compact logo for best scan reliability. Smaller logos are safer for real-world scanning.",
+    "removeLogo": "Remove logo",
+    "scanabilityTitle": "Scanning note",
+    "decorativeWarning": "Decorative themes are designed to remain scannable, but you should still test the QR code with a phone camera before printing or publishing it widely.",
+    "logoWarning": "A center logo reduces the usable QR area. Keep it small and always test the final code before sharing or printing.",
+    "unicodeHint": "QR codes support Cyrillic, Latin characters, numbers, and symbols directly — your original text is preserved.",
+    "errorGenerate": "Could not generate the QR code. Check the entered data and try again.",
     "downloadButton": "📥 Download PNG",
     "scanText": "Scan with phone camera",
     "emptyState": "Enter data on the left to create a QR code",
-    "transliterate": "Transliterate Cyrillic (for better compatibility)",
     "info": {
       "howToTitle": "How to create a QR code online",
       "howToDescription": "Create a QR code in seconds by choosing a content type, entering your data, and downloading the finished image:",
@@ -443,8 +467,8 @@
       "featuresList": {
         "free": "Create QR codes online for free without registration",
         "colors": "Customize QR code and background colors",
-        "styles": "Supports text, links, email, phone, SMS, and WiFi content types",
-        "size": "Adjust size (from 128×128 to 400×400)",
+        "styles": "Customize module styles, corner markers, themes, and an optional center logo",
+        "size": "Adjust size (from 160×160 to 480×480)",
         "download": "Download high-quality PNG files",
         "instant": "Instant generation with no delays"
       },
@@ -470,8 +494,8 @@
         "a2": "Yes. The generator supports links, Wi-Fi credentials, email, phone numbers, SMS, and plain text.",
         "q3": "Do I need an account to use this tool?",
         "a3": "No. You can create and download QR codes instantly without signing up.",
-        "q4": "What file format can I download?",
-        "a4": "The generated QR code is available as a PNG image, which works well for web and print use."
+        "q4": "Does it support Cyrillic and mixed text?",
+        "a4": "Yes. The generator encodes Unicode/UTF-8 directly, so Cyrillic, Latin text, numbers, and symbols work without transliteration."
       }
     }
   },
@@ -562,6 +586,7 @@
     "sending": "Sending...",
     "successMessage": "✅ Thank you! Your message has been sent successfully.",
     "errorMessage": "❌ Could not send your message. Please try again later.",
+    "pendingMessage": "⏳ Your message is still being processed. If the status does not update, please wait a moment — it may already be delivered.",
     "emptyMessage": "Please enter a message before sending.",
     "invalidEmail": "Please enter a valid email address."
   },

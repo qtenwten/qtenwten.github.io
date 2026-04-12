@@ -1,24 +1,28 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Breadcrumbs from './components/Breadcrumbs'
 import ErrorBoundary from './components/ErrorBoundary'
-
-const Home = lazy(() => import('./pages/Home'))
-const NumberToWords = lazy(() => import('./pages/NumberToWords'))
-const VATCalculator = lazy(() => import('./pages/VATCalculator'))
-const RandomNumber = lazy(() => import('./pages/RandomNumber'))
-const Calculator = lazy(() => import('./pages/Calculator'))
-const DateDifferenceCalculator = lazy(() => import('./pages/DateDifferenceCalculator'))
-const CompoundInterest = lazy(() => import('./pages/CompoundInterest'))
-const SEOAudit = lazy(() => import('./pages/SEOAudit'))
-const MetaTagsGenerator = lazy(() => import('./pages/MetaTagsGenerator'))
-const SEOAuditPro = lazy(() => import('./pages/SEOAuditPro'))
-const QRCodeGenerator = lazy(() => import('./pages/QRCodeGenerator'))
-const URLShortener = lazy(() => import('./pages/URLShortener'))
-const Feedback = lazy(() => import('./pages/Feedback'))
-const PasswordGenerator = lazy(() => import('./pages/PasswordGenerator'))
+import RouteSkeleton from './components/RouteSkeleton'
+import PageTransition from './components/PageTransition'
+import {
+  Home,
+  NumberToWords,
+  VATCalculator,
+  RandomNumber,
+  Calculator,
+  DateDifferenceCalculator,
+  CompoundInterest,
+  SEOAudit,
+  MetaTagsGenerator,
+  SEOAuditPro,
+  QRCodeGenerator,
+  URLShortener,
+  Feedback,
+  PasswordGenerator,
+  preloadLikelyRoutes,
+} from './routes/lazyPages'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -34,21 +38,28 @@ function App() {
   const [homeSearch, setHomeSearch] = useState('')
   const location = useLocation()
 
-  const routeFallback = (
-    <div className="tool-container" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ margin: 0 }}>Loading...</p>
-    </div>
-  )
+  useEffect(() => {
+    const preload = () => preloadLikelyRoutes()
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(preload, { timeout: 1200 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+
+    const timeoutId = window.setTimeout(preload, 500)
+    return () => window.clearTimeout(timeoutId)
+  }, [])
 
   return (
     <ErrorBoundary>
       <Header searchValue={homeSearch} onSearchChange={setHomeSearch} />
       <ScrollToTop />
-      <div className="container">
-        <Breadcrumbs />
-      </div>
-      <div key={location.pathname} className="page-transition-wrapper">
-        <Suspense fallback={routeFallback}>
+      <main className="app-main">
+        <div className="container">
+          <Breadcrumbs />
+        </div>
+        <Suspense fallback={<RouteSkeleton />}> 
+          <PageTransition routeKey={location.pathname}>
           <Routes location={location}>
             {/* Редирект с корня на /ru */}
             <Route path="/" element={<Navigate to="/ru/" replace />} />
@@ -103,8 +114,9 @@ function App() {
             <Route path="/password-generator" element={<Navigate to="/ru/password-generator" replace />} />
             <Route path="/date-difference" element={<Navigate to="/ru/date-difference" replace />} />
           </Routes>
+          </PageTransition>
         </Suspense>
-      </div>
+      </main>
       <Footer />
     </ErrorBoundary>
   )

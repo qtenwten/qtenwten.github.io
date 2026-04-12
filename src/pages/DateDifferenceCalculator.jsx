@@ -232,7 +232,6 @@ function DateDifferenceCalculator() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                autoFocus
               />
             </div>
 
@@ -258,7 +257,6 @@ function DateDifferenceCalculator() {
                 type="datetime-local"
                 value={startDateTime}
                 onChange={(e) => setStartDateTime(e.target.value)}
-                autoFocus
               />
             </div>
 
@@ -283,7 +281,6 @@ function DateDifferenceCalculator() {
               type="datetime-local"
               value={targetDateTime}
               onChange={(e) => setTargetDateTime(e.target.value)}
-              autoFocus
             />
           </div>
         )}

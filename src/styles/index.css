@@ -30,6 +30,10 @@
   --header-shadow: 0 10px 22px -22px rgba(15, 23, 42, 0.18);
   --countdown-card-bg: rgba(255, 255, 255, 0.16);
   --countdown-card-border: rgba(255, 255, 255, 0.18);
+  --transition-fast: 140ms;
+  --transition-base: 220ms;
+  --transition-slow: 300ms;
+  --transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html,
@@ -50,13 +54,18 @@ body {
   line-height: 1.65;
   overflow-y: scroll;
   font-size: 16px;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast) ease;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  min-height: calc(100vh - 176px);
 }
 
 ::selection {
@@ -106,6 +115,18 @@ a {
   color: inherit;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -127,7 +148,7 @@ select {
   border-radius: 14px;
   background: var(--bg-elevated);
   color: var(--text);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  transition: border-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-fast) ease, transform var(--transition-fast) ease;
   min-height: 56px;
   height: 56px;
   box-sizing: border-box;
@@ -179,7 +200,7 @@ button {
   border: 1px solid transparent;
   border-radius: 14px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-fast) ease, border-color var(--transition-fast) ease, color var(--transition-fast) ease, opacity var(--transition-fast) ease;
   background: var(--primary);
   color: white;
   box-shadow: var(--shadow);
@@ -264,6 +285,148 @@ button:disabled {
   border-color: var(--success);
 }
 
+.inline-spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-top-color: currentColor;
+  animation: spin 0.7s linear infinite;
+}
+
+.button-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 1.2rem;
+}
+
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.skeleton-line {
+  display: block;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.06) 0%, rgba(var(--primary-rgb), 0.13) 50%, rgba(var(--primary-rgb), 0.06) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.25s var(--transition-ease) infinite;
+}
+
+.route-skeleton {
+  min-height: calc(100vh - 176px);
+}
+
+.route-skeleton__container {
+  min-height: inherit;
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 0.75rem;
+  padding-bottom: 2.25rem;
+}
+
+.route-skeleton__hero,
+.route-skeleton__tool,
+.route-skeleton__content {
+  padding: 1.5rem;
+}
+
+.route-skeleton__hero {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.route-skeleton__eyebrow {
+  width: 7rem;
+  height: 0.9rem;
+}
+
+.route-skeleton__title {
+  width: min(100%, 26rem);
+  height: 2.5rem;
+}
+
+.route-skeleton__subtitle {
+  width: min(100%, 32rem);
+  height: 1.1rem;
+}
+
+.route-skeleton__tool {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.route-skeleton__field {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.route-skeleton__label {
+  width: 9rem;
+  height: 0.95rem;
+}
+
+.route-skeleton__label--short {
+  width: 6rem;
+}
+
+.route-skeleton__input {
+  width: 100%;
+  height: 3.4rem;
+  border-radius: 16px;
+}
+
+.route-skeleton__input--wide {
+  height: 5.25rem;
+  border-radius: 18px;
+}
+
+.route-skeleton__actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.route-skeleton__button {
+  width: 12rem;
+  height: 3.25rem;
+  border-radius: 16px;
+}
+
+.route-skeleton__button--ghost {
+  width: 8.5rem;
+}
+
+.route-skeleton__content {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.route-skeleton__section-title {
+  width: 15rem;
+  height: 1.5rem;
+}
+
+.route-skeleton__section-title--lower {
+  margin-top: 0.45rem;
+}
+
+.route-skeleton__paragraph {
+  width: 100%;
+  height: 1rem;
+}
+
+.route-skeleton__paragraph--short {
+  width: 82%;
+}
+
 .result-value {
   font-size: 1.5rem;
   font-weight: 600;
@@ -306,14 +469,44 @@ button:disabled {
 
 /* Page transitions */
 .page-transition-wrapper {
-  animation: fadeIn 0.18s ease-out;
+  min-height: calc(100vh - 176px);
+  animation: pageEnter var(--transition-base) var(--transition-ease);
+  will-change: opacity, transform;
 }
 
-@keyframes fadeIn {
+@keyframes pageEnter {
   from {
     opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

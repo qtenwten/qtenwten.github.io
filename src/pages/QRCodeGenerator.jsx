@@ -6,23 +6,222 @@ import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import './QRCodeGenerator.css'
 
+const QR_THEME_PRESETS = {
+  classic: {
+    qrColor: '#111111',
+    qrBgColor: '#ffffff',
+    moduleStyle: 'square',
+    markerStyle: 'square',
+    decorative: false,
+  },
+  soft: {
+    qrColor: '#312e81',
+    qrBgColor: '#ffffff',
+    moduleStyle: 'rounded',
+    markerStyle: 'rounded',
+    decorative: false,
+  },
+  panda: {
+    qrColor: '#111111',
+    qrBgColor: '#fffdf8',
+    moduleStyle: 'dots',
+    markerStyle: 'rounded',
+    decorative: true,
+  },
+}
+
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  const safeRadius = Math.min(radius, width / 2, height / 2)
+  ctx.beginPath()
+  ctx.moveTo(x + safeRadius, y)
+  ctx.lineTo(x + width - safeRadius, y)
+  ctx.quadraticCurveTo(x + width, y, x + width, y + safeRadius)
+  ctx.lineTo(x + width, y + height - safeRadius)
+  ctx.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height)
+  ctx.lineTo(x + safeRadius, y + height)
+  ctx.quadraticCurveTo(x, y + height, x, y + height - safeRadius)
+  ctx.lineTo(x, y + safeRadius)
+  ctx.quadraticCurveTo(x, y, x + safeRadius, y)
+  ctx.closePath()
+}
+
+function drawModule(ctx, x, y, size, style) {
+  if (style === 'dots') {
+    ctx.beginPath()
+    ctx.arc(x + size / 2, y + size / 2, size * 0.34, 0, Math.PI * 2)
+    ctx.fill()
+    return
+  }
+
+  if (style === 'rounded') {
+    drawRoundedRect(ctx, x, y, size, size, size * 0.28)
+    ctx.fill()
+    return
+  }
+
+  ctx.fillRect(x, y, size, size)
+}
+
+function drawFinderPattern(ctx, originX, originY, moduleSize, darkColor, lightColor, markerStyle) {
+  const outerSize = moduleSize * 7
+  const middleOffset = moduleSize
+  const middleSize = moduleSize * 5
+  const innerOffset = moduleSize * 2
+  const innerSize = moduleSize * 3
+  const radius = markerStyle === 'rounded' ? moduleSize * 1.15 : moduleSize * 0.25
+
+  ctx.fillStyle = darkColor
+  if (markerStyle === 'rounded') {
+    drawRoundedRect(ctx, originX, originY, outerSize, outerSize, radius)
+    ctx.fill()
+  } else {
+    ctx.fillRect(originX, originY, outerSize, outerSize)
+  }
+
+  ctx.fillStyle = lightColor
+  if (markerStyle === 'rounded') {
+    drawRoundedRect(ctx, originX + middleOffset, originY + middleOffset, middleSize, middleSize, radius * 0.7)
+    ctx.fill()
+  } else {
+    ctx.fillRect(originX + middleOffset, originY + middleOffset, middleSize, middleSize)
+  }
+
+  ctx.fillStyle = darkColor
+  if (markerStyle === 'rounded') {
+    drawRoundedRect(ctx, originX + innerOffset, originY + innerOffset, innerSize, innerSize, radius * 0.55)
+    ctx.fill()
+  } else {
+    ctx.fillRect(originX + innerOffset, originY + innerOffset, innerSize, innerSize)
+  }
+}
+
+function isFinderArea(x, y, moduleCount) {
+  const inTopLeft = x <= 6 && y <= 6
+  const inTopRight = x >= moduleCount - 7 && y <= 6
+  const inBottomLeft = x <= 6 && y >= moduleCount - 7
+
+  return inTopLeft || inTopRight || inBottomLeft
+}
+
+function escapeWifiValue(value = '') {
+  return value.replace(/([\\;,:\"])/g, '\\$1')
+}
+
+function normalizeUrlValue(value) {
+  if (!value.trim()) {
+    return ''
+  }
+
+  return /^https?:\/\//i.test(value.trim()) ? value.trim() : `https://${value.trim()}`
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = reject
+    image.src = src
+  })
+}
+
+async function renderQRCodeToCanvas({
+  canvas,
+  qrData,
+  size,
+  moduleStyle,
+  markerStyle,
+  darkColor,
+  lightColor,
+  logoDataUrl,
+}) {
+  const marginModules = 4
+  const moduleCount = qrData.modules.size
+  const totalModules = moduleCount + marginModules * 2
+  const moduleSize = size / totalModules
+  const contentOffset = marginModules * moduleSize
+  const dpr = window.devicePixelRatio || 1
+
+  canvas.width = Math.round(size * dpr)
+  canvas.height = Math.round(size * dpr)
+  canvas.style.width = `${size}px`
+  canvas.style.height = `${size}px`
+
+  const ctx = canvas.getContext('2d')
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, size, size)
+  ctx.fillStyle = lightColor
+  ctx.fillRect(0, 0, size, size)
+
+  const moduleData = qrData.modules.data
+  ctx.fillStyle = darkColor
+
+  for (let y = 0; y < moduleCount; y += 1) {
+    for (let x = 0; x < moduleCount; x += 1) {
+      if (!moduleData[y * moduleCount + x]) {
+        continue
+      }
+
+      if (isFinderArea(x, y, moduleCount)) {
+        continue
+      }
+
+      drawModule(
+        ctx,
+        contentOffset + x * moduleSize,
+        contentOffset + y * moduleSize,
+        moduleSize,
+        moduleStyle
+      )
+    }
+  }
+
+  const finderOrigins = [
+    [contentOffset, contentOffset],
+    [contentOffset + (moduleCount - 7) * moduleSize, contentOffset],
+    [contentOffset, contentOffset + (moduleCount - 7) * moduleSize],
+  ]
+
+  finderOrigins.forEach(([x, y]) => {
+    drawFinderPattern(ctx, x, y, moduleSize, darkColor, lightColor, markerStyle)
+  })
+
+  if (logoDataUrl) {
+    const logoSize = Math.min(size * 0.18, 72)
+    const logoPadding = logoSize * 0.24
+    const logoBoxSize = logoSize + logoPadding * 2
+    const logoX = (size - logoBoxSize) / 2
+    const logoY = (size - logoBoxSize) / 2
+
+    ctx.fillStyle = lightColor
+    drawRoundedRect(ctx, logoX, logoY, logoBoxSize, logoBoxSize, 14)
+    ctx.fill()
+
+    const logoImage = await loadImage(logoDataUrl)
+    ctx.drawImage(logoImage, logoX + logoPadding, logoY + logoPadding, logoSize, logoSize)
+  }
+}
+
 function QRCodeGenerator() {
   const { t, language } = useLanguage()
   const [qrType, setQrType] = useState('text')
   const [qrValue, setQrValue] = useState('')
   const [qrSize, setQrSize] = useState(256)
-  const [qrColor, setQrColor] = useState('#000000')
-  const [qrBgColor, setQrBgColor] = useState('#ffffff')
-  const [useTranslit, setUseTranslit] = useState(false)
+  const [qrColor, setQrColor] = useState(QR_THEME_PRESETS.classic.qrColor)
+  const [qrBgColor, setQrBgColor] = useState(QR_THEME_PRESETS.classic.qrBgColor)
+  const [moduleStyle, setModuleStyle] = useState(QR_THEME_PRESETS.classic.moduleStyle)
+  const [markerStyle, setMarkerStyle] = useState(QR_THEME_PRESETS.classic.markerStyle)
+  const [themePreset, setThemePreset] = useState('classic')
+  const [logoDataUrl, setLogoDataUrl] = useState('')
   const [qrCodeLib, setQrCodeLib] = useState(null)
-  const qrRef = useRef(null)
+  const [generationError, setGenerationError] = useState('')
+  const canvasRef = useRef(null)
 
   useEffect(() => {
     let mounted = true
 
     import('qrcode').then((module) => {
       if (mounted) {
-        setQrCodeLib(module.default)
+        setQrCodeLib(module.default || module)
       }
     })
 
@@ -40,43 +239,108 @@ function QRCodeGenerator() {
     { id: 'wifi', label: t('qrCodeGenerator.types.wifi'), placeholder: t('qrCodeGenerator.placeholders.wifi') }
   ]
 
-  useEffect(() => {
-    if (!qrValue.trim() || !qrCodeLib) return
+  const applyThemePreset = (presetId) => {
+    const preset = QR_THEME_PRESETS[presetId]
+    if (!preset) return
 
-    const canvas = document.createElement('canvas')
+    setThemePreset(presetId)
+    setQrColor(preset.qrColor)
+    setQrBgColor(preset.qrBgColor)
+    setModuleStyle(preset.moduleStyle)
+    setMarkerStyle(preset.markerStyle)
+  }
 
-    const options = {
-      errorCorrectionLevel: 'H',
-      type: 'image/png',
-      quality: 1,
-      margin: 1,
-      width: qrSize,
-      color: {
-        dark: qrColor,
-        light: qrBgColor
+  const formatValue = () => {
+    const value = qrValue.trim()
+
+    switch (qrType) {
+      case 'url':
+        return normalizeUrlValue(value)
+      case 'email':
+        return `mailto:${value}`
+      case 'phone':
+        return `tel:${value}`
+      case 'sms':
+        return `SMSTO:${value}`
+      case 'wifi': {
+        const [ssid = '', password = '', security = 'WPA'] = value.split(':')
+        return `WIFI:T:${escapeWifiValue(security || 'WPA')};S:${escapeWifiValue(ssid)};P:${escapeWifiValue(password)};;`
       }
+      default:
+        return value
     }
+  }
 
-    qrCodeLib.toCanvas(canvas, formatValue(), options, (error) => {
-      if (error) {
-        console.error('QR Code generation error:', error)
+  useEffect(() => {
+    let cancelled = false
+
+    async function generate() {
+      if (!qrValue.trim() || !qrCodeLib || !canvasRef.current) {
+        setGenerationError('')
         return
       }
 
-      if (qrRef.current) {
-        qrRef.current.innerHTML = ''
-        qrRef.current.appendChild(canvas)
-      }
-    })
-  }, [qrValue, qrSize, qrColor, qrBgColor, qrType, useTranslit, qrCodeLib])
+      try {
+        const qrData = qrCodeLib.create(
+          [{ data: formatValue(), mode: 'byte' }],
+          { errorCorrectionLevel: 'H' }
+        )
 
-  // Показываем QR в реальном времени
-  const shouldShowQR = qrValue.trim() !== ''
+        await renderQRCodeToCanvas({
+          canvas: canvasRef.current,
+          qrData,
+          size: qrSize,
+          moduleStyle,
+          markerStyle,
+          darkColor: qrColor,
+          lightColor: qrBgColor,
+          logoDataUrl,
+        })
+
+        if (!cancelled) {
+          setGenerationError('')
+        }
+      } catch (error) {
+        console.error('QR Code generation error:', error)
+        if (!cancelled) {
+          setGenerationError(t('qrCodeGenerator.errorGenerate'))
+        }
+      }
+    }
+
+    generate()
+
+    return () => {
+      cancelled = true
+    }
+  }, [qrCodeLib, qrValue, qrSize, qrColor, qrBgColor, qrType, moduleStyle, markerStyle, logoDataUrl, language])
+
+  const shouldShowQR = qrValue.trim() !== '' && !generationError
+  const presetIsDecorative = QR_THEME_PRESETS[themePreset]?.decorative
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setLogoDataUrl(reader.result)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleDownload = () => {
-    const canvas = qrRef.current?.querySelector('canvas')
+    const canvas = canvasRef.current
+
     if (canvas) {
       canvas.toBlob((blob) => {
+        if (!blob) return
+
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
@@ -84,45 +348,6 @@ function QRCodeGenerator() {
         link.click()
         URL.revokeObjectURL(url)
       })
-    }
-  }
-
-  const transliterate = (text) => {
-    const map = {
-      'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
-      'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
-      'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-      'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-      'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
-      'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
-      'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M',
-      'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
-      'Ф': 'F', 'Х': 'H', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch',
-      'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
-    }
-    return text.split('').map(char => map[char] || char).join('')
-  }
-
-  const formatValue = () => {
-    let value = qrValue
-
-    // Транслитерация для текста если включена
-    if (qrType === 'text' && useTranslit) {
-      value = transliterate(value)
-    }
-
-    switch (qrType) {
-      case 'email':
-        return `mailto:${value}`
-      case 'phone':
-        return `tel:${value}`
-      case 'sms':
-        return `sms:${value}`
-      case 'wifi':
-        const [ssid, password, security] = value.split(':')
-        return `WIFI:T:${security || 'WPA'};S:${ssid};P:${password};;`
-      default:
-        return value
     }
   }
 
@@ -149,14 +374,14 @@ function QRCodeGenerator() {
         <p>{t('qrCodeGenerator.subtitle')}</p>
 
         <div className="qr-generator-layout">
-          {/* Левая колонка - настройки */}
           <div>
             <div className="field">
               <label>{t('qrCodeGenerator.typeLabel')}</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+              <div className="qr-types-grid">
                 {qrTypes.map(type => (
                   <button
                     key={type.id}
+                    type="button"
                     className={qrType === type.id ? '' : 'secondary'}
                     style={{ padding: '0.75rem', fontSize: '0.85rem' }}
                     onClick={() => {
@@ -178,24 +403,39 @@ function QRCodeGenerator() {
                 onChange={(e) => setQrValue(e.target.value)}
                 placeholder={qrTypes.find(t => t.id === qrType)?.placeholder}
                 rows={qrType === 'text' ? 4 : 2}
-                autoFocus
               />
+              <small className="qr-helper-text">{t('qrCodeGenerator.unicodeHint')}</small>
               {qrType === 'wifi' && (
-                <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
-                  {t('qrCodeGenerator.wifiFormat')}
-                </small>
+                <small className="qr-helper-text">{t('qrCodeGenerator.wifiFormat')}</small>
               )}
-              {qrType === 'text' && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', cursor: 'pointer', fontWeight: 'normal' }}>
-                  <input
-                    type="checkbox"
-                    checked={useTranslit}
-                    onChange={(e) => setUseTranslit(e.target.checked)}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <span style={{ fontSize: '0.9rem' }}>{t('qrCodeGenerator.transliterate')}</span>
-                </label>
-              )}
+            </div>
+
+            <div className="field">
+              <label htmlFor="themePreset">{t('qrCodeGenerator.themeLabel')}</label>
+              <select id="themePreset" value={themePreset} onChange={(e) => applyThemePreset(e.target.value)}>
+                <option value="classic">{t('qrCodeGenerator.themes.classic')}</option>
+                <option value="soft">{t('qrCodeGenerator.themes.soft')}</option>
+                <option value="panda">{t('qrCodeGenerator.themes.panda')}</option>
+              </select>
+            </div>
+
+            <div className="qr-custom-grid">
+              <div className="field">
+                <label htmlFor="moduleStyle">{t('qrCodeGenerator.moduleStyleLabel')}</label>
+                <select id="moduleStyle" value={moduleStyle} onChange={(e) => setModuleStyle(e.target.value)}>
+                  <option value="square">{t('qrCodeGenerator.moduleStyles.square')}</option>
+                  <option value="rounded">{t('qrCodeGenerator.moduleStyles.rounded')}</option>
+                  <option value="dots">{t('qrCodeGenerator.moduleStyles.dots')}</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label htmlFor="markerStyle">{t('qrCodeGenerator.markerStyleLabel')}</label>
+                <select id="markerStyle" value={markerStyle} onChange={(e) => setMarkerStyle(e.target.value)}>
+                  <option value="square">{t('qrCodeGenerator.markerStyles.square')}</option>
+                  <option value="rounded">{t('qrCodeGenerator.markerStyles.rounded')}</option>
+                </select>
+              </div>
             </div>
 
             <div className="field">
@@ -203,8 +443,8 @@ function QRCodeGenerator() {
               <input
                 id="qrSize"
                 type="range"
-                min="128"
-                max="400"
+                min="160"
+                max="480"
                 step="16"
                 value={qrSize}
                 onChange={(e) => setQrSize(Number(e.target.value))}
@@ -213,76 +453,78 @@ function QRCodeGenerator() {
 
             <div className="field">
               <label>{t('qrCodeGenerator.colorsLabel')}</label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="qr-custom-grid">
                 <div>
-                  <label htmlFor="qrColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>{t('qrCodeGenerator.qrColor')}</label>
+                  <label htmlFor="qrColor" className="qr-color-label">{t('qrCodeGenerator.qrColor')}</label>
                   <input
                     id="qrColor"
                     type="color"
                     value={qrColor}
                     onChange={(e) => setQrColor(e.target.value)}
-                    style={{ width: '100%', height: '50px', cursor: 'pointer', border: '2px solid var(--border)', borderRadius: '8px' }}
+                    className="qr-color-input"
                   />
                 </div>
                 <div>
-                  <label htmlFor="qrBgColor" style={{ fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block', fontWeight: 'normal' }}>{t('qrCodeGenerator.bgColor')}</label>
+                  <label htmlFor="qrBgColor" className="qr-color-label">{t('qrCodeGenerator.bgColor')}</label>
                   <input
                     id="qrBgColor"
                     type="color"
                     value={qrBgColor}
                     onChange={(e) => setQrBgColor(e.target.value)}
-                    style={{ width: '100%', height: '50px', cursor: 'pointer', border: '2px solid var(--border)', borderRadius: '8px' }}
+                    className="qr-color-input"
                   />
                 </div>
               </div>
             </div>
+
+            <div className="field">
+              <label htmlFor="logoUpload">{t('qrCodeGenerator.logoLabel')}</label>
+              <input
+                id="logoUpload"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                onChange={handleLogoUpload}
+              />
+              <small className="qr-helper-text">{t('qrCodeGenerator.logoHint')}</small>
+              {logoDataUrl && (
+                <button type="button" className="secondary qr-logo-remove" onClick={() => setLogoDataUrl('')}>
+                  {t('qrCodeGenerator.removeLogo')}
+                </button>
+              )}
+            </div>
+
+            {(presetIsDecorative || logoDataUrl) && (
+              <div className="qr-warning">
+                <strong>{t('qrCodeGenerator.scanabilityTitle')}</strong>
+                <p>{logoDataUrl ? t('qrCodeGenerator.logoWarning') : t('qrCodeGenerator.decorativeWarning')}</p>
+              </div>
+            )}
           </div>
 
-          {/* Правая колонка - результат */}
           <div>
-            {shouldShowQR ? (
-              <div className="result-box success" style={{
-                textAlign: 'center',
-                height: '520px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden'
-              }}>
-                <div ref={qrRef} style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: '1.5rem',
-                  height: '420px',
-                  width: '100%'
-                }}></div>
-                <button onClick={handleDownload} style={{ width: '100%', maxWidth: '300px' }}>
-                  {t('qrCodeGenerator.downloadButton')}
-                </button>
-                <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 0 }}>
-                  {t('qrCodeGenerator.scanText')}
-                </p>
+            {qrValue.trim() !== '' ? (
+              <div className="result-box success qr-preview-shell">
+                {generationError ? (
+                  <div className="qr-preview-placeholder">
+                    <Icon name="qr_code" size={64} style={{ marginBottom: '1rem', opacity: 0.3 }} />
+                    <p>{generationError}</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="qr-preview-frame">
+                      <canvas ref={canvasRef} className="qr-preview-canvas" />
+                    </div>
+                    <button type="button" onClick={handleDownload} style={{ width: '100%', maxWidth: '320px' }}>
+                      {t('qrCodeGenerator.downloadButton')}
+                    </button>
+                    <p className="qr-preview-note">{t('qrCodeGenerator.scanText')}</p>
+                  </>
+                )}
               </div>
             ) : (
-              <div style={{
-                background: 'var(--bg-secondary)',
-                border: '2px dashed var(--border)',
-                borderRadius: '8px',
-                padding: '3rem 2rem',
-                textAlign: 'center',
-                height: '520px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden'
-              }}>
+              <div className="qr-preview-empty">
                 <Icon name="qr_code" size={64} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', margin: 0 }}>
-                  {t('qrCodeGenerator.emptyState')}
-                </p>
+                <p>{t('qrCodeGenerator.emptyState')}</p>
               </div>
             )}
           </div>

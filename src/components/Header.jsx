@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import Icon from './Icon'
+import { preloadRoute } from '../routes/lazyPages'
 import './Header.css'
 
 function Header({ searchValue, onSearchChange }) {
@@ -18,7 +19,14 @@ function Header({ searchValue, onSearchChange }) {
   return (
     <header className="header">
       <div className="container header-content">
-        <Link to={`/${language}/`} className="logo" onClick={handleLogoClick}>
+        <Link
+          to={`/${language}/`}
+          className="logo"
+          onClick={handleLogoClick}
+          onMouseEnter={() => preloadRoute('/')}
+          onFocus={() => preloadRoute('/')}
+          onTouchStart={() => preloadRoute('/')}
+        >
           <Icon name="construction" className="logo-icon" />
           <div className="logo-wrapper">
             <span className="logo-text">Utility Tools</span>

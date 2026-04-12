@@ -168,7 +168,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.1s;
+  transition: background-color var(--transition-fast) ease, color var(--transition-fast) ease, border-color var(--transition-fast) ease, transform var(--transition-fast) ease;
   background: #fff;
   color: #000;
   min-height: 42px;
@@ -366,7 +366,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease, color var(--transition-fast) ease, transform var(--transition-fast) ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -377,7 +377,26 @@
   border-color: var(--primary);
   background: var(--primary);
   color: white;
-  transform: translateX(4px);
+  transform: translateX(2px);
+}
+
+.graph-panel-skeleton {
+  min-height: 520px;
+}
+
+.graph-skeleton-line {
+  height: 1rem;
+}
+
+.graph-skeleton-line--hero {
+  width: 11rem;
+  margin-bottom: 0.5rem;
+}
+
+.graph-skeleton-line--canvas {
+  height: 360px;
+  border-radius: 18px;
+  margin-top: 0.5rem;
 }
 
 .history-item:hover .history-expr,

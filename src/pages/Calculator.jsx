@@ -150,7 +150,7 @@ function Calculator() {
 
           {(mode === 'graph' || mode === 'split') && (
             <div className="calc-section">
-              <Suspense fallback={<div className="result-box">{copy.graphLoading}</div>}>
+              <Suspense fallback={<div className="graph-panel graph-panel-skeleton" aria-hidden="true"><span className="skeleton-line graph-skeleton-line graph-skeleton-line--hero" /><span className="skeleton-line graph-skeleton-line" /><span className="skeleton-line graph-skeleton-line" /><span className="skeleton-line graph-skeleton-line graph-skeleton-line--canvas" /></div>}>
                 <GraphPanel onHistoryAdd={handleHistoryAdd} />
               </Suspense>
             </div>

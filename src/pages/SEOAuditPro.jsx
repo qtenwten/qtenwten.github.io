@@ -5,6 +5,7 @@ import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { seoAuditCache } from '../utils/apiCache'
 import { analyzeSEO } from '../utils/seoAudit'
+import InlineSpinner from '../components/InlineSpinner'
 
 const SEO_AUDIT_WORKER_URL = 'https://seo-audit-api.qten.workers.dev/'
 
@@ -578,7 +579,6 @@ function SEOAuditPro() {
             onChange={(e) => setUrl(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
             placeholder="https://example.com"
-            autoFocus
             autoComplete="off"
           />
         </div>
@@ -602,7 +602,11 @@ function SEOAuditPro() {
           disabled={loading}
           style={{ width: '100%', marginBottom: '2rem' }}
         >
-          {loading ? copy.analyzing : copy.analyze}
+          {loading ? (
+            <span className="button-spinner">
+              <InlineSpinner label={copy.analyzing} />
+            </span>
+          ) : copy.analyze}
         </button>
 
         {result && (

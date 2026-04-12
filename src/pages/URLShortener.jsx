@@ -4,6 +4,7 @@ import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import InlineSpinner from '../components/InlineSpinner'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
 
 function URLShortener() {
@@ -125,7 +126,6 @@ function URLShortener() {
             placeholder={t('urlShortener.longUrlPlaceholder')}
             rows="3"
             style={{ resize: 'vertical', minHeight: '80px' }}
-            autoFocus
           />
         </div>
 
@@ -145,7 +145,11 @@ function URLShortener() {
 
         <div className="btn-group">
           <button onClick={handleShorten} disabled={loading}>
-            {loading ? t('urlShortener.shortening') : t('urlShortener.shortenButton')}
+            {loading ? (
+              <span className="button-spinner">
+                <InlineSpinner label={t('urlShortener.shortening')} />
+              </span>
+            ) : t('urlShortener.shortenButton')}
           </button>
           <button onClick={handleClear} className="secondary">
             {t('urlShortener.clearButton')}

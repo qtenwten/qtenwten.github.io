@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import Icon from '../components/Icon'
+import { preloadRoute } from '../routes/lazyPages'
 import './Home.css'
 
 function Home({ searchValue, onSearchChange }) {
   const { t, language } = useLanguage()
-  const [filteredTools, setFilteredTools] = useState([])
   const [searchParams] = useSearchParams()
   const categoryFilter = searchParams.get('category')
 
@@ -102,7 +102,7 @@ function Home({ searchValue, onSearchChange }) {
     }
   ]
 
-  useEffect(() => {
+  const filteredTools = useMemo(() => {
     let result = tools
 
     // Фильтр по категории из URL
@@ -120,17 +120,17 @@ function Home({ searchValue, onSearchChange }) {
       )
     }
 
-    setFilteredTools(result)
-  }, [searchValue, categoryFilter, language])
+    return result
+  }, [searchValue, categoryFilter, language, t])
 
   // Группировка инструментов по категориям
-  const groupedTools = filteredTools.reduce((acc, tool) => {
+  const groupedTools = useMemo(() => filteredTools.reduce((acc, tool) => {
     if (!acc[tool.category]) {
       acc[tool.category] = []
     }
     acc[tool.category].push(tool)
     return acc
-  }, {})
+  }, {}), [filteredTools])
 
   // Порядок отображения категорий
   const categoryOrder = ['generators', 'calculators', 'converters', 'tools']
@@ -151,7 +151,14 @@ function Home({ searchValue, onSearchChange }) {
               // Показываем все результаты поиска без категорий
               <div className="tools-grid">
                 {filteredTools.map(tool => (
-                  <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
+                  <Link
+                    to={`/${language}${tool.path}`}
+                    key={tool.id}
+                    className="tool-card"
+                    onMouseEnter={() => preloadRoute(tool.path)}
+                    onFocus={() => preloadRoute(tool.path)}
+                    onTouchStart={() => preloadRoute(tool.path)}
+                  >
                     <Icon name={tool.icon} className="tool-icon" />
                     <h3>{t(tool.titleKey)}</h3>
                     <p>{t(tool.descriptionKey)}</p>
@@ -170,7 +177,14 @@ function Home({ searchValue, onSearchChange }) {
                       <h2 className="category-title">{t(`categories.${category}`)}</h2>
                       <div className="tools-grid">
                         {categoryTools.map(tool => (
-                          <Link to={`/${language}${tool.path}`} key={tool.id} className="tool-card">
+                          <Link
+                            to={`/${language}${tool.path}`}
+                            key={tool.id}
+                            className="tool-card"
+                            onMouseEnter={() => preloadRoute(tool.path)}
+                            onFocus={() => preloadRoute(tool.path)}
+                            onTouchStart={() => preloadRoute(tool.path)}
+                          >
                             <Icon name={tool.icon} className="tool-icon" />
                             <h3>{t(tool.titleKey)}</h3>
                             <p>{t(tool.descriptionKey)}</p>

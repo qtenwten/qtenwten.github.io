@@ -85,7 +85,6 @@ function VATCalculator() {
             onChange={(e) => setAmount(filterNumberInput(e.target.value))}
             onKeyDown={handleNumberKeyDown}
             placeholder="10000"
-            autoFocus
             autoComplete="off"
           />
         </div>

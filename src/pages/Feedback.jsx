@@ -2,12 +2,19 @@ import { useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
+import InlineSpinner from '../components/InlineSpinner'
 import './Feedback.css'
 
 const FEEDBACK_WORKER_URL = 'https://apifeedback.qten.workers.dev/'
+const FEEDBACK_REQUEST_TIMEOUT_MS = 12000
+const FEEDBACK_AMBIGUOUS_DELAY_MS = 3500
 
 async function readWorkerResponse(response) {
   const responseText = await response.text()
+
+  if (!responseText.trim()) {
+    return response.ok ? { ok: true } : {}
+  }
 
   try {
     return responseText ? JSON.parse(responseText) : {}
@@ -31,9 +38,9 @@ function Feedback() {
     message: '',
     website: ''
   })
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState('idle')
   const [statusMessage, setStatusMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const loading = status === 'sending'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -62,9 +69,14 @@ function Feedback() {
       return
     }
 
-    setLoading(true)
-    setStatus('')
+    setStatus('sending')
     setStatusMessage('')
+
+    const startedAt = Date.now()
+    const controller = new AbortController()
+    const timeoutId = window.setTimeout(() => {
+      controller.abort('timeout')
+    }, FEEDBACK_REQUEST_TIMEOUT_MS)
 
     try {
       const response = await fetch(FEEDBACK_WORKER_URL, {
@@ -72,7 +84,9 @@ function Feedback() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+        keepalive: true,
       })
 
       const data = await readWorkerResponse(response)
@@ -85,14 +99,28 @@ function Feedback() {
       setStatusMessage(t('feedback.successMessage'))
       setFormData({ name: '', email: '', message: '', website: '' })
     } catch (error) {
-      setStatus('error')
-      setStatusMessage(
-        error.code === 'INVALID_JSON'
-          ? t('feedback.errorMessage')
-          : (error.message || t('feedback.errorMessage'))
-      )
+      const elapsed = Date.now() - startedAt
+      const normalizedMessage = (error?.message || '').toLowerCase()
+      const isTimeout = error?.name === 'AbortError' || error === 'timeout' || normalizedMessage.includes('abort')
+      const isNetworkFailure =
+        error?.name === 'TypeError' ||
+        normalizedMessage.includes('load failed') ||
+        normalizedMessage.includes('failed to fetch') ||
+        normalizedMessage.includes('network')
+
+      if (isTimeout || (isNetworkFailure && elapsed >= FEEDBACK_AMBIGUOUS_DELAY_MS)) {
+        setStatus('pending')
+        setStatusMessage(t('feedback.pendingMessage'))
+      } else {
+        setStatus('error')
+        setStatusMessage(
+          error.code === 'INVALID_JSON' || isNetworkFailure
+            ? t('feedback.errorMessage')
+            : (error.message || t('feedback.errorMessage'))
+        )
+      }
     } finally {
-      setLoading(false)
+      window.clearTimeout(timeoutId)
     }
   }
 
@@ -111,14 +139,16 @@ function Feedback() {
         path={`/${language}/feedback`}
       />
 
-      <div className="tool-container">
-        <div className="feedback-header">
+      <div className="tool-container feedback-page">
+        <div className="feedback-intro">
+          <div className="feedback-eyebrow">{language === 'en' ? 'Get in touch' : 'Свяжитесь с нами'}</div>
           <h1>{t('feedback.title')}</h1>
           <p className="feedback-subtitle">
             {t('feedback.subtitle')}
           </p>
         </div>
 
+          <div className="feedback-panel">
           <form onSubmit={handleSubmit} className="feedback-form">
             <div className="form-group">
               <label htmlFor="name">{t('feedback.nameLabel')}</label>
@@ -173,12 +203,22 @@ function Feedback() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? t('feedback.sending') : t('feedback.submitButton')}
+              {loading ? (
+                <span className="button-spinner">
+                  <InlineSpinner label={t('feedback.sending')} />
+                </span>
+              ) : t('feedback.submitButton')}
             </button>
 
             {status === 'success' && (
               <div className="alert alert-success">
                 {statusMessage || t('feedback.successMessage')}
+              </div>
+            )}
+
+            {status === 'pending' && (
+              <div className="alert alert-pending">
+                {statusMessage || t('feedback.pendingMessage')}
               </div>
             )}
 
@@ -188,6 +228,7 @@ function Feedback() {
               </div>
             )}
           </form>
+          </div>
 
           <RelatedTools currentPath={`/${language}/feedback`} />
         </div>

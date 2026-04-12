@@ -193,7 +193,6 @@ function CompoundInterest() {
             onChange={(e) => setPrincipal(filterNumberInput(e.target.value))}
             onKeyDown={handleNumberKeyDown}
             placeholder="10000"
-            autoFocus
           />
         </div>
 

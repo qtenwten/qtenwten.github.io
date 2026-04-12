@@ -246,7 +246,6 @@ function MetaTagsGenerator() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={copy.titlePlaceholder}
-            autoFocus
           />
           <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
             {copy.titleHint(title.length)}

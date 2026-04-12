@@ -3,6 +3,7 @@ import { useState } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import InlineSpinner from '../components/InlineSpinner'
 import { analyzeSEO } from '../utils/seoAudit'
 
 function SEOAudit() {
@@ -185,7 +186,6 @@ function SEOAudit() {
             onChange={(e) => setUrl(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
             placeholder="https://example.com"
-            autoFocus
           />
         </div>
 
@@ -211,7 +211,11 @@ function SEOAudit() {
           disabled={loading}
           style={{ width: '100%', marginBottom: '2rem' }}
         >
-          {loading ? copy.analyzing : copy.analyze}
+          {loading ? (
+            <span className="button-spinner">
+              <InlineSpinner label={copy.analyzing} />
+            </span>
+          ) : copy.analyze}
         </button>
 
         {result && (

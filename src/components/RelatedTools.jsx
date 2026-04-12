@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import Icon from './Icon'
+import { preloadRoute } from '../routes/lazyPages'
 import './RelatedTools.css'
 
 function RelatedTools({ currentPath }) {
@@ -86,7 +87,14 @@ function RelatedTools({ currentPath }) {
       <h2>{t('home.relatedTools')}</h2>
       <div className="tools-grid">
         {otherTools.map(tool => (
-          <Link key={tool.path} to={`/${language}${tool.path}`} className="tool-card">
+          <Link
+            key={tool.path}
+            to={`/${language}${tool.path}`}
+            className="tool-card"
+            onMouseEnter={() => preloadRoute(tool.path)}
+            onFocus={() => preloadRoute(tool.path)}
+            onTouchStart={() => preloadRoute(tool.path)}
+          >
             <Icon name={tool.icon} className="tool-icon" />
             <h3>{t(tool.titleKey)}</h3>
             <p>{t(tool.descriptionKey)}</p>
