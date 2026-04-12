@@ -1,5 +1,5 @@
 import { useLanguage } from '../contexts/LanguageContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
@@ -9,6 +9,7 @@ import InlineSpinner from '../components/InlineSpinner'
 import { useAsyncRequest } from '../hooks/useAsyncRequest'
 import { ResultActions, ResultDetails, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolRelated } from '../components/ToolPageShell'
+import './SEOAuditPro.css'
 
 const SEO_AUDIT_WORKER_URL = 'https://seo-audit-api.qten.workers.dev/'
 
@@ -86,130 +87,760 @@ async function requestWorkerAudit(normalizedUrl, signal) {
   return data
 }
 
-function createWorkerAnalysis(data, copy) {
-  const normalizedData = {
-    source: 'worker',
+const AUDIT_UI_COPY = {
+  en: {
+    sourceWorker: 'Worker audit',
+    sourceFallback: 'Limited browser audit',
+    coverage: 'Coverage',
+    checkedChecks: 'Verified checks',
+    categoryScores: 'Category scores',
+    scoreBreakdown: 'Scoring breakdown',
+    topPriorities: 'What to fix first',
+    allGoodTitle: 'Everything checked passed',
+    allGoodText: 'The audit did not find active issues in the verified checks. The breakdown below shows what contributed to the score.',
+    filtersTitle: 'Show checks',
+    filterAll: 'All',
+    filterErrors: 'Errors',
+    filterWarnings: 'Warnings',
+    filterPassed: 'Passed',
+    filterUnavailable: 'Not checked',
+    whyItMatters: 'Why it matters',
+    recommendation: 'How to improve',
+    benchmark: 'Target',
+    currentValue: 'Current value',
+    rawSignals: 'Raw audit snapshot',
+    rawHint: 'Use these values when you need the exact fields returned by the audit.',
+    noRecommendation: 'No action needed.',
+    notChecked: 'This signal was not available in the current audit source.',
+    impact: 'Score',
+    scoreOutOf: (earned, max) => `${earned}/${max}`,
+    checksCount: (checked, total) => `${checked}/${total} checks`,
+    scoreSummary: (score) => score >= 90
+      ? 'Strong on-page SEO signals across the verified checks.'
+      : score >= 70
+        ? 'Most important signals look good, but there are clear improvements available.'
+        : 'Several important signals need work before the page looks fully optimized.',
+    status: {
+      pass: 'OK',
+      warning: 'Warning',
+      fail: 'Error',
+      na: 'Not checked',
+    },
+    categories: {
+      technical: 'Technical SEO',
+      metadata: 'Metadata',
+      content: 'Content structure',
+      enhancements: 'Rich results',
+      accessibility: 'Media & accessibility',
+    },
+    labels: {
+      httpStatus: 'HTTP status',
+      htmlContent: 'HTML response',
+      httpsUrl: 'HTTPS final URL',
+      robots: 'Robots directives',
+      titlePresence: 'Title tag present',
+      titleLength: 'Title length',
+      descriptionPresence: 'Meta description present',
+      descriptionLength: 'Meta description length',
+      canonical: 'Canonical tag',
+      h1Presence: 'Primary H1',
+      h1Length: 'H1 length',
+      h2Coverage: 'Supporting H2 headings',
+      openGraph: 'Open Graph',
+      twitter: 'Twitter cards',
+      structuredData: 'Structured data',
+      altCoverage: 'Image alt coverage',
+      linkMix: 'Link signals',
+    },
+    why: {
+      httpStatus: 'Search engines need the page to resolve successfully before any other signal matters.',
+      htmlContent: 'The audit should target a regular HTML page, not a file or API response.',
+      httpsUrl: 'HTTPS is a basic trust and indexing expectation for public pages.',
+      robots: 'Robots directives can block indexing even when everything else is correct.',
+      titlePresence: 'The title tag is one of the strongest on-page signals and shapes the search snippet.',
+      titleLength: 'A well-sized title is easier to read and less likely to be truncated in search results.',
+      descriptionPresence: 'Meta descriptions influence snippet quality and click-through context.',
+      descriptionLength: 'A balanced description is easier to display cleanly in search results.',
+      canonical: 'Canonical tags help search engines understand which version of a page should rank.',
+      h1Presence: 'A clear H1 helps align the page topic with search intent and document structure.',
+      h1Length: 'An H1 should be specific enough to clarify the topic without becoming bloated.',
+      h2Coverage: 'Subheadings help structure the content for both users and search engines.',
+      openGraph: 'Open Graph tags improve link previews in messengers and social platforms.',
+      twitter: 'Twitter/X cards add consistent preview data beyond default link scraping.',
+      structuredData: 'Structured data can improve eligibility for enhanced search presentation.',
+      altCoverage: 'Descriptive alt text improves accessibility and helps search engines understand images.',
+      linkMix: 'A healthy link profile indicates crawl paths and page context.',
+    },
+  },
+  ru: {
+    sourceWorker: 'Проверка через worker',
+    sourceFallback: 'Ограниченная браузерная проверка',
+    coverage: 'Покрытие',
+    checkedChecks: 'Проверено',
+    categoryScores: 'Оценка по категориям',
+    scoreBreakdown: 'Детальный разбор оценки',
+    topPriorities: 'Что исправить в первую очередь',
+    allGoodTitle: 'Все проверенные сигналы в порядке',
+    allGoodText: 'Активных проблем в проверенных сигналах не найдено. Ниже видно, какие именно проверки дали итоговую оценку.',
+    filtersTitle: 'Показать проверки',
+    filterAll: 'Все',
+    filterErrors: 'Ошибки',
+    filterWarnings: 'Предупреждения',
+    filterPassed: 'ОК',
+    filterUnavailable: 'Не проверено',
+    whyItMatters: 'Почему это важно',
+    recommendation: 'Что улучшить',
+    benchmark: 'Ориентир',
+    currentValue: 'Текущее значение',
+    rawSignals: 'Сырые сигналы аудита',
+    rawHint: 'Этот блок показывает точные значения, которые вернул аудит.',
+    noRecommendation: 'Доработка не требуется.',
+    notChecked: 'Этот сигнал недоступен в текущем источнике аудита.',
+    impact: 'Баллы',
+    scoreOutOf: (earned, max) => `${earned}/${max}`,
+    checksCount: (checked, total) => `${checked}/${total} проверок`,
+    scoreSummary: (score) => score >= 90
+      ? 'По проверенным сигналам страница выглядит сильно и аккуратно оптимизированной.'
+      : score >= 70
+        ? 'Основные сигналы в порядке, но остаются понятные точки роста.'
+        : 'Есть несколько важных проблем, которые заметно тянут оценку вниз.',
+    status: {
+      pass: 'OK',
+      warning: 'Предупреждение',
+      fail: 'Ошибка',
+      na: 'Не проверено',
+    },
+    categories: {
+      technical: 'Техническое SEO',
+      metadata: 'Метаданные',
+      content: 'Структура контента',
+      enhancements: 'Расширенные сниппеты',
+      accessibility: 'Медиа и доступность',
+    },
+    labels: {
+      httpStatus: 'HTTP-статус',
+      htmlContent: 'HTML-страница',
+      httpsUrl: 'HTTPS у итогового URL',
+      robots: 'Robots-директива',
+      titlePresence: 'Наличие title',
+      titleLength: 'Длина title',
+      descriptionPresence: 'Наличие description',
+      descriptionLength: 'Длина description',
+      canonical: 'Canonical',
+      h1Presence: 'Основной H1',
+      h1Length: 'Длина H1',
+      h2Coverage: 'Подзаголовки H2',
+      openGraph: 'Open Graph',
+      twitter: 'Twitter cards',
+      structuredData: 'Структурированные данные',
+      altCoverage: 'Alt у изображений',
+      linkMix: 'Ссылочные сигналы',
+    },
+    why: {
+      httpStatus: 'Пока страница не отдает корректный ответ, остальные SEO-сигналы не имеют смысла.',
+      htmlContent: 'Для индексации важна именно обычная HTML-страница, а не файл или API-ответ.',
+      httpsUrl: 'HTTPS — базовый сигнал доверия и нормальная практика для индексируемых страниц.',
+      robots: 'Robots может заблокировать индексацию даже при хороших остальных сигналах.',
+      titlePresence: 'Title — один из главных on-page сигналов и основа поискового сниппета.',
+      titleLength: 'Сбалансированный title читается лучше и реже обрезается в выдаче.',
+      descriptionPresence: 'Meta description помогает контролировать смысл и привлекательность сниппета.',
+      descriptionLength: 'Слишком короткое или длинное описание хуже работает в сниппете.',
+      canonical: 'Canonical помогает поисковикам понять, какая версия страницы является основной.',
+      h1Presence: 'Понятный H1 помогает связать тему страницы с поисковым интентом и структурой документа.',
+      h1Length: 'H1 должен быть достаточно конкретным, но не перегруженным.',
+      h2Coverage: 'Подзаголовки помогают структурировать контент и улучшают сканируемость страницы.',
+      openGraph: 'Open Graph отвечает за качественный превью-блок в соцсетях и мессенджерах.',
+      twitter: 'Twitter/X cards дополняют социальные превью и повышают консистентность ссылок.',
+      structuredData: 'Структурированные данные повышают шанс на расширенное отображение в поиске.',
+      altCoverage: 'Описательные alt улучшают доступность и помогают поисковикам понимать изображения.',
+      linkMix: 'Ссылки помогают понять структуру страницы и её связь с другими документами.',
+    },
+  },
+}
+
+const AUDIT_CATEGORY_ORDER = [
+  { id: 'technical', maxScore: 20 },
+  { id: 'metadata', maxScore: 35 },
+  { id: 'content', maxScore: 20 },
+  { id: 'enhancements', maxScore: 15 },
+  { id: 'accessibility', maxScore: 10 },
+]
+
+function truncateText(value, limit = 88) {
+  if (!value) return value
+  return value.length > limit ? `${value.slice(0, limit - 1)}…` : value
+}
+
+function createCheck({ id, categoryId, label, weight, status, value, summary, whyItMatters, recommendation = '', benchmark = '', scoreEarned = null }) {
+  const resolvedScore = scoreEarned ?? (status === 'pass'
+    ? weight
+    : status === 'warning'
+      ? Math.max(1, Math.round(weight * 0.5))
+      : status === 'fail'
+        ? 0
+        : null)
+
+  return {
+    id,
+    categoryId,
+    label,
+    weight,
+    status,
+    value,
+    summary,
+    whyItMatters,
+    recommendation,
+    benchmark,
+    scoreEarned: resolvedScore,
+  }
+}
+
+function normalizeAuditData(data) {
+  const openGraph = data.openGraph
+    || ((data.ogTitle || data.ogDescription || data.ogImage)
+      ? {
+          title: data.ogTitle || null,
+          description: data.ogDescription || null,
+          image: data.ogImage || null,
+        }
+      : null)
+
+  const twitter = data.twitter
+    || ((data.twitterCard || data.twitterTitle || data.twitterDescription || data.twitterImage)
+      ? {
+          card: data.twitterCard || null,
+          title: data.twitterTitle || null,
+          description: data.twitterDescription || null,
+          image: data.twitterImage || null,
+        }
+      : null)
+
+  return {
+    source: data.source || 'worker',
     finalUrl: data.finalUrl || null,
     status: data.status ?? null,
     ok: data.ok !== false,
     contentType: data.contentType || null,
     title: data.title || null,
-    description: data.metaDescription || null,
-    keywords: null,
+    description: data.description || data.metaDescription || null,
+    keywords: data.keywords || null,
     robots: data.robots || null,
     canonical: data.canonical || null,
-    h1Text: data.h1 || null,
-    h1Count: data.h1 ? 1 : 0,
-    h2Count: null,
-    h3Count: null,
-    imagesTotal: null,
-    imagesWithoutAlt: null,
-    hasStructuredData: null,
-    openGraph: null,
+    h1Text: data.h1Text || data.h1 || null,
+    h1Count: typeof data.h1Count === 'number' ? data.h1Count : (data.h1 || data.h1Text ? 1 : 0),
+    h2Count: typeof data.h2Count === 'number' ? data.h2Count : null,
+    h3Count: typeof data.h3Count === 'number' ? data.h3Count : null,
+    imagesTotal: typeof data.imagesTotal === 'number' ? data.imagesTotal : null,
+    imagesWithoutAlt: typeof data.imagesWithoutAlt === 'number' ? data.imagesWithoutAlt : null,
+    hasStructuredData: typeof data.hasStructuredData === 'boolean' ? data.hasStructuredData : null,
+    openGraph,
+    twitter,
+    lang: data.lang || null,
+    viewport: data.viewport || null,
+    internalLinks: typeof data.internalLinks === 'number' ? data.internalLinks : null,
+    externalLinks: typeof data.externalLinks === 'number' ? data.externalLinks : null,
+    wordCount: typeof data.wordCount === 'number' ? data.wordCount : null,
   }
+}
 
-  const issues = []
-  const suggestions = []
-  let score = 100
+function getCategoryStatus(checks) {
+  const checked = checks.filter((check) => check.status !== 'na')
+  if (!checked.length) return 'na'
+  if (checked.some((check) => check.status === 'fail')) return 'fail'
+  if (checked.some((check) => check.status === 'warning')) return 'warning'
+  return 'pass'
+}
 
-  if (normalizedData.status && (normalizedData.status < 200 || normalizedData.status >= 400 || normalizedData.ok === false)) {
-    issues.push({ type: 'error', text: copy.analysis.badStatus(normalizedData.status) })
-    suggestions.push(copy.analysis.reviewStatus)
-    score -= 20
-  }
+function buildAuditReport(rawData, language) {
+  const ui = AUDIT_UI_COPY[language] || AUDIT_UI_COPY.ru
+  const data = normalizeAuditData(rawData)
+  const title = data.title?.trim() || ''
+  const description = data.description?.trim() || ''
+  const h1Text = data.h1Text?.trim() || ''
+  const checks = []
 
-  if (normalizedData.contentType && !normalizedData.contentType.includes('text/html')) {
-    issues.push({ type: 'warning', text: copy.analysis.nonHtmlContent })
-    suggestions.push(copy.analysis.checkContentType)
-    score -= 10
-  }
+  const httpStatusOk = typeof data.status === 'number' && data.status >= 200 && data.status < 300 && data.ok !== false
+  const httpStatusRedirect = typeof data.status === 'number' && data.status >= 300 && data.status < 400
+  checks.push(createCheck({
+    id: 'http-status',
+    categoryId: 'technical',
+    label: ui.labels.httpStatus,
+    weight: 8,
+    status: data.status == null ? 'na' : httpStatusOk ? 'pass' : httpStatusRedirect ? 'warning' : 'fail',
+    value: data.status == null ? ui.status.na : `HTTP ${data.status}`,
+    summary: data.status == null
+      ? ui.notChecked
+      : httpStatusOk
+        ? (language === 'en' ? 'The page returned a successful status code.' : 'Страница вернула успешный код ответа.')
+        : httpStatusRedirect
+          ? (language === 'en' ? 'The URL redirects before the final page resolves.' : 'URL сначала отдает редирект перед финальной страницей.')
+          : (language === 'en' ? 'The page did not return a successful status code.' : 'Страница не вернула успешный код ответа.'),
+    whyItMatters: ui.why.httpStatus,
+    recommendation: data.status == null || httpStatusOk
+      ? ''
+      : (language === 'en' ? 'Review redirects or server responses so the page resolves with a clean 2xx status.' : 'Проверьте редиректы и ответы сервера, чтобы страница открывалась с чистым 2xx-статусом.'),
+    benchmark: '2xx',
+  }))
 
-  if (!normalizedData.title) {
-    issues.push({ type: 'error', text: copy.analysis.missingTitle })
-    suggestions.push(copy.analysis.addTitle)
-    score -= 15
-  } else if (normalizedData.title.length < 30) {
-    issues.push({ type: 'warning', text: copy.analysis.shortTitle })
-    suggestions.push(copy.analysis.extendTitle)
-    score -= 5
-  } else if (normalizedData.title.length > 70) {
-    issues.push({ type: 'warning', text: copy.analysis.longTitle })
-    suggestions.push(copy.analysis.reduceTitle)
-    score -= 5
-  }
+  checks.push(createCheck({
+    id: 'html-content',
+    categoryId: 'technical',
+    label: ui.labels.htmlContent,
+    weight: 4,
+    status: !data.contentType ? 'na' : data.contentType.includes('text/html') ? 'pass' : 'fail',
+    value: data.contentType || ui.status.na,
+    summary: !data.contentType
+      ? ui.notChecked
+      : data.contentType.includes('text/html')
+        ? (language === 'en' ? 'The URL points to an HTML document.' : 'URL ведет на HTML-документ.')
+        : (language === 'en' ? 'The response is not a standard HTML page.' : 'Ответ не является обычной HTML-страницей.'),
+    whyItMatters: ui.why.htmlContent,
+    recommendation: !data.contentType || data.contentType.includes('text/html')
+      ? ''
+      : (language === 'en' ? 'Use a canonical page URL that returns an HTML document.' : 'Используйте URL страницы, который отдает обычный HTML-документ.'),
+    benchmark: 'text/html',
+  }))
 
-  if (!normalizedData.description) {
-    issues.push({ type: 'error', text: copy.analysis.missingDescription })
-    suggestions.push(copy.analysis.addDescription)
-    score -= 15
-  } else if (normalizedData.description.length < 120) {
-    issues.push({ type: 'warning', text: copy.analysis.shortDescription })
-    suggestions.push(copy.analysis.extendDescription)
-    score -= 5
-  } else if (normalizedData.description.length > 170) {
-    issues.push({ type: 'warning', text: copy.analysis.longDescription })
-    suggestions.push(copy.analysis.reduceDescription)
-    score -= 5
-  }
+  checks.push(createCheck({
+    id: 'https-url',
+    categoryId: 'technical',
+    label: ui.labels.httpsUrl,
+    weight: 4,
+    status: !data.finalUrl ? 'na' : data.finalUrl.startsWith('https://') ? 'pass' : 'warning',
+    value: data.finalUrl || ui.status.na,
+    summary: !data.finalUrl
+      ? ui.notChecked
+      : data.finalUrl.startsWith('https://')
+        ? (language === 'en' ? 'The final URL uses HTTPS.' : 'Итоговый URL использует HTTPS.')
+        : (language === 'en' ? 'The final URL is not using HTTPS.' : 'Итоговый URL не использует HTTPS.'),
+    whyItMatters: ui.why.httpsUrl,
+    recommendation: !data.finalUrl || data.finalUrl.startsWith('https://')
+      ? ''
+      : (language === 'en' ? 'Serve the public page over HTTPS and update internal links to the secure version.' : 'Отдавайте страницу по HTTPS и обновите внутренние ссылки на безопасную версию.'),
+    benchmark: 'https://',
+  }))
 
-  if (!normalizedData.h1Text) {
-    issues.push({ type: 'error', text: copy.analysis.missingH1 })
-    suggestions.push(copy.analysis.addH1)
-    score -= 15
-  }
+  const robotsValue = data.robots || (language === 'en' ? 'No explicit robots tag' : 'Явный robots-тег не найден')
+  const robotsIsRestricted = typeof data.robots === 'string' && /(noindex|nofollow)/i.test(data.robots)
+  checks.push(createCheck({
+    id: 'robots',
+    categoryId: 'technical',
+    label: ui.labels.robots,
+    weight: 4,
+    status: robotsIsRestricted ? 'warning' : 'pass',
+    value: robotsValue,
+    summary: robotsIsRestricted
+      ? (language === 'en' ? 'The robots directive contains restrictive instructions.' : 'В robots есть ограничивающие директивы.')
+      : (language === 'en' ? 'No restrictive robots instructions were detected.' : 'Ограничивающих robots-директив не обнаружено.'),
+    whyItMatters: ui.why.robots,
+    recommendation: robotsIsRestricted
+      ? (language === 'en' ? 'Review the robots directive if the page is expected to rank.' : 'Проверьте robots-директиву, если страница должна индексироваться.')
+      : '',
+    benchmark: language === 'en' ? 'Indexable page' : 'Индексируемая страница',
+  }))
 
-  if (!normalizedData.canonical) {
-    issues.push({ type: 'info', text: copy.analysis.missingCanonical })
-    suggestions.push(copy.analysis.addCanonical)
-    score -= 3
-  }
+  checks.push(createCheck({
+    id: 'title-present',
+    categoryId: 'metadata',
+    label: ui.labels.titlePresence,
+    weight: 10,
+    status: title ? 'pass' : 'fail',
+    value: title ? truncateText(title) : (language === 'en' ? 'Missing' : 'Отсутствует'),
+    summary: title
+      ? (language === 'en' ? 'The page has a title tag.' : 'У страницы есть тег title.')
+      : (language === 'en' ? 'The page is missing a title tag.' : 'У страницы отсутствует тег title.'),
+    whyItMatters: ui.why.titlePresence,
+    recommendation: title ? '' : (language === 'en' ? 'Add a unique title that clearly reflects the topic of the page.' : 'Добавьте уникальный title, который ясно отражает тему страницы.'),
+    benchmark: '1 title tag',
+  }))
 
-  if (normalizedData.robots && /noindex/i.test(normalizedData.robots)) {
-    issues.push({ type: 'warning', text: copy.analysis.noindexRobots })
-    suggestions.push(copy.analysis.reviewRobots)
-    score -= 10
-  }
+  const titleLengthStatus = !title ? 'fail' : title.length >= 30 && title.length <= 65 ? 'pass' : 'warning'
+  checks.push(createCheck({
+    id: 'title-length',
+    categoryId: 'metadata',
+    label: ui.labels.titleLength,
+    weight: 8,
+    status: titleLengthStatus,
+    value: title ? `${title.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
+    summary: !title
+      ? (language === 'en' ? 'The title length cannot be optimized because the tag is missing.' : 'Длину title нельзя оценить корректно, потому что сам тег отсутствует.')
+      : titleLengthStatus === 'pass'
+        ? (language === 'en' ? 'The title length is in a solid range.' : 'Длина title находится в хорошем диапазоне.')
+        : (language === 'en' ? 'The title is likely too short or too long for a clean snippet.' : 'Title, вероятно, слишком короткий или слишком длинный для аккуратного сниппета.'),
+    whyItMatters: ui.why.titleLength,
+    recommendation: titleLengthStatus === 'pass'
+      ? ''
+      : (language === 'en' ? 'Aim for a title that is usually easy to scan and display without truncation.' : 'Сделайте title таким, чтобы его было легко читать и реже обрезало в выдаче.'),
+    benchmark: language === 'en' ? '30–65 chars' : '30–65 символов',
+    scoreEarned: !title ? 0 : titleLengthStatus === 'pass' ? 8 : 4,
+  }))
 
-  score = Math.max(0, Math.min(100, score))
+  checks.push(createCheck({
+    id: 'description-present',
+    categoryId: 'metadata',
+    label: ui.labels.descriptionPresence,
+    weight: 10,
+    status: description ? 'pass' : 'fail',
+    value: description ? truncateText(description) : (language === 'en' ? 'Missing' : 'Отсутствует'),
+    summary: description
+      ? (language === 'en' ? 'The page has a meta description.' : 'У страницы есть meta description.')
+      : (language === 'en' ? 'The page is missing a meta description.' : 'У страницы отсутствует meta description.'),
+    whyItMatters: ui.why.descriptionPresence,
+    recommendation: description ? '' : (language === 'en' ? 'Add a description that explains the page value in a concise way.' : 'Добавьте описание, которое кратко объясняет ценность страницы.'),
+    benchmark: '1 description tag',
+  }))
+
+  const descriptionLengthStatus = !description ? 'fail' : description.length >= 120 && description.length <= 170 ? 'pass' : 'warning'
+  checks.push(createCheck({
+    id: 'description-length',
+    categoryId: 'metadata',
+    label: ui.labels.descriptionLength,
+    weight: 7,
+    status: descriptionLengthStatus,
+    value: description ? `${description.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
+    summary: !description
+      ? (language === 'en' ? 'The description length cannot be assessed because the tag is missing.' : 'Длину description нельзя оценить корректно, потому что сам тег отсутствует.')
+      : descriptionLengthStatus === 'pass'
+        ? (language === 'en' ? 'The description length is in a practical range.' : 'Длина description находится в практичном диапазоне.')
+        : (language === 'en' ? 'The description could be more balanced for search snippets.' : 'Description стоит сделать более сбалансированным для сниппета.'),
+    whyItMatters: ui.why.descriptionLength,
+    recommendation: descriptionLengthStatus === 'pass'
+      ? ''
+      : (language === 'en' ? 'Keep the description concise but descriptive enough to explain the page.' : 'Сделайте description кратким, но достаточно информативным для страницы.'),
+    benchmark: language === 'en' ? '120–170 chars' : '120–170 символов',
+    scoreEarned: !description ? 0 : descriptionLengthStatus === 'pass' ? 7 : 4,
+  }))
+
+  checks.push(createCheck({
+    id: 'canonical',
+    categoryId: 'metadata',
+    label: ui.labels.canonical,
+    weight: 5,
+    status: data.canonical ? 'pass' : 'warning',
+    value: data.canonical || (language === 'en' ? 'Missing' : 'Отсутствует'),
+    summary: data.canonical
+      ? (language === 'en' ? 'A canonical URL is declared.' : 'Canonical URL указан.')
+      : (language === 'en' ? 'No canonical tag was found.' : 'Canonical-тег не найден.'),
+    whyItMatters: ui.why.canonical,
+    recommendation: data.canonical
+      ? ''
+      : (language === 'en' ? 'Add a canonical URL if the page can have multiple entry points or duplicate variants.' : 'Добавьте canonical URL, если у страницы есть несколько точек входа или дубли.'),
+    benchmark: language === 'en' ? 'Present when needed' : 'Наличие при необходимости',
+    scoreEarned: data.canonical ? 5 : 2,
+  }))
+
+  const h1Status = data.h1Count > 1 ? 'warning' : h1Text ? 'pass' : 'fail'
+  checks.push(createCheck({
+    id: 'h1-presence',
+    categoryId: 'content',
+    label: ui.labels.h1Presence,
+    weight: 10,
+    status: h1Status,
+    value: data.h1Count > 1 ? `${data.h1Count} H1` : (h1Text ? truncateText(h1Text) : (language === 'en' ? 'Missing' : 'Отсутствует')),
+    summary: h1Status === 'pass'
+      ? (language === 'en' ? 'The page has one clear H1 heading.' : 'На странице есть один понятный H1.')
+      : h1Status === 'warning'
+        ? (language === 'en' ? 'Multiple H1 headings were detected.' : 'Обнаружено несколько H1-заголовков.')
+        : (language === 'en' ? 'The page is missing an H1 heading.' : 'На странице отсутствует H1-заголовок.'),
+    whyItMatters: ui.why.h1Presence,
+    recommendation: h1Status === 'pass'
+      ? ''
+      : (language === 'en' ? 'Keep one primary H1 that reflects the page topic clearly.' : 'Оставьте один основной H1, который ясно отражает тему страницы.'),
+    benchmark: '1 H1',
+    scoreEarned: h1Status === 'pass' ? 10 : h1Status === 'warning' ? 4 : 0,
+  }))
+
+  const h1LengthStatus = !h1Text ? 'fail' : h1Text.length >= 10 && h1Text.length <= 70 ? 'pass' : 'warning'
+  checks.push(createCheck({
+    id: 'h1-length',
+    categoryId: 'content',
+    label: ui.labels.h1Length,
+    weight: 4,
+    status: h1LengthStatus,
+    value: h1Text ? `${h1Text.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
+    summary: !h1Text
+      ? (language === 'en' ? 'The H1 length cannot be assessed because the heading is missing.' : 'Длину H1 нельзя оценить, потому что заголовок отсутствует.')
+      : h1LengthStatus === 'pass'
+        ? (language === 'en' ? 'The H1 length looks balanced.' : 'Длина H1 выглядит сбалансированной.')
+        : (language === 'en' ? 'The H1 may be too short or too long.' : 'H1 может быть слишком коротким или слишком длинным.'),
+    whyItMatters: ui.why.h1Length,
+    recommendation: h1LengthStatus === 'pass'
+      ? ''
+      : (language === 'en' ? 'Use a concise H1 that explains the topic without stuffing extra phrases.' : 'Сделайте H1 кратким и понятным, без лишнего набора фраз.'),
+    benchmark: language === 'en' ? '10–70 chars' : '10–70 символов',
+    scoreEarned: !h1Text ? 0 : h1LengthStatus === 'pass' ? 4 : 2,
+  }))
+
+  const h2Status = data.h2Count === null ? 'na' : data.h2Count > 0 ? 'pass' : 'warning'
+  checks.push(createCheck({
+    id: 'h2-coverage',
+    categoryId: 'content',
+    label: ui.labels.h2Coverage,
+    weight: 6,
+    status: h2Status,
+    value: data.h2Count === null ? ui.status.na : `${data.h2Count} H2`,
+    summary: data.h2Count === null
+      ? ui.notChecked
+      : data.h2Count > 0
+        ? (language === 'en' ? 'Supporting H2 headings were found.' : 'Поддерживающие H2-заголовки найдены.')
+        : (language === 'en' ? 'No H2 headings were found.' : 'H2-заголовки не найдены.'),
+    whyItMatters: ui.why.h2Coverage,
+    recommendation: data.h2Count === null || data.h2Count > 0
+      ? ''
+      : (language === 'en' ? 'Add H2 subheadings to structure key sections of the page.' : 'Добавьте H2-подзаголовки, чтобы структурировать ключевые разделы страницы.'),
+    benchmark: language === 'en' ? 'At least 1 H2' : 'Минимум 1 H2',
+    scoreEarned: data.h2Count === null ? null : data.h2Count > 0 ? 6 : 2,
+  }))
+
+  const openGraphAvailable = data.openGraph !== null
+  const openGraphCount = openGraphAvailable ? ['title', 'description', 'image'].filter((key) => data.openGraph?.[key]).length : 0
+  checks.push(createCheck({
+    id: 'open-graph',
+    categoryId: 'enhancements',
+    label: ui.labels.openGraph,
+    weight: 8,
+    status: !openGraphAvailable ? 'na' : openGraphCount === 3 ? 'pass' : openGraphCount > 0 ? 'warning' : 'fail',
+    value: !openGraphAvailable ? ui.status.na : `${openGraphCount}/3`,
+    summary: !openGraphAvailable
+      ? ui.notChecked
+      : openGraphCount === 3
+        ? (language === 'en' ? 'Open Graph tags are complete.' : 'Open Graph-теги заполнены полностью.')
+        : openGraphCount > 0
+          ? (language === 'en' ? 'Open Graph is present but incomplete.' : 'Open Graph есть, но заполнен не полностью.')
+          : (language === 'en' ? 'Open Graph tags were not found.' : 'Open Graph-теги не найдены.'),
+    whyItMatters: ui.why.openGraph,
+    recommendation: !openGraphAvailable || openGraphCount === 3
+      ? ''
+      : (language === 'en' ? 'Add og:title, og:description, and og:image for consistent previews.' : 'Добавьте og:title, og:description и og:image для стабильных превью.'),
+    benchmark: '3/3',
+    scoreEarned: !openGraphAvailable ? null : openGraphCount === 3 ? 8 : openGraphCount > 0 ? 4 : 0,
+  }))
+
+  const twitterAvailable = data.twitter !== null
+  const twitterCount = twitterAvailable ? ['card', 'title', 'description', 'image'].filter((key) => data.twitter?.[key]).length : 0
+  checks.push(createCheck({
+    id: 'twitter-cards',
+    categoryId: 'enhancements',
+    label: ui.labels.twitter,
+    weight: 4,
+    status: !twitterAvailable ? 'na' : twitterCount >= 3 ? 'pass' : twitterCount > 0 ? 'warning' : 'fail',
+    value: !twitterAvailable ? ui.status.na : `${twitterCount}/4`,
+    summary: !twitterAvailable
+      ? ui.notChecked
+      : twitterCount >= 3
+        ? (language === 'en' ? 'Twitter/X card tags are in place.' : 'Twitter/X card-теги на месте.')
+        : twitterCount > 0
+          ? (language === 'en' ? 'Twitter/X card tags are only partially present.' : 'Twitter/X card-теги заполнены частично.')
+          : (language === 'en' ? 'Twitter/X card tags were not found.' : 'Twitter/X card-теги не найдены.'),
+    whyItMatters: ui.why.twitter,
+    recommendation: !twitterAvailable || twitterCount >= 3
+      ? ''
+      : (language === 'en' ? 'Add a card type, title, description, and image for stronger social previews.' : 'Добавьте тип карточки, title, description и image для более сильного социального превью.'),
+    benchmark: '3+/4',
+    scoreEarned: !twitterAvailable ? null : twitterCount >= 3 ? 4 : twitterCount > 0 ? 2 : 0,
+  }))
+
+  checks.push(createCheck({
+    id: 'structured-data',
+    categoryId: 'enhancements',
+    label: ui.labels.structuredData,
+    weight: 3,
+    status: typeof data.hasStructuredData !== 'boolean' ? 'na' : data.hasStructuredData ? 'pass' : 'warning',
+    value: typeof data.hasStructuredData !== 'boolean'
+      ? ui.status.na
+      : data.hasStructuredData
+        ? (language === 'en' ? 'Present' : 'Есть')
+        : (language === 'en' ? 'Missing' : 'Нет'),
+    summary: typeof data.hasStructuredData !== 'boolean'
+      ? ui.notChecked
+      : data.hasStructuredData
+        ? (language === 'en' ? 'Structured data was detected.' : 'Структурированные данные обнаружены.')
+        : (language === 'en' ? 'Structured data was not detected.' : 'Структурированные данные не обнаружены.'),
+    whyItMatters: ui.why.structuredData,
+    recommendation: typeof data.hasStructuredData !== 'boolean' || data.hasStructuredData
+      ? ''
+      : (language === 'en' ? 'Consider adding Schema.org markup where it fits the page type.' : 'Рассмотрите добавление Schema.org-разметки, если она подходит типу страницы.'),
+    benchmark: language === 'en' ? 'Present when applicable' : 'Наличие при необходимости',
+    scoreEarned: typeof data.hasStructuredData !== 'boolean' ? null : data.hasStructuredData ? 3 : 1,
+  }))
+
+  const altCoverageAvailable = data.imagesTotal !== null && data.imagesWithoutAlt !== null
+  const imagesWithAltRatio = altCoverageAvailable && data.imagesTotal > 0
+    ? (data.imagesTotal - data.imagesWithoutAlt) / data.imagesTotal
+    : 1
+  checks.push(createCheck({
+    id: 'alt-coverage',
+    categoryId: 'accessibility',
+    label: ui.labels.altCoverage,
+    weight: 8,
+    status: !altCoverageAvailable
+      ? 'na'
+      : data.imagesTotal === 0 || imagesWithAltRatio === 1
+        ? 'pass'
+        : imagesWithAltRatio >= 0.7
+          ? 'warning'
+          : 'fail',
+    value: !altCoverageAvailable
+      ? ui.status.na
+      : data.imagesTotal === 0
+        ? (language === 'en' ? 'No images' : 'Нет изображений')
+        : `${data.imagesTotal - data.imagesWithoutAlt}/${data.imagesTotal}`,
+    summary: !altCoverageAvailable
+      ? ui.notChecked
+      : data.imagesTotal === 0
+        ? (language === 'en' ? 'The page has no images that need alt coverage.' : 'На странице нет изображений, требующих alt-атрибутов.')
+        : imagesWithAltRatio === 1
+          ? (language === 'en' ? 'All detected images have alt attributes.' : 'У всех найденных изображений есть alt-атрибуты.')
+          : (language === 'en' ? 'Some images are missing alt attributes.' : 'У части изображений отсутствуют alt-атрибуты.'),
+    whyItMatters: ui.why.altCoverage,
+    recommendation: !altCoverageAvailable || data.imagesTotal === 0 || imagesWithAltRatio === 1
+      ? ''
+      : (language === 'en' ? 'Add descriptive alt text to informative images and keep decorative images intentionally empty.' : 'Добавьте описательные alt к информативным изображениям и оставляйте декоративные картинки осознанно пустыми.'),
+    benchmark: language === 'en' ? '100% covered' : '100% покрытие',
+    scoreEarned: !altCoverageAvailable ? null : data.imagesTotal === 0 || imagesWithAltRatio === 1 ? 8 : imagesWithAltRatio >= 0.7 ? 4 : 0,
+  }))
+
+  const linkSignalsAvailable = data.internalLinks !== null || data.externalLinks !== null
+  const totalLinks = (data.internalLinks || 0) + (data.externalLinks || 0)
+  checks.push(createCheck({
+    id: 'link-signals',
+    categoryId: 'accessibility',
+    label: ui.labels.linkMix,
+    weight: 2,
+    status: !linkSignalsAvailable ? 'na' : totalLinks > 0 ? 'pass' : 'warning',
+    value: !linkSignalsAvailable ? ui.status.na : `${data.internalLinks || 0} / ${data.externalLinks || 0}`,
+    summary: !linkSignalsAvailable
+      ? ui.notChecked
+      : totalLinks > 0
+        ? (language === 'en' ? 'The page exposes crawlable link signals.' : 'На странице есть сканируемые ссылочные сигналы.')
+        : (language === 'en' ? 'No internal or external links were detected.' : 'Внутренние и внешние ссылки не обнаружены.'),
+    whyItMatters: ui.why.linkMix,
+    recommendation: !linkSignalsAvailable || totalLinks > 0
+      ? ''
+      : (language === 'en' ? 'Make sure important pages include meaningful internal navigation or supporting links.' : 'Проверьте, что важная страница содержит осмысленную внутреннюю навигацию или полезные ссылки.'),
+    benchmark: language === 'en' ? 'At least one crawlable link' : 'Хотя бы одна сканируемая ссылка',
+    scoreEarned: !linkSignalsAvailable ? null : totalLinks > 0 ? 2 : 1,
+  }))
+
+  const categories = AUDIT_CATEGORY_ORDER.map((categoryConfig) => {
+    const categoryChecks = checks.filter((check) => check.categoryId === categoryConfig.id)
+    const checkedItems = categoryChecks.filter((check) => check.status !== 'na')
+    const earned = checkedItems.reduce((sum, check) => sum + (check.scoreEarned || 0), 0)
+    const available = checkedItems.reduce((sum, check) => sum + check.weight, 0)
+    const percent = available ? Math.round((earned / available) * 100) : 0
+
+    return {
+      id: categoryConfig.id,
+      label: ui.categories[categoryConfig.id],
+      maxScore: categoryConfig.maxScore,
+      earned,
+      available,
+      score: available ? Math.round((earned / available) * categoryConfig.maxScore) : null,
+      percent,
+      status: getCategoryStatus(categoryChecks),
+      checks: categoryChecks,
+      counts: {
+        pass: categoryChecks.filter((check) => check.status === 'pass').length,
+        warning: categoryChecks.filter((check) => check.status === 'warning').length,
+        fail: categoryChecks.filter((check) => check.status === 'fail').length,
+        na: categoryChecks.filter((check) => check.status === 'na').length,
+      },
+    }
+  })
+
+  const checkedChecks = checks.filter((check) => check.status !== 'na')
+  const totalAvailableWeight = checkedChecks.reduce((sum, check) => sum + check.weight, 0)
+  const totalEarnedWeight = checkedChecks.reduce((sum, check) => sum + (check.scoreEarned || 0), 0)
+  const score = totalAvailableWeight ? Math.round((totalEarnedWeight / totalAvailableWeight) * 100) : 0
+  const issueChecks = checks.filter((check) => check.status === 'fail' || check.status === 'warning')
+  const suggestions = Array.from(new Set(issueChecks.map((check) => check.recommendation).filter(Boolean)))
+  const issues = issueChecks.map((check) => ({
+    type: check.status === 'fail' ? 'error' : 'warning',
+    text: `${check.label}: ${check.summary}`,
+  }))
+  const topFixes = [...issueChecks]
+    .sort((a, b) => ((b.weight - (b.scoreEarned || 0)) - (a.weight - (a.scoreEarned || 0))))
+    .slice(0, 5)
+  const passedHighlights = checks.filter((check) => check.status === 'pass').slice(0, 5)
 
   return {
     score,
     issues,
     suggestions,
-    data: normalizedData,
+    data,
+    summary: {
+      score,
+      source: data.source,
+      checkedCount: checkedChecks.length,
+      totalChecks: checks.length,
+      coveragePercent: checks.length ? Math.round((checkedChecks.length / checks.length) * 100) : 0,
+      totalAvailableWeight,
+      totalEarnedWeight,
+    },
+    categories,
+    checks,
+    highlights: {
+      topFixes,
+      passedHighlights,
+    },
   }
 }
 
-function createFallbackAnalysis(fallbackResult, normalizedUrl) {
-  return {
-    score: fallbackResult.score,
-    issues: fallbackResult.issues,
-    suggestions: fallbackResult.suggestions,
-    data: {
-      source: 'browser',
-      finalUrl: normalizedUrl,
-      status: null,
-      ok: true,
-      contentType: 'text/html (browser fallback)',
-      title: fallbackResult.details?.title || null,
-      description: fallbackResult.details?.description || null,
-      keywords: fallbackResult.details?.keywords || null,
-      robots: null,
-      canonical: null,
-      h1Text: null,
-      h1Count: fallbackResult.details?.h1Count ?? 0,
-      h2Count: fallbackResult.details?.h2Count ?? 0,
-      h3Count: fallbackResult.details?.h3Count ?? 0,
-      imagesTotal: fallbackResult.details?.imagesTotal ?? 0,
-      imagesWithoutAlt: fallbackResult.details?.imagesWithoutAlt ?? 0,
-      hasStructuredData: fallbackResult.details?.hasStructuredData ?? false,
-      openGraph: {
-        title: fallbackResult.details?.hasOG ? 'present' : null,
-        description: fallbackResult.details?.hasOG ? 'present' : null,
-        image: fallbackResult.details?.hasOG ? 'present' : null,
-      },
-    },
-  }
+function getScoreColor(score) {
+  if (score >= 80) return 'var(--success)'
+  if (score >= 60) return '#f59e0b'
+  return 'var(--error)'
+}
+
+function getScoreTone(score) {
+  if (score >= 80) return 'success'
+  if (score >= 60) return 'warning'
+  return 'error'
+}
+
+function matchesCheckFilter(check, filter) {
+  if (filter === 'all') return true
+  if (filter === 'errors') return check.status === 'fail'
+  if (filter === 'warnings') return check.status === 'warning'
+  if (filter === 'passed') return check.status === 'pass'
+  if (filter === 'na') return check.status === 'na'
+  return true
+}
+
+function createWorkerAnalysis(data, language) {
+  return buildAuditReport({
+    source: 'worker',
+    ...data,
+  }, language)
+}
+
+function createFallbackAnalysis(fallbackResult, normalizedUrl, language) {
+  return buildAuditReport({
+    source: 'browser',
+    finalUrl: fallbackResult.details?.finalUrl || normalizedUrl,
+    status: fallbackResult.details?.status ?? null,
+    ok: fallbackResult.details?.ok ?? true,
+    contentType: fallbackResult.details?.contentType || 'text/html (browser fallback)',
+    title: fallbackResult.details?.title || null,
+    description: fallbackResult.details?.description || null,
+    keywords: fallbackResult.details?.keywords || null,
+    robots: fallbackResult.details?.robots || null,
+    canonical: fallbackResult.details?.canonical || null,
+    h1Text: fallbackResult.details?.h1Text || null,
+    h1Count: fallbackResult.details?.h1Count ?? 0,
+    h2Count: fallbackResult.details?.h2Count ?? null,
+    h3Count: fallbackResult.details?.h3Count ?? null,
+    imagesTotal: fallbackResult.details?.imagesTotal ?? null,
+    imagesWithoutAlt: fallbackResult.details?.imagesWithoutAlt ?? null,
+    hasStructuredData: fallbackResult.details?.hasStructuredData ?? null,
+    openGraph: fallbackResult.details?.openGraph || null,
+    twitter: fallbackResult.details?.twitter || null,
+    internalLinks: fallbackResult.details?.internalLinks ?? null,
+    externalLinks: fallbackResult.details?.externalLinks ?? null,
+    wordCount: fallbackResult.details?.wordCount ?? null,
+    lang: fallbackResult.details?.lang || null,
+    viewport: fallbackResult.details?.viewport || null,
+  }, language)
 }
 
 function SEOAuditPro() {
@@ -220,6 +851,8 @@ function SEOAuditPro() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [checkFilter, setCheckFilter] = useState('all')
+  const auditUi = AUDIT_UI_COPY[language] || AUDIT_UI_COPY.ru
 
   const copy = language === 'en'
     ? {
@@ -503,7 +1136,7 @@ function SEOAuditPro() {
       try {
         const data = await requestWorkerAudit(normalizedUrl, signal)
         if (!isCurrent()) return null
-        return { type: 'worker', analysis: createWorkerAnalysis(data, copy) }
+        return { type: 'worker', analysis: createWorkerAnalysis(data, language) }
       } catch (err) {
         if (signal.aborted || !isCurrent()) {
           throw err
@@ -528,7 +1161,7 @@ function SEOAuditPro() {
         }
 
         if (!isCurrent()) return null
-        return { type: 'fallback', analysis: createFallbackAnalysis(fallbackResult, normalizedUrl) }
+        return { type: 'fallback', analysis: createFallbackAnalysis(fallbackResult, normalizedUrl, language) }
       }
     })
 
@@ -541,18 +1174,6 @@ function SEOAuditPro() {
     }
 
     setLoading(false)
-  }
-
-  const getScoreColor = (score) => {
-    if (score >= 80) return 'var(--success)'
-    if (score >= 60) return '#f59e0b'
-    return 'var(--error)'
-  }
-
-  const getIssueIcon = (type) => {
-    if (type === 'error') return '🔴'
-    if (type === 'warning') return '🟡'
-    return '🔵'
   }
 
   const handleShare = () => {
@@ -573,6 +1194,26 @@ function SEOAuditPro() {
   }
 
   const isFallbackResult = result?.data?.source === 'browser'
+  const visibleCategories = useMemo(() => {
+    if (!result) return []
+
+    return result.categories
+      .map((category) => ({
+        ...category,
+        visibleChecks: category.checks.filter((check) => matchesCheckFilter(check, checkFilter)),
+      }))
+      .filter((category) => category.visibleChecks.length > 0)
+  }, [result, checkFilter])
+
+  const visibleCheckCount = visibleCategories.reduce((sum, category) => sum + category.visibleChecks.length, 0)
+
+  const filterOptions = [
+    { key: 'all', label: auditUi.filterAll },
+    { key: 'errors', label: auditUi.filterErrors },
+    { key: 'warnings', label: auditUi.filterWarnings },
+    { key: 'passed', label: auditUi.filterPassed },
+    { key: 'na', label: auditUi.filterUnavailable },
+  ]
 
   return (
     <>
@@ -609,7 +1250,7 @@ function SEOAuditPro() {
         <button
           onClick={handleAnalyze}
           disabled={loading}
-          style={{ width: '100%', marginBottom: '2rem' }}
+          className="seo-audit-pro-submit"
         >
           {loading ? (
             <span className="button-spinner">
@@ -620,153 +1261,277 @@ function SEOAuditPro() {
 
         {result && (
           <>
-            <ResultSection tone="success" className="surface-panel--success" style={{ marginBottom: '2rem' }}>
-              <ResultSummary
-                centered
-                kicker={copy.score}
-                score={result.score}
-                scoreColor={getScoreColor(result.score)}
-                description={
-                  result.score >= 80 ? `✅ ${copy.excellent}` :
-                  result.score >= 60 ? `⚠️ ${copy.good}` :
-                  `❌ ${copy.poor}`
-                }
-              />
-              <ResultActions align="center">
-                <button onClick={handleShare} className="seo-share-button">📤 {copy.share}</button>
-              </ResultActions>
-            </ResultSection>
-
-            {result.issues.length > 0 && (
-              <ResultDetails title={copy.issues} className="seo-audit-pro-section">
-                <div className="surface-panel surface-panel--subtle">
-                  {result.issues.map((issue, index) => (
-                    <div key={index} className="seo-audit-pro-list-item" style={{ borderBottom: index < result.issues.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                      <span className="seo-audit-pro-list-icon">{getIssueIcon(issue.type)}</span>
-                      <span className="seo-audit-pro-list-text">{issue.text}</span>
-                    </div>
-                  ))}
+            <ResultSection tone={getScoreTone(result.score)} className="seo-audit-pro-report">
+              <div className="seo-audit-pro-overview">
+                <div className="surface-panel seo-audit-pro-overview-card seo-audit-pro-score-card">
+                  <ResultSummary
+                    kicker={copy.score}
+                    title={
+                      result.score >= 80 ? copy.excellent :
+                      result.score >= 60 ? copy.good :
+                      copy.poor
+                    }
+                    score={result.score}
+                    scoreColor={getScoreColor(result.score)}
+                    description={auditUi.scoreSummary(result.score)}
+                    centered
+                  />
+                  <div className="seo-audit-pro-pill-row">
+                    <span className="seo-audit-pro-pill">{auditUi.coverage}: {result.summary.coveragePercent}%</span>
+                    <span className="seo-audit-pro-pill">{auditUi.checkedChecks}: {auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}</span>
+                    <span className="seo-audit-pro-pill">{isFallbackResult ? auditUi.sourceFallback : auditUi.sourceWorker}</span>
+                  </div>
                 </div>
-              </ResultDetails>
-            )}
 
-            {result.suggestions.length > 0 && (
-              <ResultDetails title={copy.suggestions} className="seo-audit-pro-section">
-                <div className="surface-panel surface-panel--subtle">
-                  <ul className="seo-audit-pro-list">
-                    {result.suggestions.map((suggestion, index) => (
-                      <li key={index}>{suggestion}</li>
-                    ))}
-                  </ul>
-                </div>
-              </ResultDetails>
-            )}
-
-            <ResultDetails title={copy.details} className="seo-audit-pro-section">
-              <div className="surface-panel surface-panel--subtle">
-                <div className="meta-grid">
-                  <div className="meta-item">
-                    <strong>Title:</strong>
-                    <div className="meta-item-value">
-                      {result.data.title ? `${result.data.title.substring(0, 50)}...` : copy.missing}
+                <div className="surface-panel seo-audit-pro-overview-card seo-audit-pro-priority-card">
+                  <h3>{auditUi.topPriorities}</h3>
+                  {result.highlights.topFixes.length > 0 ? (
+                    <div className="seo-audit-pro-priority-list">
+                      {result.highlights.topFixes.map((check) => (
+                        <div key={check.id} className="seo-audit-pro-priority-item">
+                          <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
+                          <div className="seo-audit-pro-priority-copy">
+                            <strong>{check.label}</strong>
+                            <p>{check.summary}</p>
+                          </div>
+                          <div className="seo-audit-pro-priority-points">
+                            <span className="seo-audit-pro-points">{auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>Description:</strong>
-                    <div className="meta-item-value">
-                      {result.data.description ? `${result.data.description.substring(0, 50)}...` : copy.missing}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.h1}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.h1Text || result.data.h1Count || copy.missing}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.canonical}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.canonical || copy.notAvailable}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.robotsLabel}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.robots || copy.notAvailable}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.finalUrl}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.finalUrl || copy.notAvailable}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.status}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.status ?? copy.notAvailable}
-                    </div>
-                  </div>
-                  <div className="meta-item">
-                    <strong>{copy.contentType}:</strong>
-                    <div className="meta-item-value">
-                      {result.data.contentType || copy.notAvailable}
-                    </div>
-                  </div>
-                  {result.data.keywords && (
-                    <div className="meta-item">
-                      <strong>Keywords:</strong>
-                      <div className="meta-item-value">
-                        {result.data.keywords}
+                  ) : (
+                    <div className="seo-audit-pro-success-copy">
+                      <strong>{auditUi.allGoodTitle}</strong>
+                      <p>{auditUi.allGoodText}</p>
+                      <div className="seo-audit-pro-success-list">
+                        {result.highlights.passedHighlights.map((check) => (
+                          <span key={check.id} className="seo-audit-pro-success-item">✔ {check.label}</span>
+                        ))}
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+
+              <div className="seo-audit-pro-block-heading">
+                <h3>{auditUi.categoryScores}</h3>
+                <p>{auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}</p>
+              </div>
+
+              <div className="seo-audit-pro-category-grid">
+                {result.categories.map((category) => (
+                  <article key={category.id} className={`seo-audit-pro-category-card seo-audit-pro-category-card--${category.status}`}>
+                    <div className="seo-audit-pro-category-card__top">
+                      <span className="seo-audit-pro-category-card__title">{category.label}</span>
+                      <span className={`seo-audit-pro-status seo-audit-pro-status--${category.status}`}>{auditUi.status[category.status]}</span>
+                    </div>
+                    <div className="seo-audit-pro-category-card__score">
+                      {category.score !== null ? `${category.score}/${category.maxScore}` : '—'}
+                    </div>
+                    <div className="seo-audit-pro-progress">
+                      <span style={{ width: `${category.percent}%` }} />
+                    </div>
+                    <div className="seo-audit-pro-category-card__meta">
+                      <span>{auditUi.checksCount(category.checks.length - category.counts.na, category.checks.length)}</span>
+                      <span>{auditUi.scoreOutOf(category.earned, category.available || 0)}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="seo-audit-pro-report__footer">
+                <ResultActions align="center">
+                  <button onClick={handleShare} className="seo-share-button">📤 {copy.share}</button>
+                </ResultActions>
+
+                {notice && (
+                  <ResultNotice tone="warning" className="seo-audit-pro-notice-panel">
+                    <p>{notice}</p>
+                  </ResultNotice>
+                )}
+              </div>
+            </ResultSection>
+
+            <ResultSection className="seo-audit-pro-filters-panel">
+              <div className="seo-audit-pro-filters-head">
+                <strong>{auditUi.scoreBreakdown}</strong>
+                <span>{auditUi.checksCount(visibleCheckCount, result.checks.length)}</span>
+              </div>
+              <div className="seo-audit-pro-filter-group">
+                <span className="seo-audit-pro-filter-group__label">{auditUi.filtersTitle}</span>
+                <div className="seo-audit-pro-filter-row">
+                {filterOptions.map((option) => (
+                  <button
+                    key={option.key}
+                    type="button"
+                    className={`secondary seo-audit-pro-filter ${checkFilter === option.key ? 'is-active' : ''}`.trim()}
+                    onClick={() => setCheckFilter(option.key)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+                </div>
+              </div>
+            </ResultSection>
+
+            {visibleCategories.map((category) => (
+              <ResultDetails key={category.id} title={category.label} className="seo-audit-pro-section">
+                <div className="surface-panel surface-panel--subtle seo-audit-pro-category-panel">
+                  <div className="seo-audit-pro-category-panel__header">
+                    <div className="seo-audit-pro-category-panel__summary">
+                      <p>{auditUi.checksCount(category.checks.length - category.counts.na, category.checks.length)}</p>
+                      <div className="seo-audit-pro-category-panel__chips">
+                        {category.counts.fail > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--fail">{auditUi.status.fail}: {category.counts.fail}</span> : null}
+                        {category.counts.warning > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--warning">{auditUi.status.warning}: {category.counts.warning}</span> : null}
+                        {category.counts.pass > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--pass">{auditUi.status.pass}: {category.counts.pass}</span> : null}
+                        {category.counts.na > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--na">{auditUi.status.na}: {category.counts.na}</span> : null}
+                      </div>
+                    </div>
+                    <div className="seo-audit-pro-category-panel__score">
+                      <span>{category.score !== null ? `${category.score}/${category.maxScore}` : '—'}</span>
+                      <span className={`seo-audit-pro-status seo-audit-pro-status--${category.status}`}>{auditUi.status[category.status]}</span>
+                    </div>
+                  </div>
+
+                  <div className="seo-audit-pro-check-list">
+                    {category.visibleChecks.map((check) => (
+                      <article key={check.id} className={`seo-audit-pro-check seo-audit-pro-check--${check.status}`}>
+                        <div className="seo-audit-pro-check__top">
+                          <div className="seo-audit-pro-check__heading">
+                            <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
+                            <strong>{check.label}</strong>
+                          </div>
+                          <div className="seo-audit-pro-check__meta">
+                            <span className="seo-audit-pro-check__value">{check.value}</span>
+                            <span className="seo-audit-pro-points">{check.status === 'na' ? '—' : auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
+                          </div>
+                        </div>
+
+                        <p className="seo-audit-pro-check__summary">{check.summary}</p>
+
+                        <div className="seo-audit-pro-check__details">
+                          <div className="seo-audit-pro-check__detail-card">
+                            <span className="seo-audit-pro-check__label">{auditUi.whyItMatters}</span>
+                            <p>{check.whyItMatters}</p>
+                          </div>
+                          <div className="seo-audit-pro-check__detail-card">
+                            <span className="seo-audit-pro-check__label">{auditUi.benchmark}</span>
+                            <p>{check.benchmark || '—'}</p>
+                          </div>
+                          <div className="seo-audit-pro-check__detail-card">
+                            <span className="seo-audit-pro-check__label">{auditUi.recommendation}</span>
+                            <p>{check.recommendation || auditUi.noRecommendation}</p>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </ResultDetails>
+            ))}
+
+            {!visibleCategories.length && (
+              <ResultNotice tone="info" className="seo-audit-pro-empty-filter">
+                <p>{language === 'en' ? 'No checks match the selected filter.' : 'Для выбранного фильтра нет подходящих проверок.'}</p>
+              </ResultNotice>
+            )}
+
+            <ResultDetails title={auditUi.rawSignals} className="seo-audit-pro-section">
+              <div className="surface-panel surface-panel--subtle seo-audit-pro-raw-panel">
+                <p className="seo-audit-pro-raw-hint">{auditUi.rawHint}</p>
+                <div className="meta-grid seo-audit-pro-raw-grid">
+                  <div className="meta-item">
+                    <strong>Title</strong>
+                    <div className="meta-item-value">{result.data.title || copy.missing}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>Description</strong>
+                    <div className="meta-item-value">{result.data.description || copy.missing}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.finalUrl}</strong>
+                    <div className="meta-item-value">{result.data.finalUrl || copy.notAvailable}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.status}</strong>
+                    <div className="meta-item-value">{result.data.status ?? copy.notAvailable}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.contentType}</strong>
+                    <div className="meta-item-value">{result.data.contentType || copy.notAvailable}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.canonical}</strong>
+                    <div className="meta-item-value">{result.data.canonical || copy.notAvailable}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.robotsLabel}</strong>
+                    <div className="meta-item-value">{result.data.robots || copy.notAvailable}</div>
+                  </div>
+                  <div className="meta-item">
+                    <strong>{copy.h1}</strong>
+                    <div className="meta-item-value">{result.data.h1Text || result.data.h1Count || copy.missing}</div>
+                  </div>
                   {result.data.h2Count !== null && (
                     <div className="meta-item">
-                      <strong>{copy.h2}:</strong>
-                      <div className="meta-item-value">
-                        {result.data.h2Count}
-                      </div>
+                      <strong>{copy.h2}</strong>
+                      <div className="meta-item-value">{result.data.h2Count}</div>
                     </div>
                   )}
                   {result.data.h3Count !== null && (
                     <div className="meta-item">
-                      <strong>{copy.h3}:</strong>
-                      <div className="meta-item-value">
-                        {result.data.h3Count}
-                      </div>
+                      <strong>{copy.h3}</strong>
+                      <div className="meta-item-value">{result.data.h3Count}</div>
                     </div>
                   )}
                   {result.data.imagesTotal !== null && (
                     <div className="meta-item">
-                      <strong>{copy.images}:</strong>
-                      <div className="meta-item-value">
-                        {result.data.imagesTotal} ({copy.withoutAlt}: {result.data.imagesWithoutAlt})
-                      </div>
+                      <strong>{copy.images}</strong>
+                      <div className="meta-item-value">{result.data.imagesTotal} ({copy.withoutAlt}: {result.data.imagesWithoutAlt})</div>
+                    </div>
+                  )}
+                  {result.data.internalLinks !== null && (
+                    <div className="meta-item">
+                      <strong>{language === 'en' ? 'Internal links' : 'Внутренние ссылки'}</strong>
+                      <div className="meta-item-value">{result.data.internalLinks}</div>
+                    </div>
+                  )}
+                  {result.data.externalLinks !== null && (
+                    <div className="meta-item">
+                      <strong>{language === 'en' ? 'External links' : 'Внешние ссылки'}</strong>
+                      <div className="meta-item-value">{result.data.externalLinks}</div>
+                    </div>
+                  )}
+                  {result.data.wordCount !== null && (
+                    <div className="meta-item">
+                      <strong>{language === 'en' ? 'Word count' : 'Количество слов'}</strong>
+                      <div className="meta-item-value">{result.data.wordCount}</div>
                     </div>
                   )}
                   {result.data.openGraph && (
                     <div className="meta-item">
-                      <strong>Open Graph:</strong>
+                      <strong>Open Graph</strong>
                       <div className="meta-item-value">
-                        {result.data.openGraph.title && result.data.openGraph.description && result.data.openGraph.image ? `✅ ${copy.ogReady}` : `❌ ${copy.ogPartial}`}
+                        {['title', 'description', 'image'].filter((key) => result.data.openGraph?.[key]).length}/3
+                      </div>
+                    </div>
+                  )}
+                  {result.data.twitter && (
+                    <div className="meta-item">
+                      <strong>Twitter</strong>
+                      <div className="meta-item-value">
+                        {['card', 'title', 'description', 'image'].filter((key) => result.data.twitter?.[key]).length}/4
                       </div>
                     </div>
                   )}
                   {typeof result.data.hasStructuredData === 'boolean' && (
                     <div className="meta-item">
-                      <strong>{language === 'en' ? 'Structured data' : 'Структурированные данные'}:</strong>
-                      <div className="meta-item-value">
-                        {result.data.hasStructuredData ? `✅ ${copy.structuredYes}` : `❌ ${copy.structuredNo}`}
-                      </div>
+                      <strong>{language === 'en' ? 'Structured data' : 'Структурированные данные'}</strong>
+                      <div className="meta-item-value">{result.data.hasStructuredData ? copy.structuredYes : copy.structuredNo}</div>
                     </div>
                   )}
                 </div>
-                {(isFallbackResult && notice) && (
-                  <p className="meta-item-value seo-audit-pro-notice">
-                    {notice}
-                  </p>
-                )}
               </div>
             </ResultDetails>
           </>

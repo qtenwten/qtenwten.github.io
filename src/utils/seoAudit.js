@@ -80,7 +80,12 @@ export async function analyzeSEO(url, language = 'ru') {
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
 
-    return analyzeDocument(doc, normalizedUrl, messages)
+    return analyzeDocument(doc, normalizedUrl, messages, {
+      finalUrl: response.url || normalizedUrl,
+      status: response.status,
+      ok: response.ok,
+      contentType: response.headers.get('content-type') || 'text/html',
+    })
   } catch (error) {
     // CORS error - provide instructions
     return {
@@ -91,7 +96,12 @@ export async function analyzeSEO(url, language = 'ru') {
   }
 }
 
-function analyzeDocument(doc, url, messages) {
+function countWords(text = '') {
+  const normalized = text.replace(/\s+/g, ' ').trim()
+  return normalized ? normalized.split(' ').length : 0
+}
+
+function analyzeDocument(doc, url, messages, responseMeta = {}) {
   const issues = []
   const suggestions = []
   let score = 100
@@ -100,6 +110,10 @@ function analyzeDocument(doc, url, messages) {
   const title = doc.querySelector('title')
   const metaDescription = doc.querySelector('meta[name="description"]')
   const metaKeywords = doc.querySelector('meta[name="keywords"]')
+  const canonical = doc.querySelector('link[rel="canonical"]')
+  const robots = doc.querySelector('meta[name="robots"]')
+  const viewport = doc.querySelector('meta[name="viewport"]')
+  const lang = doc.documentElement?.getAttribute('lang') || null
 
   if (!title || !title.textContent.trim()) {
     issues.push({ type: 'error', text: messages.missingTitle })
@@ -169,6 +183,10 @@ function analyzeDocument(doc, url, messages) {
   const ogTitle = doc.querySelector('meta[property="og:title"]')
   const ogDescription = doc.querySelector('meta[property="og:description"]')
   const ogImage = doc.querySelector('meta[property="og:image"]')
+  const twitterCard = doc.querySelector('meta[name="twitter:card"]')
+  const twitterTitle = doc.querySelector('meta[name="twitter:title"]')
+  const twitterDescription = doc.querySelector('meta[name="twitter:description"]')
+  const twitterImage = doc.querySelector('meta[name="twitter:image"]')
 
   if (!ogTitle) {
     issues.push({ type: 'info', text: messages.missingOgTitle })
@@ -187,12 +205,40 @@ function analyzeDocument(doc, url, messages) {
   }
 
   // 5. STRUCTURED DATA
-  const structuredData = doc.querySelector('script[type="application/ld+json"]')
+  const structuredDataScripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'))
+  const structuredData = structuredDataScripts[0] || null
   if (!structuredData) {
     issues.push({ type: 'info', text: messages.missingStructuredData })
     suggestions.push(messages.addStructuredData)
     score -= 5
   }
+
+  // 6. LINKS AND CONTENT
+  const pageUrl = new URL(responseMeta.finalUrl || url)
+  const allLinks = Array.from(doc.querySelectorAll('a[href]'))
+  let internalLinks = 0
+  let externalLinks = 0
+
+  allLinks.forEach((link) => {
+    try {
+      const href = link.getAttribute('href')
+      if (!href) return
+
+      const resolved = new URL(href, pageUrl)
+      if (!['http:', 'https:'].includes(resolved.protocol)) return
+
+      if (resolved.hostname === pageUrl.hostname) {
+        internalLinks += 1
+      } else {
+        externalLinks += 1
+      }
+    } catch {
+      // ignore malformed links in the lightweight browser fallback
+    }
+  })
+
+  const bodyText = doc.body?.textContent || ''
+  const wordCount = countWords(bodyText)
 
   // Ensure score is between 0 and 100
   score = Math.max(0, Math.min(100, score))
@@ -204,13 +250,37 @@ function analyzeDocument(doc, url, messages) {
     details: {
       title: title?.textContent || null,
       description: metaDescription?.content || null,
+      finalUrl: responseMeta.finalUrl || url,
+      status: responseMeta.status ?? null,
+      ok: responseMeta.ok ?? true,
+      contentType: responseMeta.contentType || 'text/html',
+      canonical: canonical?.href || canonical?.getAttribute('href') || null,
+      robots: robots?.content || null,
+      h1Text: h1Tags[0]?.textContent?.trim() || null,
       h1Count: h1Tags.length,
       h2Count: h2Tags.length,
       h3Count: h3Tags.length,
       imagesTotal: images.length,
       imagesWithoutAlt,
       hasOG: !!(ogTitle && ogDescription && ogImage),
-      hasStructuredData: !!structuredData
+      openGraph: {
+        title: ogTitle?.content || null,
+        description: ogDescription?.content || null,
+        image: ogImage?.content || null,
+      },
+      twitter: {
+        card: twitterCard?.content || null,
+        title: twitterTitle?.content || null,
+        description: twitterDescription?.content || null,
+        image: twitterImage?.content || null,
+      },
+      hasStructuredData: !!structuredData,
+      schemaTypes: structuredDataScripts.length,
+      lang,
+      viewport: viewport?.content || null,
+      internalLinks,
+      externalLinks,
+      wordCount,
     }
   }
 }
