@@ -16,6 +16,14 @@ function parseLocalDate(value) {
   const date = new Date(parts.year, parts.month - 1, parts.day)
   if (Number.isNaN(date.getTime())) return null
 
+  if (
+    date.getFullYear() !== parts.year ||
+    date.getMonth() !== parts.month - 1 ||
+    date.getDate() !== parts.day
+  ) {
+    return null
+  }
+
   return date
 }
 

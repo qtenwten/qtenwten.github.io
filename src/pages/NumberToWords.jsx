@@ -5,6 +5,7 @@ import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import Icon from '../components/Icon'
+import { ResultActions, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import { numberToWords } from '../utils/numberToWords'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 import { safeGetItem, safeParseJSON, safeSetItem } from '../utils/storage'
@@ -550,44 +551,42 @@ function NumberToWords() {
             <h2 style={{ marginBottom: '0.25rem', fontSize: '1.25rem' }}>{t('numberToWords.conversionResult')}</h2>
 
             {result.details && (
-              <div className="number-to-words-tax-summary">
+              <ResultNotice className="number-to-words-tax-summary">
                 <div style={{ fontSize: '0.95rem', lineHeight: '1.8' }}>
                   <p><strong>{t('numberToWords.originalAmount')}</strong> {result.details.original}</p>
                   <p><strong>{result.details.label}:</strong> {result.details.tax}</p>
                   <p><strong>{t('numberToWords.total')}</strong> {result.details.final}</p>
                 </div>
-              </div>
+              </ResultNotice>
             )}
 
             {primaryVariant && (
-              <div className="number-to-words-primary-card">
+              <ResultSection tone="success" className="number-to-words-primary-card">
                 <div className="number-to-words-card-header">
                   <div className="number-to-words-card-title">
                     <div className="number-to-words-pin-badge">
                       <Icon name="push_pin" size={14} />
                       <span>{t('numberToWords.pinnedVariant')}</span>
                     </div>
-                    <h3>{primaryVariant.label}</h3>
-                    <p>{primaryVariant.description}</p>
+                    <ResultSummary title={primaryVariant.label} description={primaryVariant.description} />
                   </div>
-                  <div className="number-to-words-card-actions">
+                  <ResultActions className="number-to-words-card-actions">
                     <CopyButton text={primaryVariant.text} className="number-to-words-copy number-to-words-main-copy" />
-                  </div>
+                  </ResultActions>
                 </div>
                 <p className="number-to-words-result-text">{primaryVariant.text}</p>
-              </div>
+              </ResultSection>
             )}
 
             {secondaryVariants.length > 0 && (
               <div className="number-to-words-variants-grid">
                 {secondaryVariants.map((variant) => (
-                  <div key={variant.id} className="number-to-words-variant-card">
+                  <ResultSection key={variant.id} className="number-to-words-variant-card">
                     <div className="number-to-words-card-header">
                       <div className="number-to-words-card-title">
-                        <h4>{variant.label}</h4>
-                        <p>{variant.description}</p>
+                        <ResultSummary title={variant.label} description={variant.description} />
                       </div>
-                      <div className="number-to-words-card-actions">
+                      <ResultActions className="number-to-words-card-actions">
                         <button
                           type="button"
                           className={`secondary number-to-words-pin ${pinnedVariantId === variant.id ? 'is-active' : ''}`}
@@ -598,10 +597,10 @@ function NumberToWords() {
                           <Icon name="push_pin" size={15} />
                         </button>
                         <CopyButton text={variant.text} className="number-to-words-copy" />
-                      </div>
+                      </ResultActions>
                     </div>
                     <p className="number-to-words-result-text">{variant.text}</p>
-                  </div>
+                  </ResultSection>
                 ))}
               </div>
             )}

@@ -20,6 +20,8 @@ export const QRCodeGenerator = createLazyPage(() => import('../pages/QRCodeGener
 export const URLShortener = createLazyPage(() => import('../pages/URLShortener'))
 export const Feedback = createLazyPage(() => import('../pages/Feedback'))
 export const PasswordGenerator = createLazyPage(() => import('../pages/PasswordGenerator'))
+export const NotFound = createLazyPage(() => import('../pages/NotFound'))
+export const SearchResults = createLazyPage(() => import('../pages/SearchResults'))
 
 const routePreloaders = {
   '/': Home.preload,
@@ -34,6 +36,7 @@ const routePreloaders = {
   '/seo-audit-pro': SEOAuditPro.preload,
   '/qr-code-generator': QRCodeGenerator.preload,
   '/url-shortener': URLShortener.preload,
+  '/search': SearchResults.preload,
   '/feedback': Feedback.preload,
   '/password-generator': PasswordGenerator.preload,
 }
@@ -50,7 +53,7 @@ export function preloadRoute(path) {
 }
 
 export function preloadLikelyRoutes() {
-  ;['/vat-calculator', '/number-to-words', '/seo-audit-pro', '/feedback'].forEach((path) => {
+  ;['/vat-calculator', '/number-to-words', '/seo-audit-pro', '/feedback', '/search'].forEach((path) => {
     preloadRoute(path)
   })
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import InlineSpinner from '../components/InlineSpinner'
+import { useAsyncRequest } from '../hooks/useAsyncRequest'
 import './Feedback.css'
 
 const FEEDBACK_WORKER_URL = 'https://apifeedback.qten.workers.dev/'
@@ -31,6 +32,7 @@ function isValidEmail(email) {
 
 function Feedback() {
   const { t, language } = useLanguage()
+  const { runRequest } = useAsyncRequest()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,54 +74,66 @@ function Feedback() {
     setStatusMessage('')
 
     const startedAt = Date.now()
-    const controller = new AbortController()
-    const timeoutId = window.setTimeout(() => {
-      controller.abort('timeout')
-    }, FEEDBACK_REQUEST_TIMEOUT_MS)
 
-    try {
-      const response = await fetch(FEEDBACK_WORKER_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-        keepalive: true,
-      })
+    const outcome = await runRequest(async ({ signal, abort, isCurrent }) => {
+      const timeoutId = window.setTimeout(() => {
+        abort()
+      }, FEEDBACK_REQUEST_TIMEOUT_MS)
 
-      const data = await readWorkerResponse(response)
+      try {
+        const response = await fetch(FEEDBACK_WORKER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          signal,
+          keepalive: true,
+        })
 
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Failed to send message')
+        const data = await readWorkerResponse(response)
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || 'Failed to send message')
+        }
+
+        if (!isCurrent()) {
+          return null
+        }
+
+        return data
+      } finally {
+        window.clearTimeout(timeoutId)
       }
+    })
 
+    if (outcome.status === 'success') {
       setStatus('success')
       setStatusMessage(t('feedback.successMessage'))
       setFormData({ name: '', email: '', message: '', website: '' })
-    } catch (error) {
-      const elapsed = Date.now() - startedAt
-      const normalizedMessage = (error?.message || '').toLowerCase()
-      const isTimeout = error?.name === 'AbortError' || error === 'timeout' || normalizedMessage.includes('abort')
-      const isNetworkFailure =
-        error?.name === 'TypeError' ||
-        normalizedMessage.includes('load failed') ||
-        normalizedMessage.includes('failed to fetch') ||
-        normalizedMessage.includes('network')
+      return
+    }
 
-      if (isTimeout || (isNetworkFailure && elapsed >= FEEDBACK_AMBIGUOUS_DELAY_MS)) {
-        setStatus('pending')
-        setStatusMessage(t('feedback.pendingMessage'))
-      } else {
-        setStatus('error')
-        setStatusMessage(
-          error.code === 'INVALID_JSON' || isNetworkFailure
-            ? t('feedback.errorMessage')
-            : (error.message || t('feedback.errorMessage'))
-        )
-      }
-    } finally {
-      window.clearTimeout(timeoutId)
+    const error = outcome.error
+    const elapsed = Date.now() - startedAt
+    const normalizedMessage = (error?.message || '').toLowerCase()
+    const isTimeout = error?.name === 'AbortError' || error === 'timeout' || normalizedMessage.includes('abort')
+    const isNetworkFailure =
+      error?.name === 'TypeError' ||
+      normalizedMessage.includes('load failed') ||
+      normalizedMessage.includes('failed to fetch') ||
+      normalizedMessage.includes('network')
+
+    if (isTimeout || (isNetworkFailure && elapsed >= FEEDBACK_AMBIGUOUS_DELAY_MS)) {
+      setStatus('pending')
+      setStatusMessage(t('feedback.pendingMessage'))
+    } else {
+      setStatus('error')
+      setStatusMessage(
+        error?.code === 'INVALID_JSON' || isNetworkFailure
+          ? t('feedback.errorMessage')
+          : (error?.message || t('feedback.errorMessage'))
+      )
     }
   }
 
@@ -224,19 +238,19 @@ function Feedback() {
               </button>
 
               {status === 'success' && (
-                <div className="alert alert-success">
+                <div className="alert alert-success" role="status" aria-live="polite">
                   {statusMessage || t('feedback.successMessage')}
                 </div>
               )}
 
               {status === 'pending' && (
-                <div className="alert alert-pending">
+                <div className="alert alert-pending" role="status" aria-live="polite">
                   {statusMessage || t('feedback.pendingMessage')}
                 </div>
               )}
 
               {status === 'error' && (
-                <div className="alert alert-error">
+                <div className="alert alert-error" role="alert" aria-live="assertive">
                   {statusMessage || t('feedback.errorMessage')}
                 </div>
               )}

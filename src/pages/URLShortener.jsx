@@ -5,10 +5,13 @@ import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import InlineSpinner from '../components/InlineSpinner'
+import { useAsyncRequest } from '../hooks/useAsyncRequest'
+import { ResultActions, ResultSection, ResultSummary } from '../components/ResultSection'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
 
 function URLShortener() {
   const { t, language } = useLanguage()
+  const { runRequest } = useAsyncRequest()
   const [longUrl, setLongUrl] = useState('')
   const [shortUrl, setShortUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,6 +35,10 @@ function URLShortener() {
   }
 
   const handleShorten = async () => {
+    if (loading) {
+      return
+    }
+
     setError('')
     setShortUrl('')
 
@@ -53,8 +60,8 @@ function URLShortener() {
 
     setLoading(true)
 
-    try {
-      const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(urlToShorten)}`)
+    const outcome = await runRequest(async ({ signal, isCurrent }) => {
+      const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(urlToShorten)}`, { signal })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -62,25 +69,37 @@ function URLShortener() {
 
       const data = await response.json()
 
-      if (data.shorturl) {
-        setShortUrl(data.shorturl)
-
-        // Сохраняем в историю
-        const newHistory = [
-          { long: urlToShorten, short: data.shorturl, date: new Date().toISOString() },
-          ...history.slice(0, 9) // Храним последние 10
-        ]
-        setHistory(newHistory)
-        safeSetItem('urlShortenerHistory', JSON.stringify(newHistory))
-      } else {
-        setError(data.errormessage || t('urlShortener.errorFailed'))
+      if (!data.shorturl) {
+        throw new Error(data.errormessage || t('urlShortener.errorFailed'))
       }
-    } catch (err) {
-      console.error('URL Shortener error:', err)
-      setError(t('urlShortener.errorFailed'))
-    } finally {
-      setLoading(false)
+
+      if (!isCurrent()) {
+        return null
+      }
+
+      return {
+        shortUrl: data.shorturl,
+        longUrl: urlToShorten,
+        date: new Date().toISOString(),
+      }
+    })
+
+    if (outcome.status === 'success' && outcome.result) {
+      setShortUrl(outcome.result.shortUrl)
+      setHistory((prevHistory) => {
+        const newHistory = [
+          { long: outcome.result.longUrl, short: outcome.result.shortUrl, date: outcome.result.date },
+          ...prevHistory.slice(0, 9)
+        ]
+        safeSetItem('urlShortenerHistory', JSON.stringify(newHistory))
+        return newHistory
+      })
+    } else if (outcome.status === 'error' && outcome.error?.name !== 'AbortError') {
+      console.error('URL Shortener error:', outcome.error)
+      setError(outcome.error?.message || t('urlShortener.errorFailed'))
     }
+
+    setLoading(false)
   }
 
   const handleClear = () => {
@@ -132,15 +151,15 @@ function URLShortener() {
         {error && <div className="error">{error}</div>}
 
         {shortUrl && (
-          <div className="result-box success">
-            <p><strong>{t('urlShortener.shortLinkLabel')}</strong></p>
-            <div className="result-value" style={{ fontSize: '1.25rem', wordBreak: 'break-all' }}>
-              <a href={shortUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
-                {shortUrl}
-              </a>
-            </div>
-            <CopyButton text={shortUrl} />
-          </div>
+          <ResultSection tone="success">
+            <ResultSummary
+              kicker={t('urlShortener.shortLinkLabel')}
+              title={<a href={shortUrl} target="_blank" rel="noopener noreferrer" className="inline-link">{shortUrl}</a>}
+            />
+            <ResultActions>
+              <CopyButton text={shortUrl} />
+            </ResultActions>
+          </ResultSection>
         )}
 
         <div className="btn-group">
@@ -159,28 +178,23 @@ function URLShortener() {
         {history.length > 0 && (
           <>
             <h2 style={{ marginTop: '2rem' }}>{t('urlShortener.historyTitle')}</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="stack-list">
               {history.map((item, index) => (
-                <div key={index} style={{
-                  background: 'var(--bg-secondary)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '8px',
-                  padding: '1rem'
-                }}>
-                  <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                <ResultSection key={index} className="surface-panel--subtle">
+                  <div className="meta-item-value" style={{ marginBottom: '0.75rem', textAlign: 'center' }}>
                     {new Date(item.date).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
                   </div>
-                  <div style={{ marginBottom: '0.75rem', wordBreak: 'break-all', textAlign: 'center' }}>
+                  <div className="meta-item-value" style={{ marginBottom: '0.75rem', textAlign: 'center' }}>
                     <strong>{t('urlShortener.historyLong')}</strong> {item.long}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                     <strong>{t('urlShortener.historyShort')}</strong>
-                    <a href={item.short} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
+                    <a href={item.short} target="_blank" rel="noopener noreferrer" className="inline-link">
                       {item.short}
                     </a>
                     <CopyButton text={item.short} />
                   </div>
-                </div>
+                </ResultSection>
               ))}
               <button onClick={handleClearHistory} className="secondary" style={{ width: '100%' }}>
                 {t('urlShortener.clearHistory')}

@@ -15,6 +15,8 @@ function Calculator() {
   const { t, language } = useLanguage()
   const [mode, setMode] = useState('calculator')
   const [history, setHistory] = useState([])
+  const [restoredCalculation, setRestoredCalculation] = useState(null)
+  const [restoredGraphExpression, setRestoredGraphExpression] = useState(null)
 
   const copy = language === 'en'
     ? {
@@ -110,13 +112,26 @@ function Calculator() {
   }, [])
 
   const handleHistoryAdd = (item) => {
+    if (history[0] && JSON.stringify(history[0]) === JSON.stringify(item)) {
+      return
+    }
+
     const newHistory = [item, ...history.slice(0, 19)]
     setHistory(newHistory)
     safeSetItem('calculator-history', JSON.stringify(newHistory))
   }
 
   const handleHistoryRestore = (item) => {
-    console.log('Restore:', item)
+    if (item.type === 'calculation') {
+      setMode('calculator')
+      setRestoredCalculation({ value: item.expression, stamp: Date.now() })
+      return
+    }
+
+    if (item.type === 'graph') {
+      setMode('graph')
+      setRestoredGraphExpression({ value: item.expression, stamp: Date.now() })
+    }
   }
 
   const handleHistoryClear = () => {
@@ -144,14 +159,14 @@ function Calculator() {
         <div className={`calc-workspace mode-${mode}`}>
           {(mode === 'calculator' || mode === 'split') && (
             <div className="calc-section">
-              <CalculatorPanel onHistoryAdd={handleHistoryAdd} />
+              <CalculatorPanel onHistoryAdd={handleHistoryAdd} restoredExpression={restoredCalculation} />
             </div>
           )}
 
           {(mode === 'graph' || mode === 'split') && (
             <div className="calc-section">
               <Suspense fallback={<div className="graph-panel graph-panel-skeleton" aria-hidden="true"><span className="skeleton-line graph-skeleton-line graph-skeleton-line--hero" /><span className="skeleton-line graph-skeleton-line" /><span className="skeleton-line graph-skeleton-line" /><span className="skeleton-line graph-skeleton-line graph-skeleton-line--canvas" /></div>}>
-                <GraphPanel onHistoryAdd={handleHistoryAdd} />
+                <GraphPanel onHistoryAdd={handleHistoryAdd} restoredExpression={restoredGraphExpression} />
               </Suspense>
             </div>
           )}

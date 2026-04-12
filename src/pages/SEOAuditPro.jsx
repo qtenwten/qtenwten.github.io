@@ -6,6 +6,8 @@ import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSe
 import { seoAuditCache } from '../utils/apiCache'
 import { analyzeSEO } from '../utils/seoAudit'
 import InlineSpinner from '../components/InlineSpinner'
+import { useAsyncRequest } from '../hooks/useAsyncRequest'
+import { ResultActions, ResultDetails, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 
 const SEO_AUDIT_WORKER_URL = 'https://seo-audit-api.qten.workers.dev/'
 
@@ -56,12 +58,13 @@ function normalizeAuditUrl(rawUrl) {
   return parsedUrl.toString()
 }
 
-async function requestWorkerAudit(normalizedUrl) {
+async function requestWorkerAudit(normalizedUrl, signal) {
   const response = await fetch(`${SEO_AUDIT_WORKER_URL}?url=${encodeURIComponent(normalizedUrl)}`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
     },
+    signal,
   })
 
   const data = await readApiResponse(response)
@@ -210,6 +213,7 @@ function createFallbackAnalysis(fallbackResult, normalizedUrl) {
 
 function SEOAuditPro() {
   const { t, language } = useLanguage()
+  const { runRequest } = useAsyncRequest()
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -479,7 +483,7 @@ function SEOAuditPro() {
     }
 
     // Check cache first
-    const cacheKey = normalizedUrl.toLowerCase()
+    const cacheKey = `${language}:${normalizedUrl.toLowerCase()}`
     const cachedResult = seoAuditCache.get(cacheKey)
 
     if (cachedResult) {
@@ -494,36 +498,48 @@ function SEOAuditPro() {
     setNotice('')
     setResult(null)
 
-    try {
-      const data = await requestWorkerAudit(normalizedUrl)
-      const analysis = createWorkerAnalysis(data, copy)
-
-      seoAuditCache.set(cacheKey, analysis)
-      setResult(analysis)
-    } catch (err) {
-      if (err.code === 'HTML_RESPONSE' || err.code === 'INVALID_JSON' || err.code === 'WORKER_ERROR' || err.name === 'TypeError') {
-        try {
-          const fallbackResult = await analyzeSEO(normalizedUrl, language)
-
-          if (fallbackResult?.error) {
-            setError(copy.fallbackFailed)
-          } else if (fallbackResult) {
-            const fallbackAnalysis = createFallbackAnalysis(fallbackResult, normalizedUrl)
-            seoAuditCache.set(cacheKey, fallbackAnalysis)
-            setResult(fallbackAnalysis)
-            setNotice(copy.fallbackNotice)
-          } else {
-            setError(copy.invalidApiResponse)
-          }
-        } catch {
-          setError(copy.invalidApiResponse)
+    const outcome = await runRequest(async ({ isCurrent, signal }) => {
+      try {
+        const data = await requestWorkerAudit(normalizedUrl, signal)
+        if (!isCurrent()) return null
+        return { type: 'worker', analysis: createWorkerAnalysis(data, copy) }
+      } catch (err) {
+        if (signal.aborted || !isCurrent()) {
+          throw err
         }
-      } else {
-        setError(err.message || copy.genericRetry)
+
+        if (!(err.code === 'HTML_RESPONSE' || err.code === 'INVALID_JSON' || err.code === 'WORKER_ERROR' || err.name === 'TypeError')) {
+          throw err
+        }
+
+        const fallbackResult = await analyzeSEO(normalizedUrl, language)
+        if (!isCurrent()) return null
+        if (fallbackResult?.error) {
+          const fallbackError = new Error(copy.fallbackFailed)
+          fallbackError.code = 'FALLBACK_FAILED'
+          throw fallbackError
+        }
+
+        if (!fallbackResult) {
+          const invalidResponseError = new Error(copy.invalidApiResponse)
+          invalidResponseError.code = 'INVALID_FALLBACK'
+          throw invalidResponseError
+        }
+
+        if (!isCurrent()) return null
+        return { type: 'fallback', analysis: createFallbackAnalysis(fallbackResult, normalizedUrl) }
       }
-    } finally {
-      setLoading(false)
+    })
+
+    if (outcome.status === 'success' && outcome.result?.analysis) {
+      seoAuditCache.set(cacheKey, outcome.result.analysis)
+      setResult(outcome.result.analysis)
+      setNotice(outcome.result.type === 'fallback' ? copy.fallbackNotice : '')
+    } else if (outcome.status === 'error') {
+      setError(outcome.error?.message || copy.genericRetry)
     }
+
+    setLoading(false)
   }
 
   const getScoreColor = (score) => {
@@ -584,17 +600,9 @@ function SEOAuditPro() {
         </div>
 
         {error && (
-          <div style={{
-            padding: '1rem',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '2px solid var(--error)',
-            borderRadius: '8px',
-            marginBottom: '1rem',
-            color: 'var(--text)'
-          }}>
-            <strong>⚠️ {copy.errorTitle}</strong>
-            <p style={{ marginTop: '0.5rem', marginBottom: '0' }}>{error}</p>
-          </div>
+          <ResultNotice tone="error" title={`⚠️ ${copy.errorTitle}`} className="status-panel--error" style={{ marginBottom: '1rem' }}>
+            <p>{error}</p>
+          </ResultNotice>
         )}
 
         <button
@@ -611,182 +619,155 @@ function SEOAuditPro() {
 
         {result && (
           <>
-            <div className="result-box success" style={{ marginBottom: '2rem' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '3rem', fontWeight: 'bold', color: getScoreColor(result.score) }}>
-                  {result.score}
-                </div>
-                <div style={{ fontSize: '1.25rem', marginTop: '0.5rem' }}>
-                  {copy.score}
-                </div>
-                <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  {result.score >= 80 && `✅ ${copy.excellent}`}
-                  {result.score >= 60 && result.score < 80 && `⚠️ ${copy.good}`}
-                {result.score < 60 && `❌ ${copy.poor}`}
-              </div>
-                <button
-                  onClick={handleShare}
-                  style={{
-                    marginTop: '1rem',
-                    background: '#25D366',
-                    color: 'white',
-                    border: 'none',
-                    padding: '0.75rem 1.5rem',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                   📤 {copy.share}
-                 </button>
-              </div>
-            </div>
+            <ResultSection tone="success" className="surface-panel--success" style={{ marginBottom: '2rem' }}>
+              <ResultSummary
+                centered
+                kicker={copy.score}
+                score={result.score}
+                scoreColor={getScoreColor(result.score)}
+                description={
+                  result.score >= 80 ? `✅ ${copy.excellent}` :
+                  result.score >= 60 ? `⚠️ ${copy.good}` :
+                  `❌ ${copy.poor}`
+                }
+              />
+              <ResultActions align="center">
+                <button onClick={handleShare} className="seo-share-button">📤 {copy.share}</button>
+              </ResultActions>
+            </ResultSection>
 
             {result.issues.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.issues}</h2>
-                <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
+              <ResultDetails title={copy.issues} className="seo-audit-pro-section">
+                <div className="surface-panel surface-panel--subtle">
                   {result.issues.map((issue, index) => (
-                    <div key={index} style={{
-                      padding: '0.75rem 0',
-                      borderBottom: index < result.issues.length - 1 ? '1px solid var(--border)' : 'none',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '0.75rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{getIssueIcon(issue.type)}</span>
-                      <span style={{ color: 'var(--text)' }}>{issue.text}</span>
+                    <div key={index} className="seo-audit-pro-list-item" style={{ borderBottom: index < result.issues.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                      <span className="seo-audit-pro-list-icon">{getIssueIcon(issue.type)}</span>
+                      <span className="seo-audit-pro-list-text">{issue.text}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </ResultDetails>
             )}
 
             {result.suggestions.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.suggestions}</h2>
-                <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
-                  <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+              <ResultDetails title={copy.suggestions} className="seo-audit-pro-section">
+                <div className="surface-panel surface-panel--subtle">
+                  <ul className="seo-audit-pro-list">
                     {result.suggestions.map((suggestion, index) => (
                       <li key={index}>{suggestion}</li>
                     ))}
                   </ul>
                 </div>
-              </div>
+              </ResultDetails>
             )}
 
-            <div style={{ marginBottom: '2rem' }}>
-              <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.details}</h2>
-              <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div>
+            <ResultDetails title={copy.details} className="seo-audit-pro-section">
+              <div className="surface-panel surface-panel--subtle">
+                <div className="meta-grid">
+                  <div className="meta-item">
                     <strong>Title:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.title ? `${result.data.title.substring(0, 50)}...` : copy.missing}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>Description:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.description ? `${result.data.description.substring(0, 50)}...` : copy.missing}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.h1}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.h1Text || result.data.h1Count || copy.missing}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.canonical}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.canonical || copy.notAvailable}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.robotsLabel}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.robots || copy.notAvailable}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.finalUrl}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.finalUrl || copy.notAvailable}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.status}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.status ?? copy.notAvailable}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.contentType}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.data.contentType || copy.notAvailable}
                     </div>
                   </div>
                   {result.data.keywords && (
-                    <div>
+                    <div className="meta-item">
                       <strong>Keywords:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.keywords}
                       </div>
                     </div>
                   )}
                   {result.data.h2Count !== null && (
-                    <div>
+                    <div className="meta-item">
                       <strong>{copy.h2}:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.h2Count}
                       </div>
                     </div>
                   )}
                   {result.data.h3Count !== null && (
-                    <div>
+                    <div className="meta-item">
                       <strong>{copy.h3}:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.h3Count}
                       </div>
                     </div>
                   )}
                   {result.data.imagesTotal !== null && (
-                    <div>
+                    <div className="meta-item">
                       <strong>{copy.images}:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.imagesTotal} ({copy.withoutAlt}: {result.data.imagesWithoutAlt})
                       </div>
                     </div>
                   )}
                   {result.data.openGraph && (
-                    <div>
+                    <div className="meta-item">
                       <strong>Open Graph:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.openGraph.title && result.data.openGraph.description && result.data.openGraph.image ? `✅ ${copy.ogReady}` : `❌ ${copy.ogPartial}`}
                       </div>
                     </div>
                   )}
                   {typeof result.data.hasStructuredData === 'boolean' && (
-                    <div>
+                    <div className="meta-item">
                       <strong>{language === 'en' ? 'Structured data' : 'Структурированные данные'}:</strong>
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      <div className="meta-item-value">
                         {result.data.hasStructuredData ? `✅ ${copy.structuredYes}` : `❌ ${copy.structuredNo}`}
                       </div>
                     </div>
                   )}
                 </div>
                 {(isFallbackResult && notice) && (
-                  <p style={{ marginTop: '1rem', marginBottom: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  <p className="meta-item-value seo-audit-pro-notice">
                     {notice}
                   </p>
                 )}
               </div>
-            </div>
+            </ResultDetails>
           </>
         )}
 

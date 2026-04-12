@@ -1,25 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { calculateExpression, preloadMathParser } from '../../utils/mathParser'
+import { calculateExpression } from '../../utils/mathParser'
 
-function CalculatorPanel({ onHistoryAdd }) {
+function CalculatorPanel({ onHistoryAdd, restoredExpression }) {
   const [expression, setExpression] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const lastValidResultRef = useRef(null)
-
-  useEffect(() => {
-    const preload = () => {
-      preloadMathParser().catch(() => {})
-    }
-
-    if ('requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(preload)
-      return () => window.cancelIdleCallback(idleId)
-    }
-
-    const timeoutId = window.setTimeout(preload, 300)
-    return () => window.clearTimeout(timeoutId)
-  }, [])
+  const [isExpressionValid, setIsExpressionValid] = useState(true)
 
   // Live preview
   useEffect(() => {
@@ -37,10 +24,12 @@ function CalculatorPanel({ onHistoryAdd }) {
           // Не показываем ошибку при незавершенном вводе, но сохраняем последний результат
           setError('')
           setResult(lastValidResultRef.current)
+          setIsExpressionValid(false)
         } else {
           setError('')
           setResult(res.result)
           lastValidResultRef.current = res.result
+          setIsExpressionValid(true)
         }
       }
 
@@ -48,6 +37,7 @@ function CalculatorPanel({ onHistoryAdd }) {
         setResult(null)
         setError('')
         lastValidResultRef.current = null
+        setIsExpressionValid(true)
       }
     }
 
@@ -58,10 +48,31 @@ function CalculatorPanel({ onHistoryAdd }) {
     }
   }, [expression])
 
-  const handleCalculate = () => {
-    if (result !== null) {
-      onHistoryAdd({ type: 'calculation', expression, result })
+  useEffect(() => {
+    if (restoredExpression?.value) {
+      setExpression(restoredExpression.value)
+      setError('')
     }
+  }, [restoredExpression])
+
+  const handleCalculate = async () => {
+    if (!expression.trim()) {
+      return
+    }
+
+    const res = await calculateExpression(expression)
+
+    if (res.error) {
+      setError(res.error)
+      setIsExpressionValid(false)
+      return
+    }
+
+    setError('')
+    setResult(res.result)
+    lastValidResultRef.current = res.result
+    setIsExpressionValid(true)
+    onHistoryAdd({ type: 'calculation', expression, result: res.result })
   }
 
   const insertText = (text) => {
@@ -73,6 +84,7 @@ function CalculatorPanel({ onHistoryAdd }) {
     setResult(null)
     setError('')
     lastValidResultRef.current = null
+    setIsExpressionValid(true)
   }
 
   const handleBackspace = () => {

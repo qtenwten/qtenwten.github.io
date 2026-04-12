@@ -6,6 +6,7 @@ import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import { ResultSection, ResultSummary, ResultMetrics, ResultMetric } from '../components/ResultSection'
 import {
   calculateDateDifference,
   calculateTimeDifference,
@@ -404,43 +405,30 @@ function DateDifferenceCalculator() {
     if (!dayResult) return null
 
     return (
-      <div className="date-diff-result-card is-success">
-        <div className="date-diff-result-header">
-          <div>
-            <div className="date-diff-result-kicker">{copy.resultTitle}</div>
-            <h2>{copy.resultLabels.betweenDates(formatDateDifference(dayResult, language))}</h2>
-            <p>
-              {dayResult.startDate} - {dayResult.endDate}
-            </p>
-          </div>
-          <CopyButton text={dayCopyText} />
-        </div>
+      <ResultSection tone="success" className="date-diff-result-card">
+        <ResultSummary
+          kicker={copy.resultTitle}
+          title={copy.resultLabels.betweenDates(formatDateDifference(dayResult, language))}
+          description={`${dayResult.startDate} - ${dayResult.endDate}`}
+          actions={<CopyButton text={dayCopyText} />}
+        />
 
-        <div className="date-diff-metrics-grid">
-          <div className="date-diff-metric-card">
-            <span>{copy.resultLabels.calendarDays}</span>
-            <strong>{dayResult.calendarDays}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{copy.resultLabels.businessDays}</span>
-            <strong>{dayResult.businessDays}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{copy.resultLabels.weekendDays}</span>
-            <strong>{dayResult.weekendDays}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{copy.resultLabels.weeksAndDays}</span>
-            <strong>
-              {dayResult.weekBreakdown.weeks > 0
+        <ResultMetrics columns={2}>
+          <ResultMetric label={copy.resultLabels.calendarDays} value={dayResult.calendarDays} />
+          <ResultMetric label={copy.resultLabels.businessDays} value={dayResult.businessDays} />
+          <ResultMetric label={copy.resultLabels.weekendDays} value={dayResult.weekendDays} />
+          <ResultMetric
+            label={copy.resultLabels.weeksAndDays}
+            value={
+              dayResult.weekBreakdown.weeks > 0
                 ? `${dayResult.weekBreakdown.weeks} ${language === 'en' ? 'wk' : 'нед.'}${dayResult.weekBreakdown.days ? ` ${dayResult.weekBreakdown.days} ${language === 'en' ? 'd' : 'д.'}` : ''}`
-                : `${dayResult.weekBreakdown.days} ${language === 'en' ? 'days' : 'дней'}`}
-            </strong>
-          </div>
-        </div>
+                : `${dayResult.weekBreakdown.days} ${language === 'en' ? 'days' : 'дней'}`
+            }
+          />
+        </ResultMetrics>
 
         <div className="date-diff-summary-grid">
-          <div>
+          <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.monthsYears}</h3>
             <p>
               {language === 'en'
@@ -448,12 +436,12 @@ function DateDifferenceCalculator() {
                 : `${dayResult.calendarBreakdown.years} лет, ${dayResult.calendarBreakdown.months} месяцев, ${dayResult.calendarBreakdown.days} дней`}
             </p>
           </div>
-          <div>
+          <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.includesEndDate}</h3>
             <p>{includeEndDate ? (language === 'en' ? 'Yes' : 'Да') : (language === 'en' ? 'No' : 'Нет')}</p>
           </div>
         </div>
-      </div>
+      </ResultSection>
     )
   }
 
@@ -474,46 +462,32 @@ function DateDifferenceCalculator() {
     if (!timeResult) return null
 
     return (
-      <div className="date-diff-result-card is-success">
-        <div className="date-diff-result-header">
-          <div>
-            <div className="date-diff-result-kicker">{copy.resultTitle}</div>
-            <h2>{copy.resultLabels.exactDifference}: {formatTimeDifference(timeResult, language)}</h2>
-            <p>{timeResult.startDate} - {timeResult.endDate}</p>
-          </div>
-          <CopyButton text={timeCopyText} />
-        </div>
+      <ResultSection tone="success" className="date-diff-result-card">
+        <ResultSummary
+          kicker={copy.resultTitle}
+          title={`${copy.resultLabels.exactDifference}: ${formatTimeDifference(timeResult, language)}`}
+          description={`${timeResult.startDate} - ${timeResult.endDate}`}
+          actions={<CopyButton text={timeCopyText} />}
+        />
 
-        <div className="date-diff-metrics-grid">
-          <div className="date-diff-metric-card">
-            <span>{language === 'en' ? 'Days' : 'Дни'}</span>
-            <strong>{timeResult.days}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{language === 'en' ? 'Hours' : 'Часы'}</span>
-            <strong>{timeResult.hours}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{language === 'en' ? 'Minutes' : 'Минуты'}</span>
-            <strong>{timeResult.minutes}</strong>
-          </div>
-          <div className="date-diff-metric-card">
-            <span>{language === 'en' ? 'Seconds' : 'Секунды'}</span>
-            <strong>{timeResult.seconds}</strong>
-          </div>
-        </div>
+        <ResultMetrics columns={2}>
+          <ResultMetric label={language === 'en' ? 'Days' : 'Дни'} value={timeResult.days} />
+          <ResultMetric label={language === 'en' ? 'Hours' : 'Часы'} value={timeResult.hours} />
+          <ResultMetric label={language === 'en' ? 'Minutes' : 'Минуты'} value={timeResult.minutes} />
+          <ResultMetric label={language === 'en' ? 'Seconds' : 'Секунды'} value={timeResult.seconds} />
+        </ResultMetrics>
 
         <div className="date-diff-summary-grid">
-          <div>
+          <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.totalHours}</h3>
             <p>{timeResult.totalHours}</p>
           </div>
-          <div>
+          <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.totalMinutes}</h3>
             <p>{timeResult.totalMinutes}</p>
           </div>
         </div>
-      </div>
+      </ResultSection>
     )
   }
 
@@ -534,41 +508,27 @@ function DateDifferenceCalculator() {
     if (!countdown) return null
 
     return (
-      <div className="date-diff-result-card is-countdown">
-        <div className="date-diff-result-header">
-          <div>
-            <div className="date-diff-result-kicker">{copy.resultTitle}</div>
-            <h2>{copy.resultLabels.countdownHeadline}</h2>
-            <p>{countdown.targetDate}</p>
-          </div>
-        </div>
+      <ResultSection tone="accent" className="date-diff-result-card is-countdown">
+        <ResultSummary
+          kicker={copy.resultTitle}
+          title={copy.resultLabels.countdownHeadline}
+          description={countdown.targetDate}
+        />
 
-        <div className="date-diff-countdown-grid">
-          <div className="date-diff-countdown-card">
-            <strong>{countdown.days}</strong>
-            <span>{language === 'en' ? 'Days' : 'Дни'}</span>
-          </div>
-          <div className="date-diff-countdown-card">
-            <strong>{String(countdown.hours).padStart(2, '0')}</strong>
-            <span>{language === 'en' ? 'Hours' : 'Часы'}</span>
-          </div>
-          <div className="date-diff-countdown-card">
-            <strong>{String(countdown.minutes).padStart(2, '0')}</strong>
-            <span>{language === 'en' ? 'Minutes' : 'Минуты'}</span>
-          </div>
-          <div className="date-diff-countdown-card">
-            <strong>{String(countdown.seconds).padStart(2, '0')}</strong>
-            <span>{language === 'en' ? 'Seconds' : 'Секунды'}</span>
-          </div>
-        </div>
+        <ResultMetrics columns={4} className="date-diff-countdown-grid">
+          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Days' : 'Дни'} value={countdown.days} />
+          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Hours' : 'Часы'} value={String(countdown.hours).padStart(2, '0')} />
+          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Minutes' : 'Минуты'} value={String(countdown.minutes).padStart(2, '0')} />
+          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Seconds' : 'Секунды'} value={String(countdown.seconds).padStart(2, '0')} />
+        </ResultMetrics>
 
         <div className="date-diff-summary-grid">
-          <div>
+          <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.targetDate}</h3>
             <p>{countdown.targetDate}</p>
           </div>
         </div>
-      </div>
+      </ResultSection>
     )
   }
 

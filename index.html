@@ -72,10 +72,39 @@
             return
           }
 
+          let isRefreshing = false
+
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (isRefreshing) return
+            isRefreshing = true
+            window.location.reload()
+          })
+
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
               console.log('SW registered:', registration)
-              // Force update check
+
+              const activateUpdate = (worker) => {
+                if (worker) {
+                  worker.postMessage({ type: 'SKIP_WAITING' })
+                }
+              }
+
+              if (registration.waiting) {
+                activateUpdate(registration.waiting)
+              }
+
+              registration.addEventListener('updatefound', () => {
+                const installing = registration.installing
+                if (!installing) return
+
+                installing.addEventListener('statechange', () => {
+                  if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                    activateUpdate(registration.waiting || installing)
+                  }
+                })
+              })
+
               registration.update()
             })
             .catch((error) => {

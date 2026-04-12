@@ -71,10 +71,10 @@ export function LanguageProvider({ children }) {
       // Если текущий путь начинается с языка, заменяем его
       if (currentLang === 'ru' || currentLang === 'en') {
         const newPath = currentPath.replace(`/${currentLang}`, `/${newLang}`)
-        navigate(newPath)
+        navigate(`${newPath}${location.search}${location.hash}`)
       } else {
         // Если языка нет в пути, добавляем новый язык
-        navigate(`/${newLang}${currentPath}`)
+        navigate(`/${newLang}${currentPath}${location.search}${location.hash}`)
       }
 
       setLanguage(newLang)

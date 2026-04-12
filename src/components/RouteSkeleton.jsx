@@ -1,10 +1,15 @@
+import { useLanguage } from '../contexts/LanguageContext'
+
 function SkeletonLine({ className = '' }) {
   return <span className={`skeleton-line ${className}`.trim()} aria-hidden="true" />
 }
 
 function RouteSkeleton() {
+  const { language } = useLanguage()
+
   return (
-    <div className="route-skeleton" aria-hidden="true">
+    <div className="route-skeleton">
+      <span className="sr-only" role="status" aria-live="polite">{language === 'en' ? 'Loading page' : 'Загружается страница'}</span>
       <div className="tool-container route-skeleton__container">
         <div className="skeleton-card route-skeleton__hero">
           <SkeletonLine className="route-skeleton__eyebrow" />

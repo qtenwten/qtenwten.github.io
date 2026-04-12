@@ -1,113 +1,126 @@
-const CACHE_NAME = 'qsen-v5'
-const urlsToCache = [
-  '/',
-  '/index.html',
+const VERSION = 'v6'
+const HTML_CACHE = `qsen-html-${VERSION}`
+const ASSET_CACHE = `qsen-assets-${VERSION}`
+const IMAGE_CACHE = `qsen-images-${VERSION}`
+const STATIC_URLS = [
   '/favicon.ico',
-  '/favicon.svg'
+  '/favicon.svg',
+  '/favicon-16x16.png',
+  '/favicon-32x32.png',
+  '/apple-touch-icon.png',
+  '/manifest.json',
 ]
 
-// Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing version:', CACHE_NAME)
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[SW] Caching assets')
-        return cache.addAll(urlsToCache).catch(err => {
-          console.error('[SW] Cache addAll failed:', err)
-          // Don't fail installation if caching fails
-          return Promise.resolve()
-        })
-      })
-      .then(() => {
-        console.log('[SW] Skip waiting')
-        return self.skipWaiting()
-      })
-  )
+  event.waitUntil((async () => {
+    const cache = await caches.open(ASSET_CACHE)
+    await cache.addAll(STATIC_URLS)
+    await self.skipWaiting()
+  })())
 })
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating version:', CACHE_NAME)
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      console.log('[SW] Existing caches:', cacheNames)
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName)
-            return caches.delete(cacheName)
-          }
-        })
-      )
-    }).then(() => {
-      console.log('[SW] Claiming clients')
-      return self.clients.claim()
-    })
-  )
+  event.waitUntil((async () => {
+    const keys = await caches.keys()
+    await Promise.all(
+      keys
+        .filter((key) => ![HTML_CACHE, ASSET_CACHE, IMAGE_CACHE].includes(key))
+        .map((key) => caches.delete(key))
+    )
+    await self.clients.claim()
+  })())
 })
 
-// Fetch event - Network first, fallback to cache for better updates
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
+function isSameOrigin(request) {
+  return new URL(request.url).origin === self.location.origin
+}
+
+function isNavigationRequest(request) {
+  return request.mode === 'navigate' || request.destination === 'document'
+}
+
+function isApiRequest(request) {
+  return new URL(request.url).pathname.startsWith('/api/')
+}
+
+function isHashedAsset(request) {
+  const pathname = new URL(request.url).pathname
+  return /\/assets\/.+\.[a-z0-9_-]+\.(js|css)$/i.test(pathname)
+}
+
+function isImageRequest(request) {
+  return request.destination === 'image'
+}
+
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName)
+
+  try {
+    const response = await fetch(request)
+    if (response && response.ok) {
+      cache.put(request, response.clone())
+    }
+    return response
+  } catch (error) {
+    const cached = await cache.match(request)
+    if (cached) return cached
+    throw error
+  }
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName)
+  const cached = await cache.match(request)
+
+  const networkPromise = fetch(request)
+    .then((response) => {
+      if (response && response.ok) {
+        cache.put(request, response.clone())
+      }
+      return response
+    })
+    .catch(() => null)
+
+  if (cached) {
+    eventWaitUntil(networkPromise)
+    return cached
+  }
+
+  const networkResponse = await networkPromise
+  if (networkResponse) return networkResponse
+
+  throw new Error('Network request failed and no cache entry exists')
+}
+
+function eventWaitUntil(promise) {
+  promise.catch(() => undefined)
+}
+
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
+  const { request } = event
+
+  if (!isSameOrigin(request) || request.method !== 'GET' || isApiRequest(request)) {
     return
   }
 
-  // Skip API requests from cache
-  if (event.request.url.includes('/api/')) {
+  if (isNavigationRequest(request)) {
+    event.respondWith(networkFirst(request, HTML_CACHE))
     return
   }
 
-  // For HTML files, always try network first
-  if (event.request.url.endsWith('.html') || event.request.url.endsWith('/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Cache the new version
-          if (response && response.status === 200) {
-            const responseToCache = response.clone()
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache)
-            })
-          }
-          return response
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(event.request)
-        })
-    )
+  if (isHashedAsset(request)) {
+    event.respondWith(staleWhileRevalidate(request, ASSET_CACHE))
     return
   }
 
-  // For other resources, cache first for performance
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response
-        }
-
-        const fetchRequest = event.request.clone()
-
-        return fetch(fetchRequest).then((response) => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response
-          }
-
-          const responseToCache = response.clone()
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache)
-            })
-
-          return response
-        }).catch((error) => {
-          console.error('[SW] Fetch failed:', error)
-          throw error
-        })
-      })
-  )
+  if (isImageRequest(request)) {
+    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE))
+    return
+  }
 })

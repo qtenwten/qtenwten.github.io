@@ -24,7 +24,7 @@ ChartJS.register(
   Legend
 )
 
-function GraphPanel({ onHistoryAdd }) {
+function GraphPanel({ onHistoryAdd, restoredExpression }) {
   const { language } = useLanguage()
   const [functionExpr, setFunctionExpr] = useState('')
   const [error, setError] = useState('')
@@ -90,6 +90,12 @@ function GraphPanel({ onHistoryAdd }) {
       active = false
     }
   }, [functionExpr, xRange, onHistoryAdd, language])
+
+  useEffect(() => {
+    if (restoredExpression?.value) {
+      setFunctionExpr(restoredExpression.value)
+    }
+  }, [restoredExpression])
 
   const options = {
     responsive: true,

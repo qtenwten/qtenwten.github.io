@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import Icon from './Icon'
@@ -8,7 +8,8 @@ import './Header.css'
 function Header({ searchValue, onSearchChange }) {
   const { language, t } = useLanguage()
   const location = useLocation()
-  const isHomePage = location.pathname === `/${language}` || location.pathname === `/${language}/`
+  const navigate = useNavigate()
+  const isHomePage = location.pathname === '/' || location.pathname === `/${language}` || location.pathname === `/${language}/`
 
   const handleLogoClick = () => {
     if (isHomePage && onSearchChange) {
@@ -16,9 +17,17 @@ function Header({ searchValue, onSearchChange }) {
     }
   }
 
+  const handleHomeSearchSubmit = (event) => {
+    if (event.key === 'Enter') {
+      const query = (searchValue || '').trim()
+      if (!query) return
+      navigate(`/${language}/search?q=${encodeURIComponent(query)}`)
+    }
+  }
+
   return (
     <header className="header">
-      <div className="container header-content">
+      <div className={`container header-content ${isHomePage ? 'is-home-search' : 'is-compact'}`}>
         <Link
           to={`/${language}/`}
           className="logo"
@@ -34,16 +43,36 @@ function Header({ searchValue, onSearchChange }) {
           </div>
         </Link>
 
-        <div className="header-search-box">
-          <input
-            type="text"
-            placeholder={t('common.search')}
-            value={searchValue || ''}
-            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-          />
-        </div>
+        {isHomePage && (
+          <div className="header-search-box">
+            <label htmlFor="header-search" className="sr-only">{t('common.search')}</label>
+            <input
+              id="header-search"
+              type="search"
+              placeholder={t('common.search')}
+              aria-label={t('common.search')}
+              value={searchValue || ''}
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+              onKeyDown={handleHomeSearchSubmit}
+            />
+          </div>
+        )}
 
-        <LanguageSwitcher />
+        <div className="header-actions">
+          {!isHomePage && (
+            <Link
+              to={`/${language}/search`}
+              className="header-search-link"
+              onMouseEnter={() => preloadRoute('/search')}
+              onFocus={() => preloadRoute('/search')}
+              onTouchStart={() => preloadRoute('/search')}
+            >
+              <Icon name="search" size={16} />
+              <span>{t('common.search')}</span>
+            </Link>
+          )}
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
   )

@@ -1,0 +1,54 @@
+.not-found-page {
+  max-width: 820px;
+}
+
+.not-found-card {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  padding: 2.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.not-found-code {
+  font-size: clamp(3rem, 2rem + 4vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  color: var(--primary);
+}
+
+.not-found-card p {
+  max-width: 36rem;
+  margin-bottom: 0;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.not-found-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.8rem 1.35rem;
+  border-radius: 14px;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-fast) ease;
+}
+
+.not-found-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}

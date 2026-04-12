@@ -4,6 +4,7 @@ import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import InlineSpinner from '../components/InlineSpinner'
+import { ResultDetails, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import { analyzeSEO } from '../utils/seoAudit'
 
 function SEOAudit() {
@@ -190,20 +191,10 @@ function SEOAudit() {
         </div>
 
         {error && (
-          <div style={{
-            padding: '1rem',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '2px solid var(--error)',
-            borderRadius: '8px',
-            marginBottom: '1rem',
-            color: 'var(--text)'
-          }}>
-            <strong>⚠️ {copy.limitation}</strong>
-            <p style={{ marginTop: '0.5rem', marginBottom: '0' }}>{error}</p>
-            <p style={{ marginTop: '0.5rem', marginBottom: '0', fontSize: '0.9rem' }}>
-              💡 <strong>{copy.tip}</strong> {copy.corsTip}
-            </p>
-          </div>
+          <ResultNotice tone="error" title={`⚠️ ${copy.limitation}`} style={{ marginBottom: '1rem' }}>
+            <p>{error}</p>
+            <p>💡 <strong>{copy.tip}</strong> {copy.corsTip}</p>
+          </ResultNotice>
         )}
 
         <button
@@ -220,98 +211,87 @@ function SEOAudit() {
 
         {result && (
           <>
-            <div className="result-box success" style={{ marginBottom: '2rem' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '3rem', fontWeight: 'bold', color: getScoreColor(result.score) }}>
-                  {result.score}
-                </div>
-                <div style={{ fontSize: '1.25rem', marginTop: '0.5rem' }}>
-                  {copy.score}
-                </div>
-                <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  {result.score >= 80 && `✅ ${copy.excellent}`}
-                  {result.score >= 60 && result.score < 80 && `⚠️ ${copy.good}`}
-                  {result.score < 60 && `❌ ${copy.poor}`}
-                </div>
-              </div>
-            </div>
+            <ResultSection tone="success" style={{ marginBottom: '2rem' }}>
+              <ResultSummary
+                centered
+                kicker={copy.score}
+                score={result.score}
+                scoreColor={getScoreColor(result.score)}
+                description={
+                  result.score >= 80 ? `✅ ${copy.excellent}` :
+                  result.score >= 60 ? `⚠️ ${copy.good}` :
+                  `❌ ${copy.poor}`
+                }
+              />
+            </ResultSection>
 
             {result.issues.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.issues}</h2>
-                <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
+              <ResultDetails title={copy.issues} style={{ marginBottom: '2rem' }}>
+                <div className="surface-panel surface-panel--subtle">
                   {result.issues.map((issue, index) => (
-                    <div key={index} style={{
-                      padding: '0.75rem 0',
-                      borderBottom: index < result.issues.length - 1 ? '1px solid var(--border)' : 'none',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '0.75rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{getIssueIcon(issue.type)}</span>
-                      <span style={{ color: 'var(--text)' }}>{issue.text}</span>
+                    <div key={index} className="seo-audit-pro-list-item" style={{ borderBottom: index < result.issues.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                      <span className="seo-audit-pro-list-icon">{getIssueIcon(issue.type)}</span>
+                      <span className="seo-audit-pro-list-text">{issue.text}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </ResultDetails>
             )}
 
             {result.suggestions.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.suggestions}</h2>
-                <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
-                  <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
+              <ResultDetails title={copy.suggestions} style={{ marginBottom: '2rem' }}>
+                <div className="surface-panel surface-panel--subtle">
+                  <ul className="seo-audit-pro-list">
                     {result.suggestions.map((suggestion, index) => (
                       <li key={index}>{suggestion}</li>
                     ))}
                   </ul>
                 </div>
-              </div>
+              </ResultDetails>
             )}
 
-            <div style={{ marginBottom: '2rem' }}>
-              <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>{copy.details}</h2>
-              <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '8px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div>
+            <ResultDetails title={copy.details} style={{ marginBottom: '2rem' }}>
+              <div className="surface-panel surface-panel--subtle">
+                <div className="meta-grid">
+                  <div className="meta-item">
                     <strong>Title:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.title ? `${result.details.title.substring(0, 50)}...` : copy.missing}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.h1}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.h1Count}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.h2}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.h2Count}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{copy.images}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.imagesTotal} ({copy.withoutAlt}: {result.details.imagesWithoutAlt})
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>Open Graph:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.hasOG ? `✅ ${copy.ogReady}` : `❌ ${copy.ogMissing}`}
                     </div>
                   </div>
-                  <div>
+                  <div className="meta-item">
                     <strong>{language === 'en' ? 'Structured data' : 'Структурированные данные'}:</strong>
-                    <div style={{ marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <div className="meta-item-value">
                       {result.details.hasStructuredData ? `✅ ${copy.structuredYes}` : `❌ ${copy.structuredNo}`}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </ResultDetails>
           </>
         )}
 

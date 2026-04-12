@@ -4,6 +4,8 @@ import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import { useAsyncRequest } from '../hooks/useAsyncRequest'
+import { ResultActions, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import './QRCodeGenerator.css'
 
 const QR_THEME_PRESETS = {
@@ -127,6 +129,7 @@ async function renderQRCodeToCanvas({
   darkColor,
   lightColor,
   logoDataUrl,
+  isCurrent,
 }) {
   const marginModules = 4
   const moduleCount = qrData.modules.size
@@ -189,12 +192,16 @@ async function renderQRCodeToCanvas({
     ctx.fill()
 
     const logoImage = await loadImage(logoDataUrl)
+    if (!isCurrent?.()) {
+      return
+    }
     ctx.drawImage(logoImage, logoX + logoPadding, logoY + logoPadding, logoSize, logoSize)
   }
 }
 
 function QRCodeGenerator() {
   const { t, language } = useLanguage()
+  const { markTask } = useAsyncRequest()
   const [qrType, setQrType] = useState('text')
   const [qrValue, setQrValue] = useState('')
   const [qrSize, setQrSize] = useState(256)
@@ -211,16 +218,23 @@ function QRCodeGenerator() {
   useEffect(() => {
     let mounted = true
 
-    import('qrcode').then((module) => {
-      if (mounted) {
-        setQrCodeLib(module.default || module)
-      }
-    })
+    import('qrcode')
+      .then((module) => {
+        if (mounted) {
+          setQrCodeLib(module.default || module)
+          setGenerationError('')
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setGenerationError(t('qrCodeGenerator.errorGenerate'))
+        }
+      })
 
     return () => {
       mounted = false
     }
-  }, [])
+  }, [t])
 
   const qrTypes = [
     { id: 'text', label: t('qrCodeGenerator.types.text'), placeholder: t('qrCodeGenerator.placeholders.text') },
@@ -264,11 +278,13 @@ function QRCodeGenerator() {
   }
 
   useEffect(() => {
-    let cancelled = false
+    const task = markTask()
 
     async function generate() {
       if (!qrValue.trim() || !qrCodeLib || !canvasRef.current) {
-        setGenerationError('')
+        if (task.isCurrent()) {
+          setGenerationError('')
+        }
         return
       }
 
@@ -287,25 +303,22 @@ function QRCodeGenerator() {
           darkColor: qrColor,
           lightColor: qrBgColor,
           logoDataUrl,
+          isCurrent: task.isCurrent,
         })
 
-        if (!cancelled) {
+        if (task.isCurrent()) {
           setGenerationError('')
         }
       } catch (error) {
         console.error('QR Code generation error:', error)
-        if (!cancelled) {
+        if (task.isCurrent()) {
           setGenerationError(t('qrCodeGenerator.errorGenerate'))
         }
       }
     }
 
     generate()
-
-    return () => {
-      cancelled = true
-    }
-  }, [qrCodeLib, qrValue, qrSize, qrColor, qrBgColor, qrType, moduleStyle, markerStyle, logoDataUrl, language])
+  }, [qrCodeLib, qrValue, qrSize, qrColor, qrBgColor, qrType, moduleStyle, markerStyle, logoDataUrl, language, markTask, t])
 
   const shouldShowQR = qrValue.trim() !== '' && !generationError
 
@@ -404,7 +417,7 @@ function QRCodeGenerator() {
 
           <div className="qr-preview-panel">
             {qrValue.trim() !== '' ? (
-              <div className="result-box success qr-preview-shell">
+              <ResultSection tone="success" className="qr-preview-shell">
                 {generationError ? (
                   <div className="qr-preview-placeholder">
                     <Icon name="qr_code" size={64} style={{ marginBottom: '1rem', opacity: 0.3 }} />
@@ -418,20 +431,25 @@ function QRCodeGenerator() {
                       </div>
                     </div>
                     <div className="qr-preview-footer">
-                      <div className="qr-preview-meta">{t('qrCodeGenerator.sizeLabel')}: {qrSize}x{qrSize}px</div>
-                      <button type="button" onClick={handleDownload} className="qr-download-button">
-                        {t('qrCodeGenerator.downloadButton')}
-                      </button>
-                      <p className="qr-preview-note">{t('qrCodeGenerator.scanText')}</p>
+                      <ResultSummary
+                        centered
+                        title={t('qrCodeGenerator.scanText')}
+                        description={`${t('qrCodeGenerator.sizeLabel')}: ${qrSize}x${qrSize}px`}
+                      />
+                      <ResultActions align="center">
+                        <button type="button" onClick={handleDownload} className="qr-download-button">
+                          {t('qrCodeGenerator.downloadButton')}
+                        </button>
+                      </ResultActions>
                     </div>
                   </>
                 )}
-              </div>
+              </ResultSection>
             ) : (
-              <div className="qr-preview-empty">
+              <ResultSection className="qr-preview-empty">
                 <Icon name="qr_code" size={64} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                <p>{t('qrCodeGenerator.emptyState')}</p>
-              </div>
+                <ResultSummary centered title={t('qrCodeGenerator.emptyState')} />
+              </ResultSection>
             )}
           </div>
 
@@ -522,10 +540,9 @@ function QRCodeGenerator() {
             </div>
 
             {logoDataUrl && (
-              <div className="qr-warning">
-                <strong>{t('qrCodeGenerator.scanabilityTitle')}</strong>
+              <ResultNotice title={t('qrCodeGenerator.scanabilityTitle')} className="qr-warning">
                 <p>{t('qrCodeGenerator.logoWarning')}</p>
-              </div>
+              </ResultNotice>
             )}
           </details>
         </div>

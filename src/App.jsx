@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -6,6 +6,8 @@ import Breadcrumbs from './components/Breadcrumbs'
 import ErrorBoundary from './components/ErrorBoundary'
 import RouteSkeleton from './components/RouteSkeleton'
 import PageTransition from './components/PageTransition'
+import { useLanguage } from './contexts/LanguageContext'
+import { LEGACY_ROUTE_REDIRECTS, ROUTE_REGISTRY } from './config/routeRegistry'
 import {
   Home,
   NumberToWords,
@@ -21,6 +23,8 @@ import {
   URLShortener,
   Feedback,
   PasswordGenerator,
+  NotFound,
+  SearchResults,
   preloadLikelyRoutes,
 } from './routes/lazyPages'
 
@@ -35,8 +39,10 @@ function ScrollToTop() {
 }
 
 function App() {
+  const { language } = useLanguage()
   const [homeSearch, setHomeSearch] = useState('')
   const location = useLocation()
+  const mainRef = useRef(null)
 
   useEffect(() => {
     const preload = () => preloadLikelyRoutes()
@@ -50,69 +56,77 @@ function App() {
     return () => window.clearTimeout(timeoutId)
   }, [])
 
+  useEffect(() => {
+    if (!mainRef.current) return
+
+    window.requestAnimationFrame(() => {
+      mainRef.current?.focus({ preventScroll: true })
+    })
+  }, [location.pathname])
+
+  const componentMap = {
+    Home,
+    NumberToWords,
+    VATCalculator,
+    RandomNumber,
+    Calculator,
+    DateDifferenceCalculator,
+    CompoundInterest,
+    SEOAudit,
+    MetaTagsGenerator,
+    SEOAuditPro,
+    QRCodeGenerator,
+    URLShortener,
+    Feedback,
+    PasswordGenerator,
+    SearchResults,
+  }
+
   return (
     <ErrorBoundary>
+      <a href="#main-content" className="skip-link">
+        {language === 'en' ? 'Skip to content' : 'Перейти к содержимому'}
+      </a>
       <Header searchValue={homeSearch} onSearchChange={setHomeSearch} />
       <ScrollToTop />
-      <main className="app-main">
+      <main id="main-content" ref={mainRef} className="app-main" tabIndex="-1">
         <div className="container">
           <Breadcrumbs />
         </div>
         <Suspense fallback={<RouteSkeleton />}> 
           <PageTransition routeKey={location.pathname}>
           <Routes location={location}>
-            {/* Редирект с корня на /ru */}
-            <Route path="/" element={<Navigate to="/ru/" replace />} />
+            {/* Корень остаётся dev/runtime fallback, production redirect генерируется статически */}
+            <Route path="/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
 
-            {/* Русская версия */}
+            {/* Home */}
             <Route path="/ru" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
             <Route path="/ru/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
-            <Route path="/ru/number-to-words" element={<NumberToWords />} />
-            <Route path="/ru/vat-calculator" element={<VATCalculator />} />
-            <Route path="/ru/random-number" element={<RandomNumber />} />
-            <Route path="/ru/calculator" element={<Calculator />} />
-            <Route path="/ru/date-difference" element={<DateDifferenceCalculator />} />
-            <Route path="/ru/compound-interest" element={<CompoundInterest />} />
-            <Route path="/ru/seo-audit" element={<SEOAudit />} />
-            <Route path="/ru/meta-tags-generator" element={<MetaTagsGenerator />} />
-            <Route path="/ru/seo-audit-pro" element={<SEOAuditPro />} />
-            <Route path="/ru/qr-code-generator" element={<QRCodeGenerator />} />
-            <Route path="/ru/url-shortener" element={<URLShortener />} />
-            <Route path="/ru/feedback" element={<Feedback />} />
-            <Route path="/ru/password-generator" element={<PasswordGenerator />} />
-
-            {/* Английская версия */}
             <Route path="/en" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
             <Route path="/en/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
-            <Route path="/en/number-to-words" element={<NumberToWords />} />
-            <Route path="/en/vat-calculator" element={<VATCalculator />} />
-            <Route path="/en/random-number" element={<RandomNumber />} />
-            <Route path="/en/calculator" element={<Calculator />} />
-            <Route path="/en/date-difference" element={<DateDifferenceCalculator />} />
-            <Route path="/en/compound-interest" element={<CompoundInterest />} />
-            <Route path="/en/seo-audit" element={<SEOAudit />} />
-            <Route path="/en/meta-tags-generator" element={<MetaTagsGenerator />} />
-            <Route path="/en/seo-audit-pro" element={<SEOAuditPro />} />
-            <Route path="/en/qr-code-generator" element={<QRCodeGenerator />} />
-            <Route path="/en/url-shortener" element={<URLShortener />} />
-            <Route path="/en/feedback" element={<Feedback />} />
-            <Route path="/en/password-generator" element={<PasswordGenerator />} />
+
+            {ROUTE_REGISTRY.map((route) => {
+              const Component = componentMap[route.componentKey]
+              return (
+                <Route key={`ru-${route.path}`} path={`/ru${route.path}`} element={<Component />} />
+              )
+            })}
+
+            {ROUTE_REGISTRY.map((route) => {
+              const Component = componentMap[route.componentKey]
+              return (
+                <Route key={`en-${route.path}`} path={`/en${route.path}`} element={<Component />} />
+              )
+            })}
 
             {/* Редиректы со старых URL без языка на /ru */}
-            <Route path="/number-to-words" element={<Navigate to="/ru/number-to-words" replace />} />
-            <Route path="/vat-calculator" element={<Navigate to="/ru/vat-calculator" replace />} />
-            <Route path="/random-number" element={<Navigate to="/ru/random-number" replace />} />
-            <Route path="/calculator" element={<Navigate to="/ru/calculator" replace />} />
-            <Route path="/time-calculator" element={<Navigate to="/ru/date-difference" replace />} />
-            <Route path="/compound-interest" element={<Navigate to="/ru/compound-interest" replace />} />
-            <Route path="/seo-audit" element={<Navigate to="/ru/seo-audit" replace />} />
-            <Route path="/meta-tags-generator" element={<Navigate to="/ru/meta-tags-generator" replace />} />
-            <Route path="/seo-audit-pro" element={<Navigate to="/ru/seo-audit-pro" replace />} />
-            <Route path="/qr-code-generator" element={<Navigate to="/ru/qr-code-generator" replace />} />
-            <Route path="/url-shortener" element={<Navigate to="/ru/url-shortener" replace />} />
-            <Route path="/feedback" element={<Navigate to="/ru/feedback" replace />} />
-            <Route path="/password-generator" element={<Navigate to="/ru/password-generator" replace />} />
-            <Route path="/date-difference" element={<Navigate to="/ru/date-difference" replace />} />
+            {Object.entries(LEGACY_ROUTE_REDIRECTS).map(([fromPath, toPath]) => (
+              <Route key={fromPath} path={fromPath} element={<Navigate to={toPath} replace />} />
+            ))}
+
+            <Route path="/ru/*" element={<NotFound />} />
+            <Route path="/en/*" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           </PageTransition>
         </Suspense>
