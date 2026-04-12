@@ -43,6 +43,7 @@ function App() {
   const [homeSearch, setHomeSearch] = useState('')
   const location = useLocation()
   const mainRef = useRef(null)
+  const hasMountedRef = useRef(false)
 
   useEffect(() => {
     const preload = () => preloadLikelyRoutes()
@@ -57,6 +58,11 @@ function App() {
   }, [])
 
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      return
+    }
+
     if (!mainRef.current) return
 
     window.requestAnimationFrame(() => {

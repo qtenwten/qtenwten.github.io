@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="yandex-verification" content="5edd40b97e956d2c" />
     <meta name="yandex-verification" content="95543c43b65cc6c5" />
     <meta name="description" content="Бесплатные онлайн-инструменты: калькулятор НДС, сумма прописью, QR-коды, случайные числа, графический калькулятор, сокращатель ссылок и SEO-аудит сайта." />
@@ -41,6 +42,15 @@
     </script>
 
     <!-- GitHub Pages SPA redirect handler - must run before React -->
+    <style>
+      html, body, #root {
+        background: #ffffff;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
     <script>
       (function() {
         var redirect = sessionStorage.redirect;

@@ -9,18 +9,17 @@
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.875rem;
-  isolation: isolate;
   background-clip: padding-box;
 }
 
-.footer::before {
+.footer::after {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  height: 1px;
-  background: var(--border);
+  bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+  height: env(safe-area-inset-bottom, 0px);
+  background: var(--header-bg);
   pointer-events: none;
 }
 
