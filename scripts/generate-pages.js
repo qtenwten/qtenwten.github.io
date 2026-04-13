@@ -9,6 +9,8 @@ const publicPath = path.resolve(__dirname, '../public')
 const templatePath = path.join(distPath, 'index.html')
 const localesPath = path.resolve(__dirname, '../src/locales')
 const ROOT_REDIRECT_URL = 'https://qsen.ru/ru/'
+const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
+const ARTICLES_REQUEST_TIMEOUT_MS = 9000
 
 const localeMessages = {
   ru: JSON.parse(fs.readFileSync(path.join(localesPath, 'ru.json'), 'utf-8')),
@@ -154,6 +156,55 @@ function getToolHeroContent(page) {
   }
 }
 
+function safeJsonForInlineScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
+function normalizeArticleIndexItem(item = {}) {
+  return {
+    id: item.id,
+    slug: item.slug || '',
+    title: item.title || '',
+    excerpt: item.excerpt || '',
+    author: item.author || '',
+    coverImage: item.cover_image || null,
+    publishedAt: item.published_at || '',
+  }
+}
+
+async function fetchArticlesIndex() {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), ARTICLES_REQUEST_TIMEOUT_MS)
+
+  try {
+    const response = await fetch(`${ARTICLES_API_BASE_URL}/articles`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Articles request failed with status ${response.status}`)
+    }
+
+    const data = await response.json()
+    return Array.isArray(data) ? data.map(normalizeArticleIndexItem) : []
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+function formatPublishedDate(value, language) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+}
+
 function getPrerenderCopy(language) {
   return language === 'ru'
     ? {
@@ -220,6 +271,35 @@ function buildToolPageShellPrerenderContent(page) {
   return `<div class="tool-container tool-page-shell"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section></div>`
 }
 
+function buildArticlesIndexPrerenderContent(page, articles = []) {
+  const hero = getToolHeroContent(page)
+  const heroClasses = ['tool-page-hero', 'is-centered', 'has-eyebrow', 'has-subtitle', 'has-note']
+  const ariaLabel = escapeHtml(getLocaleValue(page.language, 'articles.listAriaLabel', page.language === 'en' ? 'Articles list' : 'Список статей'))
+  const unknownAuthor = escapeHtml(getLocaleValue(page.language, 'articles.unknownAuthor', page.language === 'en' ? 'Editorial team' : 'Редакция'))
+
+  const cards = articles.map((article) => {
+    const href = `/${page.language}/articles/${encodeURIComponent(article.slug)}`
+    const metaDate = article.publishedAt ? escapeHtml(formatPublishedDate(article.publishedAt, page.language)) : ''
+    const meta = `<div class="article-card__meta"><span>${escapeHtml(article.author || unknownAuthor)}</span>${metaDate ? `<span>${metaDate}</span>` : ''}</div>`
+    const media = article.coverImage
+      ? `<a href="${href}" class="article-card__media" aria-label="${escapeHtml(article.title)}"><img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}" loading="lazy" decoding="async" /></a>`
+      : ''
+    const excerpt = article.excerpt ? `<p class="article-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
+    const readMore = escapeHtml(getLocaleValue(page.language, 'articles.readMore', page.language === 'en' ? 'Open article' : 'Открыть статью'))
+
+    return `<article class="article-card">${media}${meta}<h2 class="article-card__title"><a class="article-card__link" href="${href}">${escapeHtml(article.title)}</a></h2>${excerpt}<div class="article-card__actions"><a class="article-card__read-more" href="${href}">${readMore}</a></div></article>`
+  }).join('')
+
+  const skeletonCard = `<article class="article-card article-card--skeleton"><div class="article-skeleton__media"></div><div class="article-skeleton__meta"></div><div class="article-skeleton__title"></div><div class="article-skeleton__excerpt"></div></article>`
+  const fallbackSkeleton = Array.from({ length: 6 }).map(() => skeletonCard).join('')
+
+  const list = `<section class="articles-grid" aria-label="${ariaLabel}">${cards || fallbackSkeleton}</section>`
+
+  const initialDataScript = `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: articles, generatedAt: new Date().toISOString() })}</script>`
+
+  return `<div class="tool-container tool-page-shell articles-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section>${list}${initialDataScript}</div>`
+}
+
 function buildLegacyToolPrerenderContent(page) {
   return `<div class="tool-container"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>`
 }
@@ -278,7 +358,7 @@ function buildSeoTags(page) {
   `.trim()
 }
 
-function injectSeo(template, page) {
+function injectSeo(template, page, { articlesIndex = [] } = {}) {
   const seoTags = buildSeoTags(page)
   const structuredData = buildStructuredData(page)
 
@@ -311,13 +391,17 @@ function injectSeo(template, page) {
   const usesToolPageShell = TOOL_PAGE_SHELL_PATHS.has(page.path)
   const shouldSkipHydration = CLIENT_RENDER_TOOL_PATHS.has(page.path)
 
+  const prerenderContent = page.path === '/articles'
+    ? buildArticlesIndexPrerenderContent(page, articlesIndex)
+    : usesToolPageShell
+      ? buildToolPageShellPrerenderContent(page)
+      : buildLegacyToolPrerenderContent(page)
+
   const prerenderRoot = isHomePage
     ? buildAppPrerenderRoot(page, buildHomePrerenderContent(page), { isHomePage: true })
     : isRandomNumberPage
       ? buildAppPrerenderRoot(page, buildRandomNumberPrerenderContent(page))
-      : usesToolPageShell
-        ? buildAppPrerenderRoot(page, buildToolPageShellPrerenderContent(page), { skipHydration: shouldSkipHydration })
-        : buildAppPrerenderRoot(page, buildLegacyToolPrerenderContent(page))
+      : buildAppPrerenderRoot(page, prerenderContent, { skipHydration: shouldSkipHydration })
 
   html = html.replace(/<div id="root"><\/div>/, prerenderRoot)
 
@@ -407,16 +491,28 @@ function main() {
   const template = fs.readFileSync(templatePath, 'utf-8')
   const pages = getAllLocalizedSeoPages()
 
-  pages.forEach((page) => generatePage(template, page))
+  fetchArticlesIndex()
+    .then((articlesIndex) => {
+      pages.forEach((page) => {
+        const injectOptions = page.path === '/articles' ? { articlesIndex } : {}
+        const outputPath = path.join(distPath, page.route, 'index.html')
+        writeFileSafely(outputPath, injectSeo(template, page, injectOptions))
+        console.log(`✓ Generated: ${page.route}`)
+      })
 
-  writeFileSafely(path.join(distPath, 'index.html'), buildRootRedirectPage(template))
+      writeFileSafely(path.join(distPath, 'index.html'), buildRootRedirectPage(template))
 
-  const sitemap = buildSitemap(pages)
-  writeFileSafely(path.join(distPath, 'sitemap.xml'), sitemap)
-  writeFileSafely(path.join(publicPath, 'sitemap.xml'), sitemap)
+      const sitemap = buildSitemap(pages)
+      writeFileSafely(path.join(distPath, 'sitemap.xml'), sitemap)
+      writeFileSafely(path.join(publicPath, 'sitemap.xml'), sitemap)
 
-  console.log(`\n✅ Successfully generated ${pages.length} pages`)
-  console.log('📁 Output: dist/ folder with pre-rendered HTML, redirect root, and sitemap\n')
+      console.log(`\n✅ Successfully generated ${pages.length} pages`)
+      console.log('📁 Output: dist/ folder with pre-rendered HTML, redirect root, and sitemap\n')
+    })
+    .catch((error) => {
+      console.error('❌ Failed to fetch articles index for prerender:', error)
+      process.exit(1)
+    })
 }
 
 main()
