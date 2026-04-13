@@ -43,6 +43,12 @@ const TOOL_PAGE_SHELL_PATHS = new Set([
   '/url-shortener',
   '/feedback',
   '/password-generator',
+  '/articles',
+])
+
+const CLIENT_RENDER_TOOL_PATHS = new Set([
+  '/qr-code-generator',
+  '/articles',
 ])
 
 const PRERENDER_TOOL_HERO_CONFIG = {
@@ -109,6 +115,11 @@ const PRERENDER_TOOL_HERO_CONFIG = {
   '/password-generator': {
     titleKey: 'passwordGenerator.title',
     subtitleKey: 'passwordGenerator.subtitle',
+  },
+  '/articles': {
+    titleKey: 'articles.title',
+    subtitleKey: 'articles.subtitle',
+    noteKey: 'articles.note',
   },
 }
 
@@ -179,10 +190,11 @@ function buildHeaderPrerender(page, { isHomePage = false } = {}) {
   return `<header class="header"><div class="container header-content ${isHomePage ? 'is-home-search' : 'is-compact'}"><a href="${homePath}" class="logo"><svg aria-hidden="true" class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"></path><path d="M5 20V8l8-5 6 4"></path><path d="M13 7v13"></path><path d="M9 11h.01"></path><path d="M9 14h.01"></path><path d="M9 17h.01"></path></svg><div class="logo-wrapper"><span class="logo-text">Utility Tools</span><span class="logo-subtitle">${escapeHtml(copy.homeTitle)}</span></div></a>${isHomePage ? `<div class="header-search-box"><label for="header-search" class="sr-only">${escapeHtml(copy.search)}</label><input id="header-search" type="search" placeholder="${escapeHtml(copy.search)}" aria-label="${escapeHtml(copy.search)}" value="" /></div>` : ''}<div class="header-actions">${isHomePage ? '' : `<a href="/${page.language}/search" class="header-search-link"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><span>${escapeHtml(copy.search)}</span></a>`}${buildLanguageSwitcherPrerender(page.language)}</div></div></header>`
 }
 
-function buildAppPrerenderRoot(page, content, { isHomePage = false } = {}) {
+function buildAppPrerenderRoot(page, content, { isHomePage = false, skipHydration = false } = {}) {
   const copy = getPrerenderCopy(page.language)
+  const rootAttributes = skipHydration ? ' data-no-hydrate="true"' : ''
 
-  return `<div id="root"><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${isHomePage ? '<div class="container"></div>' : `<div class="container"><nav class="breadcrumbs" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><ol class="breadcrumbs-list"></ol></nav></div>`}<div class="page-transition-wrapper">${content}</div></main></div>`
+  return `<div id="root"${rootAttributes}><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${isHomePage ? '<div class="container"></div>' : `<div class="container"><nav class="breadcrumbs" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><ol class="breadcrumbs-list"></ol></nav></div>`}<div class="page-transition-wrapper">${content}</div></main></div>`
 }
 
 function buildRandomNumberPrerenderContent(page) {
@@ -297,13 +309,14 @@ function injectSeo(template, page) {
     || /^\/?(?:ru|en)\/?$/.test(page.route)
   const isRandomNumberPage = page.path === '/random-number'
   const usesToolPageShell = TOOL_PAGE_SHELL_PATHS.has(page.path)
+  const shouldSkipHydration = CLIENT_RENDER_TOOL_PATHS.has(page.path)
 
   const prerenderRoot = isHomePage
     ? buildAppPrerenderRoot(page, buildHomePrerenderContent(page), { isHomePage: true })
     : isRandomNumberPage
       ? buildAppPrerenderRoot(page, buildRandomNumberPrerenderContent(page))
       : usesToolPageShell
-        ? buildAppPrerenderRoot(page, buildToolPageShellPrerenderContent(page))
+        ? buildAppPrerenderRoot(page, buildToolPageShellPrerenderContent(page), { skipHydration: shouldSkipHydration })
         : buildAppPrerenderRoot(page, buildLegacyToolPrerenderContent(page))
 
   html = html.replace(/<div id="root"><\/div>/, prerenderRoot)

@@ -246,6 +246,17 @@
   line-height: 1.55;
 }
 
+.qr-inline-error {
+  margin-top: 0.65rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--error);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
 .qr-tool-page .field input:not([type='color']):not([type='file']),
 .qr-tool-page .field select,
 .qr-tool-page .field textarea,
@@ -260,6 +271,13 @@
 .qr-tool-page .field textarea:hover,
 .qr-tool-page .field input[type='file']:hover {
   border-color: rgba(var(--primary-rgb), 0.22);
+}
+
+.qr-tool-page .field input[aria-invalid='true']:not([type='color']):not([type='file']),
+.qr-tool-page .field select[aria-invalid='true'],
+.qr-tool-page .field textarea[aria-invalid='true'] {
+  border-color: rgba(239, 68, 68, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 0 0 4px rgba(239, 68, 68, 0.08);
 }
 
 .qr-tool-page .field input:disabled {
@@ -524,6 +542,11 @@
 }
 
 @media (max-width: 968px) {
+  .qr-tool-page::before,
+  .qr-tool-page::after {
+    display: none;
+  }
+
   .qr-generator-layout {
     grid-template-columns: 1fr;
     gap: 1rem;

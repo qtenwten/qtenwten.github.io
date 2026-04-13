@@ -4,6 +4,10 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { getRouteEntry } from '../config/routeRegistry'
 import './Breadcrumbs.css'
 
+function isArticleDetailPath(pathname = '') {
+  return /^\/articles\/[^/]+$/.test(pathname)
+}
+
 function formatFallbackLabel(pathname) {
   const lastSegment = pathname.split('/').filter(Boolean).pop() || ''
   if (!lastSegment) return ''
@@ -37,6 +41,52 @@ function Breadcrumbs() {
 
   const config = getRouteEntry(cleanPath)
   const fallbackLabel = formatFallbackLabel(cleanPath)
+
+  if (isArticleDetailPath(cleanPath)) {
+    const articleLabel = formatFallbackLabel(cleanPath)
+    const breadcrumbs = [
+      { name: t('breadcrumbs.home'), url: `https://qsen.ru/${language}/`, path: `/${language}/` },
+      { name: t('articles.title'), url: `https://qsen.ru/${language}/articles`, path: `/${language}/articles` },
+      { name: articleLabel, url: `https://qsen.ru${pathname}`, path: null },
+    ]
+
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': breadcrumbs.map((crumb, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'name': crumb.name,
+        'item': crumb.url || undefined,
+      })),
+    }
+
+    return (
+      <>
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify(structuredData)}
+          </script>
+        </Helmet>
+
+        <nav className="breadcrumbs" aria-label={t('breadcrumbs.navigation')}>
+          <ol className="breadcrumbs-list">
+            <li className="breadcrumbs-item">
+              <Link to={`/${language}/`} className="breadcrumbs-link">{t('breadcrumbs.home')}</Link>
+            </li>
+            <li className="breadcrumbs-separator" aria-hidden="true">→</li>
+            <li className="breadcrumbs-item">
+              <Link to={`/${language}/articles`} className="breadcrumbs-link">{t('articles.title')}</Link>
+            </li>
+            <li className="breadcrumbs-separator" aria-hidden="true">→</li>
+            <li className="breadcrumbs-item">
+              <span className="breadcrumbs-current" aria-current="page">{articleLabel}</span>
+            </li>
+          </ol>
+        </nav>
+      </>
+    )
+  }
 
   if (config?.breadcrumbMode === 'home-current') {
     const breadcrumbs = [

@@ -24,7 +24,10 @@ const app = (
   </React.StrictMode>
 )
 
-if (rootElement?.hasChildNodes()) {
+if (rootElement?.dataset.noHydrate === 'true') {
+  rootElement.innerHTML = ''
+  createRoot(rootElement).render(app)
+} else if (rootElement?.hasChildNodes()) {
   hydrateRoot(rootElement, app)
 } else if (rootElement) {
   createRoot(rootElement).render(app)

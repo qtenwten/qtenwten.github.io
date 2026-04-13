@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Breadcrumbs from './components/Breadcrumbs'
@@ -25,6 +25,8 @@ import {
   URLShortener,
   Feedback,
   PasswordGenerator,
+  ArticlesIndex,
+  ArticlePage,
   NotFound,
   SearchResults,
   preloadLikelyRoutes,
@@ -146,6 +148,7 @@ function App() {
     URLShortener,
     Feedback,
     PasswordGenerator,
+    ArticlesIndex,
     SearchResults,
   }
 
@@ -186,10 +189,15 @@ function App() {
                 )
               })}
 
+              <Route path="/ru/articles/:slug" element={<ArticlePage />} />
+              <Route path="/en/articles/:slug" element={<ArticlePage />} />
+
               {/* Редиректы со старых URL без языка на /ru */}
               {Object.entries(LEGACY_ROUTE_REDIRECTS).map(([fromPath, toPath]) => (
                 <Route key={fromPath} path={fromPath} element={<Navigate to={toPath} replace />} />
               ))}
+
+              <Route path="/articles/:slug" element={<LegacyArticleRedirect />} />
 
               <Route path="/ru/*" element={<NotFound />} />
               <Route path="/en/*" element={<NotFound />} />
@@ -201,6 +209,11 @@ function App() {
       <Footer />
     </ErrorBoundary>
   )
+}
+
+function LegacyArticleRedirect() {
+  const { slug = '' } = useParams()
+  return <Navigate to={`/ru/articles/${slug}`} replace />
 }
 
 export default App

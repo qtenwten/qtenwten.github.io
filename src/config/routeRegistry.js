@@ -198,6 +198,18 @@ export const ROUTE_REGISTRY = [
     icon: 'lock',
     showOnHome: true,
   },
+  {
+    key: 'articles',
+    path: '/articles',
+    componentKey: 'ArticlesIndex',
+    titleKey: 'articles.title',
+    descriptionKey: 'articles.subtitle',
+    categoryKey: null,
+    categorySlug: null,
+    icon: 'article',
+    showOnHome: false,
+    breadcrumbMode: 'home-current',
+  },
 ].map(createRouteEntry)
 
 export const LEGACY_ROUTE_REDIRECTS = {
@@ -215,6 +227,7 @@ export const LEGACY_ROUTE_REDIRECTS = {
   '/feedback': '/ru/feedback',
   '/password-generator': '/ru/password-generator',
   '/date-difference': '/ru/date-difference',
+  '/articles': '/ru/articles',
 }
 
 export function getRouteEntry(pathname) {

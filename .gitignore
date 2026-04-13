@@ -6,3 +6,5 @@ dist
 .vercel
 .vite
 logs/
+BD/article-publisher.env
+BD/content-staging/

@@ -27,6 +27,8 @@ const QR_THEME_PRESETS = {
 const QR_SIZE_DEFAULT = 256
 const QR_SIZE_MIN = 160
 const QR_SIZE_MAX = 400
+const EMAIL_ADDRESS_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PHONE_NUMBER_PATTERN = /^\+?[\d\s().-]+$/
 
 const INITIAL_QR_FORM = {
   text: '',
@@ -153,6 +155,17 @@ function normalizeUrlValue(value) {
   return /^https?:\/\//i.test(value.trim()) ? value.trim() : `https://${value.trim()}`
 }
 
+function isValidEmailAddress(value) {
+  return EMAIL_ADDRESS_PATTERN.test(value.trim())
+}
+
+function isValidPhoneNumber(value) {
+  const trimmedValue = value.trim()
+  const digitsOnly = trimmedValue.replace(/\D/g, '')
+
+  return digitsOnly.length >= 5 && PHONE_NUMBER_PATTERN.test(trimmedValue)
+}
+
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image()
@@ -251,6 +264,68 @@ function buildQrPayload(qrType, qrForm) {
     }
     default:
       return qrForm.text.trim()
+  }
+}
+
+function getQrValidationState(qrType, qrForm) {
+  const fieldErrors = {}
+
+  switch (qrType) {
+    case 'email': {
+      const emailAddress = qrForm.emailAddress.trim()
+      const hasEmailDetails = qrForm.emailSubject.trim() !== '' || qrForm.emailBody.trim() !== ''
+
+      if (!emailAddress && hasEmailDetails) {
+        fieldErrors.emailAddress = 'qrCodeGenerator.validation.emailAddressRequired'
+      } else if (emailAddress && !isValidEmailAddress(emailAddress)) {
+        fieldErrors.emailAddress = 'qrCodeGenerator.validation.invalidEmailAddress'
+      }
+      break
+    }
+    case 'phone': {
+      const phone = qrForm.phone.trim()
+
+      if (phone && !isValidPhoneNumber(phone)) {
+        fieldErrors.phone = 'qrCodeGenerator.validation.invalidPhoneNumber'
+      }
+      break
+    }
+    case 'sms': {
+      const smsNumber = qrForm.smsNumber.trim()
+      const smsMessage = qrForm.smsMessage.trim()
+
+      if (!smsNumber && smsMessage) {
+        fieldErrors.smsNumber = 'qrCodeGenerator.validation.smsNumberRequired'
+      } else if (smsNumber && !isValidPhoneNumber(smsNumber)) {
+        fieldErrors.smsNumber = 'qrCodeGenerator.validation.invalidPhoneNumber'
+      }
+      break
+    }
+    case 'wifi': {
+      const wifiSsid = qrForm.wifiSsid.trim()
+      const wifiPassword = qrForm.wifiPassword.trim()
+      const wifiSecurity = qrForm.wifiSecurity || 'WPA'
+      const hasAdditionalWifiDetails = wifiPassword !== '' || wifiSecurity !== 'WPA'
+
+      if (!wifiSsid && hasAdditionalWifiDetails) {
+        fieldErrors.wifiSsid = 'qrCodeGenerator.validation.wifiSsidRequired'
+      }
+
+      if (wifiSsid && wifiSecurity !== 'nopass' && !wifiPassword) {
+        fieldErrors.wifiPassword = 'qrCodeGenerator.validation.wifiPasswordRequired'
+      }
+      break
+    }
+    default:
+      break
+  }
+
+  const firstErrorKey = Object.values(fieldErrors)[0] || ''
+
+  return {
+    fieldErrors,
+    firstErrorKey,
+    isValid: firstErrorKey === '',
   }
 }
 
@@ -438,21 +513,33 @@ function QRCodeGenerator() {
   ]
 
   const activeType = qrTypes.find(type => type.id === qrType) || qrTypes[0]
-  const formattedValue = buildQrPayload(qrType, qrForm)
-  const payloadLength = formattedValue.length
-  const shouldShowQR = formattedValue !== '' && !generationError
+  const validationState = getQrValidationState(qrType, qrForm)
   const hasActiveTypeContent = hasQrTypeContent(qrType, qrForm)
-  const previewTone = shouldShowQR ? 'success' : generationError ? 'default' : 'accent'
+  const hasBlockingValidation = hasActiveTypeContent && !validationState.isValid
+  const formattedValue = validationState.isValid ? buildQrPayload(qrType, qrForm) : ''
+  const payloadLength = formattedValue.length
+  const validationMessage = validationState.firstErrorKey ? t(validationState.firstErrorKey) : ''
+  const shouldShowQR = formattedValue !== '' && !generationError
+  const previewTone = shouldShowQR ? 'success' : generationError || hasBlockingValidation ? 'default' : 'accent'
   const previewTitle = generationError
     ? t('qrCodeGenerator.previewErrorTitle')
+    : hasBlockingValidation
+      ? t('qrCodeGenerator.previewInvalidTitle')
     : shouldShowQR
       ? t('qrCodeGenerator.previewReadyTitle')
       : t('qrCodeGenerator.previewEmptyTitle')
   const previewDescription = generationError
     ? generationError
+    : hasBlockingValidation
+      ? validationMessage
     : shouldShowQR
       ? `${activeType.label} · ${t('qrCodeGenerator.sizeLabel')}: ${qrSize}x${qrSize}px`
       : t('qrCodeGenerator.previewEmptyDescription')
+
+  const getFieldError = (fieldName) => {
+    const messageKey = validationState.fieldErrors[fieldName]
+    return messageKey ? t(messageKey) : ''
+  }
 
   const applyThemePreset = (presetId) => {
     const preset = QR_THEME_PRESETS[presetId]
@@ -671,7 +758,12 @@ function QRCodeGenerator() {
                         value={qrForm.emailAddress}
                         onChange={(event) => updateQrForm('emailAddress', event.target.value)}
                         placeholder={t('qrCodeGenerator.placeholders.emailAddress')}
+                        aria-invalid={getFieldError('emailAddress') ? 'true' : 'false'}
+                        aria-describedby={getFieldError('emailAddress') ? 'qrEmailAddressError' : undefined}
                       />
+                      {getFieldError('emailAddress') && (
+                        <div id="qrEmailAddressError" className="qr-inline-error">{getFieldError('emailAddress')}</div>
+                      )}
                     </div>
 
                     <div className="field">
@@ -710,7 +802,12 @@ function QRCodeGenerator() {
                     value={qrForm.phone}
                     onChange={(event) => updateQrForm('phone', event.target.value)}
                     placeholder={t('qrCodeGenerator.placeholders.phone')}
+                    aria-invalid={getFieldError('phone') ? 'true' : 'false'}
+                    aria-describedby={getFieldError('phone') ? 'qrPhoneError' : undefined}
                   />
+                  {getFieldError('phone') && (
+                    <div id="qrPhoneError" className="qr-inline-error">{getFieldError('phone')}</div>
+                  )}
                   <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.phone')}</small>
                 </div>
               )}
@@ -726,7 +823,12 @@ function QRCodeGenerator() {
                         value={qrForm.smsNumber}
                         onChange={(event) => updateQrForm('smsNumber', event.target.value)}
                         placeholder={t('qrCodeGenerator.placeholders.smsNumber')}
+                        aria-invalid={getFieldError('smsNumber') ? 'true' : 'false'}
+                        aria-describedby={getFieldError('smsNumber') ? 'qrSmsNumberError' : undefined}
                       />
+                      {getFieldError('smsNumber') && (
+                        <div id="qrSmsNumberError" className="qr-inline-error">{getFieldError('smsNumber')}</div>
+                      )}
                     </div>
 
                     <div className="field">
@@ -756,7 +858,12 @@ function QRCodeGenerator() {
                         value={qrForm.wifiSsid}
                         onChange={(event) => updateQrForm('wifiSsid', event.target.value)}
                         placeholder={t('qrCodeGenerator.placeholders.wifiSsid')}
+                        aria-invalid={getFieldError('wifiSsid') ? 'true' : 'false'}
+                        aria-describedby={getFieldError('wifiSsid') ? 'qrWifiSsidError' : undefined}
                       />
+                      {getFieldError('wifiSsid') && (
+                        <div id="qrWifiSsidError" className="qr-inline-error">{getFieldError('wifiSsid')}</div>
+                      )}
                     </div>
 
                     <div className="field">
@@ -782,7 +889,12 @@ function QRCodeGenerator() {
                       onChange={(event) => updateQrForm('wifiPassword', event.target.value)}
                       placeholder={t('qrCodeGenerator.placeholders.wifiPassword')}
                       disabled={qrForm.wifiSecurity === 'nopass'}
+                      aria-invalid={getFieldError('wifiPassword') ? 'true' : 'false'}
+                      aria-describedby={getFieldError('wifiPassword') ? 'qrWifiPasswordError' : undefined}
                     />
+                    {getFieldError('wifiPassword') && (
+                      <div id="qrWifiPasswordError" className="qr-inline-error">{getFieldError('wifiPassword')}</div>
+                    )}
                   </div>
 
                   <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.wifi')}</small>
@@ -954,9 +1066,9 @@ function QRCodeGenerator() {
                   <canvas ref={canvasRef} className={`qr-preview-canvas ${shouldShowQR ? 'is-visible' : 'is-hidden'}`} />
 
                   {!shouldShowQR && (
-                    <div className={generationError ? 'qr-preview-placeholder' : 'qr-preview-empty'}>
+                    <div className={generationError || hasBlockingValidation ? 'qr-preview-placeholder' : 'qr-preview-empty'}>
                       <Icon name="qr_code" size={64} className="qr-preview-icon" />
-                      <p>{generationError || t('qrCodeGenerator.emptyState')}</p>
+                      <p>{generationError || validationMessage || t('qrCodeGenerator.emptyState')}</p>
                     </div>
                   )}
                 </div>
@@ -987,6 +1099,12 @@ function QRCodeGenerator() {
               {generationError && (
                 <ResultNotice title={t('qrCodeGenerator.previewErrorTitle')} tone="error">
                   <p>{generationError}</p>
+                </ResultNotice>
+              )}
+
+              {hasBlockingValidation && !generationError && (
+                <ResultNotice title={t('qrCodeGenerator.previewInvalidTitle')} tone="error">
+                  <p>{validationMessage}</p>
                 </ResultNotice>
               )}
 

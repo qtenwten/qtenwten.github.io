@@ -83,11 +83,40 @@
     "home": "Home",
     "navigation": "Navigation"
   },
+  "articles": {
+    "title": "Articles and guides",
+    "subtitle": "Practical content about Cloudflare, automation, tools, and useful web workflows.",
+    "eyebrow": "Knowledge base",
+    "note": "New articles are published through the Worker API and become available on the site automatically.",
+    "loading": "Loading articles",
+    "loadingArticle": "Loading article",
+    "errorTitle": "Could not load the content",
+    "emptyTitle": "No published articles yet",
+    "emptyDescription": "When new posts are published through the Worker API, they will appear here automatically.",
+    "listAriaLabel": "Articles list",
+    "readMore": "Open article",
+    "backToList": "Back to articles",
+    "detailEyebrow": "Article",
+    "detailFallbackTitle": "Article",
+    "detailLoadingTitle": "Loading article | QSEN.RU",
+    "openApiSource": "Open in Worker API",
+    "unknownAuthor": "Editorial team",
+    "errors": {
+      "list": "Could not load the article list. Please try again a bit later.",
+      "single": "Could not load the article. Please try opening it again later.",
+      "notFound": "The requested article was not found or is no longer available."
+    }
+  },
   "seo": {
     "home": {
       "title": "Free Online Calculators, Generators, and SEO Tools",
       "description": "Free online tools for VAT, QR codes, passwords, short links, random numbers, date calculations, and quick SEO checks.",
       "keywords": "free online tools, online calculators, qr code generator, vat calculator, password generator, seo audit tool"
+    },
+    "articles": {
+      "title": "Articles and Guides | QSEN.RU",
+      "description": "Browse practical articles and guides about Cloudflare, automation, tools, and useful web workflows.",
+      "keywords": "qsen articles, cloudflare d1 guide, automation guides, tools blog, web workflows"
     },
     "passwordGenerator": {
       "title": "Free Password Generator Online | Strong Password Tool",
@@ -543,6 +572,7 @@
     "previewKicker": "Live preview",
     "previewReadyTitle": "QR code is ready",
     "previewEmptyTitle": "Build a QR code for your use case",
+    "previewInvalidTitle": "Fix the input data",
     "previewErrorTitle": "Could not refresh the QR code",
     "previewEmptyDescription": "Every change appears here instantly: content, colors, size, and logo.",
     "previewTip": "Use high-contrast colors and test the final QR before print, packaging, or mass distribution.",
@@ -562,6 +592,14 @@
       "logoReady": "Added",
       "logoEmpty": "None",
       "logoHelp": "You can upload PNG, JPG, SVG, or WebP"
+    },
+    "validation": {
+      "emailAddressRequired": "Enter an email address to encode a draft with a subject or message.",
+      "invalidEmailAddress": "Enter a valid email address in the format name@example.com.",
+      "invalidPhoneNumber": "Enter a valid phone number using digits, spaces, parentheses, hyphens, or the + sign.",
+      "smsNumberRequired": "Enter a phone number to encode an SMS message.",
+      "wifiSsidRequired": "Enter the Wi-Fi network name (SSID).",
+      "wifiPasswordRequired": "A password is required for WPA/WEP-protected Wi-Fi networks."
     },
     "info": {
       "howToTitle": "How to create a QR code online",

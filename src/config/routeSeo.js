@@ -35,6 +35,22 @@ export const ROUTE_SEO = {
       includeInSitemap: false,
     },
   },
+  '/articles': {
+    ru: {
+      title: 'Статьи и руководства | QSEN.RU',
+      description: 'Подборка статей и практических руководств по инструментам, Cloudflare, автоматизации и полезным веб-сценариям.',
+      keywords: 'статьи qsen, руководства, cloudflare d1, статьи по инструментам, блог qsen',
+      h1: 'Статьи и руководства',
+      image: 'https://qsen.ru/og-image.svg',
+    },
+    en: {
+      title: 'Articles and Guides | QSEN.RU',
+      description: 'Browse practical articles and guides about tools, Cloudflare, automation, and useful web workflows.',
+      keywords: 'qsen articles, guides, cloudflare d1 guide, tool articles, qsen blog',
+      h1: 'Articles and Guides',
+      image: 'https://qsen.ru/og-image.svg',
+    },
+  },
   '/number-to-words': {
     ru: {
       title: 'Сумма прописью онлайн — число прописью для счетов и договоров',
@@ -278,7 +294,7 @@ export function getAllLocalizedSeoPages() {
       route: getLocalizedRoutePath(language, path),
       url: getLocalizedRouteUrl(language, path),
       locale: language === 'en' ? 'en_US' : 'ru_RU',
-      ...localized[language],
+      ...getRouteSeo(language, path),
     }))
   ))
 }
