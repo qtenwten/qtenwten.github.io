@@ -1025,24 +1025,28 @@ function QRCodeGenerator() {
                 <small className="qr-helper-text">{t('qrCodeGenerator.logoHint')}</small>
               </div>
 
-              {logoDataUrl && (
-                <div className="qr-logo-preview-card">
-                  <div className="qr-logo-preview-frame">
-                    <img src={logoDataUrl} alt="" />
-                  </div>
+              <div className={`qr-logo-preview-slot ${logoDataUrl ? 'is-filled' : 'is-empty'}`}>
+                {logoDataUrl && (
+                  <div className="qr-logo-preview-card">
+                    <div className="qr-logo-preview-frame">
+                      <img src={logoDataUrl} alt="" />
+                    </div>
 
-                  <div className="qr-logo-meta">
-                    <strong>{t('qrCodeGenerator.logoLoadedLabel')}</strong>
-                    <span>{logoFileName || t('qrCodeGenerator.previewMetrics.logoReady')}</span>
+                    <div className="qr-logo-meta">
+                      <strong>{t('qrCodeGenerator.logoLoadedLabel')}</strong>
+                      <span>{logoFileName || t('qrCodeGenerator.previewMetrics.logoReady')}</span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {logoDataUrl && (
-                <button type="button" className="secondary qr-logo-remove" onClick={handleRemoveLogo}>
-                  {t('qrCodeGenerator.removeLogo')}
-                </button>
-              )}
+              <div className={`qr-logo-actions-slot ${logoDataUrl ? 'is-filled' : 'is-empty'}`}>
+                {logoDataUrl && (
+                  <button type="button" className="secondary qr-logo-remove" onClick={handleRemoveLogo}>
+                    {t('qrCodeGenerator.removeLogo')}
+                  </button>
+                )}
+              </div>
             </section>
           </ToolControls>
 
@@ -1091,8 +1095,8 @@ function QRCodeGenerator() {
                 />
                 <ResultMetric
                   label={t('qrCodeGenerator.previewMetrics.logo')}
-                  value={logoDataUrl ? t('qrCodeGenerator.previewMetrics.logoReady') : t('qrCodeGenerator.previewMetrics.logoEmpty')}
-                  hint={logoDataUrl ? logoFileName : t('qrCodeGenerator.previewMetrics.logoHelp')}
+                  value={logoDataUrl ? t('qrCodeGenerator.previewMetrics.logoPresent') : t('qrCodeGenerator.previewMetrics.logoEmpty')}
+                  hint={logoDataUrl ? t('qrCodeGenerator.previewMetrics.logoAddedHint') : t('qrCodeGenerator.previewMetrics.logoHelp')}
                 />
               </ResultMetrics>
 
@@ -1120,9 +1124,6 @@ function QRCodeGenerator() {
                 </button>
               </ResultActions>
 
-              <ResultNotice title={t('qrCodeGenerator.scanabilityTitle')} tone={logoDataUrl ? 'warning' : 'info'} className="qr-warning">
-                <p>{logoDataUrl ? t('qrCodeGenerator.logoWarning') : t('qrCodeGenerator.previewTip')}</p>
-              </ResultNotice>
             </ResultSection>
           </ToolResult>
         </ToolPageLayout>

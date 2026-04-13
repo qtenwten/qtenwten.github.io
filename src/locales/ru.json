@@ -604,8 +604,10 @@
       "logo": "Логотип",
       "payloadHint": "символов в кодируемой строке",
       "logoReady": "Добавлен",
+      "logoPresent": "Да",
       "logoEmpty": "Нет",
-      "logoHelp": "Можно загрузить PNG, JPG, SVG или WebP"
+      "logoHelp": "Можно загрузить PNG, JPG, SVG или WebP",
+      "logoAddedHint": "Логотип добавлен"
     },
     "validation": {
       "emailAddressRequired": "Укажите email-адрес, чтобы закодировать письмо с темой или текстом.",

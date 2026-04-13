@@ -606,8 +606,10 @@
       "logo": "Logo",
       "payloadHint": "characters in the encoded string",
       "logoReady": "Added",
+      "logoPresent": "Yes",
       "logoEmpty": "None",
-      "logoHelp": "You can upload PNG, JPG, SVG, or WebP"
+      "logoHelp": "You can upload PNG, JPG, SVG, or WebP",
+      "logoAddedHint": "Logo added"
     },
     "validation": {
       "emailAddressRequired": "Enter an email address to encode a draft with a subject or message.",
