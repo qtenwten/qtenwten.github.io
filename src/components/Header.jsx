@@ -62,6 +62,17 @@ function Header({ searchValue, onSearchChange }) {
         )}
 
         <div className="header-actions">
+          <Link
+            to={`/${routeLanguage}/articles`}
+            className="header-nav-link"
+            onMouseEnter={() => preloadRoute('/articles')}
+            onFocus={() => preloadRoute('/articles')}
+            onTouchStart={() => preloadRoute('/articles')}
+          >
+            <Icon name="article" size={16} />
+            <span>{t('nav.articles')}</span>
+          </Link>
+
           {!isHomePage && (
             <Link
               to={`/${routeLanguage}/search`}

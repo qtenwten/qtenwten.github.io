@@ -2,16 +2,25 @@ import { Helmet } from 'react-helmet-async'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getLocalizedRouteUrl, getRouteSeo, normalizeSeoPath } from '../config/routeSeo'
 
-function SEO({ title, description, path = '', keywords = '', image = 'https://qsen.ru/og-image.svg', robots = 'index,follow' }) {
+function SEO({
+  title,
+  description,
+  path = '',
+  keywords = '',
+  image = 'https://qsen.ru/og-image.svg',
+  robots = 'index,follow',
+  ogType = 'website',
+  structuredData,
+}) {
   const { language } = useLanguage()
   const cleanPath = normalizeSeoPath(path)
   const routeSeo = getRouteSeo(language, cleanPath)
 
   const siteName = 'QSEN.RU'
-  const fullTitle = routeSeo.title || title
-  const fullDescription = routeSeo.description || description
-  const fullKeywords = routeSeo.keywords || keywords
-  const fullImage = routeSeo.image || image
+  const fullTitle = title || routeSeo.title
+  const fullDescription = description || routeSeo.description
+  const fullKeywords = keywords || routeSeo.keywords
+  const fullImage = image || routeSeo.image
   const fullUrl = getLocalizedRouteUrl(language, cleanPath)
   const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
   const enUrl = getLocalizedRouteUrl('en', cleanPath)
@@ -19,28 +28,29 @@ function SEO({ title, description, path = '', keywords = '', image = 'https://qs
   const locale = language === 'ru' ? 'ru_RU' : 'en_US'
 
   // JSON-LD structured data
-  const structuredData = {
+  const defaultStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    'name': siteName,
-    'url': 'https://qsen.ru',
-    'description': fullDescription,
-    'inLanguage': language,
-    'publisher': {
+    name: siteName,
+    url: 'https://qsen.ru',
+    description: fullDescription,
+    inLanguage: language,
+    publisher: {
       '@type': 'Organization',
-      'name': siteName,
-      'url': 'https://qsen.ru',
-      'logo': {
+      name: siteName,
+      url: 'https://qsen.ru',
+      logo: {
         '@type': 'ImageObject',
-        'url': 'https://qsen.ru/icon-512x512.png'
-      }
+        url: 'https://qsen.ru/icon-512x512.png',
+      },
     },
-    'potentialAction': {
+    potentialAction: {
       '@type': 'SearchAction',
-      'target': `https://qsen.ru/${language}/?search={search_term_string}`,
-      'query-input': 'required name=search_term_string'
-    }
+      target: `https://qsen.ru/${language}/?search={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
   }
+  const resolvedStructuredData = structuredData || defaultStructuredData
 
   return (
     <Helmet>
@@ -61,7 +71,7 @@ function SEO({ title, description, path = '', keywords = '', image = 'https://qs
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={fullDescription} />
       <meta property="og:url" content={fullUrl} />
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={ogType} />
       <meta property="og:image" content={fullImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
@@ -80,7 +90,7 @@ function SEO({ title, description, path = '', keywords = '', image = 'https://qs
 
       {/* JSON-LD Structured Data */}
       <script type="application/ld+json">
-        {JSON.stringify(structuredData)}
+        {JSON.stringify(resolvedStructuredData)}
       </script>
     </Helmet>
   )

@@ -63,6 +63,29 @@
   transition: border-color var(--transition-fast) ease, color var(--transition-fast) ease, background-color var(--transition-fast) ease, transform var(--transition-fast) ease;
 }
 
+.header-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 42px;
+  padding: 0.65rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: border-color var(--transition-fast) ease, color var(--transition-fast) ease, background-color var(--transition-fast) ease, transform var(--transition-fast) ease;
+}
+
+.header-nav-link:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-secondary);
+  transform: translateY(-1px);
+}
+
 .header-search-link:hover {
   color: var(--text);
   border-color: var(--border-strong);
@@ -173,8 +196,18 @@
     display: none;
   }
 
+  .header-nav-link span {
+    display: none;
+  }
+
   .header-search-link {
     min-width: 2.75rem;
+  }
+
+  .header-nav-link {
+    min-width: 2.75rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .header-content.is-home-search .header-search-box {

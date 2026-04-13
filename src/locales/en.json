@@ -83,11 +83,15 @@
     "home": "Home",
     "navigation": "Navigation"
   },
+  "nav": {
+    "articles": "Articles"
+  },
   "articles": {
     "title": "Articles and guides",
-    "subtitle": "Practical content about Cloudflare, automation, tools, and useful web workflows.",
+    "subtitle": "Helpful guides on using site tools, solving everyday tasks faster, and getting more value from web services.",
     "eyebrow": "Knowledge base",
-    "note": "New articles are published through the Worker API and become available on the site automatically.",
+    "note": "Browse practical tips, step-by-step guides, and real-world workflows to get the most out of online tools.",
+    "coverAlt": "Article cover",
     "loading": "Loading articles",
     "loadingArticle": "Loading article",
     "errorTitle": "Could not load the content",

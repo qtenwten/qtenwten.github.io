@@ -25,6 +25,17 @@ function Footer() {
             {t('footer.writeUs')}
           </Link>
         </div>
+        <nav className="footer-links" aria-label={t('breadcrumbs.navigation')}>
+          <Link
+            to={`/${language}/articles`}
+            className="footer-link"
+            onMouseEnter={() => preloadRoute('/articles')}
+            onFocus={() => preloadRoute('/articles')}
+            onTouchStart={() => preloadRoute('/articles')}
+          >
+            {t('nav.articles')}
+          </Link>
+        </nav>
         <p className="footer-copyright">&copy; {new Date().getFullYear()} Utility Tools. {t('footer.copyright')}</p>
       </div>
     </footer>
