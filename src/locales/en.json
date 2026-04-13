@@ -438,6 +438,8 @@
   "qrCodeGenerator": {
     "title": "Free QR Code Generator",
     "subtitle": "Create QR codes online for links, Wi-Fi, phone numbers, email, and text",
+    "heroEyebrow": "Premium builder",
+    "heroNote": "Build QR codes for links, contacts, Wi-Fi, menus, packaging, and marketing with branding controls and a live preview.",
     "typeLabel": "QR Code Type",
     "types": {
       "text": "Text",
@@ -447,21 +449,69 @@
       "sms": "SMS",
       "wifi": "WiFi"
     },
+    "typeDescriptions": {
+      "text": "notes, instructions, descriptions",
+      "url": "website, menu, profile, landing page",
+      "email": "feedback, sales, support inbox",
+      "phone": "quick call-to-action",
+      "sms": "prefilled message flow",
+      "wifi": "guest Wi-Fi for offices and events"
+    },
     "placeholders": {
-      "text": "Enter text",
+      "text": "Enter text or description",
       "url": "https://example.com",
-      "email": "example@mail.com",
+      "emailAddress": "example@mail.com",
+      "emailSubject": "Email subject",
+      "emailBody": "Email body",
       "phone": "+1 (999) 123-45-67",
-      "sms": "+1 (999) 123-45-67",
-      "wifi": "SSID:password:WPA"
+      "smsNumber": "+1 (999) 123-45-67",
+      "smsMessage": "For example: Please call me back",
+      "wifiSsid": "Network name (SSID)",
+      "wifiPassword": "Network password"
     },
     "dataLabel": "Data for QR code",
+    "sections": {
+      "typeTitle": "1. QR format",
+      "typeDescription": "Pick the setup that fits personal sharing, business assets, events, or printed materials.",
+      "contentTitle": "2. Content",
+      "contentDescription": "Fields adapt to the selected format, so you do not need to remember raw QR syntax.",
+      "styleTitle": "3. Style and branding",
+      "styleDescription": "Use safe presets, flexible colors, and module shapes for a polished and scannable result.",
+      "logoTitle": "4. Logo",
+      "logoDescription": "Add a logo or avatar. The image is fitted in the center without distortion."
+    },
+    "fields": {
+      "text": "Text or message",
+      "url": "Link",
+      "emailAddress": "Email address",
+      "emailSubject": "Email subject",
+      "emailBody": "Email body",
+      "phone": "Phone number",
+      "smsNumber": "Phone number",
+      "smsMessage": "SMS message",
+      "wifiSsid": "Network name",
+      "wifiPassword": "Password",
+      "wifiSecurity": "Security type"
+    },
+    "contentHints": {
+      "url": "Ideal for websites, menus, social profiles, digital business cards, or a bio link.",
+      "email": "Add a subject and message so people open a prefilled draft instead of a blank email.",
+      "phone": "Works well for business cards, packaging, signage, and fast callback flows.",
+      "sms": "Useful for support, promotions, confirmations, and short CTA campaigns with a ready message.",
+      "wifi": "Great for guest Wi-Fi in offices, cafes, showrooms, receptions, and event spaces."
+    },
     "wifiFormat": "Format: SSID:password:type (WPA/WEP/nopass)",
+    "wifiSecurity": {
+      "WPA": "WPA / WPA2",
+      "WEP": "WEP",
+      "nopass": "No password"
+    },
     "sizeLabel": "Size",
     "themeLabel": "Visual theme",
     "themes": {
       "classic": "Classic",
-      "soft": "Soft"
+      "soft": "Soft",
+      "custom": "Custom"
     },
     "advancedLabel": "Advanced settings",
     "moduleStyleLabel": "Module style",
@@ -479,22 +529,46 @@
     "qrColor": "QR Color",
     "bgColor": "Background Color",
     "logoLabel": "Center logo (optional)",
-    "logoHint": "Use a compact logo for best scan reliability. Smaller logos are safer for real-world scanning.",
+    "logoHint": "The logo is fitted automatically with its original aspect ratio. Compact marks with good contrast scan best.",
+    "logoLoadedLabel": "Uploaded logo",
     "removeLogo": "Remove logo",
     "scanabilityTitle": "Scanning note",
     "logoWarning": "A center logo reduces the usable QR area. Keep it small and always test the final code before sharing or printing.",
     "unicodeHint": "QR codes support Cyrillic, Latin characters, numbers, and symbols directly — your original text is preserved.",
-    "sizeHint": "The preview is capped at 400×400 px to keep the QR sharp, proportional, and easy to scan across devices.",
+    "sizeHint": "The preview is capped at 400×400 px to keep the code sharp, proportional, and easy to scan across devices.",
     "errorGenerate": "Could not generate the QR code. Check the entered data and try again.",
-    "downloadButton": "📥 Download PNG",
+    "downloadButton": "Download PNG",
     "scanText": "Scan with phone camera",
-    "emptyState": "Enter data on the left to create a QR code",
+    "emptyState": "Choose a QR type and fill in the fields to see the code",
+    "previewKicker": "Live preview",
+    "previewReadyTitle": "QR code is ready",
+    "previewEmptyTitle": "Build a QR code for your use case",
+    "previewErrorTitle": "Could not refresh the QR code",
+    "previewEmptyDescription": "Every change appears here instantly: content, colors, size, and logo.",
+    "previewTip": "Use high-contrast colors and test the final QR before print, packaging, or mass distribution.",
+    "previewBadges": {
+      "live": "Live preview",
+      "brand": "Brand-ready",
+      "export": "PNG export"
+    },
+    "clearCurrentButton": "Clear fields",
+    "resetStyleButton": "Reset style",
+    "previewMetrics": {
+      "type": "Format",
+      "size": "Size",
+      "payload": "Length",
+      "logo": "Logo",
+      "payloadHint": "characters in the encoded string",
+      "logoReady": "Added",
+      "logoEmpty": "None",
+      "logoHelp": "You can upload PNG, JPG, SVG, or WebP"
+    },
     "info": {
       "howToTitle": "How to create a QR code online",
-      "howToDescription": "Create a QR code in seconds by choosing a content type, entering your data, and downloading the finished image:",
+      "howToDescription": "Create a QR code in seconds by choosing a format, filling in the guided fields, and downloading the finished image:",
       "howToSteps": {
         "step1": "Choose the QR code type (link, text, WiFi, etc.)",
-        "step2": "Enter your data",
+        "step2": "Fill in the relevant fields for your use case",
         "step3": "Download the finished QR code as PNG"
       },
       "howToNote": "Our QR code generator works instantly and requires no registration.",
@@ -514,8 +588,8 @@
       "featuresTitle": "Features",
       "featuresList": {
         "free": "Create QR codes online for free without registration",
-        "colors": "Customize QR code and background colors",
-        "styles": "Customize module styles, corner markers, themes, and an optional center logo",
+        "colors": "Customize QR code and background colors with a live preview",
+        "styles": "Use presets, module styles, corner markers, and an optional center logo",
         "size": "Adjust size (from 160×160 to 400×400)",
         "download": "Download high-quality PNG files",
         "instant": "Instant generation with no delays"
@@ -523,8 +597,8 @@
       "stepsTitle": "How to use this QR code generator",
       "stepsList": {
         "step1": "Select the QR code type",
-        "step2": "Enter your data (link, text, WiFi, etc.)",
-        "step3": "Customize the appearance",
+        "step2": "Fill in the fields for links, text, Wi-Fi, email, SMS, or phone numbers",
+        "step3": "Customize the appearance and add a logo if needed",
         "step4": "Download the result as PNG"
       },
       "useCasesTitle": "Where QR codes are commonly used",

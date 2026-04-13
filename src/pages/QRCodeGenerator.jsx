@@ -5,8 +5,8 @@ import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { useAsyncRequest } from '../hooks/useAsyncRequest'
-import { ResultActions, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
-import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult } from '../components/ToolPageShell'
+import { ResultActions, ResultMetric, ResultMetrics, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
+import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult, ToolSectionHeading } from '../components/ToolPageShell'
 import './QRCodeGenerator.css'
 
 const QR_THEME_PRESETS = {
@@ -24,8 +24,49 @@ const QR_THEME_PRESETS = {
   },
 }
 
+const QR_SIZE_DEFAULT = 256
 const QR_SIZE_MIN = 160
 const QR_SIZE_MAX = 400
+
+const INITIAL_QR_FORM = {
+  text: '',
+  url: '',
+  emailAddress: '',
+  emailSubject: '',
+  emailBody: '',
+  phone: '',
+  smsNumber: '',
+  smsMessage: '',
+  wifiSsid: '',
+  wifiPassword: '',
+  wifiSecurity: 'WPA',
+}
+
+const QR_TYPE_EMPTY_VALUES = {
+  text: {
+    text: '',
+  },
+  url: {
+    url: '',
+  },
+  email: {
+    emailAddress: '',
+    emailSubject: '',
+    emailBody: '',
+  },
+  phone: {
+    phone: '',
+  },
+  sms: {
+    smsNumber: '',
+    smsMessage: '',
+  },
+  wifi: {
+    wifiSsid: '',
+    wifiPassword: '',
+    wifiSecurity: 'WPA',
+  },
+}
 
 function drawRoundedRect(ctx, x, y, width, height, radius) {
   const safeRadius = Math.min(radius, width / 2, height / 2)
@@ -143,6 +184,93 @@ function getContainedSize(sourceWidth, sourceHeight, maxWidth, maxHeight) {
   }
 }
 
+function clearCanvas(canvas) {
+  const ctx = canvas?.getContext('2d')
+  if (!ctx || !canvas) {
+    return
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+}
+
+function buildQrPayload(qrType, qrForm) {
+  switch (qrType) {
+    case 'url':
+      return normalizeUrlValue(qrForm.url || '')
+    case 'email': {
+      const emailAddress = qrForm.emailAddress.trim()
+      if (!emailAddress) {
+        return ''
+      }
+
+      const params = new URLSearchParams()
+
+      if (qrForm.emailSubject.trim()) {
+        params.set('subject', qrForm.emailSubject.trim())
+      }
+
+      if (qrForm.emailBody.trim()) {
+        params.set('body', qrForm.emailBody.trim())
+      }
+
+      const query = params.toString()
+      return `mailto:${emailAddress}${query ? `?${query}` : ''}`
+    }
+    case 'phone': {
+      const phone = qrForm.phone.trim()
+      return phone ? `tel:${phone}` : ''
+    }
+    case 'sms': {
+      const smsNumber = qrForm.smsNumber.trim()
+      const smsMessage = qrForm.smsMessage.trim()
+
+      if (!smsNumber) {
+        return ''
+      }
+
+      return `SMSTO:${smsNumber}${smsMessage ? `:${smsMessage}` : ''}`
+    }
+    case 'wifi': {
+      const wifiSsid = qrForm.wifiSsid.trim()
+      if (!wifiSsid) {
+        return ''
+      }
+
+      const wifiSecurity = qrForm.wifiSecurity || 'WPA'
+      const wifiPassword = qrForm.wifiPassword.trim()
+      const segments = [
+        `T:${escapeWifiValue(wifiSecurity)};`,
+        `S:${escapeWifiValue(wifiSsid)};`,
+      ]
+
+      if (wifiSecurity !== 'nopass') {
+        segments.push(`P:${escapeWifiValue(wifiPassword)};`)
+      }
+
+      return `WIFI:${segments.join('')};`
+    }
+    default:
+      return qrForm.text.trim()
+  }
+}
+
+function hasQrTypeContent(qrType, qrForm) {
+  switch (qrType) {
+    case 'url':
+      return qrForm.url.trim() !== ''
+    case 'email':
+      return qrForm.emailAddress.trim() !== '' || qrForm.emailSubject.trim() !== '' || qrForm.emailBody.trim() !== ''
+    case 'phone':
+      return qrForm.phone.trim() !== ''
+    case 'sms':
+      return qrForm.smsNumber.trim() !== '' || qrForm.smsMessage.trim() !== ''
+    case 'wifi':
+      return qrForm.wifiSsid.trim() !== '' || qrForm.wifiPassword.trim() !== '' || qrForm.wifiSecurity !== 'WPA'
+    default:
+      return qrForm.text.trim() !== ''
+  }
+}
+
 async function renderQRCodeToCanvas({
   canvas,
   qrData,
@@ -242,14 +370,15 @@ function QRCodeGenerator() {
   const { t, language } = useLanguage()
   const { markTask } = useAsyncRequest()
   const [qrType, setQrType] = useState('text')
-  const [qrValue, setQrValue] = useState('')
-  const [qrSize, setQrSize] = useState(256)
+  const [qrForm, setQrForm] = useState(INITIAL_QR_FORM)
+  const [qrSize, setQrSize] = useState(QR_SIZE_DEFAULT)
   const [qrColor, setQrColor] = useState(QR_THEME_PRESETS.classic.qrColor)
   const [qrBgColor, setQrBgColor] = useState(QR_THEME_PRESETS.classic.qrBgColor)
   const [moduleStyle, setModuleStyle] = useState(QR_THEME_PRESETS.classic.moduleStyle)
   const [markerStyle, setMarkerStyle] = useState(QR_THEME_PRESETS.classic.markerStyle)
   const [themePreset, setThemePreset] = useState('classic')
   const [logoDataUrl, setLogoDataUrl] = useState('')
+  const [logoFileName, setLogoFileName] = useState('')
   const [qrCodeLib, setQrCodeLib] = useState(null)
   const [generationError, setGenerationError] = useState('')
   const canvasRef = useRef(null)
@@ -276,17 +405,60 @@ function QRCodeGenerator() {
   }, [t])
 
   const qrTypes = [
-    { id: 'text', label: t('qrCodeGenerator.types.text'), placeholder: t('qrCodeGenerator.placeholders.text') },
-    { id: 'url', label: t('qrCodeGenerator.types.url'), placeholder: t('qrCodeGenerator.placeholders.url') },
-    { id: 'email', label: t('qrCodeGenerator.types.email'), placeholder: t('qrCodeGenerator.placeholders.email') },
-    { id: 'phone', label: t('qrCodeGenerator.types.phone'), placeholder: t('qrCodeGenerator.placeholders.phone') },
-    { id: 'sms', label: t('qrCodeGenerator.types.sms'), placeholder: t('qrCodeGenerator.placeholders.sms') },
-    { id: 'wifi', label: t('qrCodeGenerator.types.wifi'), placeholder: t('qrCodeGenerator.placeholders.wifi') }
+    {
+      id: 'text',
+      label: t('qrCodeGenerator.types.text'),
+      description: t('qrCodeGenerator.typeDescriptions.text'),
+    },
+    {
+      id: 'url',
+      label: t('qrCodeGenerator.types.url'),
+      description: t('qrCodeGenerator.typeDescriptions.url'),
+    },
+    {
+      id: 'email',
+      label: t('qrCodeGenerator.types.email'),
+      description: t('qrCodeGenerator.typeDescriptions.email'),
+    },
+    {
+      id: 'phone',
+      label: t('qrCodeGenerator.types.phone'),
+      description: t('qrCodeGenerator.typeDescriptions.phone'),
+    },
+    {
+      id: 'sms',
+      label: t('qrCodeGenerator.types.sms'),
+      description: t('qrCodeGenerator.typeDescriptions.sms'),
+    },
+    {
+      id: 'wifi',
+      label: t('qrCodeGenerator.types.wifi'),
+      description: t('qrCodeGenerator.typeDescriptions.wifi'),
+    },
   ]
+
+  const activeType = qrTypes.find(type => type.id === qrType) || qrTypes[0]
+  const formattedValue = buildQrPayload(qrType, qrForm)
+  const payloadLength = formattedValue.length
+  const shouldShowQR = formattedValue !== '' && !generationError
+  const hasActiveTypeContent = hasQrTypeContent(qrType, qrForm)
+  const previewTone = shouldShowQR ? 'success' : generationError ? 'default' : 'accent'
+  const previewTitle = generationError
+    ? t('qrCodeGenerator.previewErrorTitle')
+    : shouldShowQR
+      ? t('qrCodeGenerator.previewReadyTitle')
+      : t('qrCodeGenerator.previewEmptyTitle')
+  const previewDescription = generationError
+    ? generationError
+    : shouldShowQR
+      ? `${activeType.label} · ${t('qrCodeGenerator.sizeLabel')}: ${qrSize}x${qrSize}px`
+      : t('qrCodeGenerator.previewEmptyDescription')
 
   const applyThemePreset = (presetId) => {
     const preset = QR_THEME_PRESETS[presetId]
-    if (!preset) return
+    if (!preset) {
+      return
+    }
 
     setThemePreset(presetId)
     setQrColor(preset.qrColor)
@@ -295,32 +467,19 @@ function QRCodeGenerator() {
     setMarkerStyle(preset.markerStyle)
   }
 
-  const formatValue = () => {
-    const value = qrValue.trim()
-
-    switch (qrType) {
-      case 'url':
-        return normalizeUrlValue(value)
-      case 'email':
-        return `mailto:${value}`
-      case 'phone':
-        return `tel:${value}`
-      case 'sms':
-        return `SMSTO:${value}`
-      case 'wifi': {
-        const [ssid = '', password = '', security = 'WPA'] = value.split(':')
-        return `WIFI:T:${escapeWifiValue(security || 'WPA')};S:${escapeWifiValue(ssid)};P:${escapeWifiValue(password)};;`
-      }
-      default:
-        return value
-    }
+  const updateQrForm = (field, value) => {
+    setQrForm((current) => ({
+      ...current,
+      [field]: value,
+    }))
   }
 
   useEffect(() => {
     const task = markTask()
 
     async function generate() {
-      if (!qrValue.trim() || !qrCodeLib || !canvasRef.current) {
+      if (!formattedValue || !qrCodeLib || !canvasRef.current) {
+        clearCanvas(canvasRef.current)
         if (task.isCurrent()) {
           setGenerationError('')
         }
@@ -329,7 +488,7 @@ function QRCodeGenerator() {
 
       try {
         const qrData = qrCodeLib.create(
-          [{ data: formatValue(), mode: 'byte' }],
+          [{ data: formattedValue, mode: 'byte' }],
           { errorCorrectionLevel: 'H' }
         )
 
@@ -350,6 +509,7 @@ function QRCodeGenerator() {
         }
       } catch (error) {
         console.error('QR Code generation error:', error)
+        clearCanvas(canvasRef.current)
         if (task.isCurrent()) {
           setGenerationError(t('qrCodeGenerator.errorGenerate'))
         }
@@ -357,9 +517,7 @@ function QRCodeGenerator() {
     }
 
     generate()
-  }, [qrCodeLib, qrValue, qrSize, qrColor, qrBgColor, qrType, moduleStyle, markerStyle, logoDataUrl, language, markTask, t])
-
-  const shouldShowQR = qrValue.trim() !== '' && !generationError
+  }, [formattedValue, qrCodeLib, qrSize, qrColor, qrBgColor, moduleStyle, markerStyle, logoDataUrl, language, markTask, t])
 
   const handleLogoUpload = (event) => {
     const file = event.target.files?.[0]
@@ -372,26 +530,47 @@ function QRCodeGenerator() {
     reader.onload = () => {
       if (typeof reader.result === 'string') {
         setLogoDataUrl(reader.result)
+        setLogoFileName(file.name)
       }
     }
     reader.readAsDataURL(file)
   }
 
+  const handleRemoveLogo = () => {
+    setLogoDataUrl('')
+    setLogoFileName('')
+  }
+
+  const handleClearCurrentData = () => {
+    setQrForm((current) => ({
+      ...current,
+      ...QR_TYPE_EMPTY_VALUES[qrType],
+    }))
+  }
+
+  const handleResetAppearance = () => {
+    applyThemePreset('classic')
+    setQrSize(QR_SIZE_DEFAULT)
+    handleRemoveLogo()
+  }
+
   const handleDownload = () => {
     const canvas = canvasRef.current
 
-    if (canvas) {
-      canvas.toBlob((blob) => {
-        if (!blob) return
-
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = 'qrcode.png'
-        link.click()
-        URL.revokeObjectURL(url)
-      })
+    if (!shouldShowQR || !canvas) {
+      return
     }
+
+    canvas.toBlob((blob) => {
+      if (!blob) return
+
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'qrcode.png'
+      link.click()
+      URL.revokeObjectURL(url)
+    })
   }
 
   const faqItems = t('qrCodeGenerator.info.faqTitle')
@@ -413,175 +592,421 @@ function QRCodeGenerator() {
       />
 
       <ToolPageShell className="qr-tool-page">
-        <ToolPageHero title={t('qrCodeGenerator.title')} subtitle={t('qrCodeGenerator.subtitle')} />
+        <ToolPageHero
+          className="qr-hero"
+          eyebrow={t('qrCodeGenerator.heroEyebrow')}
+          title={t('qrCodeGenerator.title')}
+          subtitle={t('qrCodeGenerator.subtitle')}
+          note={t('qrCodeGenerator.heroNote')}
+        />
 
         <ToolPageLayout className="qr-generator-layout tool-page-layout--split">
           <ToolControls className="qr-controls-panel">
-            <div className="field">
-              <label>{t('qrCodeGenerator.typeLabel')}</label>
+            <section className="qr-section">
+              <ToolSectionHeading
+                title={t('qrCodeGenerator.sections.typeTitle')}
+                subtitle={t('qrCodeGenerator.sections.typeDescription')}
+              />
+
               <div className="qr-types-grid">
                 {qrTypes.map(type => (
                   <button
                     key={type.id}
                     type="button"
-                    className={`${qrType === type.id ? '' : 'secondary'} qr-type-button`.trim()}
-                    onClick={() => {
-                      setQrType(type.id)
-                      setQrValue('')
-                    }}
+                    className={[
+                      'qr-type-button',
+                      qrType === type.id ? 'is-active' : 'secondary',
+                    ].join(' ')}
+                    onClick={() => setQrType(type.id)}
                   >
-                    {type.label}
+                    <span className="qr-type-button__label">{type.label}</span>
+                    <span className="qr-type-button__description">{type.description}</span>
                   </button>
                 ))}
               </div>
-            </div>
+            </section>
 
-            <div className="field">
-              <label htmlFor="qrValue">{t('qrCodeGenerator.dataLabel')}</label>
-              <textarea
-                id="qrValue"
-                value={qrValue}
-                onChange={(e) => setQrValue(e.target.value)}
-                placeholder={qrTypes.find(t => t.id === qrType)?.placeholder}
-                rows={qrType === 'text' ? 4 : 2}
+            <section className="qr-section">
+              <ToolSectionHeading
+                title={t('qrCodeGenerator.sections.contentTitle')}
+                subtitle={t('qrCodeGenerator.sections.contentDescription')}
               />
-              <small className="qr-helper-text">{t('qrCodeGenerator.unicodeHint')}</small>
-              {qrType === 'wifi' && (
-                <small className="qr-helper-text">{t('qrCodeGenerator.wifiFormat')}</small>
+
+              {qrType === 'text' && (
+                <div className="field">
+                  <label htmlFor="qrText">{t('qrCodeGenerator.fields.text')}</label>
+                  <textarea
+                    id="qrText"
+                    value={qrForm.text}
+                    onChange={(event) => updateQrForm('text', event.target.value)}
+                    placeholder={t('qrCodeGenerator.placeholders.text')}
+                    rows={6}
+                  />
+                  <small className="qr-helper-text">{t('qrCodeGenerator.unicodeHint')}</small>
+                </div>
               )}
-            </div>
-          </ToolControls>
 
-          <ToolResult className="qr-preview-panel">
-            {qrValue.trim() !== '' ? (
-              <ResultSection tone="success" className="qr-preview-shell">
-                {generationError ? (
-                  <div className="qr-preview-placeholder">
-                    <Icon name="qr_code" size={64} className="qr-preview-icon" />
-                    <p>{generationError}</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="qr-preview-frame">
-                      <div className="qr-preview-stage" style={{ '--qr-preview-size': `${qrSize}px` }}>
-                        <canvas ref={canvasRef} className="qr-preview-canvas" />
-                      </div>
-                    </div>
-                    <div className="qr-preview-footer">
-                      <ResultSummary
-                        centered
-                        title={t('qrCodeGenerator.scanText')}
-                        description={`${t('qrCodeGenerator.sizeLabel')}: ${qrSize}x${qrSize}px`}
+              {qrType === 'url' && (
+                <div className="field">
+                  <label htmlFor="qrUrl">{t('qrCodeGenerator.fields.url')}</label>
+                  <input
+                    id="qrUrl"
+                    type="url"
+                    value={qrForm.url}
+                    onChange={(event) => updateQrForm('url', event.target.value)}
+                    placeholder={t('qrCodeGenerator.placeholders.url')}
+                  />
+                  <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.url')}</small>
+                </div>
+              )}
+
+              {qrType === 'email' && (
+                <>
+                  <div className="qr-field-grid">
+                    <div className="field">
+                      <label htmlFor="qrEmailAddress">{t('qrCodeGenerator.fields.emailAddress')}</label>
+                      <input
+                        id="qrEmailAddress"
+                        type="email"
+                        value={qrForm.emailAddress}
+                        onChange={(event) => updateQrForm('emailAddress', event.target.value)}
+                        placeholder={t('qrCodeGenerator.placeholders.emailAddress')}
                       />
-                      <ResultActions align="center">
-                        <button type="button" onClick={handleDownload} className="qr-download-button">
-                          {t('qrCodeGenerator.downloadButton')}
-                        </button>
-                      </ResultActions>
                     </div>
-                  </>
-                )}
-              </ResultSection>
-            ) : (
-              <ResultSection className="qr-preview-empty">
-                <Icon name="qr_code" size={64} className="qr-preview-icon" />
-                <ResultSummary centered title={t('qrCodeGenerator.emptyState')} />
-              </ResultSection>
-            )}
-          </ToolResult>
 
-          <ToolControls className="qr-advanced-panel" tone="subtle" as="details">
-            <summary>{t('qrCodeGenerator.advancedLabel')}</summary>
+                    <div className="field">
+                      <label htmlFor="qrEmailSubject">{t('qrCodeGenerator.fields.emailSubject')}</label>
+                      <input
+                        id="qrEmailSubject"
+                        type="text"
+                        value={qrForm.emailSubject}
+                        onChange={(event) => updateQrForm('emailSubject', event.target.value)}
+                        placeholder={t('qrCodeGenerator.placeholders.emailSubject')}
+                      />
+                    </div>
+                  </div>
 
-            <div className="field">
-              <label htmlFor="themePreset">{t('qrCodeGenerator.themeLabel')}</label>
-              <select id="themePreset" value={themePreset} onChange={(e) => applyThemePreset(e.target.value)}>
-                <option value="classic">{t('qrCodeGenerator.themes.classic')}</option>
-                <option value="soft">{t('qrCodeGenerator.themes.soft')}</option>
-              </select>
-            </div>
+                  <div className="field">
+                    <label htmlFor="qrEmailBody">{t('qrCodeGenerator.fields.emailBody')}</label>
+                    <textarea
+                      id="qrEmailBody"
+                      value={qrForm.emailBody}
+                      onChange={(event) => updateQrForm('emailBody', event.target.value)}
+                      placeholder={t('qrCodeGenerator.placeholders.emailBody')}
+                      rows={4}
+                    />
+                  </div>
 
-            <div className="qr-custom-grid">
+                  <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.email')}</small>
+                </>
+              )}
+
+              {qrType === 'phone' && (
+                <div className="field">
+                  <label htmlFor="qrPhone">{t('qrCodeGenerator.fields.phone')}</label>
+                  <input
+                    id="qrPhone"
+                    type="tel"
+                    value={qrForm.phone}
+                    onChange={(event) => updateQrForm('phone', event.target.value)}
+                    placeholder={t('qrCodeGenerator.placeholders.phone')}
+                  />
+                  <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.phone')}</small>
+                </div>
+              )}
+
+              {qrType === 'sms' && (
+                <>
+                  <div className="qr-field-grid">
+                    <div className="field">
+                      <label htmlFor="qrSmsNumber">{t('qrCodeGenerator.fields.smsNumber')}</label>
+                      <input
+                        id="qrSmsNumber"
+                        type="tel"
+                        value={qrForm.smsNumber}
+                        onChange={(event) => updateQrForm('smsNumber', event.target.value)}
+                        placeholder={t('qrCodeGenerator.placeholders.smsNumber')}
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor="qrSmsMessage">{t('qrCodeGenerator.fields.smsMessage')}</label>
+                      <input
+                        id="qrSmsMessage"
+                        type="text"
+                        value={qrForm.smsMessage}
+                        onChange={(event) => updateQrForm('smsMessage', event.target.value)}
+                        placeholder={t('qrCodeGenerator.placeholders.smsMessage')}
+                      />
+                    </div>
+                  </div>
+
+                  <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.sms')}</small>
+                </>
+              )}
+
+              {qrType === 'wifi' && (
+                <>
+                  <div className="qr-field-grid">
+                    <div className="field">
+                      <label htmlFor="qrWifiSsid">{t('qrCodeGenerator.fields.wifiSsid')}</label>
+                      <input
+                        id="qrWifiSsid"
+                        type="text"
+                        value={qrForm.wifiSsid}
+                        onChange={(event) => updateQrForm('wifiSsid', event.target.value)}
+                        placeholder={t('qrCodeGenerator.placeholders.wifiSsid')}
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor="qrWifiSecurity">{t('qrCodeGenerator.fields.wifiSecurity')}</label>
+                      <select
+                        id="qrWifiSecurity"
+                        value={qrForm.wifiSecurity}
+                        onChange={(event) => updateQrForm('wifiSecurity', event.target.value)}
+                      >
+                        <option value="WPA">{t('qrCodeGenerator.wifiSecurity.WPA')}</option>
+                        <option value="WEP">{t('qrCodeGenerator.wifiSecurity.WEP')}</option>
+                        <option value="nopass">{t('qrCodeGenerator.wifiSecurity.nopass')}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="qrWifiPassword">{t('qrCodeGenerator.fields.wifiPassword')}</label>
+                    <input
+                      id="qrWifiPassword"
+                      type="text"
+                      value={qrForm.wifiPassword}
+                      onChange={(event) => updateQrForm('wifiPassword', event.target.value)}
+                      placeholder={t('qrCodeGenerator.placeholders.wifiPassword')}
+                      disabled={qrForm.wifiSecurity === 'nopass'}
+                    />
+                  </div>
+
+                  <small className="qr-helper-text">{t('qrCodeGenerator.contentHints.wifi')}</small>
+                </>
+              )}
+            </section>
+
+            <section className="qr-section">
+              <ToolSectionHeading
+                title={t('qrCodeGenerator.sections.styleTitle')}
+                subtitle={t('qrCodeGenerator.sections.styleDescription')}
+              />
+
               <div className="field">
-                <label htmlFor="moduleStyle">{t('qrCodeGenerator.moduleStyleLabel')}</label>
-                <select id="moduleStyle" value={moduleStyle} onChange={(e) => setModuleStyle(e.target.value)}>
-                  <option value="square">{t('qrCodeGenerator.moduleStyles.square')}</option>
-                  <option value="rounded">{t('qrCodeGenerator.moduleStyles.rounded')}</option>
-                  <option value="dots">{t('qrCodeGenerator.moduleStyles.dots')}</option>
+                <label htmlFor="themePreset">{t('qrCodeGenerator.themeLabel')}</label>
+                <select
+                  id="themePreset"
+                  value={themePreset}
+                  onChange={(event) => {
+                    if (event.target.value === 'custom') {
+                      return
+                    }
+
+                    applyThemePreset(event.target.value)
+                  }}
+                >
+                  <option value="classic">{t('qrCodeGenerator.themes.classic')}</option>
+                  <option value="soft">{t('qrCodeGenerator.themes.soft')}</option>
+                  <option value="custom">{t('qrCodeGenerator.themes.custom')}</option>
                 </select>
               </div>
 
+              <div className="qr-style-grid">
+                <div className="field">
+                  <label htmlFor="moduleStyle">{t('qrCodeGenerator.moduleStyleLabel')}</label>
+                  <select
+                    id="moduleStyle"
+                    value={moduleStyle}
+                    onChange={(event) => {
+                      setThemePreset('custom')
+                      setModuleStyle(event.target.value)
+                    }}
+                  >
+                    <option value="square">{t('qrCodeGenerator.moduleStyles.square')}</option>
+                    <option value="rounded">{t('qrCodeGenerator.moduleStyles.rounded')}</option>
+                    <option value="dots">{t('qrCodeGenerator.moduleStyles.dots')}</option>
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label htmlFor="markerStyle">{t('qrCodeGenerator.markerStyleLabel')}</label>
+                  <select
+                    id="markerStyle"
+                    value={markerStyle}
+                    onChange={(event) => {
+                      setThemePreset('custom')
+                      setMarkerStyle(event.target.value)
+                    }}
+                  >
+                    <option value="square">{t('qrCodeGenerator.markerStyles.square')}</option>
+                    <option value="rounded">{t('qrCodeGenerator.markerStyles.rounded')}</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="field">
-                <label htmlFor="markerStyle">{t('qrCodeGenerator.markerStyleLabel')}</label>
-                <select id="markerStyle" value={markerStyle} onChange={(e) => setMarkerStyle(e.target.value)}>
-                  <option value="square">{t('qrCodeGenerator.markerStyles.square')}</option>
-                  <option value="rounded">{t('qrCodeGenerator.markerStyles.rounded')}</option>
-                </select>
+                <label htmlFor="qrSize">{t('qrCodeGenerator.sizeLabel')}: {qrSize}x{qrSize} px</label>
+                <input
+                  id="qrSize"
+                  type="range"
+                  min={String(QR_SIZE_MIN)}
+                  max={String(QR_SIZE_MAX)}
+                  step="16"
+                  value={qrSize}
+                  onChange={(event) => setQrSize(Number(event.target.value))}
+                />
+                <small className="qr-helper-text">{t('qrCodeGenerator.sizeHint')}</small>
               </div>
-            </div>
 
-            <div className="field">
-              <label htmlFor="qrSize">{t('qrCodeGenerator.sizeLabel')}: {qrSize}x{qrSize} px</label>
-              <input
-                id="qrSize"
-                type="range"
-                min={String(QR_SIZE_MIN)}
-                max={String(QR_SIZE_MAX)}
-                step="16"
-                value={qrSize}
-                onChange={(e) => setQrSize(Number(e.target.value))}
-              />
-              <small className="qr-helper-text">{t('qrCodeGenerator.sizeHint')}</small>
-            </div>
+              <div className="field">
+                <label>{t('qrCodeGenerator.colorsLabel')}</label>
+                <div className="qr-color-grid">
+                  <div>
+                    <label htmlFor="qrColor" className="qr-color-label">{t('qrCodeGenerator.qrColor')}</label>
+                    <input
+                      id="qrColor"
+                      type="color"
+                      value={qrColor}
+                      onChange={(event) => {
+                        setThemePreset('custom')
+                        setQrColor(event.target.value)
+                      }}
+                      className="qr-color-input"
+                    />
+                  </div>
 
-            <div className="field">
-              <label>{t('qrCodeGenerator.colorsLabel')}</label>
-              <div className="qr-custom-grid">
-                <div>
-                  <label htmlFor="qrColor" className="qr-color-label">{t('qrCodeGenerator.qrColor')}</label>
-                  <input
-                    id="qrColor"
-                    type="color"
-                    value={qrColor}
-                    onChange={(e) => setQrColor(e.target.value)}
-                    className="qr-color-input"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="qrBgColor" className="qr-color-label">{t('qrCodeGenerator.bgColor')}</label>
-                  <input
-                    id="qrBgColor"
-                    type="color"
-                    value={qrBgColor}
-                    onChange={(e) => setQrBgColor(e.target.value)}
-                    className="qr-color-input"
-                  />
+                  <div>
+                    <label htmlFor="qrBgColor" className="qr-color-label">{t('qrCodeGenerator.bgColor')}</label>
+                    <input
+                      id="qrBgColor"
+                      type="color"
+                      value={qrBgColor}
+                      onChange={(event) => {
+                        setThemePreset('custom')
+                        setQrBgColor(event.target.value)
+                      }}
+                      className="qr-color-input"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="field">
-              <label htmlFor="logoUpload">{t('qrCodeGenerator.logoLabel')}</label>
-              <input
-                id="logoUpload"
-                type="file"
-                accept="image/png,.png,image/jpeg,.jpg,.jpeg,image/webp,.webp,image/svg+xml,.svg"
-                onChange={handleLogoUpload}
+            <section className="qr-section">
+              <ToolSectionHeading
+                title={t('qrCodeGenerator.sections.logoTitle')}
+                subtitle={t('qrCodeGenerator.sections.logoDescription')}
               />
-              <small className="qr-helper-text">{t('qrCodeGenerator.logoHint')}</small>
+
+              <div className="field">
+                <label htmlFor="logoUpload">{t('qrCodeGenerator.logoLabel')}</label>
+                <input
+                  id="logoUpload"
+                  type="file"
+                  accept="image/png,.png,image/jpeg,.jpg,.jpeg,image/webp,.webp,image/svg+xml,.svg"
+                  onChange={handleLogoUpload}
+                />
+                <small className="qr-helper-text">{t('qrCodeGenerator.logoHint')}</small>
+              </div>
+
               {logoDataUrl && (
-                <button type="button" className="secondary qr-logo-remove" onClick={() => setLogoDataUrl('')}>
+                <div className="qr-logo-preview-card">
+                  <div className="qr-logo-preview-frame">
+                    <img src={logoDataUrl} alt="" />
+                  </div>
+
+                  <div className="qr-logo-meta">
+                    <strong>{t('qrCodeGenerator.logoLoadedLabel')}</strong>
+                    <span>{logoFileName || t('qrCodeGenerator.previewMetrics.logoReady')}</span>
+                  </div>
+                </div>
+              )}
+
+              {logoDataUrl && (
+                <button type="button" className="secondary qr-logo-remove" onClick={handleRemoveLogo}>
                   {t('qrCodeGenerator.removeLogo')}
                 </button>
               )}
-            </div>
-
-            {logoDataUrl && (
-              <ResultNotice title={t('qrCodeGenerator.scanabilityTitle')} className="qr-warning">
-                <p>{t('qrCodeGenerator.logoWarning')}</p>
-              </ResultNotice>
-            )}
+            </section>
           </ToolControls>
+
+          <ToolResult className="qr-preview-panel">
+            <ResultSection tone={previewTone} className="qr-preview-shell">
+              <ResultSummary
+                centered
+                kicker={t('qrCodeGenerator.previewKicker')}
+                title={previewTitle}
+                description={previewDescription}
+              />
+
+              <div className="qr-preview-badges" aria-hidden="true">
+                <span className="qr-preview-badge">{t('qrCodeGenerator.previewBadges.live')}</span>
+                <span className="qr-preview-badge">{t('qrCodeGenerator.previewBadges.brand')}</span>
+                <span className="qr-preview-badge">{t('qrCodeGenerator.previewBadges.export')}</span>
+              </div>
+
+              <div className="qr-preview-frame">
+                <div className="qr-preview-stage" style={{ '--qr-preview-size': `${qrSize}px` }}>
+                  <canvas ref={canvasRef} className={`qr-preview-canvas ${shouldShowQR ? 'is-visible' : 'is-hidden'}`} />
+
+                  {!shouldShowQR && (
+                    <div className={generationError ? 'qr-preview-placeholder' : 'qr-preview-empty'}>
+                      <Icon name="qr_code" size={64} className="qr-preview-icon" />
+                      <p>{generationError || t('qrCodeGenerator.emptyState')}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <ResultMetrics columns={4} className="qr-preview-metrics">
+                <ResultMetric
+                  label={t('qrCodeGenerator.previewMetrics.type')}
+                  value={activeType.label}
+                />
+                <ResultMetric
+                  label={t('qrCodeGenerator.previewMetrics.size')}
+                  value={String(qrSize)}
+                  hint={`${qrSize}x${qrSize} px`}
+                />
+                <ResultMetric
+                  label={t('qrCodeGenerator.previewMetrics.payload')}
+                  value={String(payloadLength)}
+                  hint={t('qrCodeGenerator.previewMetrics.payloadHint')}
+                />
+                <ResultMetric
+                  label={t('qrCodeGenerator.previewMetrics.logo')}
+                  value={logoDataUrl ? t('qrCodeGenerator.previewMetrics.logoReady') : t('qrCodeGenerator.previewMetrics.logoEmpty')}
+                  hint={logoDataUrl ? logoFileName : t('qrCodeGenerator.previewMetrics.logoHelp')}
+                />
+              </ResultMetrics>
+
+              {generationError && (
+                <ResultNotice title={t('qrCodeGenerator.previewErrorTitle')} tone="error">
+                  <p>{generationError}</p>
+                </ResultNotice>
+              )}
+
+              <ResultActions align="center" className="qr-preview-actions">
+                <button type="button" onClick={handleDownload} className="qr-download-button" disabled={!shouldShowQR}>
+                  {t('qrCodeGenerator.downloadButton')}
+                </button>
+                <button type="button" className="secondary" onClick={handleClearCurrentData} disabled={!hasActiveTypeContent}>
+                  {t('qrCodeGenerator.clearCurrentButton')}
+                </button>
+                <button type="button" className="secondary" onClick={handleResetAppearance}>
+                  {t('qrCodeGenerator.resetStyleButton')}
+                </button>
+              </ResultActions>
+
+              <ResultNotice title={t('qrCodeGenerator.scanabilityTitle')} tone={logoDataUrl ? 'warning' : 'info'} className="qr-warning">
+                <p>{logoDataUrl ? t('qrCodeGenerator.logoWarning') : t('qrCodeGenerator.previewTip')}</p>
+              </ResultNotice>
+            </ResultSection>
+          </ToolResult>
         </ToolPageLayout>
 
         <ToolHelp>
