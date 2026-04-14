@@ -3,7 +3,6 @@ dist
 .DS_Store
 *.log
 .env
-.vercel
 .vite
 logs/
 BD/article-publisher.env
