@@ -10,6 +10,7 @@ import {
   readInitialArticlesIndex,
   writeCachedArticlesIndex,
 } from '../lib/articlesApi'
+import { filterArticlesForLanguage } from '../lib/articleLanguage'
 import { preloadRoute } from '../routes/lazyPages'
 import './Articles.css'
 
@@ -22,25 +23,26 @@ function pickCoverAlt(article, language, t) {
 
 function ArticlesIndex() {
   const { t, language } = useLanguage()
-  const initialArticles = readInitialArticlesIndex()
-  const cachedArticles = initialArticles.length ? [] : readCachedArticlesIndex()
+  const initialArticles = readInitialArticlesIndex(language)
+  const cachedArticles = initialArticles.length ? [] : readCachedArticlesIndex(language)
   const bootstrapArticles = initialArticles.length ? initialArticles : cachedArticles
   const [articles, setArticles] = useState(() => {
     return bootstrapArticles
   })
   const [status, setStatus] = useState(() => (bootstrapArticles.length ? 'success' : 'loading'))
   const [errorMessage, setErrorMessage] = useState('')
+  const visibleArticles = filterArticlesForLanguage(articles, language)
 
   useEffect(() => {
     let cancelled = false
-    const hasVisibleData = articles.length > 0
+    const hasVisibleData = visibleArticles.length > 0
     let refreshTimerId = 0
 
     if (!hasVisibleData) {
       setStatus('loading')
     }
 
-    const runRefresh = () => fetchArticles()
+    const runRefresh = () => fetchArticles(language)
       .then((items) => {
         if (cancelled) {
           return
@@ -71,12 +73,12 @@ function ArticlesIndex() {
       cancelled = true
       window.clearTimeout(refreshTimerId)
     }
-  }, [t, articles.length])
+  }, [language, t, visibleArticles.length])
 
-  const showSkeleton = status === 'loading' && articles.length === 0
-  const featuredArticle = articles[0] || null
-  const sidebarArticles = articles.slice(1, 4)
-  const editorialArticles = articles.slice(1, 7)
+  const showSkeleton = status === 'loading' && visibleArticles.length === 0
+  const featuredArticle = visibleArticles[0] || null
+  const sidebarArticles = visibleArticles.slice(1, 4)
+  const editorialArticles = visibleArticles.slice(1, 7)
 
   return (
     <>
@@ -123,14 +125,14 @@ function ArticlesIndex() {
           </section>
         )}
 
-        {status === 'success' && articles.length === 0 && (
+        {status === 'success' && visibleArticles.length === 0 && (
           <section className="articles-list-state">
             <h2>{t('articles.emptyTitle')}</h2>
             <p>{t('articles.emptyDescription')}</p>
           </section>
         )}
 
-        {articles.length > 0 && (
+        {visibleArticles.length > 0 && (
           <div className="articles-hub">
             {featuredArticle && (
               <section className="articles-featured-layout" aria-label={t('articles.listAriaLabel')}>

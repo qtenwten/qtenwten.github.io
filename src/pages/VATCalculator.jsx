@@ -63,16 +63,16 @@ function VATCalculator() {
 
       <div className="tool-container">
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {t('vatCalculator.title')}
           <img
             src="/bull-icon.png"
             alt=""
             style={{
-              marginRight: '0.5rem',
+              marginLeft: '0.5rem',
               width: '2rem',
               height: '2rem'
             }}
           />
-          {t('vatCalculator.title')}
         </h1>
         <p style={{ textAlign: 'center' }}>{t('vatCalculator.subtitle')}</p>
 

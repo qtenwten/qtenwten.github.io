@@ -1,3 +1,5 @@
+import { articleMatchesLanguage, filterArticlesForLanguage } from './articleLanguage'
+
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 12000
 const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v1'
@@ -135,36 +137,40 @@ function writeSessionCache(cacheKey, value) {
   }
 }
 
-export function readInitialArticlesIndex() {
+export function readInitialArticlesIndex(language) {
   const payload = readInlineJsonPayload('__ARTICLES_INDEX_DATA__')
-  return Array.isArray(payload?.items) ? payload.items.map(normalizeArticleListItem) : []
+  const items = Array.isArray(payload?.items) ? payload.items.map(normalizeArticleListItem) : []
+  return filterArticlesForLanguage(items, language)
 }
 
-export function readCachedArticlesIndex() {
+export function readCachedArticlesIndex(language) {
   const cachedValue = readSessionCache(ARTICLES_INDEX_CACHE_KEY)
-  return Array.isArray(cachedValue) ? cachedValue.map(normalizeArticleListItem) : []
+  const items = Array.isArray(cachedValue) ? cachedValue.map(normalizeArticleListItem) : []
+  return filterArticlesForLanguage(items, language)
 }
 
 export function writeCachedArticlesIndex(items) {
   writeSessionCache(ARTICLES_INDEX_CACHE_KEY, items)
 }
 
-export function readInitialArticleDetail(slug) {
+export function readInitialArticleDetail(slug, language) {
   const payload = readInlineJsonPayload('__ARTICLE_DETAIL_DATA__')
   if (!payload || payload.slug !== slug) {
     return null
   }
 
-  return normalizeArticle(payload)
+  const article = normalizeArticle(payload)
+  return articleMatchesLanguage(article, language) ? article : null
 }
 
-export function readCachedArticleDetail(slug) {
+export function readCachedArticleDetail(slug, language) {
   const cachedValue = readSessionCache(`${ARTICLE_DETAIL_CACHE_PREFIX}${slug}`)
   if (!cachedValue || cachedValue.slug !== slug) {
     return null
   }
 
-  return normalizeArticle(cachedValue)
+  const article = normalizeArticle(cachedValue)
+  return articleMatchesLanguage(article, language) ? article : null
 }
 
 export function writeCachedArticleDetail(article) {
@@ -175,14 +181,23 @@ export function writeCachedArticleDetail(article) {
   writeSessionCache(`${ARTICLE_DETAIL_CACHE_PREFIX}${article.slug}`, article)
 }
 
-export async function fetchArticles() {
+export async function fetchArticles(language) {
   const data = await requestJson('/articles')
-  return Array.isArray(data) ? data.map(normalizeArticleListItem) : []
+  const items = Array.isArray(data) ? data.map(normalizeArticleListItem) : []
+  return filterArticlesForLanguage(items, language)
 }
 
-export async function fetchArticleBySlug(slug) {
+export async function fetchArticleBySlug(slug, language) {
   const data = await requestJson(`/articles/${encodeURIComponent(slug)}`)
-  return normalizeArticle(data)
+  const article = normalizeArticle(data)
+
+  if (!articleMatchesLanguage(article, language)) {
+    const error = new Error('Article not found')
+    error.status = 404
+    throw error
+  }
+
+  return article
 }
 
 export function getArticlePublicUrl(slug) {

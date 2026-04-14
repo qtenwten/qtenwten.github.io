@@ -16,6 +16,7 @@ import {
   writeCachedArticlesIndex,
   writeCachedArticleDetail,
 } from '../lib/articlesApi'
+import { articleMatchesLanguage, filterArticlesForLanguage } from '../lib/articleLanguage'
 import { getLocalizedRouteUrl } from '../config/routeSeo'
 import './Articles.css'
 
@@ -29,20 +30,21 @@ function pickCoverAlt(article, language, t) {
 function ArticlePage() {
   const { slug = '' } = useParams()
   const { t, language } = useLanguage()
-  const initialArticle = readInitialArticleDetail(slug)
-  const cachedArticle = initialArticle || readCachedArticleDetail(slug)
+  const initialArticle = readInitialArticleDetail(slug, language)
+  const cachedArticle = initialArticle || readCachedArticleDetail(slug, language)
   const [article, setArticle] = useState(cachedArticle)
   const [status, setStatus] = useState(cachedArticle ? 'success' : 'loading')
   const [errorMessage, setErrorMessage] = useState('')
   const [relatedArticles, setRelatedArticles] = useState(() => {
-    return readInitialArticlesIndex().length ? readInitialArticlesIndex() : readCachedArticlesIndex()
+    const seededArticles = readInitialArticlesIndex(language)
+    return seededArticles.length ? seededArticles : readCachedArticlesIndex(language)
   })
 
   useEffect(() => {
     let cancelled = false
     let refreshTimerId = 0
-    const seedArticle = readInitialArticleDetail(slug) || readCachedArticleDetail(slug)
-    const hasVisibleArticle = Boolean((article && article.slug === slug) || seedArticle)
+    const seedArticle = readInitialArticleDetail(slug, language) || readCachedArticleDetail(slug, language)
+    const hasVisibleArticle = Boolean((article && article.slug === slug && articleMatchesLanguage(article, language)) || seedArticle)
 
     setErrorMessage('')
 
@@ -54,7 +56,7 @@ function ArticlePage() {
       setStatus('success')
     }
 
-    const runRefresh = () => fetchArticleBySlug(slug)
+    const runRefresh = () => fetchArticleBySlug(slug, language)
       .then((data) => {
         if (cancelled) {
           return
@@ -89,11 +91,11 @@ function ArticlePage() {
       cancelled = true
       window.clearTimeout(refreshTimerId)
     }
-  }, [slug, t])
+  }, [language, slug, t])
 
   useEffect(() => {
     let cancelled = false
-    const seedArticles = readInitialArticlesIndex()
+    const seedArticles = readInitialArticlesIndex(language)
 
     if (seedArticles.length) {
       setRelatedArticles(seedArticles)
@@ -109,7 +111,7 @@ function ArticlePage() {
       }
     }
 
-    fetchArticles()
+    fetchArticles(language)
       .then((items) => {
         if (cancelled) {
           return
@@ -125,17 +127,19 @@ function ArticlePage() {
     return () => {
       cancelled = true
     }
-  }, [relatedArticles.length])
+  }, [language, relatedArticles.length])
 
+  const visibleArticle = article && articleMatchesLanguage(article, language) ? article : null
+  const localizedRelatedArticles = filterArticlesForLanguage(relatedArticles, language)
   const canonicalPath = useMemo(() => `/${language}/articles/${slug}`, [language, slug])
   const canonicalUrl = useMemo(() => getLocalizedRouteUrl(language, `/articles/${slug}`), [language, slug])
   const ruUrl = useMemo(() => getLocalizedRouteUrl('ru', `/articles/${slug}`), [slug])
   const enUrl = useMemo(() => getLocalizedRouteUrl('en', `/articles/${slug}`), [slug])
-  const articleTitle = article?.title || t('articles.detailFallbackTitle')
-  const articleDescription = article?.seoDescription || article?.excerpt || t('articles.subtitle')
-  const articleSeoTitle = article?.seoTitle || (status === 'success' ? `${articleTitle} | QSEN.RU` : t('articles.detailLoadingTitle'))
-  const ogImage = article?.coverImage || 'https://qsen.ru/og-image.svg'
-  const visibleRelatedArticles = relatedArticles
+  const articleTitle = visibleArticle?.title || t('articles.detailFallbackTitle')
+  const articleDescription = visibleArticle?.seoDescription || visibleArticle?.excerpt || t('articles.subtitle')
+  const articleSeoTitle = visibleArticle?.seoTitle || (status === 'success' ? `${articleTitle} | QSEN.RU` : t('articles.detailLoadingTitle'))
+  const ogImage = visibleArticle?.coverImage || 'https://qsen.ru/og-image.svg'
+  const visibleRelatedArticles = localizedRelatedArticles
     .filter((item) => item.slug && item.slug !== slug)
     .slice(0, 3)
   const structuredData = useMemo(() => ({
@@ -143,17 +147,17 @@ function ArticlePage() {
     '@type': 'Article',
     headline: articleTitle,
     description: articleDescription,
-    author: article?.author ? { '@type': 'Person', name: article.author } : undefined,
-    datePublished: article?.publishedAt || undefined,
+    author: visibleArticle?.author ? { '@type': 'Person', name: visibleArticle.author } : undefined,
+    datePublished: visibleArticle?.publishedAt || undefined,
     mainEntityOfPage: canonicalUrl,
     url: canonicalUrl,
-    image: article?.coverImage ? [article.coverImage] : undefined,
+    image: visibleArticle?.coverImage ? [visibleArticle.coverImage] : undefined,
     publisher: {
       '@type': 'Organization',
       name: 'QSEN.RU',
       url: 'https://qsen.ru',
     },
-  }), [article?.author, article?.coverImage, article?.publishedAt, articleDescription, articleTitle, canonicalUrl])
+  }), [visibleArticle?.author, visibleArticle?.coverImage, visibleArticle?.publishedAt, articleDescription, articleTitle, canonicalUrl])
 
   return (
     <>
@@ -192,21 +196,21 @@ function ArticlePage() {
           </section>
         )}
 
-        {status === 'success' && article && (
+        {status === 'success' && visibleArticle && (
           <div className={`article-layout ${visibleRelatedArticles.length ? 'article-layout--with-related' : ''}`.trim()}>
             <div className="article-main-column">
               <article>
                 <header className="article-header-card">
                   <div className="article-header-card__eyebrow">{t('articles.detailEyebrow')}</div>
 
-                  {article.coverImage ? (
+                  {visibleArticle.coverImage ? (
                     <div className="article-cover">
-                      <img src={article.coverImage} alt={pickCoverAlt(article, language, t)} loading="eager" decoding="async" />
+                      <img src={visibleArticle.coverImage} alt={pickCoverAlt(visibleArticle, language, t)} loading="eager" decoding="async" />
                     </div>
                   ) : null}
 
-                  <h1>{article.title}</h1>
-                  {article.excerpt ? <p className="article-header-card__excerpt">{article.excerpt}</p> : null}
+                  <h1>{visibleArticle.title}</h1>
+                  {visibleArticle.excerpt ? <p className="article-header-card__excerpt">{visibleArticle.excerpt}</p> : null}
 
                   <Link to={`/${language}/articles`} className="article-back-link">
                     {t('articles.backToList')}
@@ -215,7 +219,7 @@ function ArticlePage() {
               </article>
 
               <section className="article-content-card">
-                <ArticleMarkdown content={article.content} />
+                <ArticleMarkdown content={visibleArticle.content} />
               </section>
             </div>
 

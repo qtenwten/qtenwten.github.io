@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { getAllLocalizedSeoPages, getLocalizedRouteUrl } from '../src/config/routeSeo.js'
+import { articleMatchesLanguage, filterArticlesForLanguage } from '../src/lib/articleLanguage.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const distPath = path.resolve(__dirname, '../dist')
@@ -302,7 +303,8 @@ function buildRandomNumberPrerenderContent(page) {
 
 function buildHomePrerenderContent(page, articlesIndex = []) {
   const copy = getPrerenderCopy(page.language)
-  const latestArticles = articlesIndex.slice(0, 3)
+  const localizedArticles = filterArticlesForLanguage(articlesIndex, page.language)
+  const latestArticles = localizedArticles.slice(0, 3)
   const latestArticlesTitle = escapeHtml(getLocaleValue(page.language, 'home.latestArticlesTitle', page.language === 'en' ? 'Latest articles' : 'Последние статьи'))
   const latestArticlesAction = escapeHtml(getLocaleValue(page.language, 'home.latestArticlesAction', page.language === 'en' ? 'Open all articles' : 'Открыть все статьи'))
   const latestArticlesEyebrow = escapeHtml(getLocaleValue(page.language, 'home.latestArticlesEyebrow', page.language === 'en' ? 'Fresh reads' : 'Свежие материалы'))
@@ -312,7 +314,7 @@ function buildHomePrerenderContent(page, articlesIndex = []) {
     ? `<section class="home-articles" aria-labelledby="home-articles-heading"><div class="home-articles__header"><div><span class="home-articles__eyebrow">${latestArticlesEyebrow}</span><h2 id="home-articles-heading">${latestArticlesTitle}</h2><p>${latestArticlesDescription}</p></div><a href="/${page.language}/articles" class="home-articles__link">${latestArticlesAction}</a></div><div class="home-articles__grid">${latestArticles.map((article) => `<article class="home-article-card"><div class="home-article-card__meta"><span>${escapeHtml(article.author || unknownAuthor)}</span>${article.publishedAt ? `<span>${escapeHtml(formatPublishedDate(article.publishedAt, page.language))}</span>` : ''}</div><h3><a href="/${page.language}/articles/${encodeURIComponent(article.slug)}">${escapeHtml(article.title)}</a></h3>${article.excerpt ? `<p>${escapeHtml(article.excerpt)}</p>` : ''}</article>`).join('')}</div></section>`
     : ''
   const initialDataScript = latestArticles.length
-    ? `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: articlesIndex, generatedAt: new Date().toISOString() })}</script>`
+    ? `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: localizedArticles, generatedAt: new Date().toISOString() })}</script>`
     : ''
 
   return `<div class="home"><div class="container"><section class="home-hero" aria-labelledby="home-heading"><h1 id="home-heading">${escapeHtml(page.h1)}</h1><p>${escapeHtml(copy.subtitle)}</p></section>${latestArticlesMarkup}${initialDataScript}</div></div>`
@@ -333,7 +335,8 @@ function buildArticlesIndexPrerenderContent(page, articles = []) {
   const hero = getToolHeroContent(page)
   const heroClasses = ['tool-page-hero', 'is-centered', 'has-eyebrow', 'has-subtitle', 'has-note']
   const ariaLabel = escapeHtml(getLocaleValue(page.language, 'articles.listAriaLabel', page.language === 'en' ? 'Articles list' : 'Список статей'))
-  const cards = articles.map((article) => {
+  const localizedArticles = filterArticlesForLanguage(articles, page.language)
+  const cards = localizedArticles.map((article) => {
     const href = `/${page.language}/articles/${encodeURIComponent(article.slug)}`
     const media = article.coverImage
       ? `<a href="${href}" class="article-card__media" aria-label="${escapeHtml(article.title)}"><img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}" loading="lazy" decoding="async" /></a>`
@@ -349,7 +352,7 @@ function buildArticlesIndexPrerenderContent(page, articles = []) {
 
   const list = `<section class="articles-grid" aria-label="${ariaLabel}">${cards || fallbackSkeleton}</section>`
 
-  const initialDataScript = `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: articles, generatedAt: new Date().toISOString() })}</script>`
+  const initialDataScript = `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: localizedArticles, generatedAt: new Date().toISOString() })}</script>`
 
   return `<div class="tool-container tool-page-shell articles-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section>${list}${initialDataScript}</div>`
 }
@@ -616,11 +619,16 @@ function main() {
 
       articleDetails.forEach((article) => {
         ;['ru', 'en'].forEach((language) => {
+          if (!articleMatchesLanguage(article, language)) {
+            return
+          }
+
           const page = buildArticleDetailPage(language, article)
           articlePages.push(page)
           const outputPath = path.join(distPath, page.route, 'index.html')
+          const localizedArticlesIndex = filterArticlesForLanguage(articlesIndex, language)
           const html = injectSeo(template, page, {
-            customPrerenderContent: buildArticleDetailPrerenderContent(page, article, articlesIndex),
+            customPrerenderContent: buildArticleDetailPrerenderContent(page, article, localizedArticlesIndex),
             customSkipHydration: true,
           })
 

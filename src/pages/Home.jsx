@@ -7,6 +7,7 @@ import { getHomeRouteEntries } from '../config/routeRegistry'
 import { getRouteSeo } from '../config/routeSeo'
 import { buildSearchIndex, searchRoutes } from '../config/searchIndex'
 import { fetchArticles, readCachedArticlesIndex, readInitialArticlesIndex, writeCachedArticlesIndex } from '../lib/articlesApi'
+import { filterArticlesForLanguage } from '../lib/articleLanguage'
 import { preloadRoute } from '../routes/lazyPages'
 import './Home.css'
 
@@ -44,8 +45,9 @@ function Home({ searchValue, onSearchChange }) {
   const toolsById = useMemo(() => Object.fromEntries(tools.map((tool) => [tool.id, tool])), [tools])
 
   const searchIndex = useMemo(() => buildSearchIndex(language, t), [language, t])
-  const initialArticles = readInitialArticlesIndex()
-  const [latestArticles, setLatestArticles] = useState(() => (initialArticles.length ? initialArticles : readCachedArticlesIndex()).slice(0, 3))
+  const initialArticles = readInitialArticlesIndex(language)
+  const [latestArticles, setLatestArticles] = useState(() => (initialArticles.length ? initialArticles : readCachedArticlesIndex(language)).slice(0, 3))
+  const visibleLatestArticles = filterArticlesForLanguage(latestArticles, language).slice(0, 3)
 
   const filteredTools = useMemo(() => {
     let result = searchIndex.map((item) => ({
@@ -81,13 +83,13 @@ function Home({ searchValue, onSearchChange }) {
   useEffect(() => {
     let cancelled = false
 
-    if (latestArticles.length > 0) {
+    if (visibleLatestArticles.length > 0) {
       return () => {
         cancelled = true
       }
     }
 
-    fetchArticles()
+    fetchArticles(language)
       .then((items) => {
         if (cancelled) {
           return
@@ -103,7 +105,7 @@ function Home({ searchValue, onSearchChange }) {
     return () => {
       cancelled = true
     }
-  }, [latestArticles.length])
+  }, [language, visibleLatestArticles.length])
 
   return (
     <>
@@ -174,7 +176,7 @@ function Home({ searchValue, onSearchChange }) {
             </div>
           )}
 
-          {!searchValue && !categoryFilter && latestArticles.length > 0 && (
+          {!searchValue && !categoryFilter && visibleLatestArticles.length > 0 && (
             <section className="home-articles" aria-labelledby="home-articles-heading">
               <div className="home-articles__header">
                 <div>
@@ -194,7 +196,7 @@ function Home({ searchValue, onSearchChange }) {
               </div>
 
               <div className="home-articles__grid">
-                {latestArticles.map((article) => (
+                {visibleLatestArticles.map((article) => (
                   <article key={article.id || article.slug} className="home-article-card">
                     <div className="home-article-card__meta">
                       <span>{article.author || t('articles.unknownAuthor')}</span>
