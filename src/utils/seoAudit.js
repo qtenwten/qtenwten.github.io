@@ -72,7 +72,7 @@ export async function analyzeSEO(url, language = 'ru') {
       return { error: messages.invalidProtocol }
     }
 
-    // Fetch HTML (will fail due to CORS for most sites)
+    // Fetch HTML (may fail due to browser CORS limits)
     const response = await fetch(normalizedUrl, { mode: 'cors' })
     const html = await response.text()
 
@@ -87,11 +87,17 @@ export async function analyzeSEO(url, language = 'ru') {
       contentType: response.headers.get('content-type') || 'text/html',
     })
   } catch (error) {
-    // CORS error - provide instructions
+    // Most external URLs will fail in-browser because of CORS. Keep the response honest and lightweight.
     return {
       error: 'cors',
       message: messages.cors,
-      url: url
+      url: url,
+      details: {
+        finalUrl: /^https?:\/\//i.test((url || '').trim()) ? url.trim() : `https://${(url || '').trim()}`,
+        status: null,
+        ok: false,
+        contentType: null,
+      },
     }
   }
 }

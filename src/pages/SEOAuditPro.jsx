@@ -259,11 +259,11 @@ const AUDIT_UI_COPY = {
 }
 
 const AUDIT_CATEGORY_ORDER = [
-  { id: 'technical', maxScore: 20 },
-  { id: 'metadata', maxScore: 35 },
-  { id: 'content', maxScore: 20 },
-  { id: 'enhancements', maxScore: 15 },
-  { id: 'accessibility', maxScore: 10 },
+  { id: 'technical' },
+  { id: 'metadata' },
+  { id: 'content' },
+  { id: 'enhancements' },
+  { id: 'accessibility' },
 ]
 
 function truncateText(value, limit = 88) {
@@ -296,51 +296,115 @@ function createCheck({ id, categoryId, label, weight, status, value, summary, wh
 }
 
 function normalizeAuditData(data) {
-  const openGraph = data.openGraph
-    || ((data.ogTitle || data.ogDescription || data.ogImage)
-      ? {
-          title: data.ogTitle || null,
-          description: data.ogDescription || null,
-          image: data.ogImage || null,
-        }
-      : null)
+  const raw = data || {}
 
-  const twitter = data.twitter
-    || ((data.twitterCard || data.twitterTitle || data.twitterDescription || data.twitterImage)
-      ? {
-          card: data.twitterCard || null,
-          title: data.twitterTitle || null,
-          description: data.twitterDescription || null,
-          image: data.twitterImage || null,
-        }
-      : null)
-
-  return {
-    source: data.source || 'worker',
-    finalUrl: data.finalUrl || null,
-    status: data.status ?? null,
-    ok: data.ok !== false,
-    contentType: data.contentType || null,
-    title: data.title || null,
-    description: data.description || data.metaDescription || null,
-    keywords: data.keywords || null,
-    robots: data.robots || null,
-    canonical: data.canonical || null,
-    h1Text: data.h1Text || data.h1 || null,
-    h1Count: typeof data.h1Count === 'number' ? data.h1Count : (data.h1 || data.h1Text ? 1 : 0),
-    h2Count: typeof data.h2Count === 'number' ? data.h2Count : null,
-    h3Count: typeof data.h3Count === 'number' ? data.h3Count : null,
-    imagesTotal: typeof data.imagesTotal === 'number' ? data.imagesTotal : null,
-    imagesWithoutAlt: typeof data.imagesWithoutAlt === 'number' ? data.imagesWithoutAlt : null,
-    hasStructuredData: typeof data.hasStructuredData === 'boolean' ? data.hasStructuredData : null,
-    openGraph,
-    twitter,
-    lang: data.lang || null,
-    viewport: data.viewport || null,
-    internalLinks: typeof data.internalLinks === 'number' ? data.internalLinks : null,
-    externalLinks: typeof data.externalLinks === 'number' ? data.externalLinks : null,
-    wordCount: typeof data.wordCount === 'number' ? data.wordCount : null,
+  const asTrimmedString = (value) => {
+    if (value == null) return null
+    if (typeof value !== 'string') return null
+    const trimmed = value.trim()
+    return trimmed.length ? trimmed : null
   }
+
+  const asMaybeNumber = (value) => {
+    if (typeof value === 'number' && Number.isFinite(value)) return value
+    if (typeof value === 'string') {
+      const parsed = Number(value)
+      return Number.isFinite(parsed) ? parsed : null
+    }
+    return null
+  }
+
+  const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key)
+
+  // NOTE: We treat `undefined` as "unknown / not provided by the source".
+  // `null` means "known missing / empty".
+  const normalized = {
+    source: hasOwn(raw, 'source') ? (asTrimmedString(raw.source) || 'worker') : 'worker',
+    finalUrl: hasOwn(raw, 'finalUrl') ? asTrimmedString(raw.finalUrl) : undefined,
+    status: hasOwn(raw, 'status') ? asMaybeNumber(raw.status) : undefined,
+    ok: hasOwn(raw, 'ok') ? raw.ok !== false : undefined,
+    contentType: hasOwn(raw, 'contentType') ? (asTrimmedString(raw.contentType) || null) : undefined,
+    title: hasOwn(raw, 'title') ? asTrimmedString(raw.title) : undefined,
+    description: hasOwn(raw, 'description')
+      ? asTrimmedString(raw.description)
+      : hasOwn(raw, 'metaDescription')
+        ? asTrimmedString(raw.metaDescription)
+        : undefined,
+    keywords: hasOwn(raw, 'keywords') ? asTrimmedString(raw.keywords) : undefined,
+    robots: hasOwn(raw, 'robots') ? asTrimmedString(raw.robots) : undefined,
+    canonical: hasOwn(raw, 'canonical') ? asTrimmedString(raw.canonical) : undefined,
+    h1Text: hasOwn(raw, 'h1Text')
+      ? asTrimmedString(raw.h1Text)
+      : hasOwn(raw, 'h1')
+        ? asTrimmedString(raw.h1)
+        : undefined,
+    h1Count: hasOwn(raw, 'h1Count')
+      ? asMaybeNumber(raw.h1Count)
+      : undefined,
+    h2Count: hasOwn(raw, 'h2Count') ? asMaybeNumber(raw.h2Count) : undefined,
+    h3Count: hasOwn(raw, 'h3Count') ? asMaybeNumber(raw.h3Count) : undefined,
+    imagesTotal: hasOwn(raw, 'imagesTotal') ? asMaybeNumber(raw.imagesTotal) : undefined,
+    imagesWithoutAlt: hasOwn(raw, 'imagesWithoutAlt') ? asMaybeNumber(raw.imagesWithoutAlt) : undefined,
+    hasStructuredData: hasOwn(raw, 'hasStructuredData')
+      ? (typeof raw.hasStructuredData === 'boolean' ? raw.hasStructuredData : null)
+      : undefined,
+    openGraph: hasOwn(raw, 'openGraph') ? raw.openGraph : undefined,
+    twitter: hasOwn(raw, 'twitter') ? raw.twitter : undefined,
+    lang: hasOwn(raw, 'lang') ? asTrimmedString(raw.lang) : undefined,
+    viewport: hasOwn(raw, 'viewport') ? asTrimmedString(raw.viewport) : undefined,
+    internalLinks: hasOwn(raw, 'internalLinks') ? asMaybeNumber(raw.internalLinks) : undefined,
+    externalLinks: hasOwn(raw, 'externalLinks') ? asMaybeNumber(raw.externalLinks) : undefined,
+    wordCount: hasOwn(raw, 'wordCount') ? asMaybeNumber(raw.wordCount) : undefined,
+    evidenceRaw: raw,
+  }
+
+  const openGraphFromLegacy = (raw.ogTitle || raw.ogDescription || raw.ogImage)
+    ? {
+        title: asTrimmedString(raw.ogTitle),
+        description: asTrimmedString(raw.ogDescription),
+        image: asTrimmedString(raw.ogImage),
+      }
+    : null
+  const twitterFromLegacy = (raw.twitterCard || raw.twitterTitle || raw.twitterDescription || raw.twitterImage)
+    ? {
+        card: asTrimmedString(raw.twitterCard),
+        title: asTrimmedString(raw.twitterTitle),
+        description: asTrimmedString(raw.twitterDescription),
+        image: asTrimmedString(raw.twitterImage),
+      }
+    : null
+
+  if (normalized.openGraph === undefined && openGraphFromLegacy) {
+    normalized.openGraph = openGraphFromLegacy
+  }
+  if (normalized.twitter === undefined && twitterFromLegacy) {
+    normalized.twitter = twitterFromLegacy
+  }
+
+  // Normalize known shapes to either an object or null, but keep undefined as "unknown".
+  const normalizeSocialObject = (value, fields) => {
+    if (value === undefined) return undefined
+    if (value === null) return null
+    if (typeof value !== 'object') return null
+    const result = {}
+    let hasAny = false
+    fields.forEach((field) => {
+      const fieldValue = asTrimmedString(value[field])
+      result[field] = fieldValue
+      if (fieldValue) hasAny = true
+    })
+    return hasAny ? result : null
+  }
+
+  normalized.openGraph = normalizeSocialObject(normalized.openGraph, ['title', 'description', 'image'])
+  normalized.twitter = normalizeSocialObject(normalized.twitter, ['card', 'title', 'description', 'image'])
+
+  // Fill derived counts only if the source provided enough evidence.
+  if (normalized.h1Count === undefined) {
+    if (normalized.h1Text) normalized.h1Count = 1
+  }
+
+  return normalized
 }
 
 function getCategoryStatus(checks) {
@@ -354,373 +418,700 @@ function getCategoryStatus(checks) {
 function buildAuditReport(rawData, language) {
   const ui = AUDIT_UI_COPY[language] || AUDIT_UI_COPY.ru
   const data = normalizeAuditData(rawData)
-  const title = data.title?.trim() || ''
-  const description = data.description?.trim() || ''
-  const h1Text = data.h1Text?.trim() || ''
+  const values = {
+    title: (data.title || '').trim(),
+    description: (data.description || '').trim(),
+    h1Text: (data.h1Text || '').trim(),
+  }
+
   const checks = []
 
-  const httpStatusOk = typeof data.status === 'number' && data.status >= 200 && data.status < 300 && data.ok !== false
-  const httpStatusRedirect = typeof data.status === 'number' && data.status >= 300 && data.status < 400
-  checks.push(createCheck({
-    id: 'http-status',
-    categoryId: 'technical',
-    label: ui.labels.httpStatus,
-    weight: 8,
-    status: data.status == null ? 'na' : httpStatusOk ? 'pass' : httpStatusRedirect ? 'warning' : 'fail',
-    value: data.status == null ? ui.status.na : `HTTP ${data.status}`,
-    summary: data.status == null
-      ? ui.notChecked
-      : httpStatusOk
-        ? (language === 'en' ? 'The page returned a successful status code.' : 'Страница вернула успешный код ответа.')
-        : httpStatusRedirect
-          ? (language === 'en' ? 'The URL redirects before the final page resolves.' : 'URL сначала отдает редирект перед финальной страницей.')
-          : (language === 'en' ? 'The page did not return a successful status code.' : 'Страница не вернула успешный код ответа.'),
-    whyItMatters: ui.why.httpStatus,
-    recommendation: data.status == null || httpStatusOk
-      ? ''
-      : (language === 'en' ? 'Review redirects or server responses so the page resolves with a clean 2xx status.' : 'Проверьте редиректы и ответы сервера, чтобы страница открывалась с чистым 2xx-статусом.'),
-    benchmark: '2xx',
-  }))
+  const safeParseUrl = (value) => {
+    try {
+      if (!value || typeof value !== 'string') return null
+      return new URL(value)
+    } catch {
+      return null
+    }
+  }
 
-  checks.push(createCheck({
-    id: 'html-content',
-    categoryId: 'technical',
-    label: ui.labels.htmlContent,
-    weight: 4,
-    status: !data.contentType ? 'na' : data.contentType.includes('text/html') ? 'pass' : 'fail',
-    value: data.contentType || ui.status.na,
-    summary: !data.contentType
-      ? ui.notChecked
-      : data.contentType.includes('text/html')
-        ? (language === 'en' ? 'The URL points to an HTML document.' : 'URL ведет на HTML-документ.')
-        : (language === 'en' ? 'The response is not a standard HTML page.' : 'Ответ не является обычной HTML-страницей.'),
-    whyItMatters: ui.why.htmlContent,
-    recommendation: !data.contentType || data.contentType.includes('text/html')
-      ? ''
-      : (language === 'en' ? 'Use a canonical page URL that returns an HTML document.' : 'Используйте URL страницы, который отдает обычный HTML-документ.'),
-    benchmark: 'text/html',
-  }))
+  const makeNotChecked = ({ id, categoryId, label, weight, whyItMatters, benchmark }) => createCheck({
+    id,
+    categoryId,
+    label,
+    weight,
+    status: 'na',
+    value: ui.status.na,
+    summary: ui.notChecked,
+    whyItMatters,
+    recommendation: '',
+    benchmark,
+    scoreEarned: null,
+  })
 
-  checks.push(createCheck({
-    id: 'https-url',
-    categoryId: 'technical',
-    label: ui.labels.httpsUrl,
-    weight: 4,
-    status: !data.finalUrl ? 'na' : data.finalUrl.startsWith('https://') ? 'pass' : 'warning',
-    value: data.finalUrl || ui.status.na,
-    summary: !data.finalUrl
-      ? ui.notChecked
-      : data.finalUrl.startsWith('https://')
-        ? (language === 'en' ? 'The final URL uses HTTPS.' : 'Итоговый URL использует HTTPS.')
-        : (language === 'en' ? 'The final URL is not using HTTPS.' : 'Итоговый URL не использует HTTPS.'),
-    whyItMatters: ui.why.httpsUrl,
-    recommendation: !data.finalUrl || data.finalUrl.startsWith('https://')
-      ? ''
-      : (language === 'en' ? 'Serve the public page over HTTPS and update internal links to the secure version.' : 'Отдавайте страницу по HTTPS и обновите внутренние ссылки на безопасную версию.'),
-    benchmark: 'https://',
-  }))
+  const ctx = { language, ui, data, values, safeParseUrl, makeNotChecked }
 
-  const robotsValue = data.robots || (language === 'en' ? 'No explicit robots tag' : 'Явный robots-тег не найден')
-  const robotsIsRestricted = typeof data.robots === 'string' && /(noindex|nofollow)/i.test(data.robots)
-  checks.push(createCheck({
-    id: 'robots',
-    categoryId: 'technical',
-    label: ui.labels.robots,
-    weight: 4,
-    status: robotsIsRestricted ? 'warning' : 'pass',
-    value: robotsValue,
-    summary: robotsIsRestricted
-      ? (language === 'en' ? 'The robots directive contains restrictive instructions.' : 'В robots есть ограничивающие директивы.')
-      : (language === 'en' ? 'No restrictive robots instructions were detected.' : 'Ограничивающих robots-директив не обнаружено.'),
-    whyItMatters: ui.why.robots,
-    recommendation: robotsIsRestricted
-      ? (language === 'en' ? 'Review the robots directive if the page is expected to rank.' : 'Проверьте robots-директиву, если страница должна индексироваться.')
-      : '',
-    benchmark: language === 'en' ? 'Indexable page' : 'Индексируемая страница',
-  }))
+  const CHECK_CATALOG = [
+    // TECHNICAL
+    (ctx) => {
+      const { data, language, ui } = ctx
+      const hasStatus = typeof data.status === 'number'
+      const httpStatusOk = hasStatus && data.status >= 200 && data.status < 300 && data.ok !== false
+      const httpStatusRedirect = hasStatus && data.status >= 300 && data.status < 400
+      return createCheck({
+        id: 'http-status',
+        categoryId: 'technical',
+        label: ui.labels.httpStatus,
+        weight: 8,
+        status: !hasStatus ? 'na' : httpStatusOk ? 'pass' : httpStatusRedirect ? 'warning' : 'fail',
+        value: !hasStatus ? ui.status.na : `HTTP ${data.status}`,
+        summary: !hasStatus
+          ? ui.notChecked
+          : httpStatusOk
+            ? (language === 'en' ? 'The page returned a successful status code.' : 'Страница вернула успешный код ответа.')
+            : httpStatusRedirect
+              ? (language === 'en' ? 'The URL redirects before the final page resolves.' : 'URL сначала отдает редирект перед финальной страницей.')
+              : (language === 'en' ? 'The page did not return a successful status code.' : 'Страница не вернула успешный код ответа.'),
+        whyItMatters: ui.why.httpStatus,
+        recommendation: !hasStatus || httpStatusOk
+          ? ''
+          : (language === 'en' ? 'Review redirects or server responses so the page resolves with a clean 2xx status.' : 'Проверьте редиректы и ответы сервера, чтобы страница открывалась с чистым 2xx-статусом.'),
+        benchmark: '2xx',
+      })
+    },
+    (ctx) => {
+      const { data, language, ui } = ctx
+      if (data.contentType === undefined) {
+        return ctx.makeNotChecked({
+          id: 'html-content',
+          categoryId: 'technical',
+          label: ui.labels.htmlContent,
+          weight: 4,
+          whyItMatters: ui.why.htmlContent,
+          benchmark: 'text/html',
+        })
+      }
+      const contentType = typeof data.contentType === 'string' ? data.contentType : ''
+      const isHtml = contentType.toLowerCase().includes('text/html')
+      return createCheck({
+        id: 'html-content',
+        categoryId: 'technical',
+        label: ui.labels.htmlContent,
+        weight: 4,
+        status: isHtml ? 'pass' : 'fail',
+        value: contentType || (language === 'en' ? 'Unknown' : 'Неизвестно'),
+        summary: isHtml
+          ? (language === 'en' ? 'The URL points to an HTML document.' : 'URL ведет на HTML-документ.')
+          : (language === 'en' ? 'The response is not a standard HTML page.' : 'Ответ не является обычной HTML-страницей.'),
+        whyItMatters: ui.why.htmlContent,
+        recommendation: isHtml
+          ? ''
+          : (language === 'en' ? 'Use a canonical page URL that returns an HTML document.' : 'Используйте URL страницы, который отдает обычный HTML-документ.'),
+        benchmark: 'text/html',
+      })
+    },
+    (ctx) => {
+      const { data, language, ui } = ctx
+      if (data.finalUrl === undefined) {
+        return ctx.makeNotChecked({
+          id: 'https-url',
+          categoryId: 'technical',
+          label: ui.labels.httpsUrl,
+          weight: 4,
+          whyItMatters: ui.why.httpsUrl,
+          benchmark: 'https://',
+        })
+      }
+      const finalUrl = typeof data.finalUrl === 'string' ? data.finalUrl : ''
+      const isHttps = finalUrl.startsWith('https://')
+      return createCheck({
+        id: 'https-url',
+        categoryId: 'technical',
+        label: ui.labels.httpsUrl,
+        weight: 4,
+        status: isHttps ? 'pass' : 'warning',
+        value: finalUrl || (language === 'en' ? 'Unknown' : 'Неизвестно'),
+        summary: isHttps
+          ? (language === 'en' ? 'The final URL uses HTTPS.' : 'Итоговый URL использует HTTPS.')
+          : (language === 'en' ? 'The final URL is not using HTTPS.' : 'Итоговый URL не использует HTTPS.'),
+        whyItMatters: ui.why.httpsUrl,
+        recommendation: isHttps
+          ? ''
+          : (language === 'en' ? 'Serve the public page over HTTPS and update internal links to the secure version.' : 'Отдавайте страницу по HTTPS и обновите внутренние ссылки на безопасную версию.'),
+        benchmark: 'https://',
+      })
+    },
+    (ctx) => {
+      const { data, language, ui } = ctx
+      if (data.robots === undefined) {
+        return ctx.makeNotChecked({
+          id: 'robots',
+          categoryId: 'technical',
+          label: ui.labels.robots,
+          weight: 5,
+          whyItMatters: ui.why.robots,
+          benchmark: language === 'en' ? 'Indexable page' : 'Индексируемая страница',
+        })
+      }
+      const robotsValue = typeof data.robots === 'string' ? data.robots : ''
+      const robotsLower = robotsValue.toLowerCase()
+      const hasNoindex = robotsLower.includes('noindex')
+      const hasNofollow = robotsLower.includes('nofollow')
+      const status = hasNoindex ? 'fail' : hasNofollow ? 'warning' : 'pass'
+      return createCheck({
+        id: 'robots',
+        categoryId: 'technical',
+        label: ui.labels.robots,
+        weight: 5,
+        status,
+        value: robotsValue || (language === 'en' ? 'No explicit robots tag' : 'Явный robots-тег не найден'),
+        summary: status === 'pass'
+          ? (language === 'en' ? 'No restrictive robots instructions were detected.' : 'Ограничивающих robots-директив не обнаружено.')
+          : status === 'warning'
+            ? (language === 'en' ? 'The robots directive contains nofollow.' : 'В robots есть директива nofollow.')
+            : (language === 'en' ? 'The robots directive contains noindex.' : 'В robots есть директива noindex.'),
+        whyItMatters: ui.why.robots,
+        recommendation: status === 'pass'
+          ? ''
+          : (language === 'en' ? 'Review the robots directive if the page is expected to be indexed.' : 'Проверьте robots-директиву, если страница должна индексироваться.'),
+        benchmark: language === 'en' ? 'Indexable page' : 'Индексируемая страница',
+        scoreEarned: status === 'pass' ? 5 : status === 'warning' ? 2 : 0,
+      })
+    },
+    (ctx) => {
+      const { data, language } = ctx
+      if (data.lang === undefined) {
+        return ctx.makeNotChecked({
+          id: 'html-lang',
+          categoryId: 'technical',
+          label: language === 'en' ? 'HTML language' : 'Язык HTML (lang)',
+          weight: 2,
+          whyItMatters: language === 'en'
+            ? 'The lang attribute helps search engines and assistive tech interpret language and locale.'
+            : 'Атрибут lang помогает поисковикам и технологиям доступности корректно интерпретировать язык страницы.',
+          benchmark: language === 'en' ? 'Present (BCP 47)' : 'Наличие (BCP 47)',
+        })
+      }
+      const langValue = typeof data.lang === 'string' ? data.lang : ''
+      const looksValid = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/i.test(langValue)
+      return createCheck({
+        id: 'html-lang',
+        categoryId: 'technical',
+        label: language === 'en' ? 'HTML language' : 'Язык HTML (lang)',
+        weight: 2,
+        status: looksValid ? 'pass' : 'warning',
+        value: langValue || (language === 'en' ? 'Missing' : 'Отсутствует'),
+        summary: looksValid
+          ? (language === 'en' ? 'The page declares an HTML language.' : 'У страницы указан язык в атрибуте lang.')
+          : (language === 'en' ? 'The HTML language value looks unusual.' : 'Значение lang выглядит необычно.'),
+        whyItMatters: language === 'en'
+          ? 'The lang attribute helps search engines and assistive tech interpret language and locale.'
+          : 'Атрибут lang помогает поисковикам и технологиям доступности корректно интерпретировать язык страницы.',
+        recommendation: looksValid
+          ? ''
+          : (language === 'en' ? 'Use a standard language tag like en, en-US, ru, etc.' : 'Используйте стандартный языковой тег: ru, en, en-US и т.д.'),
+        benchmark: language === 'en' ? 'Present (BCP 47)' : 'Наличие (BCP 47)',
+        scoreEarned: looksValid ? 2 : 1,
+      })
+    },
+    (ctx) => {
+      const { data, language } = ctx
+      if (data.viewport === undefined) {
+        return ctx.makeNotChecked({
+          id: 'viewport',
+          categoryId: 'technical',
+          label: language === 'en' ? 'Viewport meta tag' : 'Viewport meta-тег',
+          weight: 2,
+          whyItMatters: language === 'en'
+            ? 'Mobile usability impacts crawling, rankings, and conversion.'
+            : 'Мобильная удобство влияет на индексацию, ранжирование и конверсию.',
+          benchmark: 'width=device-width',
+        })
+      }
+      const viewport = typeof data.viewport === 'string' ? data.viewport : ''
+      const looksResponsive = viewport.toLowerCase().includes('width=device-width')
+      return createCheck({
+        id: 'viewport',
+        categoryId: 'technical',
+        label: language === 'en' ? 'Viewport meta tag' : 'Viewport meta-тег',
+        weight: 2,
+        status: looksResponsive ? 'pass' : 'warning',
+        value: viewport ? truncateText(viewport, 60) : (language === 'en' ? 'Missing' : 'Отсутствует'),
+        summary: looksResponsive
+          ? (language === 'en' ? 'The page declares a responsive viewport.' : 'У страницы указан адаптивный viewport.')
+          : (language === 'en' ? 'A viewport tag was found, but it may not be configured for responsive layouts.' : 'Viewport найден, но он может быть настроен не для адаптивной верстки.'),
+        whyItMatters: language === 'en'
+          ? 'Mobile usability impacts crawling, rankings, and conversion.'
+          : 'Мобильная удобство влияет на индексацию, ранжирование и конверсию.',
+        recommendation: looksResponsive ? '' : (language === 'en' ? 'Use `width=device-width, initial-scale=1` as a baseline.' : 'Используйте базово `width=device-width, initial-scale=1`.'),
+        benchmark: 'width=device-width',
+        scoreEarned: looksResponsive ? 2 : 1,
+      })
+    },
 
-  checks.push(createCheck({
-    id: 'title-present',
-    categoryId: 'metadata',
-    label: ui.labels.titlePresence,
-    weight: 10,
-    status: title ? 'pass' : 'fail',
-    value: title ? truncateText(title) : (language === 'en' ? 'Missing' : 'Отсутствует'),
-    summary: title
-      ? (language === 'en' ? 'The page has a title tag.' : 'У страницы есть тег title.')
-      : (language === 'en' ? 'The page is missing a title tag.' : 'У страницы отсутствует тег title.'),
-    whyItMatters: ui.why.titlePresence,
-    recommendation: title ? '' : (language === 'en' ? 'Add a unique title that clearly reflects the topic of the page.' : 'Добавьте уникальный title, который ясно отражает тему страницы.'),
-    benchmark: '1 title tag',
-  }))
+    // METADATA
+    (ctx) => createCheck({
+      id: 'title-present',
+      categoryId: 'metadata',
+      label: ctx.ui.labels.titlePresence,
+      weight: 10,
+      status: ctx.values.title ? 'pass' : 'fail',
+      value: ctx.values.title ? truncateText(ctx.values.title) : (ctx.language === 'en' ? 'Missing' : 'Отсутствует'),
+      summary: ctx.values.title
+        ? (ctx.language === 'en' ? 'The page has a title tag.' : 'У страницы есть тег title.')
+        : (ctx.language === 'en' ? 'The page is missing a title tag.' : 'У страницы отсутствует тег title.'),
+      whyItMatters: ctx.ui.why.titlePresence,
+      recommendation: ctx.values.title ? '' : (ctx.language === 'en' ? 'Add a unique title that clearly reflects the page topic.' : 'Добавьте уникальный title, который ясно отражает тему страницы.'),
+      benchmark: '1 title tag',
+    }),
+    (ctx) => {
+      if (!ctx.values.title) {
+        return ctx.makeNotChecked({
+          id: 'title-length',
+          categoryId: 'metadata',
+          label: ctx.ui.labels.titleLength,
+          weight: 8,
+          whyItMatters: ctx.ui.why.titleLength,
+          benchmark: ctx.language === 'en' ? '30–65 chars' : '30–65 символов',
+        })
+      }
+      const ok = ctx.values.title.length >= 30 && ctx.values.title.length <= 65
+      return createCheck({
+        id: 'title-length',
+        categoryId: 'metadata',
+        label: ctx.ui.labels.titleLength,
+        weight: 8,
+        status: ok ? 'pass' : 'warning',
+        value: `${ctx.values.title.length} ${ctx.language === 'en' ? 'chars' : 'симв.'}`,
+        summary: ok
+          ? (ctx.language === 'en' ? 'The title length is in a solid range.' : 'Длина title находится в хорошем диапазоне.')
+          : (ctx.language === 'en' ? 'The title is likely too short or too long for a clean snippet.' : 'Title, вероятно, слишком короткий или слишком длинный для аккуратного сниппета.'),
+        whyItMatters: ctx.ui.why.titleLength,
+        recommendation: ok ? '' : (ctx.language === 'en' ? 'Aim for a title that is easy to scan and less likely to truncate.' : 'Сделайте title таким, чтобы его было легко читать и реже обрезало в выдаче.'),
+        benchmark: ctx.language === 'en' ? '30–65 chars' : '30–65 символов',
+        scoreEarned: ok ? 8 : 4,
+      })
+    },
+    (ctx) => createCheck({
+      id: 'description-present',
+      categoryId: 'metadata',
+      label: ctx.ui.labels.descriptionPresence,
+      weight: 10,
+      status: ctx.values.description ? 'pass' : 'fail',
+      value: ctx.values.description ? truncateText(ctx.values.description) : (ctx.language === 'en' ? 'Missing' : 'Отсутствует'),
+      summary: ctx.values.description
+        ? (ctx.language === 'en' ? 'The page has a meta description.' : 'У страницы есть meta description.')
+        : (ctx.language === 'en' ? 'The page is missing a meta description.' : 'У страницы отсутствует meta description.'),
+      whyItMatters: ctx.ui.why.descriptionPresence,
+      recommendation: ctx.values.description ? '' : (ctx.language === 'en' ? 'Add a description that explains the page value concisely.' : 'Добавьте описание, которое кратко объясняет ценность страницы.'),
+      benchmark: '1 description tag',
+    }),
+    (ctx) => {
+      if (!ctx.values.description) {
+        return ctx.makeNotChecked({
+          id: 'description-length',
+          categoryId: 'metadata',
+          label: ctx.ui.labels.descriptionLength,
+          weight: 7,
+          whyItMatters: ctx.ui.why.descriptionLength,
+          benchmark: ctx.language === 'en' ? '120–170 chars' : '120–170 символов',
+        })
+      }
+      const ok = ctx.values.description.length >= 120 && ctx.values.description.length <= 170
+      return createCheck({
+        id: 'description-length',
+        categoryId: 'metadata',
+        label: ctx.ui.labels.descriptionLength,
+        weight: 7,
+        status: ok ? 'pass' : 'warning',
+        value: `${ctx.values.description.length} ${ctx.language === 'en' ? 'chars' : 'симв.'}`,
+        summary: ok
+          ? (ctx.language === 'en' ? 'The description length is in a practical range.' : 'Длина description находится в практичном диапазоне.')
+          : (ctx.language === 'en' ? 'The description could be more balanced for search snippets.' : 'Description стоит сделать более сбалансированным для сниппета.'),
+        whyItMatters: ctx.ui.why.descriptionLength,
+        recommendation: ok ? '' : (ctx.language === 'en' ? 'Keep the description concise but descriptive for the snippet.' : 'Сделайте description кратким, но достаточно информативным для сниппета.'),
+        benchmark: ctx.language === 'en' ? '120–170 chars' : '120–170 символов',
+        scoreEarned: ok ? 7 : 4,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.canonical === undefined) {
+        return ctx.makeNotChecked({
+          id: 'canonical-present',
+          categoryId: 'metadata',
+          label: ctx.ui.labels.canonical,
+          weight: 5,
+          whyItMatters: ctx.ui.why.canonical,
+          benchmark: ctx.language === 'en' ? 'Present when needed' : 'Наличие при необходимости',
+        })
+      }
+      const canonical = typeof ctx.data.canonical === 'string' ? ctx.data.canonical.trim() : ''
+      const hasCanonical = canonical.length > 0
+      return createCheck({
+        id: 'canonical-present',
+        categoryId: 'metadata',
+        label: ctx.ui.labels.canonical,
+        weight: 5,
+        status: hasCanonical ? 'pass' : 'warning',
+        value: hasCanonical ? truncateText(canonical, 88) : (ctx.language === 'en' ? 'Missing' : 'Отсутствует'),
+        summary: hasCanonical
+          ? (ctx.language === 'en' ? 'A canonical URL is declared.' : 'Canonical URL указан.')
+          : (ctx.language === 'en' ? 'No canonical tag was found.' : 'Canonical-тег не найден.'),
+        whyItMatters: ctx.ui.why.canonical,
+        recommendation: hasCanonical ? '' : (ctx.language === 'en' ? 'Add a canonical URL if the page can have duplicate variants.' : 'Добавьте canonical URL, если у страницы есть дубли.'),
+        benchmark: ctx.language === 'en' ? 'Present when needed' : 'Наличие при необходимости',
+        scoreEarned: hasCanonical ? 5 : 2,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.canonical === undefined) {
+        return ctx.makeNotChecked({
+          id: 'canonical-sanity',
+          categoryId: 'metadata',
+          label: ctx.language === 'en' ? 'Canonical sanity' : 'Проверка canonical',
+          weight: 3,
+          whyItMatters: ctx.ui.why.canonical,
+          benchmark: ctx.language === 'en' ? 'Absolute URL (http/https)' : 'Абсолютный URL (http/https)',
+        })
+      }
+      const canonical = typeof ctx.data.canonical === 'string' ? ctx.data.canonical.trim() : ''
+      if (!canonical) {
+        return ctx.makeNotChecked({
+          id: 'canonical-sanity',
+          categoryId: 'metadata',
+          label: ctx.language === 'en' ? 'Canonical sanity' : 'Проверка canonical',
+          weight: 3,
+          whyItMatters: ctx.ui.why.canonical,
+          benchmark: ctx.language === 'en' ? 'Absolute URL (http/https)' : 'Абсолютный URL (http/https)',
+        })
+      }
+      const canonicalUrl = ctx.safeParseUrl(canonical)
+      const finalUrl = ctx.safeParseUrl(ctx.data.finalUrl)
+      const isHttp = canonicalUrl && ['http:', 'https:'].includes(canonicalUrl.protocol)
+      const isBad = !canonicalUrl || !isHttp || canonical.startsWith('#') || canonical.toLowerCase().startsWith('javascript:')
+      const differentHost = canonicalUrl && finalUrl && canonicalUrl.hostname !== finalUrl.hostname
+      const status = isBad ? 'fail' : differentHost ? 'warning' : 'pass'
+      return createCheck({
+        id: 'canonical-sanity',
+        categoryId: 'metadata',
+        label: ctx.language === 'en' ? 'Canonical sanity' : 'Проверка canonical',
+        weight: 3,
+        status,
+        value: truncateText(canonical, 60),
+        summary: status === 'pass'
+          ? (ctx.language === 'en' ? 'Canonical looks like a valid absolute URL.' : 'Canonical выглядит как корректный абсолютный URL.')
+          : status === 'warning'
+            ? (ctx.language === 'en' ? 'Canonical points to a different host than the final URL.' : 'Canonical указывает на другой домен по сравнению с итоговым URL.')
+            : (ctx.language === 'en' ? 'Canonical value does not look like a valid absolute page URL.' : 'Значение canonical не похоже на корректный абсолютный URL страницы.'),
+        whyItMatters: ctx.ui.why.canonical,
+        recommendation: status === 'pass'
+          ? ''
+          : (ctx.language === 'en'
+              ? 'Use an absolute canonical URL that matches the preferred public version of the page.'
+              : 'Укажите абсолютный canonical URL, который соответствует основной публичной версии страницы.'),
+        benchmark: ctx.language === 'en' ? 'Absolute URL (http/https)' : 'Абсолютный URL (http/https)',
+        scoreEarned: status === 'pass' ? 3 : status === 'warning' ? 1 : 0,
+      })
+    },
 
-  const titleLengthStatus = !title ? 'fail' : title.length >= 30 && title.length <= 65 ? 'pass' : 'warning'
-  checks.push(createCheck({
-    id: 'title-length',
-    categoryId: 'metadata',
-    label: ui.labels.titleLength,
-    weight: 8,
-    status: titleLengthStatus,
-    value: title ? `${title.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
-    summary: !title
-      ? (language === 'en' ? 'The title length cannot be optimized because the tag is missing.' : 'Длину title нельзя оценить корректно, потому что сам тег отсутствует.')
-      : titleLengthStatus === 'pass'
-        ? (language === 'en' ? 'The title length is in a solid range.' : 'Длина title находится в хорошем диапазоне.')
-        : (language === 'en' ? 'The title is likely too short or too long for a clean snippet.' : 'Title, вероятно, слишком короткий или слишком длинный для аккуратного сниппета.'),
-    whyItMatters: ui.why.titleLength,
-    recommendation: titleLengthStatus === 'pass'
-      ? ''
-      : (language === 'en' ? 'Aim for a title that is usually easy to scan and display without truncation.' : 'Сделайте title таким, чтобы его было легко читать и реже обрезало в выдаче.'),
-    benchmark: language === 'en' ? '30–65 chars' : '30–65 символов',
-    scoreEarned: !title ? 0 : titleLengthStatus === 'pass' ? 8 : 4,
-  }))
+    // CONTENT
+    (ctx) => {
+      const count = typeof ctx.data.h1Count === 'number' ? ctx.data.h1Count : null
+      const hasSignal = count !== null || !!ctx.values.h1Text
+      if (!hasSignal) {
+        return ctx.makeNotChecked({
+          id: 'h1-presence',
+          categoryId: 'content',
+          label: ctx.ui.labels.h1Presence,
+          weight: 10,
+          whyItMatters: ctx.ui.why.h1Presence,
+          benchmark: '1 H1',
+        })
+      }
+      const computedCount = count ?? (ctx.values.h1Text ? 1 : 0)
+      const status = computedCount > 1 ? 'warning' : ctx.values.h1Text ? 'pass' : 'fail'
+      return createCheck({
+        id: 'h1-presence',
+        categoryId: 'content',
+        label: ctx.ui.labels.h1Presence,
+        weight: 10,
+        status,
+        value: computedCount > 1 ? `${computedCount} H1` : (ctx.values.h1Text ? truncateText(ctx.values.h1Text) : (ctx.language === 'en' ? 'Missing' : 'Отсутствует')),
+        summary: status === 'pass'
+          ? (ctx.language === 'en' ? 'The page has one clear H1 heading.' : 'На странице есть один понятный H1.')
+          : status === 'warning'
+            ? (ctx.language === 'en' ? 'Multiple H1 headings were detected.' : 'Обнаружено несколько H1-заголовков.')
+            : (ctx.language === 'en' ? 'The page is missing an H1 heading.' : 'На странице отсутствует H1-заголовок.'),
+        whyItMatters: ctx.ui.why.h1Presence,
+        recommendation: status === 'pass' ? '' : (ctx.language === 'en' ? 'Keep one primary H1 that reflects the page topic clearly.' : 'Оставьте один основной H1, который ясно отражает тему страницы.'),
+        benchmark: '1 H1',
+        scoreEarned: status === 'pass' ? 10 : status === 'warning' ? 4 : 0,
+      })
+    },
+    (ctx) => {
+      if (!ctx.values.h1Text) {
+        return ctx.makeNotChecked({
+          id: 'h1-length',
+          categoryId: 'content',
+          label: ctx.ui.labels.h1Length,
+          weight: 4,
+          whyItMatters: ctx.ui.why.h1Length,
+          benchmark: ctx.language === 'en' ? '10–70 chars' : '10–70 символов',
+        })
+      }
+      const ok = ctx.values.h1Text.length >= 10 && ctx.values.h1Text.length <= 70
+      return createCheck({
+        id: 'h1-length',
+        categoryId: 'content',
+        label: ctx.ui.labels.h1Length,
+        weight: 4,
+        status: ok ? 'pass' : 'warning',
+        value: `${ctx.values.h1Text.length} ${ctx.language === 'en' ? 'chars' : 'симв.'}`,
+        summary: ok
+          ? (ctx.language === 'en' ? 'The H1 length looks balanced.' : 'Длина H1 выглядит сбалансированной.')
+          : (ctx.language === 'en' ? 'The H1 may be too short or too long.' : 'H1 может быть слишком коротким или слишком длинным.'),
+        whyItMatters: ctx.ui.why.h1Length,
+        recommendation: ok ? '' : (ctx.language === 'en' ? 'Use a concise H1 that explains the topic without stuffing extra phrases.' : 'Сделайте H1 кратким и понятным, без лишнего набора фраз.'),
+        benchmark: ctx.language === 'en' ? '10–70 chars' : '10–70 символов',
+        scoreEarned: ok ? 4 : 2,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.h2Count === undefined) {
+        return ctx.makeNotChecked({
+          id: 'h2-coverage',
+          categoryId: 'content',
+          label: ctx.ui.labels.h2Coverage,
+          weight: 6,
+          whyItMatters: ctx.ui.why.h2Coverage,
+          benchmark: ctx.language === 'en' ? 'At least 1 H2' : 'Минимум 1 H2',
+        })
+      }
+      const count = typeof ctx.data.h2Count === 'number' ? ctx.data.h2Count : 0
+      const ok = count > 0
+      return createCheck({
+        id: 'h2-coverage',
+        categoryId: 'content',
+        label: ctx.ui.labels.h2Coverage,
+        weight: 6,
+        status: ok ? 'pass' : 'warning',
+        value: `${count} H2`,
+        summary: ok
+          ? (ctx.language === 'en' ? 'Supporting H2 headings were found.' : 'Поддерживающие H2-заголовки найдены.')
+          : (ctx.language === 'en' ? 'No H2 headings were found.' : 'H2-заголовки не найдены.'),
+        whyItMatters: ctx.ui.why.h2Coverage,
+        recommendation: ok ? '' : (ctx.language === 'en' ? 'Add H2 subheadings to structure key sections of the page.' : 'Добавьте H2-подзаголовки, чтобы структурировать ключевые разделы страницы.'),
+        benchmark: ctx.language === 'en' ? 'At least 1 H2' : 'Минимум 1 H2',
+        scoreEarned: ok ? 6 : 2,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.wordCount === undefined) {
+        return ctx.makeNotChecked({
+          id: 'word-count',
+          categoryId: 'content',
+          label: ctx.language === 'en' ? 'Word count (signal)' : 'Количество слов (сигнал)',
+          weight: 2,
+          whyItMatters: ctx.language === 'en'
+            ? 'Extremely thin pages can struggle to satisfy search intent unless the page type is intentionally minimal.'
+            : 'Слишком “тонкие” страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
+          benchmark: ctx.language === 'en' ? 'Context-dependent' : 'Зависит от типа страницы',
+        })
+      }
+      const wc = typeof ctx.data.wordCount === 'number' ? ctx.data.wordCount : 0
+      const status = wc >= 250 ? 'pass' : wc >= 120 ? 'warning' : 'fail'
+      return createCheck({
+        id: 'word-count',
+        categoryId: 'content',
+        label: ctx.language === 'en' ? 'Word count (signal)' : 'Количество слов (сигнал)',
+        weight: 2,
+        status,
+        value: `${wc}`,
+        summary: status === 'pass'
+          ? (ctx.language === 'en' ? 'The page has a reasonable amount of text content.' : 'На странице достаточно текста для большинства сценариев.')
+          : status === 'warning'
+            ? (ctx.language === 'en' ? 'The page looks relatively thin on text content.' : 'Страница выглядит относительно “тонкой” по объёму текста.')
+            : (ctx.language === 'en' ? 'The page looks extremely thin on text content.' : 'Страница выглядит слишком “тонкой” по объёму текста.'),
+        whyItMatters: ctx.language === 'en'
+          ? 'Extremely thin pages can struggle to satisfy search intent unless the page type is intentionally minimal.'
+          : 'Слишком “тонкие” страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
+        recommendation: status === 'pass'
+          ? ''
+          : (ctx.language === 'en'
+              ? 'Ensure the page answers the query thoroughly (examples, explanations, FAQs), or clarify the intent if it is a utility page.'
+              : 'Проверьте, что страница полно отвечает на запрос (примеры, объяснения, FAQ), либо уточните интент, если это утилита.'),
+        benchmark: ctx.language === 'en' ? '250+ words (heuristic)' : '250+ слов (эвристика)',
+        scoreEarned: status === 'pass' ? 2 : status === 'warning' ? 1 : 0,
+      })
+    },
 
-  checks.push(createCheck({
-    id: 'description-present',
-    categoryId: 'metadata',
-    label: ui.labels.descriptionPresence,
-    weight: 10,
-    status: description ? 'pass' : 'fail',
-    value: description ? truncateText(description) : (language === 'en' ? 'Missing' : 'Отсутствует'),
-    summary: description
-      ? (language === 'en' ? 'The page has a meta description.' : 'У страницы есть meta description.')
-      : (language === 'en' ? 'The page is missing a meta description.' : 'У страницы отсутствует meta description.'),
-    whyItMatters: ui.why.descriptionPresence,
-    recommendation: description ? '' : (language === 'en' ? 'Add a description that explains the page value in a concise way.' : 'Добавьте описание, которое кратко объясняет ценность страницы.'),
-    benchmark: '1 description tag',
-  }))
+    // ENHANCEMENTS
+    (ctx) => {
+      if (ctx.data.openGraph === undefined) {
+        return ctx.makeNotChecked({
+          id: 'open-graph',
+          categoryId: 'enhancements',
+          label: ctx.ui.labels.openGraph,
+          weight: 8,
+          whyItMatters: ctx.ui.why.openGraph,
+          benchmark: '3/3',
+        })
+      }
+      const og = ctx.data.openGraph
+      const count = og ? ['title', 'description', 'image'].filter((key) => og?.[key]).length : 0
+      const status = count === 3 ? 'pass' : count > 0 ? 'warning' : 'fail'
+      return createCheck({
+        id: 'open-graph',
+        categoryId: 'enhancements',
+        label: ctx.ui.labels.openGraph,
+        weight: 8,
+        status,
+        value: `${count}/3`,
+        summary: status === 'pass'
+          ? (ctx.language === 'en' ? 'Open Graph tags are complete.' : 'Open Graph-теги заполнены полностью.')
+          : status === 'warning'
+            ? (ctx.language === 'en' ? 'Open Graph is present but incomplete.' : 'Open Graph есть, но заполнен не полностью.')
+            : (ctx.language === 'en' ? 'Open Graph tags were not found.' : 'Open Graph-теги не найдены.'),
+        whyItMatters: ctx.ui.why.openGraph,
+        recommendation: status === 'pass' ? '' : (ctx.language === 'en' ? 'Add og:title, og:description, and og:image for consistent previews.' : 'Добавьте og:title, og:description и og:image для стабильных превью.'),
+        benchmark: '3/3',
+        scoreEarned: status === 'pass' ? 8 : status === 'warning' ? 4 : 0,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.twitter === undefined) {
+        return ctx.makeNotChecked({
+          id: 'twitter-cards',
+          categoryId: 'enhancements',
+          label: ctx.ui.labels.twitter,
+          weight: 4,
+          whyItMatters: ctx.ui.why.twitter,
+          benchmark: '3+/4',
+        })
+      }
+      const tw = ctx.data.twitter
+      const count = tw ? ['card', 'title', 'description', 'image'].filter((key) => tw?.[key]).length : 0
+      const status = count >= 3 ? 'pass' : count > 0 ? 'warning' : 'fail'
+      return createCheck({
+        id: 'twitter-cards',
+        categoryId: 'enhancements',
+        label: ctx.ui.labels.twitter,
+        weight: 4,
+        status,
+        value: `${count}/4`,
+        summary: status === 'pass'
+          ? (ctx.language === 'en' ? 'Twitter/X card tags are in place.' : 'Twitter/X card-теги на месте.')
+          : status === 'warning'
+            ? (ctx.language === 'en' ? 'Twitter/X card tags are only partially present.' : 'Twitter/X card-теги заполнены частично.')
+            : (ctx.language === 'en' ? 'Twitter/X card tags were not found.' : 'Twitter/X card-теги не найдены.'),
+        whyItMatters: ctx.ui.why.twitter,
+        recommendation: status === 'pass' ? '' : (ctx.language === 'en' ? 'Add card type, title, description, and image for stronger previews.' : 'Добавьте тип карточки, title, description и image для более сильного превью.'),
+        benchmark: '3+/4',
+        scoreEarned: status === 'pass' ? 4 : status === 'warning' ? 2 : 0,
+      })
+    },
+    (ctx) => {
+      if (ctx.data.hasStructuredData === undefined) {
+        return ctx.makeNotChecked({
+          id: 'structured-data',
+          categoryId: 'enhancements',
+          label: ctx.ui.labels.structuredData,
+          weight: 3,
+          whyItMatters: ctx.ui.why.structuredData,
+          benchmark: ctx.language === 'en' ? 'Present when applicable' : 'Наличие при необходимости',
+        })
+      }
+      const present = ctx.data.hasStructuredData === true
+      return createCheck({
+        id: 'structured-data',
+        categoryId: 'enhancements',
+        label: ctx.ui.labels.structuredData,
+        weight: 3,
+        status: present ? 'pass' : 'warning',
+        value: present ? (ctx.language === 'en' ? 'Present' : 'Есть') : (ctx.language === 'en' ? 'Missing' : 'Нет'),
+        summary: present
+          ? (ctx.language === 'en' ? 'Structured data was detected.' : 'Структурированные данные обнаружены.')
+          : (ctx.language === 'en' ? 'Structured data was not detected.' : 'Структурированные данные не обнаружены.'),
+        whyItMatters: ctx.ui.why.structuredData,
+        recommendation: present ? '' : (ctx.language === 'en' ? 'Consider adding Schema.org markup where it fits the page type.' : 'Рассмотрите добавление Schema.org-разметки, если она подходит типу страницы.'),
+        benchmark: ctx.language === 'en' ? 'Present when applicable' : 'Наличие при необходимости',
+        scoreEarned: present ? 3 : 1,
+      })
+    },
 
-  const descriptionLengthStatus = !description ? 'fail' : description.length >= 120 && description.length <= 170 ? 'pass' : 'warning'
-  checks.push(createCheck({
-    id: 'description-length',
-    categoryId: 'metadata',
-    label: ui.labels.descriptionLength,
-    weight: 7,
-    status: descriptionLengthStatus,
-    value: description ? `${description.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
-    summary: !description
-      ? (language === 'en' ? 'The description length cannot be assessed because the tag is missing.' : 'Длину description нельзя оценить корректно, потому что сам тег отсутствует.')
-      : descriptionLengthStatus === 'pass'
-        ? (language === 'en' ? 'The description length is in a practical range.' : 'Длина description находится в практичном диапазоне.')
-        : (language === 'en' ? 'The description could be more balanced for search snippets.' : 'Description стоит сделать более сбалансированным для сниппета.'),
-    whyItMatters: ui.why.descriptionLength,
-    recommendation: descriptionLengthStatus === 'pass'
-      ? ''
-      : (language === 'en' ? 'Keep the description concise but descriptive enough to explain the page.' : 'Сделайте description кратким, но достаточно информативным для страницы.'),
-    benchmark: language === 'en' ? '120–170 chars' : '120–170 символов',
-    scoreEarned: !description ? 0 : descriptionLengthStatus === 'pass' ? 7 : 4,
-  }))
+    // ACCESSIBILITY
+    (ctx) => {
+      const hasSignals = typeof ctx.data.imagesTotal === 'number' && typeof ctx.data.imagesWithoutAlt === 'number'
+      if (!hasSignals) {
+        return ctx.makeNotChecked({
+          id: 'alt-coverage',
+          categoryId: 'accessibility',
+          label: ctx.ui.labels.altCoverage,
+          weight: 8,
+          whyItMatters: ctx.ui.why.altCoverage,
+          benchmark: ctx.language === 'en' ? '100% covered' : '100% покрытие',
+        })
+      }
+      const total = ctx.data.imagesTotal
+      const withoutAlt = ctx.data.imagesWithoutAlt
+      const ratio = total > 0 ? (total - withoutAlt) / total : 1
+      const status = total === 0 || ratio === 1 ? 'pass' : ratio >= 0.7 ? 'warning' : 'fail'
+      return createCheck({
+        id: 'alt-coverage',
+        categoryId: 'accessibility',
+        label: ctx.ui.labels.altCoverage,
+        weight: 8,
+        status,
+        value: total === 0 ? (ctx.language === 'en' ? 'No images' : 'Нет изображений') : `${total - withoutAlt}/${total}`,
+        summary: total === 0
+          ? (ctx.language === 'en' ? 'The page has no images that need alt coverage.' : 'На странице нет изображений, требующих alt-атрибутов.')
+          : ratio === 1
+            ? (ctx.language === 'en' ? 'All detected images have alt attributes.' : 'У всех найденных изображений есть alt-атрибуты.')
+            : (ctx.language === 'en' ? 'Some images are missing alt attributes.' : 'У части изображений отсутствуют alt-атрибуты.'),
+        whyItMatters: ctx.ui.why.altCoverage,
+        recommendation: status === 'pass' ? '' : (ctx.language === 'en' ? 'Add descriptive alt text to informative images; keep decorative images intentionally empty.' : 'Добавьте описательные alt к информативным изображениям; декоративные оставляйте осознанно пустыми.'),
+        benchmark: ctx.language === 'en' ? '100% covered' : '100% покрытие',
+        scoreEarned: status === 'pass' ? 8 : status === 'warning' ? 4 : 0,
+      })
+    },
+    (ctx) => {
+      const hasSignals = typeof ctx.data.internalLinks === 'number' || typeof ctx.data.externalLinks === 'number'
+      if (!hasSignals) {
+        return ctx.makeNotChecked({
+          id: 'link-signals',
+          categoryId: 'accessibility',
+          label: ctx.ui.labels.linkMix,
+          weight: 2,
+          whyItMatters: ctx.ui.why.linkMix,
+          benchmark: ctx.language === 'en' ? 'At least one crawlable link' : 'Хотя бы одна сканируемая ссылка',
+        })
+      }
+      const internal = typeof ctx.data.internalLinks === 'number' ? ctx.data.internalLinks : 0
+      const external = typeof ctx.data.externalLinks === 'number' ? ctx.data.externalLinks : 0
+      const total = internal + external
+      const status = total > 0 ? 'pass' : 'warning'
+      return createCheck({
+        id: 'link-signals',
+        categoryId: 'accessibility',
+        label: ctx.ui.labels.linkMix,
+        weight: 2,
+        status,
+        value: `${internal} / ${external}`,
+        summary: total > 0
+          ? (ctx.language === 'en' ? 'The page exposes crawlable link signals.' : 'На странице есть сканируемые ссылочные сигналы.')
+          : (ctx.language === 'en' ? 'No internal or external links were detected.' : 'Внутренние и внешние ссылки не обнаружены.'),
+        whyItMatters: ctx.ui.why.linkMix,
+        recommendation: total > 0 ? '' : (ctx.language === 'en' ? 'Ensure important pages include meaningful internal navigation or supporting links.' : 'Проверьте, что важная страница содержит внутреннюю навигацию или полезные ссылки.'),
+        benchmark: ctx.language === 'en' ? 'At least one crawlable link' : 'Хотя бы одна сканируемая ссылка',
+        scoreEarned: total > 0 ? 2 : 1,
+      })
+    },
+  ]
 
-  checks.push(createCheck({
-    id: 'canonical',
-    categoryId: 'metadata',
-    label: ui.labels.canonical,
-    weight: 5,
-    status: data.canonical ? 'pass' : 'warning',
-    value: data.canonical || (language === 'en' ? 'Missing' : 'Отсутствует'),
-    summary: data.canonical
-      ? (language === 'en' ? 'A canonical URL is declared.' : 'Canonical URL указан.')
-      : (language === 'en' ? 'No canonical tag was found.' : 'Canonical-тег не найден.'),
-    whyItMatters: ui.why.canonical,
-    recommendation: data.canonical
-      ? ''
-      : (language === 'en' ? 'Add a canonical URL if the page can have multiple entry points or duplicate variants.' : 'Добавьте canonical URL, если у страницы есть несколько точек входа или дубли.'),
-    benchmark: language === 'en' ? 'Present when needed' : 'Наличие при необходимости',
-    scoreEarned: data.canonical ? 5 : 2,
-  }))
-
-  const h1Status = data.h1Count > 1 ? 'warning' : h1Text ? 'pass' : 'fail'
-  checks.push(createCheck({
-    id: 'h1-presence',
-    categoryId: 'content',
-    label: ui.labels.h1Presence,
-    weight: 10,
-    status: h1Status,
-    value: data.h1Count > 1 ? `${data.h1Count} H1` : (h1Text ? truncateText(h1Text) : (language === 'en' ? 'Missing' : 'Отсутствует')),
-    summary: h1Status === 'pass'
-      ? (language === 'en' ? 'The page has one clear H1 heading.' : 'На странице есть один понятный H1.')
-      : h1Status === 'warning'
-        ? (language === 'en' ? 'Multiple H1 headings were detected.' : 'Обнаружено несколько H1-заголовков.')
-        : (language === 'en' ? 'The page is missing an H1 heading.' : 'На странице отсутствует H1-заголовок.'),
-    whyItMatters: ui.why.h1Presence,
-    recommendation: h1Status === 'pass'
-      ? ''
-      : (language === 'en' ? 'Keep one primary H1 that reflects the page topic clearly.' : 'Оставьте один основной H1, который ясно отражает тему страницы.'),
-    benchmark: '1 H1',
-    scoreEarned: h1Status === 'pass' ? 10 : h1Status === 'warning' ? 4 : 0,
-  }))
-
-  const h1LengthStatus = !h1Text ? 'fail' : h1Text.length >= 10 && h1Text.length <= 70 ? 'pass' : 'warning'
-  checks.push(createCheck({
-    id: 'h1-length',
-    categoryId: 'content',
-    label: ui.labels.h1Length,
-    weight: 4,
-    status: h1LengthStatus,
-    value: h1Text ? `${h1Text.length} ${language === 'en' ? 'chars' : 'симв.'}` : `0 ${language === 'en' ? 'chars' : 'симв.'}`,
-    summary: !h1Text
-      ? (language === 'en' ? 'The H1 length cannot be assessed because the heading is missing.' : 'Длину H1 нельзя оценить, потому что заголовок отсутствует.')
-      : h1LengthStatus === 'pass'
-        ? (language === 'en' ? 'The H1 length looks balanced.' : 'Длина H1 выглядит сбалансированной.')
-        : (language === 'en' ? 'The H1 may be too short or too long.' : 'H1 может быть слишком коротким или слишком длинным.'),
-    whyItMatters: ui.why.h1Length,
-    recommendation: h1LengthStatus === 'pass'
-      ? ''
-      : (language === 'en' ? 'Use a concise H1 that explains the topic without stuffing extra phrases.' : 'Сделайте H1 кратким и понятным, без лишнего набора фраз.'),
-    benchmark: language === 'en' ? '10–70 chars' : '10–70 символов',
-    scoreEarned: !h1Text ? 0 : h1LengthStatus === 'pass' ? 4 : 2,
-  }))
-
-  const h2Status = data.h2Count === null ? 'na' : data.h2Count > 0 ? 'pass' : 'warning'
-  checks.push(createCheck({
-    id: 'h2-coverage',
-    categoryId: 'content',
-    label: ui.labels.h2Coverage,
-    weight: 6,
-    status: h2Status,
-    value: data.h2Count === null ? ui.status.na : `${data.h2Count} H2`,
-    summary: data.h2Count === null
-      ? ui.notChecked
-      : data.h2Count > 0
-        ? (language === 'en' ? 'Supporting H2 headings were found.' : 'Поддерживающие H2-заголовки найдены.')
-        : (language === 'en' ? 'No H2 headings were found.' : 'H2-заголовки не найдены.'),
-    whyItMatters: ui.why.h2Coverage,
-    recommendation: data.h2Count === null || data.h2Count > 0
-      ? ''
-      : (language === 'en' ? 'Add H2 subheadings to structure key sections of the page.' : 'Добавьте H2-подзаголовки, чтобы структурировать ключевые разделы страницы.'),
-    benchmark: language === 'en' ? 'At least 1 H2' : 'Минимум 1 H2',
-    scoreEarned: data.h2Count === null ? null : data.h2Count > 0 ? 6 : 2,
-  }))
-
-  const openGraphAvailable = data.openGraph !== null
-  const openGraphCount = openGraphAvailable ? ['title', 'description', 'image'].filter((key) => data.openGraph?.[key]).length : 0
-  checks.push(createCheck({
-    id: 'open-graph',
-    categoryId: 'enhancements',
-    label: ui.labels.openGraph,
-    weight: 8,
-    status: !openGraphAvailable ? 'na' : openGraphCount === 3 ? 'pass' : openGraphCount > 0 ? 'warning' : 'fail',
-    value: !openGraphAvailable ? ui.status.na : `${openGraphCount}/3`,
-    summary: !openGraphAvailable
-      ? ui.notChecked
-      : openGraphCount === 3
-        ? (language === 'en' ? 'Open Graph tags are complete.' : 'Open Graph-теги заполнены полностью.')
-        : openGraphCount > 0
-          ? (language === 'en' ? 'Open Graph is present but incomplete.' : 'Open Graph есть, но заполнен не полностью.')
-          : (language === 'en' ? 'Open Graph tags were not found.' : 'Open Graph-теги не найдены.'),
-    whyItMatters: ui.why.openGraph,
-    recommendation: !openGraphAvailable || openGraphCount === 3
-      ? ''
-      : (language === 'en' ? 'Add og:title, og:description, and og:image for consistent previews.' : 'Добавьте og:title, og:description и og:image для стабильных превью.'),
-    benchmark: '3/3',
-    scoreEarned: !openGraphAvailable ? null : openGraphCount === 3 ? 8 : openGraphCount > 0 ? 4 : 0,
-  }))
-
-  const twitterAvailable = data.twitter !== null
-  const twitterCount = twitterAvailable ? ['card', 'title', 'description', 'image'].filter((key) => data.twitter?.[key]).length : 0
-  checks.push(createCheck({
-    id: 'twitter-cards',
-    categoryId: 'enhancements',
-    label: ui.labels.twitter,
-    weight: 4,
-    status: !twitterAvailable ? 'na' : twitterCount >= 3 ? 'pass' : twitterCount > 0 ? 'warning' : 'fail',
-    value: !twitterAvailable ? ui.status.na : `${twitterCount}/4`,
-    summary: !twitterAvailable
-      ? ui.notChecked
-      : twitterCount >= 3
-        ? (language === 'en' ? 'Twitter/X card tags are in place.' : 'Twitter/X card-теги на месте.')
-        : twitterCount > 0
-          ? (language === 'en' ? 'Twitter/X card tags are only partially present.' : 'Twitter/X card-теги заполнены частично.')
-          : (language === 'en' ? 'Twitter/X card tags were not found.' : 'Twitter/X card-теги не найдены.'),
-    whyItMatters: ui.why.twitter,
-    recommendation: !twitterAvailable || twitterCount >= 3
-      ? ''
-      : (language === 'en' ? 'Add a card type, title, description, and image for stronger social previews.' : 'Добавьте тип карточки, title, description и image для более сильного социального превью.'),
-    benchmark: '3+/4',
-    scoreEarned: !twitterAvailable ? null : twitterCount >= 3 ? 4 : twitterCount > 0 ? 2 : 0,
-  }))
-
-  checks.push(createCheck({
-    id: 'structured-data',
-    categoryId: 'enhancements',
-    label: ui.labels.structuredData,
-    weight: 3,
-    status: typeof data.hasStructuredData !== 'boolean' ? 'na' : data.hasStructuredData ? 'pass' : 'warning',
-    value: typeof data.hasStructuredData !== 'boolean'
-      ? ui.status.na
-      : data.hasStructuredData
-        ? (language === 'en' ? 'Present' : 'Есть')
-        : (language === 'en' ? 'Missing' : 'Нет'),
-    summary: typeof data.hasStructuredData !== 'boolean'
-      ? ui.notChecked
-      : data.hasStructuredData
-        ? (language === 'en' ? 'Structured data was detected.' : 'Структурированные данные обнаружены.')
-        : (language === 'en' ? 'Structured data was not detected.' : 'Структурированные данные не обнаружены.'),
-    whyItMatters: ui.why.structuredData,
-    recommendation: typeof data.hasStructuredData !== 'boolean' || data.hasStructuredData
-      ? ''
-      : (language === 'en' ? 'Consider adding Schema.org markup where it fits the page type.' : 'Рассмотрите добавление Schema.org-разметки, если она подходит типу страницы.'),
-    benchmark: language === 'en' ? 'Present when applicable' : 'Наличие при необходимости',
-    scoreEarned: typeof data.hasStructuredData !== 'boolean' ? null : data.hasStructuredData ? 3 : 1,
-  }))
-
-  const altCoverageAvailable = data.imagesTotal !== null && data.imagesWithoutAlt !== null
-  const imagesWithAltRatio = altCoverageAvailable && data.imagesTotal > 0
-    ? (data.imagesTotal - data.imagesWithoutAlt) / data.imagesTotal
-    : 1
-  checks.push(createCheck({
-    id: 'alt-coverage',
-    categoryId: 'accessibility',
-    label: ui.labels.altCoverage,
-    weight: 8,
-    status: !altCoverageAvailable
-      ? 'na'
-      : data.imagesTotal === 0 || imagesWithAltRatio === 1
-        ? 'pass'
-        : imagesWithAltRatio >= 0.7
-          ? 'warning'
-          : 'fail',
-    value: !altCoverageAvailable
-      ? ui.status.na
-      : data.imagesTotal === 0
-        ? (language === 'en' ? 'No images' : 'Нет изображений')
-        : `${data.imagesTotal - data.imagesWithoutAlt}/${data.imagesTotal}`,
-    summary: !altCoverageAvailable
-      ? ui.notChecked
-      : data.imagesTotal === 0
-        ? (language === 'en' ? 'The page has no images that need alt coverage.' : 'На странице нет изображений, требующих alt-атрибутов.')
-        : imagesWithAltRatio === 1
-          ? (language === 'en' ? 'All detected images have alt attributes.' : 'У всех найденных изображений есть alt-атрибуты.')
-          : (language === 'en' ? 'Some images are missing alt attributes.' : 'У части изображений отсутствуют alt-атрибуты.'),
-    whyItMatters: ui.why.altCoverage,
-    recommendation: !altCoverageAvailable || data.imagesTotal === 0 || imagesWithAltRatio === 1
-      ? ''
-      : (language === 'en' ? 'Add descriptive alt text to informative images and keep decorative images intentionally empty.' : 'Добавьте описательные alt к информативным изображениям и оставляйте декоративные картинки осознанно пустыми.'),
-    benchmark: language === 'en' ? '100% covered' : '100% покрытие',
-    scoreEarned: !altCoverageAvailable ? null : data.imagesTotal === 0 || imagesWithAltRatio === 1 ? 8 : imagesWithAltRatio >= 0.7 ? 4 : 0,
-  }))
-
-  const linkSignalsAvailable = data.internalLinks !== null || data.externalLinks !== null
-  const totalLinks = (data.internalLinks || 0) + (data.externalLinks || 0)
-  checks.push(createCheck({
-    id: 'link-signals',
-    categoryId: 'accessibility',
-    label: ui.labels.linkMix,
-    weight: 2,
-    status: !linkSignalsAvailable ? 'na' : totalLinks > 0 ? 'pass' : 'warning',
-    value: !linkSignalsAvailable ? ui.status.na : `${data.internalLinks || 0} / ${data.externalLinks || 0}`,
-    summary: !linkSignalsAvailable
-      ? ui.notChecked
-      : totalLinks > 0
-        ? (language === 'en' ? 'The page exposes crawlable link signals.' : 'На странице есть сканируемые ссылочные сигналы.')
-        : (language === 'en' ? 'No internal or external links were detected.' : 'Внутренние и внешние ссылки не обнаружены.'),
-    whyItMatters: ui.why.linkMix,
-    recommendation: !linkSignalsAvailable || totalLinks > 0
-      ? ''
-      : (language === 'en' ? 'Make sure important pages include meaningful internal navigation or supporting links.' : 'Проверьте, что важная страница содержит осмысленную внутреннюю навигацию или полезные ссылки.'),
-    benchmark: language === 'en' ? 'At least one crawlable link' : 'Хотя бы одна сканируемая ссылка',
-    scoreEarned: !linkSignalsAvailable ? null : totalLinks > 0 ? 2 : 1,
-  }))
+  CHECK_CATALOG.forEach((factory) => {
+    const check = factory(ctx)
+    if (check) checks.push(check)
+  })
 
   const categories = AUDIT_CATEGORY_ORDER.map((categoryConfig) => {
     const categoryChecks = checks.filter((check) => check.categoryId === categoryConfig.id)
@@ -732,10 +1123,10 @@ function buildAuditReport(rawData, language) {
     return {
       id: categoryConfig.id,
       label: ui.categories[categoryConfig.id],
-      maxScore: categoryConfig.maxScore,
+      maxScore: available || 0,
       earned,
       available,
-      score: available ? Math.round((earned / available) * categoryConfig.maxScore) : null,
+      score: available ? earned : null,
       percent,
       status: getCategoryStatus(categoryChecks),
       checks: categoryChecks,
@@ -1215,6 +1606,27 @@ function SEOAuditPro() {
     { key: 'na', label: auditUi.filterUnavailable },
   ]
 
+  const renderSignal = (value, { missing = copy.missing, unknown = copy.notAvailable } = {}) => {
+    if (value === undefined) return unknown
+    if (value === null) return missing
+    if (typeof value === 'string') return value.length ? value : missing
+    if (typeof value === 'number') return Number.isFinite(value) ? String(value) : unknown
+    if (typeof value === 'boolean') return value ? (language === 'en' ? 'Yes' : 'Да') : (language === 'en' ? 'No' : 'Нет')
+    return unknown
+  }
+
+  const copyToClipboard = (value) => {
+    const text = typeof value === 'string' ? value : ''
+    if (!text) return
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {
+        prompt(copy.sharePrompt, text)
+      })
+      return
+    }
+    prompt(copy.sharePrompt, text)
+  }
+
   return (
     <>
       <SEO
@@ -1293,6 +1705,10 @@ function SEOAuditPro() {
                           <div className="seo-audit-pro-priority-copy">
                             <strong>{check.label}</strong>
                             <p>{check.summary}</p>
+                            <div className="seo-audit-pro-priority-meta">
+                              <span><strong>{auditUi.currentValue}:</strong> {check.value}</span>
+                              <span><strong>{auditUi.benchmark}:</strong> {check.benchmark || '—'}</span>
+                            </div>
                           </div>
                           <div className="seo-audit-pro-priority-points">
                             <span className="seo-audit-pro-points">{auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
@@ -1443,92 +1859,116 @@ function SEOAuditPro() {
                 <div className="meta-grid seo-audit-pro-raw-grid">
                   <div className="meta-item">
                     <strong>Title</strong>
-                    <div className="meta-item-value">{result.data.title || copy.missing}</div>
+                    <div className="meta-item-value">{renderSignal(result.data.title)}</div>
                   </div>
                   <div className="meta-item">
                     <strong>Description</strong>
-                    <div className="meta-item-value">{result.data.description || copy.missing}</div>
+                    <div className="meta-item-value">{renderSignal(result.data.description)}</div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.finalUrl}</strong>
-                    <div className="meta-item-value">{result.data.finalUrl || copy.notAvailable}</div>
+                    <div className="meta-item-value seo-audit-pro-raw-copy-row">
+                      <span>{renderSignal(result.data.finalUrl, { missing: copy.missing, unknown: copy.notAvailable })}</span>
+                      {typeof result.data.finalUrl === 'string' && result.data.finalUrl.length > 0 ? (
+                        <button type="button" className="seo-audit-pro-raw-copy" onClick={() => copyToClipboard(result.data.finalUrl)}>
+                          {language === 'en' ? 'Copy' : 'Копировать'}
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.status}</strong>
-                    <div className="meta-item-value">{result.data.status ?? copy.notAvailable}</div>
+                    <div className="meta-item-value">{renderSignal(result.data.status, { missing: copy.notAvailable, unknown: copy.notAvailable })}</div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.contentType}</strong>
-                    <div className="meta-item-value">{result.data.contentType || copy.notAvailable}</div>
+                    <div className="meta-item-value">{renderSignal(result.data.contentType, { missing: copy.missing, unknown: copy.notAvailable })}</div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.canonical}</strong>
-                    <div className="meta-item-value">{result.data.canonical || copy.notAvailable}</div>
+                    <div className="meta-item-value seo-audit-pro-raw-copy-row">
+                      <span>{renderSignal(result.data.canonical, { missing: copy.missing, unknown: copy.notAvailable })}</span>
+                      {typeof result.data.canonical === 'string' && result.data.canonical.length > 0 ? (
+                        <button type="button" className="seo-audit-pro-raw-copy" onClick={() => copyToClipboard(result.data.canonical)}>
+                          {language === 'en' ? 'Copy' : 'Копировать'}
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.robotsLabel}</strong>
-                    <div className="meta-item-value">{result.data.robots || copy.notAvailable}</div>
+                    <div className="meta-item-value">{renderSignal(result.data.robots, { missing: copy.missing, unknown: copy.notAvailable })}</div>
                   </div>
                   <div className="meta-item">
                     <strong>{copy.h1}</strong>
-                    <div className="meta-item-value">{result.data.h1Text || result.data.h1Count || copy.missing}</div>
+                    <div className="meta-item-value">{result.data.h1Text ? renderSignal(result.data.h1Text) : renderSignal(result.data.h1Count)}</div>
                   </div>
-                  {result.data.h2Count !== null && (
+                  {typeof result.data.h2Count === 'number' && (
                     <div className="meta-item">
                       <strong>{copy.h2}</strong>
                       <div className="meta-item-value">{result.data.h2Count}</div>
                     </div>
                   )}
-                  {result.data.h3Count !== null && (
+                  {typeof result.data.h3Count === 'number' && (
                     <div className="meta-item">
                       <strong>{copy.h3}</strong>
                       <div className="meta-item-value">{result.data.h3Count}</div>
                     </div>
                   )}
-                  {result.data.imagesTotal !== null && (
+                  {typeof result.data.imagesTotal === 'number' && typeof result.data.imagesWithoutAlt === 'number' && (
                     <div className="meta-item">
                       <strong>{copy.images}</strong>
                       <div className="meta-item-value">{result.data.imagesTotal} ({copy.withoutAlt}: {result.data.imagesWithoutAlt})</div>
                     </div>
                   )}
-                  {result.data.internalLinks !== null && (
+                  {typeof result.data.internalLinks === 'number' && (
                     <div className="meta-item">
                       <strong>{language === 'en' ? 'Internal links' : 'Внутренние ссылки'}</strong>
                       <div className="meta-item-value">{result.data.internalLinks}</div>
                     </div>
                   )}
-                  {result.data.externalLinks !== null && (
+                  {typeof result.data.externalLinks === 'number' && (
                     <div className="meta-item">
                       <strong>{language === 'en' ? 'External links' : 'Внешние ссылки'}</strong>
                       <div className="meta-item-value">{result.data.externalLinks}</div>
                     </div>
                   )}
-                  {result.data.wordCount !== null && (
+                  {typeof result.data.wordCount === 'number' && (
                     <div className="meta-item">
                       <strong>{language === 'en' ? 'Word count' : 'Количество слов'}</strong>
                       <div className="meta-item-value">{result.data.wordCount}</div>
                     </div>
                   )}
-                  {result.data.openGraph && (
+                  {result.data.openGraph !== undefined && (
                     <div className="meta-item">
                       <strong>Open Graph</strong>
                       <div className="meta-item-value">
-                        {['title', 'description', 'image'].filter((key) => result.data.openGraph?.[key]).length}/3
+                        {result.data.openGraph
+                          ? `${['title', 'description', 'image'].filter((key) => result.data.openGraph?.[key]).length}/3`
+                          : copy.missing}
                       </div>
                     </div>
                   )}
-                  {result.data.twitter && (
+                  {result.data.twitter !== undefined && (
                     <div className="meta-item">
                       <strong>Twitter</strong>
                       <div className="meta-item-value">
-                        {['card', 'title', 'description', 'image'].filter((key) => result.data.twitter?.[key]).length}/4
+                        {result.data.twitter
+                          ? `${['card', 'title', 'description', 'image'].filter((key) => result.data.twitter?.[key]).length}/4`
+                          : copy.missing}
                       </div>
                     </div>
                   )}
-                  {typeof result.data.hasStructuredData === 'boolean' && (
+                  {result.data.hasStructuredData !== undefined && (
                     <div className="meta-item">
                       <strong>{language === 'en' ? 'Structured data' : 'Структурированные данные'}</strong>
-                      <div className="meta-item-value">{result.data.hasStructuredData ? copy.structuredYes : copy.structuredNo}</div>
+                      <div className="meta-item-value">
+                        {result.data.hasStructuredData === true
+                          ? copy.structuredYes
+                          : result.data.hasStructuredData === false
+                            ? copy.structuredNo
+                            : copy.notAvailable}
+                      </div>
                     </div>
                   )}
                 </div>
