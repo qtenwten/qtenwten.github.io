@@ -131,10 +131,26 @@ function ArticlePage() {
 
   const visibleArticle = article && articleMatchesLanguage(article, language) ? article : null
   const localizedRelatedArticles = filterArticlesForLanguage(relatedArticles, language)
+  const translationKey = visibleArticle?.translationKey || visibleArticle?.translation_key || ''
+  const translatedSlugs = useMemo(() => {
+    if (!translationKey) {
+      return { ru: '', en: '' }
+    }
+
+    const ru = relatedArticles.find((item) => (item?.translationKey || item?.translation_key) === translationKey && articleMatchesLanguage(item, 'ru'))?.slug || ''
+    const en = relatedArticles.find((item) => (item?.translationKey || item?.translation_key) === translationKey && articleMatchesLanguage(item, 'en'))?.slug || ''
+    return { ru, en }
+  }, [relatedArticles, translationKey])
   const canonicalPath = useMemo(() => `/${language}/articles/${slug}`, [language, slug])
   const canonicalUrl = useMemo(() => getLocalizedRouteUrl(language, `/articles/${slug}`), [language, slug])
-  const ruUrl = useMemo(() => getLocalizedRouteUrl('ru', `/articles/${slug}`), [slug])
-  const enUrl = useMemo(() => getLocalizedRouteUrl('en', `/articles/${slug}`), [slug])
+  const ruUrl = useMemo(() => {
+    if (translatedSlugs.ru) return getLocalizedRouteUrl('ru', `/articles/${translatedSlugs.ru}`)
+    return getLocalizedRouteUrl('ru', '/articles')
+  }, [translatedSlugs.ru])
+  const enUrl = useMemo(() => {
+    if (translatedSlugs.en) return getLocalizedRouteUrl('en', `/articles/${translatedSlugs.en}`)
+    return getLocalizedRouteUrl('en', '/articles')
+  }, [translatedSlugs.en])
   const articleTitle = visibleArticle?.title || t('articles.detailFallbackTitle')
   const articleDescription = visibleArticle?.seoDescription || visibleArticle?.excerpt || t('articles.subtitle')
   const articleSeoTitle = visibleArticle?.seoTitle || (status === 'success' ? `${articleTitle} | QSEN.RU` : t('articles.detailLoadingTitle'))
@@ -190,7 +206,7 @@ function ArticlePage() {
           <section className="articles-list-state articles-list-state--error" role="alert">
             <h1>{t('articles.errorTitle')}</h1>
             <p>{errorMessage}</p>
-            <Link to={`/${language}/articles`} className="article-back-link">
+            <Link to={`/${language}/articles/`} className="article-back-link">
               {t('articles.backToList')}
             </Link>
           </section>
@@ -212,7 +228,7 @@ function ArticlePage() {
                   <h1>{visibleArticle.title}</h1>
                   {visibleArticle.excerpt ? <p className="article-header-card__excerpt">{visibleArticle.excerpt}</p> : null}
 
-                  <Link to={`/${language}/articles`} className="article-back-link">
+                  <Link to={`/${language}/articles/`} className="article-back-link">
                     {t('articles.backToList')}
                   </Link>
                 </header>

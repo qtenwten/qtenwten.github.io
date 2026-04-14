@@ -63,7 +63,7 @@ function Header({ searchValue, onSearchChange }) {
 
         <div className="header-actions">
           <Link
-            to={`/${routeLanguage}/articles`}
+            to={`/${routeLanguage}/articles/`}
             className="header-nav-link"
             onMouseEnter={() => preloadRoute('/articles')}
             onFocus={() => preloadRoute('/articles')}

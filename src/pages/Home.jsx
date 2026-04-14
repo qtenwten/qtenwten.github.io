@@ -185,7 +185,7 @@ function Home({ searchValue, onSearchChange }) {
                   <p>{t('home.latestArticlesDescription')}</p>
                 </div>
                 <Link
-                  to={`/${language}/articles`}
+                  to={`/${language}/articles/`}
                   className="home-articles__link"
                   onMouseEnter={() => preloadRoute('/articles')}
                   onFocus={() => preloadRoute('/articles')}
