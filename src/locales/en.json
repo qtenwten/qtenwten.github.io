@@ -111,7 +111,7 @@
     "emptyTitle": "No published articles yet",
     "emptyDescription": "When new posts are published through the Worker API, they will appear here automatically.",
     "listAriaLabel": "Articles list",
-    "readMore": "Open article",
+    "readMore": "Open tool",
     "backToList": "Back to articles",
     "detailEyebrow": "Article",
     "detailFallbackTitle": "Article",

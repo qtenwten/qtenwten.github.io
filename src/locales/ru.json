@@ -111,7 +111,7 @@
     "emptyTitle": "Пока нет опубликованных статей",
     "emptyDescription": "Когда через Worker API появятся новые публикации, они автоматически отобразятся здесь.",
     "listAriaLabel": "Список статей",
-    "readMore": "Открыть статью",
+    "readMore": "Открыть инструмент",
     "backToList": "Вернуться к списку статей",
     "detailEyebrow": "Статья",
     "detailFallbackTitle": "Статья",

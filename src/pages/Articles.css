@@ -385,6 +385,7 @@
 }
 
 .article-card__read-more,
+.article-card__tool-link,
 .article-back-link {
   display: inline-flex;
   align-items: center;
@@ -393,6 +394,11 @@
   color: var(--primary);
   font-weight: 700;
   text-decoration: none;
+}
+
+.article-card__tool-link {
+  color: var(--text-secondary);
+  opacity: 0.85;
 }
 
 .article-layout {

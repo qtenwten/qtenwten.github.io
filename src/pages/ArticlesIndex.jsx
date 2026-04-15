@@ -146,9 +146,11 @@ function ArticlesIndex() {
                     <Link to={`/${language}/articles/${featuredArticle.slug}`} className="articles-primary-link">
                       {t('articles.readFeatured')}
                     </Link>
-                    <Link to={`/${language}/articles/${featuredArticle.slug}`} className="articles-secondary-link">
-                      {t('articles.readMore')}
-                    </Link>
+                    {featuredArticle.toolSlug && (
+                      <Link to={`/${language}/${featuredArticle.toolSlug}`} className="articles-secondary-link">
+                        {t('articles.readMore')}
+                      </Link>
+                    )}
                   </div>
                 </article>
 
@@ -213,8 +215,13 @@ function ArticlesIndex() {
 
                         <div className="article-card__actions">
                           <Link to={articlePath} className="article-card__read-more">
-                            {t('articles.readMore')}
+                            {t('articles.readFeatured')}
                           </Link>
+                          {article.toolSlug && (
+                            <Link to={`/${language}/${article.toolSlug}`} className="article-card__tool-link">
+                              {t('articles.readMore')}
+                            </Link>
+                          )}
                         </div>
                       </article>
                     )

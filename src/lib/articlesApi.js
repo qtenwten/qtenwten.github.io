@@ -68,6 +68,7 @@ function normalizeArticleListItem(item = {}) {
     publishedAt: item.published_at || '',
     seoTitle: item.seo_title || '',
     seoDescription: item.seo_description || '',
+    toolSlug: item.tool_slug || null,
   }
 }
 
