@@ -7,6 +7,7 @@ import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSe
 import { useAsyncRequest } from '../hooks/useAsyncRequest'
 import { ResultActions, ResultMetric, ResultMetrics, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult, ToolSectionHeading } from '../components/ToolPageShell'
+import { CustomSelect } from '../components/CustomSelect'
 import './QRCodeGenerator.css'
 
 const QR_THEME_PRESETS = {
@@ -868,15 +869,16 @@ function QRCodeGenerator() {
 
                     <div className="field">
                       <label htmlFor="qrWifiSecurity">{t('qrCodeGenerator.fields.wifiSecurity')}</label>
-                      <select
+                      <CustomSelect
                         id="qrWifiSecurity"
                         value={qrForm.wifiSecurity}
                         onChange={(event) => updateQrForm('wifiSecurity', event.target.value)}
-                      >
-                        <option value="WPA">{t('qrCodeGenerator.wifiSecurity.WPA')}</option>
-                        <option value="WEP">{t('qrCodeGenerator.wifiSecurity.WEP')}</option>
-                        <option value="nopass">{t('qrCodeGenerator.wifiSecurity.nopass')}</option>
-                      </select>
+                        options={[
+                          { value: 'WPA', label: t('qrCodeGenerator.wifiSecurity.WPA') },
+                          { value: 'WEP', label: t('qrCodeGenerator.wifiSecurity.WEP') },
+                          { value: 'nopass', label: t('qrCodeGenerator.wifiSecurity.nopass') },
+                        ]}
+                      />
                     </div>
                   </div>
 
@@ -910,53 +912,55 @@ function QRCodeGenerator() {
 
               <div className="field">
                 <label htmlFor="themePreset">{t('qrCodeGenerator.themeLabel')}</label>
-                <select
+                <CustomSelect
                   id="themePreset"
                   value={themePreset}
                   onChange={(event) => {
                     if (event.target.value === 'custom') {
                       return
                     }
-
                     applyThemePreset(event.target.value)
                   }}
-                >
-                  <option value="classic">{t('qrCodeGenerator.themes.classic')}</option>
-                  <option value="soft">{t('qrCodeGenerator.themes.soft')}</option>
-                  <option value="custom">{t('qrCodeGenerator.themes.custom')}</option>
-                </select>
+                  options={[
+                    { value: 'classic', label: t('qrCodeGenerator.themes.classic') },
+                    { value: 'soft', label: t('qrCodeGenerator.themes.soft') },
+                    { value: 'custom', label: t('qrCodeGenerator.themes.custom') },
+                  ]}
+                />
               </div>
 
               <div className="qr-style-grid">
                 <div className="field">
                   <label htmlFor="moduleStyle">{t('qrCodeGenerator.moduleStyleLabel')}</label>
-                  <select
+                  <CustomSelect
                     id="moduleStyle"
                     value={moduleStyle}
                     onChange={(event) => {
                       setThemePreset('custom')
                       setModuleStyle(event.target.value)
                     }}
-                  >
-                    <option value="square">{t('qrCodeGenerator.moduleStyles.square')}</option>
-                    <option value="rounded">{t('qrCodeGenerator.moduleStyles.rounded')}</option>
-                    <option value="dots">{t('qrCodeGenerator.moduleStyles.dots')}</option>
-                  </select>
+                    options={[
+                      { value: 'square', label: t('qrCodeGenerator.moduleStyles.square') },
+                      { value: 'rounded', label: t('qrCodeGenerator.moduleStyles.rounded') },
+                      { value: 'dots', label: t('qrCodeGenerator.moduleStyles.dots') },
+                    ]}
+                  />
                 </div>
 
                 <div className="field">
                   <label htmlFor="markerStyle">{t('qrCodeGenerator.markerStyleLabel')}</label>
-                  <select
+                  <CustomSelect
                     id="markerStyle"
                     value={markerStyle}
                     onChange={(event) => {
                       setThemePreset('custom')
                       setMarkerStyle(event.target.value)
                     }}
-                  >
-                    <option value="square">{t('qrCodeGenerator.markerStyles.square')}</option>
-                    <option value="rounded">{t('qrCodeGenerator.markerStyles.rounded')}</option>
-                  </select>
+                    options={[
+                      { value: 'square', label: t('qrCodeGenerator.markerStyles.square') },
+                      { value: 'rounded', label: t('qrCodeGenerator.markerStyles.rounded') },
+                    ]}
+                  />
                 </div>
               </div>
 
