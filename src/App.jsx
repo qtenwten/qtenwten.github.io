@@ -126,6 +126,7 @@ function App() {
       'html[data-theme]': htmlTheme,
       'theme-switcher outerHTML (300)': themeSwitcher?.outerHTML?.slice(0, 300),
       'lang-switcher outerHTML (300)': langSwitcher?.outerHTML?.slice(0, 300),
+      'footer outerHTML (300)': footerEl?.outerHTML?.slice(0, 300),
       'hero h1 text': heroH1?.textContent?.slice(0, 80),
       'hero p text': heroP?.textContent?.slice(0, 80),
       'footer exists': !!footerEl,
