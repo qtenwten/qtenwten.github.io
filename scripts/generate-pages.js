@@ -272,6 +272,9 @@ function getPrerenderCopy(language) {
         switchToRu: 'Переключить язык на русский',
         switchToEn: 'Switch language to English',
         breadcrumbsNav: 'Навигация',
+        footerFeedback: 'Есть идеи или предложения?',
+        footerWriteUs: 'Написать нам',
+        footerCopyright: '© 2026 QSEN. Quick Service Engine. Все права защищены.',
       }
     : {
         homeTitle: 'QSEN — fast online services for calculations, links, text, and SEO',
@@ -284,6 +287,9 @@ function getPrerenderCopy(language) {
         switchToRu: 'Переключить язык на русский',
         switchToEn: 'Switch language to English',
         breadcrumbsNav: 'Navigation',
+        footerFeedback: 'Have ideas or suggestions?',
+        footerWriteUs: 'Contact us',
+        footerCopyright: '© 2026 QSEN. Quick Service Engine. All rights reserved.',
       }
 }
 
@@ -292,6 +298,14 @@ function buildLanguageSwitcherPrerender(language) {
   const isEnglish = language === 'en'
 
   return `<button type="button" class="language-switcher ${isEnglish ? 'is-en' : 'is-ru'}" aria-label="${escapeHtml(isEnglish ? copy.switchToRu : copy.switchToEn)}" aria-pressed="${isEnglish ? 'true' : 'false'}" title="${escapeHtml(isEnglish ? copy.switchToRu : copy.switchToEn)}"><span class="language-switcher__thumb" aria-hidden="true"></span><span class="language-switcher__labels" aria-hidden="true"><span class="language-switcher__label ${language === 'ru' ? 'is-active' : ''}">RU</span><span class="language-switcher__label ${isEnglish ? 'is-active' : ''}">EN</span></span></button>`
+}
+
+function buildFooterPrerender(language) {
+  const copy = getPrerenderCopy(language)
+  const articlesPath = `/${language}/articles`
+  const feedbackPath = `/${language}/feedback`
+
+  return `<footer class="footer"><div class="container"><div class="footer-feedback"><p class="feedback-text"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>${escapeHtml(copy.footerFeedback)}</p><a href="${feedbackPath}" class="feedback-button">${escapeHtml(copy.footerWriteUs)}</a></div><nav class="footer-links" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><a href="${articlesPath}" class="footer-link">${escapeHtml(copy.articles)}</a></nav><p class="footer-copyright">${escapeHtml(copy.footerCopyright)}</p></div></footer>`
 }
 
 function buildHeaderPrerender(page, { isHomePage = false } = {}) {
@@ -307,7 +321,7 @@ function buildAppPrerenderRoot(page, content, { isHomePage = false, skipHydratio
   const copy = getPrerenderCopy(page.language)
   const rootAttributes = skipHydration ? ' data-no-hydrate="true"' : ''
 
-  return `<div id="root"${rootAttributes}><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${isHomePage ? '<div class="container"></div>' : `<div class="container"><nav class="breadcrumbs" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><ol class="breadcrumbs-list"></ol></nav></div>`}<div class="page-transition-wrapper">${content}</div></main></div>`
+  return `<div id="root"${rootAttributes}><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${isHomePage ? '<div class="container"></div>' : `<div class="container"><nav class="breadcrumbs" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><ol class="breadcrumbs-list"></ol></nav></div>`}<div class="page-transition-wrapper">${content}</div></main>${buildFooterPrerender(page.language)}</div>`
 }
 
 function buildRandomNumberPrerenderContent(page) {
