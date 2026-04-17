@@ -33,9 +33,11 @@ export function LanguageProvider({ children }) {
 
   // Определение языка из URL
   useEffect(() => {
+    console.log('🌐 [LanguageProvider] useEffect lang detection, path:', location.pathname)
     try {
       const pathLang = location.pathname.split('/')[1]
         if (pathLang === 'ru' || pathLang === 'en') {
+          console.log('🌐 [LanguageProvider] Setting lang from URL:', pathLang)
           setLanguage(pathLang)
           safeSetItem('language', pathLang)
         } else {
@@ -43,11 +45,13 @@ export function LanguageProvider({ children }) {
           const savedLang = safeGetItem('language')
 
         if (savedLang && (savedLang === 'ru' || savedLang === 'en')) {
+          console.log('🌐 [LanguageProvider] Setting lang from localStorage:', savedLang)
           setLanguage(savedLang)
         } else {
           // Определяем по языку браузера
           const browserLang = navigator.language.toLowerCase()
           const detectedLang = browserLang.startsWith('ru') ? 'ru' : 'en'
+          console.log('🌐 [LanguageProvider] Setting lang from browser:', detectedLang)
           setLanguage(detectedLang)
           safeSetItem('language', detectedLang)
         }

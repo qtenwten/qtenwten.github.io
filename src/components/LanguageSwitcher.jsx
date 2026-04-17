@@ -1,4 +1,5 @@
 import { useLanguage } from '../contexts/LanguageContext'
+import { useEffect } from 'react'
 import './LanguageSwitcher.css'
 
 function LanguageSwitcher() {
@@ -7,6 +8,17 @@ function LanguageSwitcher() {
   const ariaLabel = language === 'ru'
     ? 'Switch language to English'
     : 'Переключить язык на русский'
+
+  useEffect(() => {
+    console.log('🌐 [LanguageSwitcher] MOUNT', { language })
+    return () => {
+      console.log('🌐 [LanguageSwitcher] UNMOUNT', { language })
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log('🌐 [LanguageSwitcher] RENDER', { language })
+  })
 
   return (
     <button

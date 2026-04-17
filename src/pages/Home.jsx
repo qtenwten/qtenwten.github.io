@@ -37,6 +37,22 @@ function Home({ searchValue, onSearchChange }) {
   const categoryFilter = searchParams.get('category')
   const homeSeo = getRouteSeo(language, '/')
 
+  // DIAG: mount/unmount
+  useEffect(() => {
+    console.log('🏠 [Home] MOUNT', {
+      language,
+      searchValue: searchValue || '',
+      categoryFilter: categoryFilter || '',
+    })
+    return () => {
+      console.log('🏠 [Home] UNMOUNT', {
+        language,
+        searchValue: searchValue || '',
+        categoryFilter: categoryFilter || '',
+      })
+    }
+  }, [])
+
   const tools = getHomeRouteEntries().map((entry) => ({
     id: entry.key,
     path: entry.path,
