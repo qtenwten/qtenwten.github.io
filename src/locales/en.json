@@ -611,7 +611,7 @@
       "logoReady": "Added",
       "logoPresent": "Yes",
       "logoEmpty": "None",
-      "logoHelp": "You can upload PNG, JPG, SVG, or WebP",
+      "logoHelp": "PNG, JPG, SVG, or WebP",
       "logoAddedHint": "Logo added"
     },
     "validation": {

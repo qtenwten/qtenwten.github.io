@@ -609,7 +609,7 @@
       "logoReady": "Добавлен",
       "logoPresent": "Да",
       "logoEmpty": "Нет",
-      "logoHelp": "Можно загрузить PNG, JPG, SVG или WebP",
+      "logoHelp": "PNG, JPG, SVG или WebP",
       "logoAddedHint": "Логотип добавлен"
     },
     "validation": {
