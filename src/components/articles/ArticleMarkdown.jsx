@@ -148,19 +148,28 @@ function isSafeHref(href) {
 }
 
 function getSingleMarkdownLink(text = '') {
+  if (typeof text !== 'string') {
+    return null
+  }
+
   const trimmedText = text.trim()
-  const markdownLinkMatch = trimmedText.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/)
-
-  if (!markdownLinkMatch) {
+  if (!trimmedText) {
     return null
   }
 
-  const [, label, href] = markdownLinkMatch
-  if (!isSafeHref(href)) {
-    return null
+  const strictMatch = trimmedText.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/)
+  if (strictMatch) {
+    const [, label, href] = strictMatch
+    return isSafeHref(href) ? { label, href } : null
   }
 
-  return { label, href }
+  const linkMatch = trimmedText.match(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/)
+  if (linkMatch) {
+    const [, label, href] = linkMatch
+    return isSafeHref(href) ? { label, href } : null
+  }
+
+  return null
 }
 
 function renderInline(text = '') {

@@ -168,7 +168,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
               style={{ width: '80px', marginLeft: '0.5rem' }}
             />
           </label>
-          <label style={{ marginLeft: '1rem' }}>
+          <label style={{ marginLeft: '0.25rem' }}>
             {language === 'en' ? 'to:' : 'до:'}
             <input
               type="number"
@@ -178,6 +178,21 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
             />
           </label>
         </div>
+        <button
+          onClick={() => setXRange({ min: -10, max: 10 })}
+          style={{
+            flexShrink: 0,
+            padding: '0.5rem 1rem',
+            fontSize: '0.9rem',
+            background: 'var(--bg-secondary)',
+            color: 'var(--text)',
+            border: '1px solid var(--border)',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          {language === 'en' ? 'Reset' : 'Сбросить'}
+        </button>
       </div>
 
       <div className="graph-canvas">

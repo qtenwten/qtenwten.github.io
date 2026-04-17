@@ -48,8 +48,7 @@
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
-  background: currentColor;
-  opacity: 0.75;
+  background: #22c55e;
 }
 
 .tool-page-hero__title {

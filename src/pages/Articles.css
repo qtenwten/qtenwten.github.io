@@ -162,6 +162,11 @@
   background: var(--bg-elevated);
 }
 
+.articles-secondary-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .articles-sidebar-card,
 .articles-section-card,
 .articles-related-card {
@@ -398,7 +403,11 @@
 
 .article-card__tool-link {
   color: var(--text-secondary);
-  opacity: 0.85;
+}
+
+.article-card__read-more:hover,
+.article-card__tool-link:hover {
+  color: var(--primary-hover);
 }
 
 .article-layout {

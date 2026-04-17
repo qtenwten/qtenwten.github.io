@@ -46,6 +46,10 @@ export function articleMatchesLanguage(article, language) {
     return true
   }
 
+  if (['ru', 'en'].includes(article?.language)) {
+    return article.language === language
+  }
+
   return detectArticleLanguage(article) === language
 }
 

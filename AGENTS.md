@@ -72,6 +72,33 @@ Never overwrite `main` from `gh-pages`.
 
 If the current branch is not `main`, stop immediately.
 
+## Commit command safety
+
+When proposing or running git commit commands:
+
+- Always use simple, readable, Windows-safe commands
+- Do not use heredoc syntax
+- Do not use shell substitutions such as `$(...)`
+- Do not use multi-line inline commit message generators
+- Do not generate complex shell-wrapped commit commands when a simple `git commit -m "..."` is enough
+- Prefer plain commands that work safely in standard Windows terminal environments
+
+Commit message rules:
+
+- Do not add any `Co-Authored-By` line unless the user explicitly requests it
+- Do not add assistant attribution
+- Do not add model names
+- Do not add tool names
+- Do not add vendor or platform attribution
+- Do not include hidden metadata in commit messages
+
+Preferred format:
+
+- use a simple command like:
+  - `git commit -m "Clear and short message"`
+
+If a commit is needed, always propose the simplest safe command for the current shell environment.
+
 ## Article system overview
 
 Articles are:
