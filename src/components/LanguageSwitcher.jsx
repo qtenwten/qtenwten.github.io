@@ -20,8 +20,8 @@ function LanguageSwitcher() {
     >
       <span className="language-switcher__thumb" aria-hidden="true" />
       <span className="language-switcher__labels" aria-hidden="true">
-        <span className={`language-switcher__label ${language === 'ru' ? 'is-active' : ''}`}>RU</span>
-        <span className={`language-switcher__label ${language === 'en' ? 'is-active' : ''}`}>EN</span>
+        <span suppressHydrationWarning className={`language-switcher__label ${language === 'ru' ? 'is-active' : ''}`}>RU</span>
+        <span suppressHydrationWarning className={`language-switcher__label ${language === 'en' ? 'is-active' : ''}`}>EN</span>
       </span>
     </button>
   )

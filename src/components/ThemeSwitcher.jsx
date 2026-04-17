@@ -22,8 +22,8 @@ function ThemeSwitcher() {
     >
       <span className="theme-switcher__thumb" aria-hidden="true" />
       <span className="theme-switcher__labels" aria-hidden="true">
-        <span className={`theme-switcher__label ${theme === 'light' ? 'is-active' : ''}`}>☀</span>
-        <span className={`theme-switcher__label ${isDark ? 'is-active' : ''}`}>☾</span>
+        <span suppressHydrationWarning className={`theme-switcher__label ${theme === 'light' ? 'is-active' : ''}`}>☀</span>
+        <span suppressHydrationWarning className={`theme-switcher__label ${isDark ? 'is-active' : ''}`}>☾</span>
       </span>
     </button>
   )
