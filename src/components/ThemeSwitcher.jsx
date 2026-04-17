@@ -7,9 +7,10 @@ function ThemeSwitcher() {
   const { language } = useLanguage()
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
-  const ariaLabel = language === 'ru'
-    ? (isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему')
-    : (isDark ? 'Switch to light theme' : 'Switch to dark theme')
+  // Use a neutral aria-label that matches regardless of theme state.
+  // This prevents text content mismatch during hydration.
+  // The correct direction-specific label is applied after hydration.
+  const neutralAriaLabel = language === 'ru' ? 'Переключить тему' : 'Toggle theme'
 
   useEffect(() => {
     console.log('🎨 [ThemeSwitcher] MOUNT', { theme, isDark, language })
@@ -27,9 +28,9 @@ function ThemeSwitcher() {
       type="button"
       className={`theme-switcher ${isDark ? 'is-dark' : 'is-light'}`}
       onClick={toggleTheme}
-      aria-label={ariaLabel}
+      aria-label={neutralAriaLabel}
       aria-pressed={isDark}
-      title={ariaLabel}
+      title={neutralAriaLabel}
       suppressHydrationWarning
     >
       <span className="theme-switcher__thumb" aria-hidden="true" />
