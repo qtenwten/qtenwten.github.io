@@ -179,11 +179,11 @@ if (rootElement?.dataset.noHydrate === 'true') {
     onRecoverableError: (error, errorInfo) => {
       logHydrationError(error, errorInfo?.componentStack)
     },
-  }).then(() => {
-    __QSEN_HYDRATION_COMPLETE = true
-    console.log('[DIAG] Hydration complete - MutationObserver now tracking')
-    console.log('[DIAG] Mutations so far:', __QSEN_DOM_MUTATIONS.length)
   })
+  // hydrateRoot is synchronous - initial render completes before it returns
+  __QSEN_HYDRATION_COMPLETE = true
+  console.log('[DIAG] Hydration complete - MutationObserver now tracking')
+  console.log('[DIAG] Mutations so far:', __QSEN_DOM_MUTATIONS.length)
 } else if (rootElement) {
   console.log('[DIAG] No child nodes - using createRoot')
   createRoot(rootElement).render(app)
