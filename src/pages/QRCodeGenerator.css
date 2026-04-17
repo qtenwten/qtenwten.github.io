@@ -3,6 +3,7 @@
   position: relative;
   isolation: isolate;
   max-width: 1220px;
+  overflow-x: hidden;
 }
 
 .qr-tool-page::before,
