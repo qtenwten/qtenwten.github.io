@@ -108,19 +108,26 @@ function App() {
   useEffect(() => {
     const headerSearch = document.getElementById('header-search')
     const logoImg = document.querySelector('.logo-image')
+    const themeSwitcher = document.querySelector('.theme-switcher')
+    const langSwitcher = document.querySelector('.language-switcher')
     const bodyTheme = document.body?.getAttribute('data-theme')
     const htmlTheme = document.documentElement?.getAttribute('data-theme')
     const footerEl = document.querySelector('.footer')
     const skipLink = document.querySelector('.skip-link')
     const headerEl = document.querySelector('.header')
+    const heroH1 = document.querySelector('.home-hero h1')
+    const heroP = document.querySelector('.home-hero > p')
 
     console.log('🔍 [SHELL DIAG] After first render:', {
       'header-search value': headerSearch?.value,
       'header-search defaultValue': headerSearch?.defaultValue,
-      'logo src (first 80 chars)': logoImg?.src?.slice(0, 80),
-      'logo src length': logoImg?.src?.length,
+      'logo src': logoImg?.src,
       'body[data-theme]': bodyTheme,
       'html[data-theme]': htmlTheme,
+      'theme-switcher outerHTML (300)': themeSwitcher?.outerHTML?.slice(0, 300),
+      'lang-switcher outerHTML (300)': langSwitcher?.outerHTML?.slice(0, 300),
+      'hero h1 text': heroH1?.textContent?.slice(0, 80),
+      'hero p text': heroP?.textContent?.slice(0, 80),
       'footer exists': !!footerEl,
       'footer class': footerEl?.className,
       'skip-link text': skipLink?.textContent,
