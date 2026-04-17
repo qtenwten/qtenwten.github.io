@@ -163,8 +163,6 @@ const app = (
 // Always capture prerender payloads before any rendering/hydration
 capturePrerenderJsonPayloads()
 
-const rootElement = document.getElementById('root')
-
 if (rootElement?.dataset.noHydrate === 'true') {
   createRoot(rootElement).render(app)
 } else if (rootElement?.hasChildNodes()) {
