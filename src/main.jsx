@@ -163,10 +163,26 @@ const app = (
 // Always capture prerender payloads before any rendering/hydration
 capturePrerenderJsonPayloads()
 
-console.log('[DIAG] Before hydration - URL:', window.location.href)
-console.log('[DIAG] Before hydration - root has childNodes:', rootElement?.hasChildNodes())
-console.log('[DIAG] Before hydration - data-theme:', document.documentElement.getAttribute('data-theme'))
-console.log('[DIAG] Before hydration - body children:', document.body?.childNodes?.length)
+const logoImg = document.querySelector('.logo-image')
+const headerSearch = document.getElementById('header-search')
+const themeSwitcher = document.querySelector('.theme-switcher')
+const langSwitcher = document.querySelector('.language-switcher')
+const heroH1 = document.querySelector('.home-hero h1')
+const heroP = document.querySelector('.home-hero > p')
+
+console.log('🔍 [BEFORE HYDRATION] URL:', window.location.href)
+console.log('🔍 [BEFORE HYDRATION] logo src:', logoImg?.src)
+console.log('🔍 [BEFORE HYDRATION] html[data-theme]:', document.documentElement.getAttribute('data-theme'))
+console.log('🔍 [BEFORE HYDRATION] body[data-theme]:', document.body?.getAttribute('data-theme'))
+console.log('🔍 [BEFORE HYDRATION] header-search value:', headerSearch?.value)
+console.log('🔍 [BEFORE HYDRATION] header-search defaultValue:', headerSearch?.defaultValue)
+console.log('🔍 [BEFORE HYDRATION] theme-switcher aria-label:', themeSwitcher?.getAttribute('aria-label'))
+console.log('🔍 [BEFORE HYDRATION] theme-switcher class:', themeSwitcher?.className)
+console.log('🔍 [BEFORE HYDRATION] lang-switcher aria-label:', langSwitcher?.getAttribute('aria-label'))
+console.log('🔍 [BEFORE HYDRATION] lang-switcher class:', langSwitcher?.className)
+console.log('🔍 [BEFORE HYDRATION] hero h1 text:', heroH1?.textContent?.slice(0, 80))
+console.log('🔍 [BEFORE HYDRATION] hero p text:', heroP?.textContent?.slice(0, 80))
+console.log('🔍 [BEFORE HYDRATION] root has childNodes:', rootElement?.hasChildNodes())
 
 if (rootElement?.dataset.noHydrate === 'true') {
   console.log('[DIAG] Skipping hydration - data-no-hydrate=true')
