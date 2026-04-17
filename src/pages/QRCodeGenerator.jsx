@@ -1020,12 +1020,17 @@ function QRCodeGenerator() {
 
               <div className="field">
                 <label htmlFor="logoUpload">{t('qrCodeGenerator.logoLabel')}</label>
-                <input
-                  id="logoUpload"
-                  type="file"
-                  accept="image/png,.png,image/jpeg,.jpg,.jpeg,image/webp,.webp,image/svg+xml,.svg"
-                  onChange={handleLogoUpload}
-                />
+                <div className="qr-file-input-wrapper">
+                  <input
+                    id="logoUpload"
+                    type="file"
+                    accept="image/png,.png,image/jpeg,.jpg,.jpeg,image/webp,.webp,image/svg+xml,.svg"
+                    onChange={handleLogoUpload}
+                  />
+                  <label htmlFor="logoUpload" className="qr-file-input-label">
+                    {logoFileName || t('qrCodeGenerator.chooseFile')}
+                  </label>
+                </div>
                 <small className="qr-helper-text">{t('qrCodeGenerator.logoHint')}</small>
               </div>
 

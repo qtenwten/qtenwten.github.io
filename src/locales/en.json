@@ -578,6 +578,8 @@
     "logoHint": "The logo is fitted automatically with its original aspect ratio. Compact marks with good contrast scan best.",
     "logoLoadedLabel": "Uploaded logo",
     "removeLogo": "Remove logo",
+    "chooseFile": "Choose file",
+    "fileSelected": "File selected",
     "scanabilityTitle": "Scanning note",
     "logoWarning": "A center logo reduces the usable QR area. Keep it small and always test the final code before sharing or printing.",
     "unicodeHint": "QR codes support Cyrillic, Latin characters, numbers, and symbols directly — your original text is preserved.",
