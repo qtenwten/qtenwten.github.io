@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
-import Icon from './Icon'
 import { preloadRoute } from '../routes/lazyPages'
 import './Footer.css'
 
@@ -11,10 +10,7 @@ function Footer() {
     <footer className="footer">
       <div className="container">
         <div className="footer-feedback">
-          <p className="feedback-text">
-            <Icon name="lightbulb" size={18} className="feedback-icon" />
-            {t('footer.feedback')}
-          </p>
+          <p className="feedback-text">{t('footer.feedback')}</p>
           <Link
             to={`/${language}/feedback`}
             className="feedback-button"
