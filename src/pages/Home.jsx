@@ -28,30 +28,11 @@ function formatPublishedDate(value, language) {
   }).format(date)
 }
 
-// DEBUG: Diagnostic counter for tracking renders
-const _debugRenderCount = { value: 0 }
-
 function Home({ searchValue, onSearchChange }) {
   const { t, language } = useLanguage()
   const [searchParams] = useSearchParams()
   const categoryFilter = searchParams.get('category')
   const homeSeo = getRouteSeo(language, '/')
-
-  // DIAG: mount/unmount
-  useEffect(() => {
-    console.log('🏠 [Home] MOUNT', {
-      language,
-      searchValue: searchValue || '',
-      categoryFilter: categoryFilter || '',
-    })
-    return () => {
-      console.log('🏠 [Home] UNMOUNT', {
-        language,
-        searchValue: searchValue || '',
-        categoryFilter: categoryFilter || '',
-      })
-    }
-  }, [])
 
   const tools = getHomeRouteEntries().map((entry) => ({
     id: entry.key,
@@ -65,14 +46,8 @@ function Home({ searchValue, onSearchChange }) {
 
   const searchIndex = useMemo(() => buildSearchIndex(language, t), [language, t])
 
-  // DEBUG: Track readInitialArticlesIndex result
-  const _debugInitialArticles = readInitialArticlesIndex(language)
-  const [latestArticles, setLatestArticles] = useState(() => (_debugInitialArticles.length ? _debugInitialArticles : readCachedArticlesIndex(language)).slice(0, 3))
+  const [latestArticles, setLatestArticles] = useState(() => readCachedArticlesIndex(language).slice(0, 3))
   const visibleLatestArticles = filterArticlesForLanguage(latestArticles, language).slice(0, 3)
-
-  // DEBUG: Track render cycle
-  _debugRenderCount.value++
-  const _thisRender = _debugRenderCount.value
 
   const filteredTools = useMemo(() => {
     let result = searchIndex.map((item) => ({
@@ -114,21 +89,16 @@ function Home({ searchValue, onSearchChange }) {
       }
     }
 
-    // DEBUG: Log when fetch is triggered
-    console.log('[HOME DEBUG] FetchArticles triggered, visibleLatestArticles.length =', visibleLatestArticles.length, 'render #', _thisRender)
-
     fetchArticles(language)
       .then((items) => {
         if (cancelled) {
           return
         }
 
-        console.log('[HOME DEBUG] FetchArticles resolved, items count =', items?.length, 'render #', _thisRender)
         setLatestArticles(items.slice(0, 3))
         writeCachedArticlesIndex(items)
       })
-      .catch((err) => {
-        console.log('[HOME DEBUG] FetchArticles rejected:', err?.message, 'render #', _thisRender)
+      .catch(() => {
         // latest articles block is optional on the home page
       })
 
@@ -136,19 +106,6 @@ function Home({ searchValue, onSearchChange }) {
       cancelled = true
     }
   }, [language, visibleLatestArticles.length])
-
-  // DEBUG: Track state on every render
-  useEffect(() => {
-    console.log('[HOME DEBUG] Render #' + _thisRender, {
-      language,
-      initialArticlesLength: _debugInitialArticles.length,
-      latestArticlesLength: latestArticles.length,
-      visibleLatestArticlesLength: visibleLatestArticles.length,
-      shouldShowArticles: !searchValue && !categoryFilter && visibleLatestArticles.length > 0,
-      searchValue: searchValue || '',
-      categoryFilter: categoryFilter || ''
-    })
-  })
 
   return (
     <>

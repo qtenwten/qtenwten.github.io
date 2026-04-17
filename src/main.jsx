@@ -163,55 +163,18 @@ const app = (
 // Always capture prerender payloads before any rendering/hydration
 capturePrerenderJsonPayloads()
 
-const logoImg = document.querySelector('.logo-image')
-const headerSearch = document.getElementById('header-search')
-const themeSwitcher = document.querySelector('.theme-switcher')
-const langSwitcher = document.querySelector('.language-switcher')
-const heroH1 = document.querySelector('.home-hero h1')
-const heroP = document.querySelector('.home-hero > p')
-const footerEl = document.querySelector('.footer')
-
-window.__QSEN_BEFORE_HYDRATION__ = {
-  logoSrc: logoImg?.src,
-  headerSearchValue: headerSearch?.value,
-  headerSearchDefaultValue: headerSearch?.defaultValue,
-  themeSwitcherOuterHTML: themeSwitcher?.outerHTML || null,
-  langSwitcherOuterHTML: langSwitcher?.outerHTML || null,
-  heroH1Text: heroH1?.textContent || null,
-  heroPText: heroP?.textContent || null,
-  footerOuterHTML: footerEl?.outerHTML || null,
-}
-
-console.log('🔍 [BEFORE HYDRATION] URL:', window.location.href)
-console.log('🔍 [BEFORE HYDRATION] logo src:', logoImg?.src)
-console.log('🔍 [BEFORE HYDRATION] html[data-theme]:', document.documentElement.getAttribute('data-theme'))
-console.log('🔍 [BEFORE HYDRATION] body[data-theme]:', document.body?.getAttribute('data-theme'))
-console.log('🔍 [BEFORE HYDRATION] header-search value:', headerSearch?.value)
-console.log('🔍 [BEFORE HYDRATION] header-search defaultValue:', headerSearch?.defaultValue)
-console.log('🔍 [BEFORE HYDRATION] theme-switcher outerHTML (full):', themeSwitcher?.outerHTML)
-console.log('🔍 [BEFORE HYDRATION] lang-switcher outerHTML (full):', langSwitcher?.outerHTML)
-console.log('🔍 [BEFORE HYDRATION] footer outerHTML (full):', footerEl?.outerHTML)
-console.log('🔍 [BEFORE HYDRATION] hero h1 text (full):', heroH1?.textContent)
-console.log('🔍 [BEFORE HYDRATION] hero p text (full):', heroP?.textContent)
-console.log('🔍 [BEFORE HYDRATION] root has childNodes:', rootElement?.hasChildNodes())
+const rootElement = document.getElementById('root')
 
 if (rootElement?.dataset.noHydrate === 'true') {
-  console.log('[DIAG] Skipping hydration - data-no-hydrate=true')
   createRoot(rootElement).render(app)
 } else if (rootElement?.hasChildNodes()) {
-  console.log('[DIAG] Starting hydrateRoot...')
   startDomMutationObserver()
-
   hydrateRoot(rootElement, app, {
     onRecoverableError: (error, errorInfo) => {
       logHydrationError(error, errorInfo?.componentStack)
     },
   })
-  // hydrateRoot is synchronous - initial render completes before it returns
   __QSEN_HYDRATION_COMPLETE = true
-  console.log('[DIAG] Hydration complete - MutationObserver now tracking')
-  console.log('[DIAG] Mutations so far:', __QSEN_DOM_MUTATIONS.length)
 } else if (rootElement) {
-  console.log('[DIAG] No child nodes - using createRoot')
   createRoot(rootElement).render(app)
 }
