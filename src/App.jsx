@@ -117,6 +117,9 @@ function App() {
     const headerEl = document.querySelector('.header')
     const heroH1 = document.querySelector('.home-hero h1')
     const heroP = document.querySelector('.home-hero > p')
+    const articlesSection = document.querySelector('.home-articles')
+    const homeContainer = document.querySelector('.home .container')
+    const mainEl = document.querySelector('.app-main')
 
     console.log('🔍 [SHELL DIAG] After first render:', {
       'header-search value': headerSearch?.value,
@@ -135,6 +138,55 @@ function App() {
       'skip-link class': skipLink?.className,
       'header class': headerEl?.className,
     })
+
+    // DIAG: Layout shift detection — track bounding rects across frames
+    function getRect(label, el) {
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return { label, top: r.top, height: r.height, left: r.left, width: r.width }
+    }
+
+    const targets = ['articles-section', 'home-container', 'app-main', 'footer']
+    const els = {
+      'articles-section': articlesSection,
+      'home-container': homeContainer,
+      'app-main': mainEl,
+      'footer': footerEl,
+    }
+
+    const t0 = {}
+    targets.forEach((k) => { t0[k] = getRect(k, els[k]) })
+    console.log('📐 [LAYOUT SHIFT] t0 (mount):', t0)
+
+    requestAnimationFrame(() => {
+      const t1 = {}
+      targets.forEach((k) => { t1[k] = getRect(k, els[k]) })
+      console.log('📐 [LAYOUT SHIFT] t1 (rAF):', t1)
+      targets.forEach((k) => {
+        if (t0[k] && t1[k]) {
+          const dy = t1[k].top - t0[k].top
+          const dh = t1[k].height - t0[k].height
+          if (Math.abs(dy) > 1 || Math.abs(dh) > 1) {
+            console.log(`  ⚠️  ${k} SHIFT: top ${t0[k].top}→${t1[k].top} (Δ${dy.toFixed(1)}), height ${t0[k].height}→${t1[k].height} (Δ${dh.toFixed(1)})`)
+          }
+        }
+      })
+    })
+
+    setTimeout(() => {
+      const t2 = {}
+      targets.forEach((k) => { t2[k] = getRect(k, els[k]) })
+      console.log('📐 [LAYOUT SHIFT] t2 (setTimeout 0):', t2)
+      targets.forEach((k) => {
+        if (t0[k] && t2[k]) {
+          const dy = t2[k].top - t0[k].top
+          const dh = t2[k].height - t0[k].height
+          if (Math.abs(dy) > 1 || Math.abs(dh) > 1) {
+            console.log(`  ⚠️  ${k} SHIFT: top ${t0[k].top}→${t2[k].top} (Δ${dy.toFixed(1)}), height ${t0[k].height}→${t2[k].height} (Δ${dh.toFixed(1)})`)
+          }
+        }
+      })
+    }, 0)
   }, [])
 
   useEffect(() => {
