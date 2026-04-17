@@ -133,8 +133,12 @@
 .tool-card:hover {
   border-color: var(--border-strong);
   background: var(--bg-secondary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow), 0 10px 20px -10px rgba(79, 70, 229, 0.38);
+}
+
+[data-theme='dark'] .tool-card:hover {
+  box-shadow: var(--shadow), 0 10px 20px -10px rgba(79, 70, 229, 0.45);
 }
 
 .tool-icon {
@@ -150,6 +154,12 @@
   border-bottom: 3px solid #10b981;
   justify-self: center;
   align-self: center;
+}
+
+[data-theme='dark'] .tool-icon {
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+  box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.5);
 }
 
 .tool-card h2,

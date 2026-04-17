@@ -341,7 +341,7 @@ function ArticleMarkdown({ content, title = '', lead = '' }) {
         if (ctaLink) {
           return (
             <div key={`cta-${index}`} className="article-cta-row">
-              <a href={ctaLink.href} target="_blank" rel="noreferrer" className="article-cta-button">
+              <a href={ctaLink.href} className="article-cta-button">
                 {ctaLink.label}
               </a>
             </div>

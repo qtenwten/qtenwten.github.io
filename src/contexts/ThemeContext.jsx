@@ -6,6 +6,15 @@ const ThemeContext = createContext()
 const THEME_STORAGE_KEY = 'theme'
 
 function getInitialTheme() {
+  // Read from the global set by the blocking inline script to ensure consistency
+  if (typeof window !== 'undefined' && window.__QSEN_INITIAL_THEME__ === 'dark') {
+    return 'dark'
+  }
+  if (typeof window !== 'undefined' && window.__QSEN_INITIAL_THEME__ === 'light') {
+    return 'light'
+  }
+
+  // Fallback: read from localStorage
   const savedTheme = safeGetItem(THEME_STORAGE_KEY)
   if (savedTheme === 'light' || savedTheme === 'dark') {
     return savedTheme

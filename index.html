@@ -65,10 +65,13 @@
           var resolvedTheme = savedTheme === 'dark' || savedTheme === 'light'
             ? savedTheme
             : (prefersDark ? 'dark' : 'light');
+          window.__QSEN_INITIAL_THEME__ = resolvedTheme;
           document.documentElement.setAttribute('data-theme', resolvedTheme);
           document.body && document.body.setAttribute('data-theme', resolvedTheme);
         } catch (e) {
+          window.__QSEN_INITIAL_THEME__ = 'light';
           document.documentElement.setAttribute('data-theme', 'light');
+          document.body && document.body.setAttribute('data-theme', 'light');
         }
 
         var redirect = sessionStorage.redirect;
