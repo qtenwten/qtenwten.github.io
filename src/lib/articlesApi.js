@@ -85,27 +85,42 @@ function readInlineJsonPayload(scriptId) {
     return null
   }
 
+  // DEBUG: Log what we're trying to read
+  const hasStoredData = scriptId in (window.__QSEN_PRERENDER_DATA__ || {})
+  const storedData = window.__QSEN_PRERENDER_DATA__?.[scriptId]
+
   // First try the captured prerender data (most reliable during hydration)
   const globalPayload = window.__QSEN_PRERENDER_DATA__?.[scriptId]
   if (typeof globalPayload === 'string' && globalPayload.trim()) {
     try {
-      return JSON.parse(globalPayload)
+      const result = JSON.parse(globalPayload)
+      console.log('[ARTICLES API DEBUG] readInlineJsonPayload(' + scriptId + ') from __QSEN_PRERENDER_DATA__, items:', result?.items?.length, 'hasStoredData:', hasStoredData, 'storedLen:', storedData?.length)
+      return result
     } catch {
+      console.log('[ARTICLES API DEBUG] readInlineJsonPayload(' + scriptId + ') parse error from __QSEN_PRERENDER_DATA__, fallback to DOM')
       // Fall through to fallback
     }
   }
 
   // Fallback: try to find script directly in document
-  // This handles cases where capture didn't run or missed the script
-  const element = document.getElementById(scriptId)
+  // Use querySelector as additional fallback (handles edge cases with getElementById)
+  let element = document.getElementById(scriptId)
+  if (!element || element.tagName !== 'SCRIPT') {
+    // Try querySelector as well
+    element = document.querySelector(`script[id="${scriptId}"]`)
+  }
   if (element && element.tagName === 'SCRIPT' && element.textContent) {
     try {
-      return JSON.parse(element.textContent)
+      const result = JSON.parse(element.textContent)
+      console.log('[ARTICLES API DEBUG] readInlineJsonPayload(' + scriptId + ') from DOM, items:', result?.items?.length)
+      return result
     } catch {
+      console.log('[ARTICLES API DEBUG] readInlineJsonPayload(' + scriptId + ') parse error from DOM')
       return null
     }
   }
 
+  console.log('[ARTICLES API DEBUG] readInlineJsonPayload(' + scriptId + ') NOT FOUND in __QSEN_PRERENDER_DATA__ or DOM, hasStoredData:', hasStoredData)
   return null
 }
 
@@ -147,13 +162,18 @@ export function readInitialArticlesIndex(language) {
   const payload = readInlineJsonPayload('__ARTICLES_INDEX_DATA__')
   const items = Array.isArray(payload?.items) ? payload.items.map(normalizeArticleListItem) : []
 
+  console.log('[ARTICLES API DEBUG] readInitialArticlesIndex(language=' + language + ') total items:', items.length)
+
   if (language === 'ru' || language === 'en') {
     const hasExplicitLanguage = items.some((item) => item && (item.language === 'ru' || item.language === 'en'))
     if (hasExplicitLanguage) {
-      return items.filter((item) => item && item.language === language)
+      const filtered = items.filter((item) => item && item.language === language)
+      console.log('[ARTICLES API DEBUG] readInitialArticlesIndex filtered by language, result:', filtered.length)
+      return filtered
     }
   }
 
+  console.log('[ARTICLES API DEBUG] readInitialArticlesIndex returning all items:', items.length)
   return items
 }
 

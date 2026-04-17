@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react'
 import { safeGetItem, safeSetItem } from '../utils/storage'
 
 const ThemeContext = createContext()
@@ -30,14 +30,12 @@ function getInitialTheme() {
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     document.body?.setAttribute('data-theme', theme)
     safeSetItem(THEME_STORAGE_KEY, theme)
-    // Remove theme-init flag after first render to enable CSS transitions
-    if (document.documentElement.hasAttribute('data-theme-init')) {
-      document.documentElement.removeAttribute('data-theme-init')
-    }
+    // Remove theme-init flag synchronously before first paint to prevent transition flicker
+    document.documentElement.removeAttribute('data-theme-init')
   }, [theme])
 
   const toggleTheme = () => {
