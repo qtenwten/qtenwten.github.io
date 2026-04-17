@@ -187,6 +187,17 @@ function App() {
         }
       })
     }, 0)
+
+    // DIAG: Paint / visibility flash detection
+    const paintTargets = ['.home-articles', '.home-article-card', '.home-articles__header', '.home-articles__grid']
+    paintTargets.forEach((sel) => {
+      const all = document.querySelectorAll(sel)
+      console.log(`🎨 [PAINT DIAG] "${sel}" count in DOM: ${all.length}`)
+      all.forEach((el, i) => {
+        const cs = window.getComputedStyle(el)
+        console.log(`  [${i}] display:${cs.display} visibility:${cs.visibility} opacity:${cs.opacity} transform:${cs.transform} z-index:${cs.zIndex} will-change:${cs.willChange} contain:${cs.contain}`)
+      })
+    })
   }, [])
 
   useEffect(() => {
