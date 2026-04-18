@@ -165,7 +165,7 @@ function ArticlePage() {
   const articleTitle = visibleArticle?.title || t('articles.detailFallbackTitle')
   const articleDescription = visibleArticle?.seoDescription || visibleArticle?.excerpt || t('articles.subtitle')
   const articleSeoTitle = visibleArticle?.seoTitle || (status === 'success' ? `${articleTitle} | QSEN.RU` : t('articles.detailLoadingTitle'))
-  const ogImage = visibleArticle?.coverImage || 'https://qsen.ru/og-image.svg'
+  const ogImage = visibleArticle?.coverImage || 'https://qsen.ru/og-image.png'
   const visibleRelatedArticles = localizedRelatedArticles
     .filter((item) => item.slug && item.slug !== slug)
     .slice(0, 3)

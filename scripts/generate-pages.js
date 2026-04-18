@@ -492,7 +492,7 @@ function buildArticleDetailPage(language, article, availableLanguages) {
     description: article.seoDescription || article.excerpt || getLocaleValue(language, 'articles.subtitle', ''),
     keywords: getLocaleValue(language, 'seo.articles.keywords', ''),
     h1: article.title,
-    image: article.coverImage || 'https://qsen.ru/og-image.svg',
+    image: article.coverImage || 'https://qsen.ru/og-image.png',
     ogType: 'article',
     availableLanguages,
     structuredData: {

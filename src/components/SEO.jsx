@@ -7,7 +7,7 @@ function SEO({
   description,
   path = '',
   keywords = '',
-  image = 'https://qsen.ru/og-image.svg',
+  image = 'https://qsen.ru/og-image.png',
   robots = 'index,follow',
   ogType = 'website',
   structuredData,
