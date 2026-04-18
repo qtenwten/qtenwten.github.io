@@ -571,11 +571,13 @@ function NumberToWords() {
                     </div>
                     <ResultSummary title={primaryVariant.label} description={primaryVariant.description} />
                   </div>
-                  <ResultActions className="number-to-words-card-actions">
-                    <CopyButton text={primaryVariant.text} className="number-to-words-copy number-to-words-main-copy" />
-                  </ResultActions>
                 </div>
-                <p className="number-to-words-result-text">{primaryVariant.text}</p>
+                <div className="number-to-words-result-block">
+                  <p className="number-to-words-result-text">{primaryVariant.text}</p>
+                  <div className="number-to-words-result-actions">
+                    <CopyButton text={primaryVariant.text} className="number-to-words-copy number-to-words-main-copy" />
+                  </div>
+                </div>
               </ResultSection>
             )}
 
@@ -587,7 +589,10 @@ function NumberToWords() {
                       <div className="number-to-words-card-title">
                         <ResultSummary title={variant.label} description={variant.description} />
                       </div>
-                      <ResultActions className="number-to-words-card-actions">
+                    </div>
+                    <div className="number-to-words-result-block">
+                      <p className="number-to-words-result-text">{variant.text}</p>
+                      <div className="number-to-words-result-actions">
                         <button
                           type="button"
                           className={`secondary number-to-words-pin ${pinnedVariantId === variant.id ? 'is-active' : ''}`}
@@ -595,12 +600,12 @@ function NumberToWords() {
                           title={t('numberToWords.pinVariant')}
                           aria-label={t('numberToWords.pinVariant')}
                         >
-                          <Icon name="push_pin" size={15} />
+                          <Icon name="push_pin" size={14} />
+                          <span>{language === 'ru' ? 'Закрепить' : 'Pin'}</span>
                         </button>
                         <CopyButton text={variant.text} className="number-to-words-copy" />
-                      </ResultActions>
+                      </div>
                     </div>
-                    <p className="number-to-words-result-text">{variant.text}</p>
                   </ResultSection>
                 ))}
               </div>

@@ -24,12 +24,12 @@ function CopyButton({ text, className = '' }) {
     >
       {copied ? (
         <>
-          <Icon name="check" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
+          <Icon name="check" size={14} />
           {t('common.copied')}
         </>
       ) : (
         <>
-          <Icon name="content_copy" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
+          <Icon name="content_copy" size={14} />
           {t('common.copy')}
         </>
       )}

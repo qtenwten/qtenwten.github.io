@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
+import Icon from '../components/Icon'
 import ToolPageShell, { ToolPageHero } from '../components/ToolPageShell'
 import InlineSpinner from '../components/InlineSpinner'
 import {
@@ -20,6 +21,88 @@ function pickCoverAlt(article, language, t) {
   }
   return language === 'en' ? 'Article cover' : t('articles.coverAlt')
 }
+
+function getToolDisplayInfo(toolSlug, t) {
+  const slug = toolSlug?.replace(/^\//, '')
+  const entry = ROUTE_REGISTRY.find((r) => r.path === `/${slug}` || r.path === slug)
+  if (!entry) return null
+  return { title: t(entry.titleKey), icon: entry.icon }
+}
+
+const ROUTE_REGISTRY = [
+  {
+    key: 'numberToWords',
+    path: '/number-to-words',
+    titleKey: 'tools.numberToWords.title',
+    icon: 'text_fields',
+  },
+  {
+    key: 'vatCalculator',
+    path: '/vat-calculator',
+    titleKey: 'tools.vatCalculator.title',
+    icon: 'calculate',
+  },
+  {
+    key: 'randomNumber',
+    path: '/random-number',
+    titleKey: 'tools.randomNumber.title',
+    icon: 'casino',
+  },
+  {
+    key: 'calculator',
+    path: '/calculator',
+    titleKey: 'tools.calculator.title',
+    icon: 'calculate',
+  },
+  {
+    key: 'dateDifference',
+    path: '/date-difference',
+    titleKey: 'tools.dateDifference.title',
+    icon: 'event',
+  },
+  {
+    key: 'compoundInterest',
+    path: '/compound-interest',
+    titleKey: 'tools.compoundInterest.title',
+    icon: 'trending_up',
+  },
+  {
+    key: 'seoAudit',
+    path: '/seo-audit',
+    titleKey: 'tools.seoAudit.title',
+    icon: 'search',
+  },
+  {
+    key: 'metaTagsGenerator',
+    path: '/meta-tags-generator',
+    titleKey: 'tools.metaTagsGenerator.title',
+    icon: 'code',
+  },
+  {
+    key: 'seoAuditPro',
+    path: '/seo-audit-pro',
+    titleKey: 'tools.seoAuditPro.title',
+    icon: 'search',
+  },
+  {
+    key: 'qrCodeGenerator',
+    path: '/qr-code-generator',
+    titleKey: 'tools.qrCodeGenerator.title',
+    icon: 'qr_code',
+  },
+  {
+    key: 'urlShortener',
+    path: '/url-shortener',
+    titleKey: 'tools.urlShortener.title',
+    icon: 'link',
+  },
+  {
+    key: 'passwordGenerator',
+    path: '/password-generator',
+    titleKey: 'tools.passwordGenerator.title',
+    icon: 'lock',
+  },
+]
 
 function ArticlesIndex() {
   const { t, language } = useLanguage()
@@ -202,6 +285,16 @@ function ArticlesIndex() {
                           </Link>
                         ) : null}
 
+                        {article.toolSlug && (() => {
+                          const info = getToolDisplayInfo(article.toolSlug, t)
+                          return info ? (
+                            <div className="article-card__tool-badge">
+                              <Icon name={info.icon} size={12} />
+                              <span>{info.title}</span>
+                            </div>
+                          ) : null
+                        })()}
+
                         <h3 className="articles-section-card__title">
                           <Link
                             to={articlePath}
@@ -221,7 +314,8 @@ function ArticlesIndex() {
                             {t('articles.readFeatured')}
                           </Link>
                           {article.toolSlug && (
-                            <Link to={`/${language}/${article.toolSlug}`} className="article-card__tool-link">
+                            <Link to={`/${language}/${article.toolSlug}`} className="article-card__tool-cta">
+                              <Icon name="open_in_new" size={14} />
                               {t('articles.readMore')}
                             </Link>
                           )}
