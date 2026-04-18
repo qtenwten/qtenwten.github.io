@@ -466,6 +466,7 @@ function buildSeoTags(page) {
     <meta property="og:url" content="${page.url}" />
     <meta property="og:type" content="${page.ogType || 'website'}" />
     <meta property="og:image" content="${page.image}" />
+    <meta property="og:image:alt" content="${escapeHtml(page.title)}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="${page.locale}" />

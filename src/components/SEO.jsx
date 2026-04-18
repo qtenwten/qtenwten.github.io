@@ -73,6 +73,7 @@ function SEO({
       <meta property="og:url" content={fullUrl} />
       <meta property="og:type" content={ogType} />
       <meta property="og:image" content={fullImage} />
+      <meta property="og:image:alt" content={fullTitle} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content={locale} />
