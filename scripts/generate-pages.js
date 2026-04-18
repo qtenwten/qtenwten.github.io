@@ -595,15 +595,13 @@ function buildRootRedirectPage(template) {
   html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, '')
 
   const redirectMeta = `
-    <meta name="description" content="Redirecting to the default language version of QSEN.RU." />
     <link rel="canonical" href="${ROOT_REDIRECT_URL}" />
     <meta name="robots" content="noindex,follow" />
-    <meta http-equiv="refresh" content="0; url=${ROOT_REDIRECT_URL}" />
     <script>window.location.replace('${ROOT_REDIRECT_URL}' + window.location.search + window.location.hash)</script>
   `.trim()
 
   html = replaceOrInsert(html, /<meta name="description" content=".*?" \/>/, redirectMeta, /<link rel="icon"/)
-  html = html.replace(/<div id="root"><\/div>/, '<div id="root"></div>')
+  html = html.replace(/<div id="root"><\/div>/, '<div id="root"><noscript><meta http-equiv="refresh" content="0; url=' + ROOT_REDIRECT_URL + '" /></noscript></div>')
 
   return html
 }
