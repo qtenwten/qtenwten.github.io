@@ -42,6 +42,7 @@ export const ROUTE_SEO = {
       keywords: 'статьи qsen, руководства, cloudflare d1, статьи по инструментам, блог qsen',
       h1: 'Статьи и руководства',
       image: 'https://qsen.ru/og-image.svg',
+      robots: 'noindex,follow',
     },
     en: {
       title: 'Articles and Guides | QSEN.RU',
@@ -49,6 +50,7 @@ export const ROUTE_SEO = {
       keywords: 'qsen articles, guides, cloudflare d1 guide, tool articles, qsen blog',
       h1: 'Articles and Guides',
       image: 'https://qsen.ru/og-image.svg',
+      robots: 'noindex,follow',
     },
   },
   '/number-to-words': {
