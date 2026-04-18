@@ -43,6 +43,7 @@ export const ROUTE_SEO = {
       h1: 'Статьи и руководства',
       image: 'https://qsen.ru/og-image.svg',
       robots: 'noindex,follow',
+      includeInSitemap: false,
     },
     en: {
       title: 'Articles and Guides | QSEN.RU',
@@ -51,6 +52,7 @@ export const ROUTE_SEO = {
       h1: 'Articles and Guides',
       image: 'https://qsen.ru/og-image.svg',
       robots: 'noindex,follow',
+      includeInSitemap: false,
     },
   },
   '/number-to-words': {

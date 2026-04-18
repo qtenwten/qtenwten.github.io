@@ -437,19 +437,23 @@ function buildStructuredData({ language, title, description, url }) {
   })
 }
 
-function buildAlternateLinks(pathName) {
-  const ruUrl = getLocalizedRouteUrl('ru', pathName)
-  const enUrl = getLocalizedRouteUrl('en', pathName)
-
-  return [
-    `<link rel="alternate" hreflang="ru" href="${ruUrl}" />`,
-    `<link rel="alternate" hreflang="en" href="${enUrl}" />`,
-    `<link rel="alternate" hreflang="x-default" href="${ruUrl}" />`,
-  ].join('\n    ')
+function buildAlternateLinks(pathName, availableLanguages = ['ru', 'en']) {
+  const links = []
+  if (availableLanguages.includes('ru')) {
+    links.push(`<link rel="alternate" hreflang="ru" href="${getLocalizedRouteUrl('ru', pathName)}" />`)
+  }
+  if (availableLanguages.includes('en')) {
+    links.push(`<link rel="alternate" hreflang="en" href="${getLocalizedRouteUrl('en', pathName)}" />`)
+  }
+  if (links.length > 1) {
+    links.push(`<link rel="alternate" hreflang="x-default" href="${getLocalizedRouteUrl('ru', pathName)}" />`)
+  }
+  return links.join('\n    ')
 }
 
 function buildSeoTags(page) {
-  const alternateLinks = buildAlternateLinks(page.path)
+  const availableLangs = page.availableLanguages || ['ru', 'en']
+  const alternateLinks = buildAlternateLinks(page.path, availableLangs)
 
   return `
     <meta name="description" content="${escapeHtml(page.description)}" />
@@ -475,7 +479,7 @@ function buildSeoTags(page) {
   `.trim()
 }
 
-function buildArticleDetailPage(language, article) {
+function buildArticleDetailPage(language, article, availableLanguages) {
   const articlePath = `/articles/${article.slug}`
 
   return {
@@ -490,6 +494,7 @@ function buildArticleDetailPage(language, article) {
     h1: article.title,
     image: article.coverImage || 'https://qsen.ru/og-image.svg',
     ogType: 'article',
+    availableLanguages,
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -604,23 +609,48 @@ function buildRootRedirectPage(template) {
 }
 
 function buildSitemap(pages) {
-  const items = pages
-    .filter((page) => page.includeInSitemap !== false)
-    .map((page) => {
+  const filteredPages = pages.filter((page) => page.includeInSitemap !== false)
+
+  // For article detail pages, build a map of slug -> available languages
+  // so we only generate hreflang for languages that actually exist
+  const articleSlugLanguages = {}
+  filteredPages
+    .filter((page) => page.ogType === 'article')
+    .forEach((page) => {
+      const slug = page.path.replace('/articles/', '')
+      if (!articleSlugLanguages[slug]) {
+        articleSlugLanguages[slug] = []
+      }
+      articleSlugLanguages[slug].push(page.language)
+    })
+
+  const items = filteredPages.map((page) => {
     const cleanPath = page.path
     const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
     const enUrl = getLocalizedRouteUrl('en', cleanPath)
+    const isArticle = page.ogType === 'article'
+    const slug = isArticle ? cleanPath.replace('/articles/', '') : null
+    const availableLangs = slug ? (articleSlugLanguages[slug] || []) : ['ru', 'en']
+
+    const alternateLinks = []
+    if (availableLangs.includes('ru')) {
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="ru" href="${ruUrl}" />`)
+    }
+    if (availableLangs.includes('en')) {
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />`)
+    }
+    if (availableLangs.length > 1) {
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${ruUrl}" />`)
+    }
 
     return `  <url>
     <loc>${page.url}</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="${ruUrl}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="${ruUrl}" />
+${alternateLinks.join('\n')}
     <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
     <changefreq>${cleanPath === '/' ? 'weekly' : 'monthly'}</changefreq>
     <priority>${cleanPath === '/' ? '1.0' : cleanPath === '/seo-audit-pro' ? '0.9' : '0.8'}</priority>
   </url>`
-    }).join('\n')
+  }).join('\n')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -659,12 +689,13 @@ function main() {
       })
 
       articleDetails.forEach((article) => {
+        const availableLanguages = (['ru', 'en']).filter((lang) => articleMatchesLanguage(article, lang))
         ;['ru', 'en'].forEach((language) => {
           if (!articleMatchesLanguage(article, language)) {
             return
           }
 
-          const page = buildArticleDetailPage(language, article)
+          const page = buildArticleDetailPage(language, article, availableLanguages)
           articlePages.push(page)
           const outputPath = path.join(distPath, page.route, 'index.html')
           const localizedArticlesIndex = filterArticlesForLanguage(articlesIndex, language)

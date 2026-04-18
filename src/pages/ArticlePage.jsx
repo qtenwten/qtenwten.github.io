@@ -200,9 +200,17 @@ function ArticlePage() {
 
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
-        <link rel="alternate" hreflang="ru" href={ruUrl} />
-        <link rel="alternate" hreflang="en" href={enUrl} />
-        <link rel="alternate" hreflang="x-default" href={ruUrl} />
+        {translatedSlugs.ru && translatedSlugs.en ? (
+          <>
+            <link rel="alternate" hreflang="ru" href={ruUrl} />
+            <link rel="alternate" hreflang="en" href={enUrl} />
+            <link rel="alternate" hreflang="x-default" href={ruUrl} />
+          </>
+        ) : translatedSlugs.ru ? (
+          <link rel="alternate" hreflang="ru" href={ruUrl} />
+        ) : translatedSlugs.en ? (
+          <link rel="alternate" hreflang="en" href={enUrl} />
+        ) : null}
       </Helmet>
 
       <ToolPageShell className="articles-page article-page">
