@@ -7,7 +7,6 @@
   top: 0;
   left: 0;
   right: 0;
-  contain: layout;
   z-index: 100;
   min-height: 80px;
   box-shadow: none;
