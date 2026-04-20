@@ -477,6 +477,18 @@
       "calculator": "Calculator",
       "graph": "Graph",
       "both": "Both"
+    },
+    "graphPanel": {
+      "functionLabel": "Function y =",
+      "xFrom": "X from:",
+      "xTo": "to:",
+      "reset": "Reset",
+      "enterFunction": "Enter a function to plot the graph",
+      "unableToBuild": "Unable to build the graph"
+    },
+    "historyPanel": {
+      "title": "History",
+      "clear": "Clear"
     }
   },
   "timeCalculator": {
@@ -815,7 +827,15 @@
       "months": "Months",
       "years": "Years",
       "between": "Between",
-      "and": "and"
+      "and": "and",
+      "wk": "wk",
+      "d": "d",
+      "yes": "Yes",
+      "no": "No",
+      "daysLabel": "Days",
+      "hoursLabel": "Hours",
+      "minutesLabel": "Minutes",
+      "secondsLabel": "Seconds"
     },
     "errors": {
       "endBeforeStart": "End date cannot be before start date",

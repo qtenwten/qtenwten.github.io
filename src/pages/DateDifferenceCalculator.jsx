@@ -422,8 +422,8 @@ function DateDifferenceCalculator() {
             label={copy.resultLabels.weeksAndDays}
             value={
               dayResult.weekBreakdown.weeks > 0
-                ? `${dayResult.weekBreakdown.weeks} ${language === 'en' ? 'wk' : 'нед.'}${dayResult.weekBreakdown.days ? ` ${dayResult.weekBreakdown.days} ${language === 'en' ? 'd' : 'д.'}` : ''}`
-                : `${dayResult.weekBreakdown.days} ${language === 'en' ? 'days' : 'дней'}`
+                ? `${dayResult.weekBreakdown.weeks} ${t('dateDifference.result.wk')}${dayResult.weekBreakdown.days ? ` ${dayResult.weekBreakdown.days} ${t('dateDifference.result.d')}` : ''}`
+                : `${dayResult.weekBreakdown.days} ${t('dateDifference.result.days')}`
             }
           />
         </ResultMetrics>
@@ -432,14 +432,12 @@ function DateDifferenceCalculator() {
           <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.monthsYears}</h3>
             <p>
-              {language === 'en'
-                ? `${dayResult.calendarBreakdown.years} years, ${dayResult.calendarBreakdown.months} months, ${dayResult.calendarBreakdown.days} days`
-                : `${dayResult.calendarBreakdown.years} лет, ${dayResult.calendarBreakdown.months} месяцев, ${dayResult.calendarBreakdown.days} дней`}
+              {dayResult.calendarBreakdown.years} {t('dateDifference.result.years')}, {dayResult.calendarBreakdown.months} {t('dateDifference.result.months')}, {dayResult.calendarBreakdown.days} {t('dateDifference.result.days')}
             </p>
           </div>
           <div className="surface-panel surface-panel--subtle">
             <h3>{copy.resultLabels.includesEndDate}</h3>
-            <p>{includeEndDate ? (language === 'en' ? 'Yes' : 'Да') : (language === 'en' ? 'No' : 'Нет')}</p>
+            <p>{includeEndDate ? t('dateDifference.result.yes') : t('dateDifference.result.no')}</p>
           </div>
         </div>
       </ResultSection>
@@ -472,10 +470,10 @@ function DateDifferenceCalculator() {
         />
 
         <ResultMetrics columns={2}>
-          <ResultMetric label={language === 'en' ? 'Days' : 'Дни'} value={timeResult.days} />
-          <ResultMetric label={language === 'en' ? 'Hours' : 'Часы'} value={timeResult.hours} />
-          <ResultMetric label={language === 'en' ? 'Minutes' : 'Минуты'} value={timeResult.minutes} />
-          <ResultMetric label={language === 'en' ? 'Seconds' : 'Секунды'} value={timeResult.seconds} />
+          <ResultMetric label={t('dateDifference.result.daysLabel')} value={timeResult.days} />
+          <ResultMetric label={t('dateDifference.result.hoursLabel')} value={timeResult.hours} />
+          <ResultMetric label={t('dateDifference.result.minutesLabel')} value={timeResult.minutes} />
+          <ResultMetric label={t('dateDifference.result.secondsLabel')} value={timeResult.seconds} />
         </ResultMetrics>
 
         <div className="date-diff-summary-grid">
@@ -517,10 +515,10 @@ function DateDifferenceCalculator() {
         />
 
         <ResultMetrics columns={4} className="date-diff-countdown-grid">
-          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Days' : 'Дни'} value={countdown.days} />
-          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Hours' : 'Часы'} value={String(countdown.hours).padStart(2, '0')} />
-          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Minutes' : 'Минуты'} value={String(countdown.minutes).padStart(2, '0')} />
-          <ResultMetric className="date-diff-countdown-card" label={language === 'en' ? 'Seconds' : 'Секунды'} value={String(countdown.seconds).padStart(2, '0')} />
+          <ResultMetric className="date-diff-countdown-card" label={t('dateDifference.result.daysLabel')} value={countdown.days} />
+          <ResultMetric className="date-diff-countdown-card" label={t('dateDifference.result.hoursLabel')} value={String(countdown.hours).padStart(2, '0')} />
+          <ResultMetric className="date-diff-countdown-card" label={t('dateDifference.result.minutesLabel')} value={String(countdown.minutes).padStart(2, '0')} />
+          <ResultMetric className="date-diff-countdown-card" label={t('dateDifference.result.secondsLabel')} value={String(countdown.seconds).padStart(2, '0')} />
         </ResultMetrics>
 
         <div className="date-diff-summary-grid">

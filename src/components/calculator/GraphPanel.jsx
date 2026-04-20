@@ -25,7 +25,7 @@ ChartJS.register(
 )
 
 function GraphPanel({ onHistoryAdd, restoredExpression }) {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
   const [functionExpr, setFunctionExpr] = useState('')
   const [error, setError] = useState('')
   const [chartData, setChartData] = useState(null)
@@ -58,7 +58,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
       const { xValues, yValues } = generateGraphData(compiled, xRange.min, xRange.max)
 
       if (xValues.length === 0) {
-        setError(language === 'en' ? 'Unable to build the graph' : 'Не удалось построить график')
+        setError(t('calculator.graphPanel.unableToBuild'))
         setChartData(null)
         return
       }
@@ -89,7 +89,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
     return () => {
       active = false
     }
-  }, [functionExpr, xRange, onHistoryAdd, language])
+  }, [functionExpr, xRange, onHistoryAdd])
 
   useEffect(() => {
     if (restoredExpression?.value) {
@@ -145,7 +145,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
   return (
     <div className="graph-panel">
       <div className="graph-input">
-        <label htmlFor="function">{language === 'en' ? 'Function y =' : 'Функция y ='}</label>
+        <label htmlFor="function">{t('calculator.graphPanel.functionLabel')}</label>
         <input
           id="function"
           type="text"
@@ -160,7 +160,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
       <div className="graph-controls">
         <div className="range-control">
           <label>
-            {language === 'en' ? 'X from:' : 'X от:'}
+            {t('calculator.graphPanel.xFrom')}
             <input
               type="number"
               value={xRange.min}
@@ -169,7 +169,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
             />
           </label>
           <label style={{ marginLeft: '0.25rem' }}>
-            {language === 'en' ? 'to:' : 'до:'}
+            {t('calculator.graphPanel.xTo')}
             <input
               type="number"
               value={xRange.max}
@@ -191,7 +191,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
             cursor: 'pointer',
           }}
         >
-          {language === 'en' ? 'Reset' : 'Сбросить'}
+          {t('calculator.graphPanel.reset')}
         </button>
       </div>
 
@@ -202,7 +202,7 @@ function GraphPanel({ onHistoryAdd, restoredExpression }) {
           <div className="graph-placeholder">
             <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.3 }}>📈</div>
             <p style={{ color: 'var(--text-secondary)' }}>
-              {language === 'en' ? 'Enter a function to plot the graph' : 'Введите функцию для построения графика'}
+              {t('calculator.graphPanel.enterFunction')}
             </p>
           </div>
         )}

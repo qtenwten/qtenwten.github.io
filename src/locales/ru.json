@@ -475,6 +475,18 @@
       "calculator": "Калькулятор",
       "graph": "График",
       "both": "Оба"
+    },
+    "graphPanel": {
+      "functionLabel": "Функция y =",
+      "xFrom": "X от:",
+      "xTo": "до:",
+      "reset": "Сбросить",
+      "enterFunction": "Введите функцию для построения графика",
+      "unableToBuild": "Не удалось построить график"
+    },
+    "historyPanel": {
+      "title": "История",
+      "clear": "Очистить"
     }
   },
   "timeCalculator": {
@@ -813,7 +825,15 @@
       "months": "Месяцев",
       "years": "Лет",
       "between": "Между",
-      "and": "и"
+      "and": "и",
+      "wk": "нед.",
+      "d": "д.",
+      "yes": "Да",
+      "no": "Нет",
+      "daysLabel": "Дни",
+      "hoursLabel": "Часы",
+      "minutesLabel": "Минуты",
+      "secondsLabel": "Секунды"
     },
     "errors": {
       "endBeforeStart": "Дата окончания не может быть раньше даты начала",
