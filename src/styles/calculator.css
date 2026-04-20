@@ -41,8 +41,7 @@
 }
 
 .calc-mode-shell {
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
   justify-self: center;
 }
 
