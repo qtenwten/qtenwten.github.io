@@ -5,11 +5,11 @@ function SkeletonLine({ className = '' }) {
 }
 
 function RouteSkeleton() {
-  const { language } = useLanguage()
+  const { t } = useLanguage()
 
   return (
     <div className="route-skeleton">
-      <span className="sr-only" role="status" aria-live="polite">{language === 'en' ? 'Loading page' : 'Загружается страница'}</span>
+      <span className="sr-only" role="status" aria-live="polite">{t('common.loading')}</span>
       <div className="tool-container route-skeleton__container">
         <div className="skeleton-card route-skeleton__hero">
           <SkeletonLine className="route-skeleton__eyebrow" />

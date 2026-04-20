@@ -11,7 +11,7 @@ function Footer() {
       <div className="container">
         <div className="footer-brand">
           <span className="footer-brand__name">QSEN</span>
-          <p className="footer-brand__tagline">Бесплатные онлайн-инструменты для расчётов, ссылок и SEO.</p>
+          <p className="footer-brand__tagline">{t('footer.tagline')}</p>
         </div>
         <div className="footer-feedback">
           <p className="feedback-text">{t('footer.feedback')}</p>

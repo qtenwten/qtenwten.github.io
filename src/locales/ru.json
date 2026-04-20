@@ -8,7 +8,13 @@
     "calculate": "Рассчитать",
     "result": "Результат",
     "search": "Поиск инструмента...",
-    "noResults": "Ничего не найдено"
+    "noResults": "Ничего не найдено",
+    "skipToContent": "Перейти к содержимому",
+    "switchTheme": "Переключить тему",
+    "switchToEn": "Переключить язык на English",
+    "switchToRu": "Переключить язык на русский",
+    "loading": "Загружается страница",
+    "helpfulGuide": "Полезная информация"
   },
   "header": {
     "title": "Utility Tools",
@@ -17,7 +23,8 @@
   "footer": {
     "feedback": "Есть идеи или предложения?",
     "writeUs": "Написать нам",
-    "copyright": "© 2026 QSEN. Quick Service Engine. Все права защищены."
+    "copyright": "© 2026 QSEN. Quick Service Engine. Все права защищены.",
+    "tagline": "Бесплатные онлайн-инструменты для расчётов, ссылок и SEO."
   },
   "categories": {
     "calculators": "Калькуляторы",
@@ -32,7 +39,10 @@
     "latestArticlesEyebrow": "Свежие материалы",
     "latestArticlesTitle": "Последние статьи",
     "latestArticlesDescription": "Короткие практические руководства, которые помогают быстрее решать реальные задачи и лучше использовать инструменты сайта.",
-    "latestArticlesAction": "Все статьи"
+    "latestArticlesAction": "Все статьи",
+    "trustFree": "Бесплатно",
+    "trustNoRegister": "Без регистрации",
+    "trustFastResult": "Быстрый результат"
   },
   "tools": {
     "numberToWords": {

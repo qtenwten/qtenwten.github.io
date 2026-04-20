@@ -4,10 +4,9 @@ import { useEffect, useState } from 'react'
 import './ThemeSwitcher.css'
 
 function ThemeSwitcher() {
-  const { language } = useLanguage()
+  const { t } = useLanguage()
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
-  const neutralAriaLabel = language === 'ru' ? 'Переключить тему' : 'Toggle theme'
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -19,9 +18,9 @@ function ThemeSwitcher() {
       type="button"
       className={`theme-switcher${isDark ? ' is-dark' : ''}`}
       onClick={toggleTheme}
-      aria-label={neutralAriaLabel}
+      aria-label={t('common.switchTheme')}
       {...(isMounted ? { 'aria-pressed': isDark } : {})}
-      title={neutralAriaLabel}
+      title={t('common.switchTheme')}
       suppressHydrationWarning
     >
       <span className="theme-switcher__thumb" aria-hidden="true" />

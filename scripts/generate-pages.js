@@ -312,6 +312,7 @@ function getPrerenderCopy(language) {
         breadcrumbsNav: 'Навигация',
         footerFeedback: 'Есть идеи или предложения?',
         footerWriteUs: 'Написать нам',
+        footerTagline: 'Бесплатные онлайн-инструменты для расчётов, ссылок и SEO.',
         footerCopyright: '© 2026 QSEN. Quick Service Engine. Все права защищены.',
       }
     : {
@@ -322,11 +323,12 @@ function getPrerenderCopy(language) {
         articles: 'Articles',
         switchToDarkTheme: 'Toggle theme',
         skipLink: 'Skip to content',
-        switchToRu: 'Переключить язык на русский',
+        switchToRu: 'Switch to Russian',
         switchToEn: 'Switch language to English',
         breadcrumbsNav: 'Navigation',
         footerFeedback: 'Have ideas or suggestions?',
         footerWriteUs: 'Contact us',
+        footerTagline: 'Free online tools for calculations, links, and SEO.',
         footerCopyright: '© 2026 QSEN. Quick Service Engine. All rights reserved.',
       }
 }
@@ -343,7 +345,7 @@ function buildFooterPrerender(language) {
   const articlesPath = `/${language}/articles`
   const feedbackPath = `/${language}/feedback`
 
-  return `<footer class="footer"><div class="container"><div class="footer-brand"><span class="footer-brand__name">QSEN</span><p class="footer-brand__tagline">Бесплатные онлайн-инструменты для расчётов, ссылок и SEO.</p></div><div class="footer-feedback"><p class="feedback-text">${escapeHtml(copy.footerFeedback)}</p><a href="${feedbackPath}" class="feedback-button">${escapeHtml(copy.footerWriteUs)}</a></div><nav class="footer-links" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><a href="${articlesPath}" class="footer-link">${escapeHtml(copy.articles)}</a></nav><p class="footer-copyright">${escapeHtml(copy.footerCopyright)}</p></div></footer>`
+  return `<footer class="footer"><div class="container"><div class="footer-brand"><span class="footer-brand__name">QSEN</span><p class="footer-brand__tagline">${escapeHtml(copy.footerTagline)}</p></div><div class="footer-feedback"><p class="feedback-text">${escapeHtml(copy.footerFeedback)}</p><a href="${feedbackPath}" class="feedback-button">${escapeHtml(copy.footerWriteUs)}</a></div><nav class="footer-links" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><a href="${articlesPath}" class="footer-link">${escapeHtml(copy.articles)}</a></nav><p class="footer-copyright">${escapeHtml(copy.footerCopyright)}</p></div></footer>`
 }
 
 function buildHeaderPrerender(page, { isHomePage = false } = {}) {
@@ -394,7 +396,7 @@ function buildHomePrerenderContent(page, articlesIndex = []) {
   }
 
   const trustBadges = page.isPrerenderHomePage
-    ? `<div class="home-trust"><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Бесплатно</span><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Без регистрации</span><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Быстрый результат</span></div>`
+    ? `<div class="home-trust"><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>${escapeHtml(getLocaleValue(page.language, 'home.trustFree', 'Free'))}</span><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>${escapeHtml(getLocaleValue(page.language, 'home.trustNoRegister', 'No registration'))}</span><span class="home-trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>${escapeHtml(getLocaleValue(page.language, 'home.trustFastResult', 'Instant result'))}</span></div>`
     : ''
 
   const categoriesMarkup = categoryOrder.map((categorySlug) => {

@@ -2,8 +2,8 @@ import { useLanguage } from '../contexts/LanguageContext'
 import './ToolDescriptionSection.css'
 
 function ToolDescriptionSection({ eyebrow, className = '', children }) {
-  const { language } = useLanguage()
-  const sectionEyebrow = eyebrow || (language === 'en' ? 'Helpful Guide' : 'Полезная информация')
+  const { t } = useLanguage()
+  const sectionEyebrow = eyebrow || t('common.helpfulGuide')
 
   return (
     <section className={`tool-description-section ${className}`.trim()}>

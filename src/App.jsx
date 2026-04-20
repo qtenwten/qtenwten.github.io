@@ -96,7 +96,7 @@ function ScrollManager() {
 }
 
 function App() {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
   const [homeSearch, setHomeSearch] = useState('')
   const location = useLocation()
   const pageTransitionKey = normalizeLocalePath(location.pathname)
@@ -160,7 +160,7 @@ function App() {
   return (
     <ErrorBoundary>
       <a href="#main-content" className="skip-link">
-        {language === 'en' ? 'Skip to content' : 'Перейти к содержимому'}
+        {t('common.skipToContent')}
       </a>
       <Header searchValue={homeSearch} onSearchChange={setHomeSearch} />
       <ScrollManager />

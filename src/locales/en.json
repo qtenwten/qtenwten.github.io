@@ -8,7 +8,13 @@
     "calculate": "Calculate",
     "result": "Result",
     "search": "Search for a tool...",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "skipToContent": "Skip to content",
+    "switchTheme": "Toggle theme",
+    "switchToEn": "Switch language to English",
+    "switchToRu": "Switch to Russian",
+    "loading": "Loading page",
+    "helpfulGuide": "Helpful Guide"
   },
   "header": {
     "title": "Utility Tools",
@@ -17,7 +23,8 @@
   "footer": {
     "feedback": "Have ideas or suggestions?",
     "writeUs": "Contact us",
-    "copyright": "© 2026 QSEN. Quick Service Engine. All rights reserved."
+    "copyright": "© 2026 QSEN. Quick Service Engine. All rights reserved.",
+    "tagline": "Free online tools for calculations, links, and SEO."
   },
   "categories": {
     "calculators": "Calculators",
@@ -32,7 +39,10 @@
     "latestArticlesEyebrow": "Fresh reads",
     "latestArticlesTitle": "Latest articles",
     "latestArticlesDescription": "Short practical guides that help people solve real tasks faster and get more value from the tools on the site.",
-    "latestArticlesAction": "All articles"
+    "latestArticlesAction": "All articles",
+    "trustFree": "Free",
+    "trustNoRegister": "No registration",
+    "trustFastResult": "Instant result"
   },
   "tools": {
     "numberToWords": {
