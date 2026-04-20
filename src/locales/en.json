@@ -905,7 +905,56 @@
   },
   "metaTagsGenerator": {
     "title": "Meta Tags Generator",
-    "subtitle": "Create title tags, meta descriptions, and Open Graph tags fast"
+    "subtitle": "Create title tags, meta descriptions, and Open Graph tags fast",
+    "titleLabel": "Page Title",
+    "titlePlaceholder": "Free VAT Calculator Online | Add, Remove, and Extract VAT",
+    "titleHint": "Recommended: 50-60 characters",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Use this free VAT calculator online to add VAT, remove VAT from a total amount, or calculate the tax portion in seconds.",
+    "descriptionHint": "Recommended: 150-160 characters",
+    "keywordsLabel": "Keywords",
+    "keywordsPlaceholder": "vat calculator, add vat, remove vat, vat calculator online",
+    "keywordsHint": "Use a few relevant keyword variations, separated by commas.",
+    "authorLabel": "Author (optional)",
+    "authorPlaceholder": "Author or company name",
+    "urlLabel": "Page URL",
+    "imageLabel": "Social image URL",
+    "imageHint": "Recommended size: 1200x630 pixels",
+    "previewTitle": "Search preview",
+    "generatedTitle": "Generated meta tags",
+    "clear": "Clear",
+    "infoTitle": "Build SEO meta tags for any page in minutes",
+    "infoDescription": "Use this meta tags generator to create clean, ready-to-copy title tags, meta descriptions, Open Graph tags, and Twitter cards. It is a quick way to draft metadata for landing pages, articles, product pages, and tool pages.",
+    "basicTitle": "What you can generate:",
+    "basicItems": {
+      "titles": "Title tags for search results and browser tabs",
+      "descriptions": "Meta descriptions for clearer search snippets",
+      "keywords": "Keyword fields for projects that still use them",
+      "robots": "Robots directives for basic crawl instructions"
+    },
+    "ogTitle": "Open Graph tags:",
+    "ogDescription": "Open Graph tags control how your page appears when someone shares it in messaging apps and social networks. Add a clear title, description, and image to improve click-through rate.",
+    "twitterTitle": "Twitter Cards:",
+    "twitterDescription": "Twitter card tags help links look cleaner on X/Twitter and in tools that support Twitter metadata.",
+    "tipsTitle": "What strong pages usually do:",
+    "tips": {
+      "unique": "Use unique metadata for each page instead of one site-wide template",
+      "keyword": "Place the main keyword early in the title when it fits naturally",
+      "description": "Write descriptions that explain value and encourage clicks",
+      "length": "Keep titles and descriptions within clean, readable lengths",
+      "social": "Add social metadata when the page will be shared in chat or social apps"
+    },
+    "faqTitle": "FAQ",
+    "faq": {
+      "q1": "How do I create meta tags for a page?",
+      "a1": "Fill in the title, description, and other fields, then copy the generated code into the head section of your page.",
+      "q2": "What is the ideal title tag length?",
+      "a2": "A common best practice is about 50-60 characters, depending on the query and page intent.",
+      "q3": "Why do I need Open Graph tags?",
+      "a3": "Open Graph tags improve how a page looks when it is shared in messaging apps and social networks.",
+      "q4": "Can I use this tool for product pages and blog posts?",
+      "a4": "Yes. It works well for landing pages, articles, category pages, tools, and product pages."
+    }
   },
   "seoAudit": {
     "title": "Free SEO Audit Tool",
@@ -1147,5 +1196,25 @@
         "a4": "It is commonly used for planning vacations, tracking deadlines, counting age, and measuring time until important events."
       }
     }
+  },
+  "searchResults": {
+    "title": "Search tools",
+    "subtitle": "Find calculators, generators, and utilities by name, description, or intent.",
+    "inputLabel": "Search tools",
+    "inputPlaceholder": "Search calculators, generators, SEO tools...",
+    "submit": "Search",
+    "emptyTitle": "No tools found",
+    "emptyText": "Try a broader phrase or search by task, such as VAT, QR, password, or date.",
+    "startTitle": "Search the tool library",
+    "startText": "Type a keyword to quickly find the right calculator, generator, or SEO tool.",
+    "searchTip": "Search by task, tool type, or a phrase you would normally type into a search box."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page may have moved, the address may be incorrect, or the route may no longer exist.",
+    "primary": "Go to homepage",
+    "secondary": "Popular tools",
+    "seoTitle": "Page not found | QSEN.RU",
+    "seoDescription": "This page could not be found. Return to the homepage and continue with the most popular online tools."
   }
 }

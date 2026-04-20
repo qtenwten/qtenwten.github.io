@@ -18,36 +18,6 @@ function SearchResults() {
     setQuery(initialQuery)
   }, [initialQuery])
 
-  const copy = language === 'en'
-    ? {
-        title: 'Search tools',
-        subtitle: 'Find calculators, generators, and utilities by name, description, or intent.',
-        inputLabel: 'Search tools',
-        inputPlaceholder: 'Search calculators, generators, SEO tools...',
-        submit: 'Search',
-        emptyTitle: 'No tools found',
-        emptyText: 'Try a broader phrase or search by task, such as “VAT”, “QR”, “password”, or “date”.',
-        startTitle: 'Search the tool library',
-        startText: 'Type a keyword to quickly find the right calculator, generator, or SEO tool.',
-        results: (count, value) => `${count} result${count === 1 ? '' : 's'} for “${value}”`,
-        allTools: (count) => `${count} available tools`,
-        searchTip: 'Search by task, tool type, or a phrase you would normally type into a search box.',
-      }
-    : {
-        title: 'Поиск по инструментам',
-        subtitle: 'Найдите нужный калькулятор, генератор или SEO-инструмент по названию, описанию и задаче.',
-        inputLabel: 'Поиск по инструментам',
-        inputPlaceholder: 'Найти калькулятор, генератор, SEO-инструмент...',
-        submit: 'Найти',
-        emptyTitle: 'Ничего не найдено',
-        emptyText: 'Попробуйте более общий запрос, например: НДС, QR, пароль, дата.',
-        startTitle: 'Начните поиск',
-        startText: 'Введите слово или задачу, чтобы быстро найти нужный инструмент.',
-        results: (count, value) => `Результатов: ${count} — по запросу «${value}»`,
-        allTools: (count) => `Доступно инструментов: ${count}`,
-        searchTip: 'Ищите по задаче, названию инструмента или обычной поисковой фразе.',
-      }
-
   const searchIndex = useMemo(() => buildSearchIndex(language, t), [language, t])
   const trimmedQuery = query.trim()
   const results = useMemo(() => searchRoutes(searchIndex, trimmedQuery), [searchIndex, trimmedQuery])
@@ -64,43 +34,43 @@ function SearchResults() {
   return (
     <>
       <SEO
-        title={copy.title}
-        description={copy.subtitle}
+        title={t('searchResults.title')}
+        description={t('searchResults.subtitle')}
         path={`/${language}/search`}
         robots="noindex,follow"
       />
 
       <ToolPageShell className="search-results-page">
-        <ToolPageHero title={copy.title} subtitle={copy.subtitle} note={copy.searchTip} />
+        <ToolPageHero title={t('searchResults.title')} subtitle={t('searchResults.subtitle')} note={t('searchResults.searchTip')} />
 
         <form onSubmit={handleSubmit} className="search-results-form surface-panel">
-          <label htmlFor="search-page-input" className="search-results-label">{copy.inputLabel}</label>
+          <label htmlFor="search-page-input" className="search-results-label">{t('searchResults.inputLabel')}</label>
           <div className="search-results-form-row">
             <input
               id="search-page-input"
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder={copy.inputPlaceholder}
+              placeholder={t('searchResults.inputPlaceholder')}
             />
-            <button type="submit">{copy.submit}</button>
+            <button type="submit">{t('searchResults.submit')}</button>
           </div>
         </form>
 
         {!trimmedQuery ? (
           <ToolResult className="surface-panel surface-panel--subtle search-results-empty">
-            <h2>{copy.startTitle}</h2>
-            <p>{copy.startText}</p>
-            <p className="search-results-meta">{copy.allTools(searchIndex.length)}</p>
+            <h2>{t('searchResults.startTitle')}</h2>
+            <p>{t('searchResults.startText')}</p>
+            <p className="search-results-meta">{language === 'en' ? `${searchIndex.length} available tools` : `Доступно инструментов: ${searchIndex.length}`}</p>
           </ToolResult>
         ) : results.length === 0 ? (
           <ToolResult className="surface-panel surface-panel--subtle search-results-empty">
-            <h2>{copy.emptyTitle}</h2>
-            <p>{copy.emptyText}</p>
+            <h2>{t('searchResults.emptyTitle')}</h2>
+            <p>{t('searchResults.emptyText')}</p>
           </ToolResult>
         ) : (
           <>
-            <p className="search-results-meta">{copy.results(results.length, trimmedQuery)}</p>
+            <p className="search-results-meta">{language === 'en' ? `${results.length} result${results.length === 1 ? '' : 's'} for "${trimmedQuery}"` : `Результатов: ${results.length} — по запросу «${trimmedQuery}»`}</p>
             <div className="search-results-grid">
               {results.map((item) => (
                 <Link
