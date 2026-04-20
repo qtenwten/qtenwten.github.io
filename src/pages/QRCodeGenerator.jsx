@@ -1,5 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef } from 'react'
+import { jsPDF } from 'jspdf'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
@@ -457,6 +458,10 @@ function QRCodeGenerator() {
   const [logoFileName, setLogoFileName] = useState('')
   const [qrCodeLib, setQrCodeLib] = useState(null)
   const [generationError, setGenerationError] = useState('')
+  const [downloadFormat, setDownloadFormat] = useState('png')
+  const [showFormatDropdown, setShowFormatDropdown] = useState(false)
+  const [transparentExport, setTransparentExport] = useState(false)
+  const qrDataRef = useRef(null)
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -579,6 +584,7 @@ function QRCodeGenerator() {
           [{ data: formattedValue, mode: 'byte' }],
           { errorCorrectionLevel: 'H' }
         )
+        qrDataRef.current = qrData
 
         await renderQRCodeToCanvas({
           canvas: canvasRef.current,
@@ -642,6 +648,205 @@ function QRCodeGenerator() {
     handleRemoveLogo()
   }
 
+  const triggerDownload = (blob, filename) => {
+    if (!blob) return
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const triggerDataURLDownload = (dataUrl, filename) => {
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = filename
+    link.click()
+  }
+
+  // Creates an opaque copy of the canvas with white background
+  const getOpaqueCanvas = (canvas) => {
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = canvas.width
+    tempCanvas.height = canvas.height
+    const ctx = tempCanvas.getContext('2d')
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
+    ctx.drawImage(canvas, 0, 0)
+    return tempCanvas
+  }
+
+  // Creates a transparent copy by removing background color pixels
+  const getTransparentCanvas = (canvas, bgColor) => {
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = canvas.width
+    tempCanvas.height = canvas.height
+    const ctx = tempCanvas.getContext('2d')
+    ctx.drawImage(canvas, 0, 0)
+
+    const imageData = ctx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+    const data = imageData.data
+
+    // Parse background color to RGB
+    const parseColor = (color) => {
+      if (!color) return { r: 255, g: 255, b: 255 }
+      if (color.startsWith('#')) {
+        const hex = color.slice(1)
+        if (hex.length === 3) {
+          return {
+            r: parseInt(hex[0] + hex[0], 16),
+            g: parseInt(hex[1] + hex[1], 16),
+            b: parseInt(hex[2] + hex[2], 16),
+          }
+        }
+        if (hex.length === 6) {
+          return {
+            r: parseInt(hex.slice(0, 2), 16),
+            g: parseInt(hex.slice(2, 4), 16),
+            b: parseInt(hex.slice(4, 6), 16),
+          }
+        }
+      }
+      return { r: 255, g: 255, b: 255 }
+    }
+
+    const bgRGB = parseColor(bgColor)
+
+    // Tolerance for matching background color (to handle anti-aliasing)
+    const tolerance = 30
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i]
+      const g = data[i + 1]
+      const b = data[i + 2]
+
+      if (
+        Math.abs(r - bgRGB.r) <= tolerance &&
+        Math.abs(g - bgRGB.g) <= tolerance &&
+        Math.abs(b - bgRGB.b) <= tolerance
+      ) {
+        data[i + 3] = 0 // Set alpha to 0 (transparent)
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0)
+    return tempCanvas
+  }
+
+  const downloadPNG = (canvas) => {
+    if (transparentExport) {
+      const exportCanvas = getTransparentCanvas(canvas, qrBgColor)
+      exportCanvas.toBlob((blob) => {
+        triggerDownload(blob, 'qrcode-transparent.png')
+      }, 'image/png')
+    } else {
+      const exportCanvas = getOpaqueCanvas(canvas)
+      exportCanvas.toBlob((blob) => {
+        triggerDownload(blob, 'qrcode.png')
+      }, 'image/png')
+    }
+  }
+
+  const downloadJPG = (canvas) => {
+    const exportCanvas = getOpaqueCanvas(canvas)
+    const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.95)
+    triggerDataURLDownload(dataUrl, 'qrcode.jpg')
+  }
+
+  const downloadWEBP = (canvas) => {
+    const exportCanvas = getOpaqueCanvas(canvas)
+    const dataUrl = exportCanvas.toDataURL('image/webp', 0.92)
+    triggerDataURLDownload(dataUrl, 'qrcode.webp')
+  }
+
+  const downloadGIF = (canvas) => {
+    const exportCanvas = getOpaqueCanvas(canvas)
+    exportCanvas.toBlob((blob) => {
+      triggerDownload(blob, 'qrcode.gif')
+    }, 'image/gif')
+  }
+
+  const downloadSVG = () => {
+    const qrData = qrDataRef.current
+    if (!qrData) return
+
+    const moduleCount = qrData.modules.size
+    const marginModules = 4
+    const totalModules = moduleCount + marginModules * 2
+    const moduleSize = 10
+    const size = totalModules * moduleSize
+    const contentOffset = marginModules * moduleSize
+    const moduleData = qrData.modules.data
+    const darkColor = qrColor || '#111111'
+    const lightColor = qrBgColor || '#ffffff'
+
+    // Build data module rects
+    let dataModules = ''
+    for (let y = 0; y < moduleCount; y += 1) {
+      for (let x = 0; x < moduleCount; x += 1) {
+        const moduleValue = moduleData[y * moduleCount + x]
+        if (!moduleValue) continue
+        if (isFinderArea(x, y, moduleCount)) continue
+        const px = contentOffset + x * moduleSize
+        const py = contentOffset + y * moduleSize
+        dataModules += `    <rect x="${px}" y="${py}" width="${moduleSize}" height="${moduleSize}" fill="${darkColor}"/>\n`
+      }
+    }
+
+    // Build finder pattern rects (three corners)
+    const finderSize = moduleSize * 7
+    const finderMiddleSize = moduleSize * 5
+    const finderInnerSize = moduleSize * 3
+    const finderMiddleOffset = moduleSize
+    const finderInnerOffset = moduleSize * 2
+
+    const finderPositions = [
+      [contentOffset, contentOffset],
+      [contentOffset + (moduleCount - 7) * moduleSize, contentOffset],
+      [contentOffset, contentOffset + (moduleCount - 7) * moduleSize],
+    ]
+
+    let finderRects = ''
+    finderPositions.forEach(([fx, fy]) => {
+      // Outer dark square
+      finderRects += `    <rect x="${fx}" y="${fy}" width="${finderSize}" height="${finderSize}" fill="${darkColor}"/>\n`
+      // Middle white square
+      finderRects += `    <rect x="${fx + finderMiddleOffset}" y="${fy + finderMiddleOffset}" width="${finderMiddleSize}" height="${finderMiddleSize}" fill="${lightColor}"/>\n`
+      // Inner dark square
+      finderRects += `    <rect x="${fx + finderInnerOffset}" y="${fy + finderInnerOffset}" width="${finderInnerSize}" height="${finderInnerSize}" fill="${darkColor}"/>\n`
+    })
+
+    const bgRect = transparentExport
+      ? `  <rect x="0" y="0" width="${size}" height="${size}" fill="none"/>\n`
+      : `  <rect x="0" y="0" width="${size}" height="${size}" fill="${lightColor}"/>\n`
+
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+${bgRect}  <g>
+    ${dataModules}
+    ${finderRects}
+  </g>
+</svg>`
+
+    const blob = new Blob([svg], { type: 'image/svg+xml' })
+    triggerDownload(blob, 'qrcode.svg')
+  }
+
+  const downloadPDF = (canvas) => {
+    const size = canvas.width / (window.devicePixelRatio || 1)
+    const imgData = canvas.toDataURL('image/png')
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [size, size],
+    })
+
+    pdf.addImage(imgData, 'PNG', 0, 0, size, size)
+    pdf.save('qrcode.pdf')
+  }
+
   const handleDownload = () => {
     const canvas = canvasRef.current
 
@@ -649,16 +854,38 @@ function QRCodeGenerator() {
       return
     }
 
-    canvas.toBlob((blob) => {
-      if (!blob) return
+    setShowFormatDropdown(false)
 
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'qrcode.png'
-      link.click()
-      URL.revokeObjectURL(url)
-    })
+    switch (downloadFormat) {
+      case 'svg':
+        downloadSVG()
+        break
+      case 'pdf':
+        downloadPDF(canvas)
+        break
+      case 'jpg':
+        downloadJPG(canvas)
+        break
+      case 'webp':
+        downloadWEBP(canvas)
+        break
+      case 'gif':
+        downloadGIF(canvas)
+        break
+      case 'png':
+      default:
+        downloadPNG(canvas)
+        break
+    }
+  }
+
+  const handleFormatSelect = (format) => {
+    setDownloadFormat(format)
+    setShowFormatDropdown(false)
+  }
+
+  const toggleFormatDropdown = () => {
+    setShowFormatDropdown((prev) => !prev)
   }
 
   const faqItems = t('qrCodeGenerator.info.faqTitle')
@@ -1121,15 +1348,57 @@ function QRCodeGenerator() {
               )}
 
               <ResultActions align="center" className="qr-preview-actions">
-                <button type="button" onClick={handleDownload} className="qr-download-button" disabled={!shouldShowQR}>
-                  {t('qrCodeGenerator.downloadButton')}
-                </button>
-                <button type="button" className="secondary" onClick={handleClearCurrentData} disabled={!hasActiveTypeContent}>
-                  {t('qrCodeGenerator.clearCurrentButton')}
-                </button>
-                <button type="button" className="secondary" onClick={handleResetAppearance}>
-                  {t('qrCodeGenerator.resetStyleButton')}
-                </button>
+                <div className="qr-download-group">
+                  <button type="button" onClick={handleDownload} className="qr-download-button" disabled={!shouldShowQR}>
+                    <span>{t(`qrCodeGenerator.formats.${downloadFormat}`)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`qr-format-dropdown-toggle ${showFormatDropdown ? 'is-open' : ''}`}
+                    onClick={toggleFormatDropdown}
+                    disabled={!shouldShowQR}
+                    aria-label="Select format"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </button>
+                  {showFormatDropdown && (
+                    <div className="qr-format-dropdown">
+                      {['png', 'svg', 'pdf', 'jpg', 'webp', 'gif'].map((fmt) => (
+                        <button
+                          key={fmt}
+                          type="button"
+                          className={`qr-format-option ${downloadFormat === fmt ? 'is-active' : ''}`}
+                          onClick={() => handleFormatSelect(fmt)}
+                        >
+                          {t(`qrCodeGenerator.formats.${fmt}`)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="qr-export-row">
+                  {(downloadFormat === 'png' || downloadFormat === 'svg') && (
+                    <label className="qr-transparent-toggle">
+                      <input
+                        type="checkbox"
+                        checked={transparentExport}
+                        onChange={(e) => setTransparentExport(e.target.checked)}
+                        disabled={!shouldShowQR}
+                      />
+                      <span>{t('qrCodeGenerator.transparentBg')}</span>
+                    </label>
+                  )}
+                </div>
+                <div className="qr-secondary-actions">
+                  <button type="button" className="secondary" onClick={handleClearCurrentData} disabled={!hasActiveTypeContent}>
+                    {t('qrCodeGenerator.clearCurrentButton')}
+                  </button>
+                  <button type="button" className="secondary" onClick={handleResetAppearance}>
+                    {t('qrCodeGenerator.resetStyleButton')}
+                  </button>
+                </div>
               </ResultActions>
 
             </ResultSection>

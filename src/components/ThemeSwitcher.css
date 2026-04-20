@@ -3,30 +3,31 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 5rem;
-  min-width: 5rem;
-  height: 2.3rem;
+  width: 5.4rem;
+  min-width: 5.4rem;
+  height: 2.2rem;
   padding: 0.2rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow);
+  background: var(--bg-secondary);
   cursor: pointer;
   overflow: hidden;
-  transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
+  transition:
+    border-color var(--transition-fast) ease,
+    opacity var(--transition-fast) ease;
 }
 
 .theme-switcher:hover {
   border-color: var(--border-strong);
-  background: var(--bg-secondary);
-  transform: none;
-  box-shadow: var(--shadow);
 }
 
-.theme-switcher:active,
-.theme-switcher:focus,
+.theme-switcher:active {
+  transform: scale(0.98);
+}
+
 .theme-switcher:focus-visible {
-  transform: none;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .theme-switcher__thumb {
@@ -36,10 +37,10 @@
   left: 0.2rem;
   width: calc(50% - 0.2rem);
   border-radius: 999px;
-  background: var(--primary-soft);
-  border: 1px solid rgba(var(--primary-rgb), 0.18);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
   pointer-events: none;
-  transition: transform var(--transition-fast) ease;
+  transition: transform var(--transition-fast) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .theme-switcher.is-dark .theme-switcher__thumb {
@@ -53,6 +54,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   width: 100%;
+  gap: 0;
 }
 
 .theme-switcher__label {
@@ -60,27 +62,28 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
   color: var(--text-secondary);
   user-select: none;
   transition: color var(--transition-fast) ease;
-  line-height: 1;
+  padding: 0.25rem 0;
 }
 
 .theme-switcher__label.is-active {
-  color: var(--primary);
-  font-weight: 700;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
   .theme-switcher {
-    width: 4.75rem;
-    min-width: 4.75rem;
-    height: 2.15rem;
+    width: 5rem;
+    min-width: 5rem;
+    height: 2.05rem;
   }
 
   .theme-switcher__label {
-    font-size: 0.9rem;
+    font-size: 0.78rem;
   }
 }

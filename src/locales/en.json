@@ -747,6 +747,15 @@
     "sizeHint": "The preview is capped at 400×400 px to keep the code sharp, proportional, and easy to scan across devices.",
     "errorGenerate": "Could not generate the QR code. Check the entered data and try again.",
     "downloadButton": "Download PNG",
+    "formats": {
+      "png": "Download PNG",
+      "svg": "Download SVG",
+      "pdf": "Download PDF",
+      "jpg": "Download JPG",
+      "webp": "Download WEBP",
+      "gif": "Download GIF"
+    },
+    "transparentBg": "Transparent background",
     "scanText": "Scan with phone camera",
     "emptyState": "Choose a QR type and fill in the fields to see the code",
     "previewKicker": "Live preview",
