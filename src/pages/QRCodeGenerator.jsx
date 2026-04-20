@@ -485,6 +485,26 @@ function QRCodeGenerator() {
     }
   }, [t])
 
+  useEffect(() => {
+    if (!showFormatDropdown) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowFormatDropdown(false)
+    }
+    const handleClickOutside = (e) => {
+      const dropdown = document.querySelector('.qr-format-dropdown')
+      const toggle = document.querySelector('.qr-format-dropdown-toggle')
+      if (dropdown && !dropdown.contains(e.target) && !toggle.contains(e.target)) {
+        setShowFormatDropdown(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showFormatDropdown])
+
   const qrTypes = [
     {
       id: 'text',
@@ -760,13 +780,6 @@ function QRCodeGenerator() {
     triggerDataURLDownload(dataUrl, 'qrcode.webp')
   }
 
-  const downloadGIF = (canvas) => {
-    const exportCanvas = getOpaqueCanvas(canvas)
-    exportCanvas.toBlob((blob) => {
-      triggerDownload(blob, 'qrcode.gif')
-    }, 'image/gif')
-  }
-
   const downloadSVG = () => {
     const qrData = qrDataRef.current
     if (!qrData) return
@@ -868,9 +881,6 @@ ${bgRect}  <g>
         break
       case 'webp':
         downloadWEBP(canvas)
-        break
-      case 'gif':
-        downloadGIF(canvas)
         break
       case 'png':
       default:
@@ -1365,7 +1375,7 @@ ${bgRect}  <g>
                   </button>
                   {showFormatDropdown && (
                     <div className="qr-format-dropdown">
-                      {['png', 'svg', 'pdf', 'jpg', 'webp', 'gif'].map((fmt) => (
+                      {['png', 'svg', 'pdf', 'jpg', 'webp'].map((fmt) => (
                         <button
                           key={fmt}
                           type="button"

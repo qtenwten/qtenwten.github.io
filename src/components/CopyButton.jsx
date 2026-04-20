@@ -5,24 +5,33 @@ import Icon from './Icon'
 function CopyButton({ text, className = '' }) {
   const { t } = useLanguage()
   const [copied, setCopied] = useState(false)
+  const [copyError, setCopyError] = useState(false)
 
   const handleCopy = async () => {
+    if (!text) return
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      setCopyError(false)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      // Silently fail - clipboard API might not be available
+      setCopyError(true)
+      setTimeout(() => setCopyError(false), 2000)
     }
   }
 
   return (
     <button
       onClick={handleCopy}
-      className={`copy-btn ${className}`}
+      className={`copy-btn ${copyError ? 'copy-btn--error' : ''} ${className}`}
       disabled={!text}
     >
-      {copied ? (
+      {copyError ? (
+        <>
+          <Icon name="close" size={14} />
+          {t('common.copyFailed') || 'Не вышло'}
+        </>
+      ) : copied ? (
         <>
           <Icon name="check" size={14} />
           {t('common.copied')}

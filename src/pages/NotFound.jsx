@@ -5,7 +5,7 @@ import RelatedTools from '../components/RelatedTools'
 import './NotFound.css'
 
 function NotFound() {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
 
   return (
     <>

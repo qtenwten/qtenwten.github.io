@@ -3,6 +3,7 @@
     "home": "Home",
     "copy": "Copy",
     "copied": "Copied",
+    "copyFailed": "Failed",
     "clear": "Clear",
     "generate": "Generate",
     "calculate": "Calculate",
@@ -752,8 +753,7 @@
       "svg": "Download SVG",
       "pdf": "Download PDF",
       "jpg": "Download JPG",
-      "webp": "Download WEBP",
-      "gif": "Download GIF"
+      "webp": "Download WEBP"
     },
     "transparentBg": "Transparent background",
     "scanText": "Scan with phone camera",
