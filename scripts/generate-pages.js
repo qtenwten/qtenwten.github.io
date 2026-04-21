@@ -664,7 +664,6 @@ function buildRootRedirectPage(template) {
 
   const redirectMeta = `
     <link rel="canonical" href="${ROOT_REDIRECT_URL}" />
-    <meta name="robots" content="noindex,follow" />
     <script>window.location.replace('${ROOT_REDIRECT_URL}' + window.location.search + window.location.hash)</script>
   `.trim()
 
