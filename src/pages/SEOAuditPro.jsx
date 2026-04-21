@@ -8,7 +8,7 @@ import { analyzeSEO } from '../utils/seoAudit'
 import InlineSpinner from '../components/InlineSpinner'
 import { useAsyncRequest } from '../hooks/useAsyncRequest'
 import { ResultActions, ResultDetails, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
-import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolRelated } from '../components/ToolPageShell'
+import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult } from '../components/ToolPageShell'
 import './SEOAuditPro.css'
 
 const SEO_AUDIT_WORKER_URL = 'https://seo-audit-api.qten.workers.dev/'
@@ -89,15 +89,15 @@ async function requestWorkerAudit(normalizedUrl, signal) {
 
 const AUDIT_UI_COPY = {
   en: {
-    sourceWorker: 'Worker audit',
-    sourceFallback: 'Limited browser audit',
+    badgeWorker: 'Remote audit',
+    badgeFallback: 'Limited check',
     coverage: 'Coverage',
-    checkedChecks: 'Verified checks',
-    categoryScores: 'Category scores',
+    checkedChecks: 'Verified',
+    categoryScores: 'Category overview',
     scoreBreakdown: 'Scoring breakdown',
-    topPriorities: 'What to fix first',
-    allGoodTitle: 'Everything checked passed',
-    allGoodText: 'The audit did not find active issues in the verified checks. The breakdown below shows what contributed to the score.',
+    topPriorities: 'Priority fixes',
+    allGoodTitle: 'No active issues found',
+    allGoodText: 'All verified checks passed. The breakdown below shows the full score picture.',
     filtersTitle: 'Show checks',
     filterAll: 'All',
     filterErrors: 'Errors',
@@ -107,49 +107,49 @@ const AUDIT_UI_COPY = {
     whyItMatters: 'Why it matters',
     recommendation: 'How to improve',
     benchmark: 'Target',
-    currentValue: 'Current value',
-    rawSignals: 'Raw audit snapshot',
-    rawHint: 'Use these values when you need the exact fields returned by the audit.',
+    currentValue: 'Current',
+    rawSignals: 'Raw audit data',
+    rawHint: 'Technical snapshot returned by the audit source.',
     noRecommendation: 'No action needed.',
-    notChecked: 'This signal was not available in the current audit source.',
-    impact: 'Score',
+    notChecked: 'Signal unavailable in the current audit mode.',
+    impact: 'Score impact',
     scoreOutOf: (earned, max) => `${earned}/${max}`,
-    checksCount: (checked, total) => `${checked}/${total} checks`,
+    checksCount: (checked, total) => `${checked}/${total}`,
     scoreSummary: (score) => score >= 90
-      ? 'Strong on-page SEO signals across the verified checks.'
+      ? 'Strong on-page signals across all verified checks.'
       : score >= 70
-        ? 'Most important signals look good, but there are clear improvements available.'
-        : 'Several important signals need work before the page looks fully optimized.',
+        ? 'Most signals look good. A few targeted improvements available.'
+        : 'Several signals need work before the page looks fully optimized.',
     status: {
-      pass: 'OK',
-      warning: 'Warning',
+      pass: 'Pass',
+      warning: 'Warn',
       fail: 'Error',
-      na: 'Not checked',
+      na: 'N/A',
     },
     categories: {
-      technical: 'Technical SEO',
+      technical: 'Technical',
       metadata: 'Metadata',
-      content: 'Content structure',
-      enhancements: 'Rich results',
-      accessibility: 'Media & accessibility',
+      content: 'Content',
+      enhancements: 'Enhancements',
+      accessibility: 'Media',
     },
     labels: {
       httpStatus: 'HTTP status',
       htmlContent: 'HTML response',
       httpsUrl: 'HTTPS final URL',
       robots: 'Robots directives',
-      titlePresence: 'Title tag present',
+      titlePresence: 'Title tag',
       titleLength: 'Title length',
-      descriptionPresence: 'Meta description present',
-      descriptionLength: 'Meta description length',
-      canonical: 'Canonical tag',
+      descriptionPresence: 'Meta description',
+      descriptionLength: 'Description length',
+      canonical: 'Canonical URL',
       h1Presence: 'Primary H1',
       h1Length: 'H1 length',
-      h2Coverage: 'Supporting H2 headings',
+      h2Coverage: 'H2 headings',
       openGraph: 'Open Graph',
       twitter: 'Twitter cards',
       structuredData: 'Structured data',
-      altCoverage: 'Image alt coverage',
+      altCoverage: 'Image alt',
       linkMix: 'Link signals',
     },
     why: {
@@ -171,17 +171,19 @@ const AUDIT_UI_COPY = {
       altCoverage: 'Descriptive alt text improves accessibility and helps search engines understand images.',
       linkMix: 'A healthy link profile indicates crawl paths and page context.',
     },
+    fallbackNoticeBody: 'The remote audit endpoint is temporarily unavailable. This is a limited browser-based check — some signals could not be evaluated. Try again in a moment.',
+    workerIcon: 'worker',
   },
   ru: {
-    sourceWorker: 'Проверка через worker',
-    sourceFallback: 'Ограниченная браузерная проверка',
+    badgeWorker: 'Удалённый аудит',
+    badgeFallback: 'Ограниченная проверка',
     coverage: 'Покрытие',
     checkedChecks: 'Проверено',
-    categoryScores: 'Оценка по категориям',
-    scoreBreakdown: 'Детальный разбор оценки',
-    topPriorities: 'Что исправить в первую очередь',
+    categoryScores: 'Обзор по категориям',
+    scoreBreakdown: 'Детализация оценки',
+    topPriorities: 'Приоритетные исправления',
     allGoodTitle: 'Все проверенные сигналы в порядке',
-    allGoodText: 'Активных проблем в проверенных сигналах не найдено. Ниже видно, какие именно проверки дали итоговую оценку.',
+    allGoodText: 'Активных проблем не найдено. Ниже — полная картина оценки.',
     filtersTitle: 'Показать проверки',
     filterAll: 'Все',
     filterErrors: 'Ошибки',
@@ -191,42 +193,42 @@ const AUDIT_UI_COPY = {
     whyItMatters: 'Почему это важно',
     recommendation: 'Что улучшить',
     benchmark: 'Ориентир',
-    currentValue: 'Текущее значение',
-    rawSignals: 'Сырые сигналы аудита',
-    rawHint: 'Этот блок показывает точные значения, которые вернул аудит.',
+    currentValue: 'Текущее',
+    rawSignals: 'Сырые данные аудита',
+    rawHint: 'Технический снимок, возвращённый источником аудита.',
     noRecommendation: 'Доработка не требуется.',
-    notChecked: 'Этот сигнал недоступен в текущем источнике аудита.',
-    impact: 'Баллы',
+    notChecked: 'Этот сигнал недоступен в текущем режиме аудита.',
+    impact: 'Влияние на оценку',
     scoreOutOf: (earned, max) => `${earned}/${max}`,
-    checksCount: (checked, total) => `${checked}/${total} проверок`,
+    checksCount: (checked, total) => `${checked}/${total}`,
     scoreSummary: (score) => score >= 90
-      ? 'По проверенным сигналам страница выглядит сильно и аккуратно оптимизированной.'
+      ? 'Сильные on-page сигналы по всем проверенным проверкам.'
       : score >= 70
-        ? 'Основные сигналы в порядке, но остаются понятные точки роста.'
-        : 'Есть несколько важных проблем, которые заметно тянут оценку вниз.',
+        ? 'Основные сигналы в порядке. Доступны точечные улучшения.'
+        : 'Есть несколько проблем, которые заметно тянут оценку вниз.',
     status: {
-      pass: 'OK',
-      warning: 'Предупреждение',
+      pass: 'ОК',
+      warning: 'Вним.',
       fail: 'Ошибка',
-      na: 'Не проверено',
+      na: 'Н/Д',
     },
     categories: {
-      technical: 'Техническое SEO',
+      technical: 'Техническое',
       metadata: 'Метаданные',
-      content: 'Структура контента',
-      enhancements: 'Расширенные сниппеты',
-      accessibility: 'Медиа и доступность',
+      content: 'Контент',
+      enhancements: 'Расширения',
+      accessibility: 'Медиа',
     },
     labels: {
       httpStatus: 'HTTP-статус',
       htmlContent: 'HTML-страница',
-      httpsUrl: 'HTTPS у итогового URL',
-      robots: 'Robots-директива',
-      titlePresence: 'Наличие title',
+      httpsUrl: 'Итоговый URL (HTTPS)',
+      robots: 'Robots-директивы',
+      titlePresence: 'Тег title',
       titleLength: 'Длина title',
-      descriptionPresence: 'Наличие description',
+      descriptionPresence: 'Meta description',
       descriptionLength: 'Длина description',
-      canonical: 'Canonical',
+      canonical: 'Canonical URL',
       h1Presence: 'Основной H1',
       h1Length: 'Длина H1',
       h2Coverage: 'Подзаголовки H2',
@@ -255,6 +257,8 @@ const AUDIT_UI_COPY = {
       altCoverage: 'Описательные alt улучшают доступность и помогают поисковикам понимать изображения.',
       linkMix: 'Ссылки помогают понять структуру страницы и её связь с другими документами.',
     },
+    fallbackNoticeBody: 'Удалённый эндпоинт SEO-аудита временно недоступен. Это ограниченная браузерная проверка — часть сигналов не могла быть оценена. Попробуйте ещё раз через некоторое время.',
+    workerIcon: 'worker',
   },
 }
 
@@ -316,8 +320,6 @@ function normalizeAuditData(data) {
 
   const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key)
 
-  // NOTE: We treat `undefined` as "unknown / not provided by the source".
-  // `null` means "known missing / empty".
   const normalized = {
     source: hasOwn(raw, 'source') ? (asTrimmedString(raw.source) || 'worker') : 'worker',
     finalUrl: hasOwn(raw, 'finalUrl') ? asTrimmedString(raw.finalUrl) : undefined,
@@ -381,7 +383,6 @@ function normalizeAuditData(data) {
     normalized.twitter = twitterFromLegacy
   }
 
-  // Normalize known shapes to either an object or null, but keep undefined as "unknown".
   const normalizeSocialObject = (value, fields) => {
     if (value === undefined) return undefined
     if (value === null) return null
@@ -399,7 +400,6 @@ function normalizeAuditData(data) {
   normalized.openGraph = normalizeSocialObject(normalized.openGraph, ['title', 'description', 'image'])
   normalized.twitter = normalizeSocialObject(normalized.twitter, ['card', 'title', 'description', 'image'])
 
-  // Fill derived counts only if the source provided enough evidence.
   if (normalized.h1Count === undefined) {
     if (normalized.h1Text) normalized.h1Count = 1
   }
@@ -452,7 +452,6 @@ function buildAuditReport(rawData, language) {
   const ctx = { language, ui, data, values, safeParseUrl, makeNotChecked }
 
   const CHECK_CATALOG = [
-    // TECHNICAL
     (ctx) => {
       const { data, language, ui } = ctx
       const hasStatus = typeof data.status === 'number'
@@ -648,8 +647,6 @@ function buildAuditReport(rawData, language) {
         scoreEarned: looksResponsive ? 2 : 1,
       })
     },
-
-    // METADATA
     (ctx) => createCheck({
       id: 'title-present',
       categoryId: 'metadata',
@@ -813,8 +810,6 @@ function buildAuditReport(rawData, language) {
         scoreEarned: status === 'pass' ? 3 : status === 'warning' ? 1 : 0,
       })
     },
-
-    // CONTENT
     (ctx) => {
       const count = typeof ctx.data.h1Count === 'number' ? ctx.data.h1Count : null
       const hasSignal = count !== null || !!ctx.values.h1Text
@@ -914,7 +909,7 @@ function buildAuditReport(rawData, language) {
           weight: 2,
           whyItMatters: ctx.language === 'en'
             ? 'Extremely thin pages can struggle to satisfy search intent unless the page type is intentionally minimal.'
-            : 'Слишком “тонкие” страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
+            : 'Слишком "тонкие" страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
           benchmark: ctx.language === 'en' ? 'Context-dependent' : 'Зависит от типа страницы',
         })
       }
@@ -930,11 +925,11 @@ function buildAuditReport(rawData, language) {
         summary: status === 'pass'
           ? (ctx.language === 'en' ? 'The page has a reasonable amount of text content.' : 'На странице достаточно текста для большинства сценариев.')
           : status === 'warning'
-            ? (ctx.language === 'en' ? 'The page looks relatively thin on text content.' : 'Страница выглядит относительно “тонкой” по объёму текста.')
-            : (ctx.language === 'en' ? 'The page looks extremely thin on text content.' : 'Страница выглядит слишком “тонкой” по объёму текста.'),
+            ? (ctx.language === 'en' ? 'The page looks relatively thin on text content.' : 'Страница выглядит относительно "тонкой" по объёму текста.')
+            : (ctx.language === 'en' ? 'The page looks extremely thin on text content.' : 'Страница выглядит слишком "тонкой" по объёму текста.'),
         whyItMatters: ctx.language === 'en'
           ? 'Extremely thin pages can struggle to satisfy search intent unless the page type is intentionally minimal.'
-          : 'Слишком “тонкие” страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
+          : 'Слишком "тонкие" страницы хуже закрывают интент, если только страница не должна быть минимальной по типу.',
         recommendation: status === 'pass'
           ? ''
           : (ctx.language === 'en'
@@ -944,8 +939,6 @@ function buildAuditReport(rawData, language) {
         scoreEarned: status === 'pass' ? 2 : status === 'warning' ? 1 : 0,
       })
     },
-
-    // ENHANCEMENTS
     (ctx) => {
       if (ctx.data.openGraph === undefined) {
         return ctx.makeNotChecked({
@@ -1038,8 +1031,6 @@ function buildAuditReport(rawData, language) {
         scoreEarned: present ? 3 : 1,
       })
     },
-
-    // ACCESSIBILITY
     (ctx) => {
       const hasSignals = typeof ctx.data.imagesTotal === 'number' && typeof ctx.data.imagesWithoutAlt === 'number'
       if (!hasSignals) {
@@ -1234,6 +1225,32 @@ function createFallbackAnalysis(fallbackResult, normalizedUrl, language) {
   }, language)
 }
 
+function WorkerIcon() {
+  return (
+    <svg className="seo-audit-pro-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  )
+}
+
+function FallbackIcon() {
+  return (
+    <svg className="seo-audit-pro-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  )
+}
+
+function ChevronIcon({ className }) {
+  return (
+    <svg className={`seo-audit-pro-raw-toggle-icon ${className || ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  )
+}
+
 function SEOAuditPro() {
   const { t, language } = useLanguage()
   const { runRequest } = useAsyncRequest()
@@ -1241,12 +1258,11 @@ function SEOAuditPro() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
   const [checkFilter, setCheckFilter] = useState('all')
+  const [rawOpen, setRawOpen] = useState(false)
   const auditUi = AUDIT_UI_COPY[language] || AUDIT_UI_COPY.ru
 
   useEffect(() => {
-    // Check if URL parameters exist (shared link)
     const params = new URLSearchParams(window.location.search)
     const sharedUrl = params.get('url')
     const sharedScore = params.get('score')
@@ -1254,7 +1270,6 @@ function SEOAuditPro() {
 
     if (sharedUrl) {
       setUrl(sharedUrl)
-      // Auto-analyze if shared link
       if (sharedScore && sharedIssues) {
         setError(`${t('seoAuditPro.sharedPreview')}\n\n${t('seoAuditPro.score')}: ${sharedScore}/100\n${t('seoAuditPro.issues')}: ${sharedIssues}\n\n${language === 'en' ? 'Click "Analyze" to load the full report.' : 'Нажмите "Анализировать" для полного отчета'}`)
       }
@@ -1276,20 +1291,17 @@ function SEOAuditPro() {
       return
     }
 
-    // Check cache first
     const cacheKey = `${language}:${normalizedUrl.toLowerCase()}`
     const cachedResult = seoAuditCache.get(cacheKey)
 
     if (cachedResult) {
       setError('')
-      setNotice('')
       setResult(cachedResult)
       return
     }
 
     setLoading(true)
     setError('')
-    setNotice('')
     setResult(null)
 
     const outcome = await runRequest(async ({ isCurrent, signal }) => {
@@ -1302,8 +1314,16 @@ function SEOAuditPro() {
           throw err
         }
 
-        if (!(err.code === 'HTML_RESPONSE' || err.code === 'INVALID_JSON' || err.code === 'WORKER_ERROR' || err.name === 'TypeError')) {
-          throw err
+        const isNetworkFailure =
+          err.code === 'HTML_RESPONSE' ||
+          err.code === 'INVALID_JSON' ||
+          err.name === 'TypeError'
+
+        if (!isNetworkFailure) {
+          const userMessage = err.message || t('seoAuditPro.genericRetry')
+          const surfacedError = new Error(userMessage)
+          surfacedError.code = 'WORKER_ERROR'
+          throw surfacedError
         }
 
         const fallbackResult = await analyzeSEO(normalizedUrl, language)
@@ -1328,7 +1348,6 @@ function SEOAuditPro() {
     if (outcome.status === 'success' && outcome.result?.analysis) {
       seoAuditCache.set(cacheKey, outcome.result.analysis)
       setResult(outcome.result.analysis)
-      setNotice(outcome.result.type === 'fallback' ? t('seoAuditPro.fallbackNotice') : '')
     } else if (outcome.status === 'error') {
       setError(outcome.error?.message || t('seoAuditPro.genericRetry'))
     }
@@ -1338,8 +1357,6 @@ function SEOAuditPro() {
 
   const handleShare = () => {
     if (!result) return
-
-    // Create shareable URL with encoded parameters
     const shareUrl = `${window.location.origin}/${language}/seo-audit-pro?url=${encodeURIComponent(url)}&score=${result.score}&issues=${result.issues.length}`
 
     if (navigator.clipboard) {
@@ -1405,227 +1422,249 @@ function SEOAuditPro() {
         keywords={t('seo.seoAuditPro.keywords')}
       />
 
-      <ToolPageShell>
+      <ToolPageShell className="seo-audit-pro-page">
         <ToolPageHero title={t('seoAuditPro.title')} subtitle={t('seoAuditPro.subtitle')} />
 
-        <ToolControls>
-        <div className="field">
-          <label htmlFor="url">{t('seoAuditPro.urlLabel')}</label>
-          <input
-            id="url"
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
-            placeholder="https://example.com"
-            autoComplete="off"
-          />
-        </div>
+        {/* === FORM — only in ToolControls === */}
+        <ToolControls className="seo-audit-pro-form-shell">
+          <div className="field">
+            <label htmlFor="url">{t('seoAuditPro.urlLabel')}</label>
+            <input
+              id="url"
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
+              placeholder="https://example.com"
+              autoComplete="off"
+            />
+          </div>
 
-        {error && (
-          <ResultNotice tone="error" title={`⚠️ ${t('seoAuditPro.errorTitle')}`} className="status-panel--error" style={{ marginBottom: '1rem' }}>
-            <p>{error}</p>
-          </ResultNotice>
-        )}
+          {error && (
+            <div className="seo-audit-pro-error">
+              <p>{error}</p>
+            </div>
+          )}
 
-        <button
-          onClick={handleAnalyze}
-          disabled={loading}
-          className="seo-audit-pro-submit"
-        >
-          {loading ? (
-            <span className="button-spinner">
-              <InlineSpinner label={t('seoAuditPro.analyzing')} />
-            </span>
-          ) : t('seoAuditPro.analyze') }
-        </button>
+          <button
+            onClick={handleAnalyze}
+            disabled={loading}
+            className="seo-audit-pro-submit"
+          >
+            {loading ? (
+              <span className="button-spinner">
+                <InlineSpinner label={t('seoAuditPro.analyzing')} />
+              </span>
+            ) : t('seoAuditPro.analyze') }
+          </button>
+        </ToolControls>
 
+        {/* === REPORT === */}
         {result && (
-          <>
-            <ResultSection tone={getScoreTone(result.score)} className="seo-audit-pro-report">
-              <div className="seo-audit-pro-overview">
-                <div className="surface-panel seo-audit-pro-overview-card seo-audit-pro-score-card">
-                  <ResultSummary
-                    kicker={t('seoAuditPro.score')}
-                    title={
-                      result.score >= 80 ? t('seoAuditPro.excellent') :
-                      result.score >= 60 ? t('seoAuditPro.good') :
-                      t('seoAuditPro.poor')
-                    }
-                    score={result.score}
-                    scoreColor={getScoreColor(result.score)}
-                    description={auditUi.scoreSummary(result.score)}
-                    centered
-                  />
-                  <div className="seo-audit-pro-pill-row">
-                    <span className="seo-audit-pro-pill">{auditUi.coverage}: {result.summary.coveragePercent}%</span>
-                    <span className="seo-audit-pro-pill">{auditUi.checkedChecks}: {auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}</span>
-                    <span className="seo-audit-pro-pill">{isFallbackResult ? auditUi.sourceFallback : auditUi.sourceWorker}</span>
+          <ToolPageLayout className="seo-audit-pro-workspace">
+
+            {/* Fallback notice */}
+            {isFallbackResult && (
+              <ToolResult className="seo-audit-pro-notice">
+                <div className="seo-audit-pro-source-notice">
+                  <FallbackIcon />
+                  <div className="seo-audit-pro-source-notice-text">
+                    <strong>{auditUi.badgeFallback}</strong>
+                    <span>{auditUi.fallbackNoticeBody}</span>
                   </div>
                 </div>
+              </ToolResult>
+            )}
 
-                <div className="surface-panel seo-audit-pro-overview-card seo-audit-pro-priority-card">
-                  <h3>{auditUi.topPriorities}</h3>
+            {/* ===== EXECUTIVE ROW: Score + Badges + Priorities ===== */}
+            <div className="seo-audit-pro-dashboard-row">
+
+              {/* LEFT: Score hero — dominant visual anchor */}
+              <div className="seo-audit-pro-score-panel">
+                <div className="seo-audit-pro-score-hero">
+                  <div className="seo-audit-pro-score-top">
+                    <div className="seo-audit-pro-score-kicker">
+                      <span>{t('seo.seoAuditPro.title')}</span>
+                    </div>
+                    <div className="seo-audit-pro-score-number" style={{ color: getScoreColor(result.score) }}>
+                      {result.score}
+                    </div>
+                    <div className="seo-audit-pro-score-label">
+                      {result.score >= 80 ? t('seoAuditPro.excellent') :
+                       result.score >= 60 ? t('seoAuditPro.good') :
+                       t('seoAuditPro.poor')}
+                    </div>
+                    <p className="seo-audit-pro-score-description">{auditUi.scoreSummary(result.score)}</p>
+                  </div>
+
+                  <div className="seo-audit-pro-badges">
+                    <span className={`seo-audit-pro-badge ${isFallbackResult ? 'seo-audit-pro-badge--fallback' : 'seo-audit-pro-badge--worker'}`}>
+                      {isFallbackResult ? <FallbackIcon /> : <WorkerIcon />}
+                      {isFallbackResult ? auditUi.badgeFallback : auditUi.badgeWorker}
+                    </span>
+                    <span className="seo-audit-pro-badge">
+                      {auditUi.coverage}: {result.summary.coveragePercent}%
+                    </span>
+                    <span className="seo-audit-pro-badge">
+                      {auditUi.checkedChecks}: {auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT: Priority action list */}
+              <div className="seo-audit-pro-priorities-panel">
+                <div className="seo-audit-pro-priorities-block">
+                  <h3 className="seo-audit-pro-section-title">{auditUi.topPriorities}</h3>
                   {result.highlights.topFixes.length > 0 ? (
                     <div className="seo-audit-pro-priority-list">
                       {result.highlights.topFixes.map((check) => (
-                        <div key={check.id} className="seo-audit-pro-priority-item">
-                          <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
-                          <div className="seo-audit-pro-priority-copy">
-                            <strong>{check.label}</strong>
-                            <p>{check.summary}</p>
-                            <div className="seo-audit-pro-priority-meta">
-                              <span><strong>{auditUi.currentValue}:</strong> {check.value}</span>
-                              <span><strong>{auditUi.benchmark}:</strong> {check.benchmark || '—'}</span>
+                        <div key={check.id} className={`seo-audit-pro-priority-item seo-audit-pro-priority-item--${check.status}`}>
+                          <div className="seo-audit-pro-priority-item__left">
+                            <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
+                            <div className="seo-audit-pro-priority-item__content">
+                              <strong className="seo-audit-pro-priority-item__label">{check.label}</strong>
+                              <p className="seo-audit-pro-priority-item__summary">{check.summary}</p>
+                              <div className="seo-audit-pro-priority-item__bench">
+                                <span className="seo-audit-pro-priority-item__current">
+                                  <strong>{auditUi.currentValue}:</strong> {check.value}
+                                </span>
+                                <span className="seo-audit-pro-priority-item__target">
+                                  <strong>{auditUi.benchmark}:</strong> {check.benchmark || '—'}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                          <div className="seo-audit-pro-priority-points">
+                          <div className="seo-audit-pro-priority-item__right">
                             <span className="seo-audit-pro-points">{auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="seo-audit-pro-success-copy">
+                    <div className="seo-audit-pro-success-state">
                       <strong>{auditUi.allGoodTitle}</strong>
                       <p>{auditUi.allGoodText}</p>
                       <div className="seo-audit-pro-success-list">
                         {result.highlights.passedHighlights.map((check) => (
-                          <span key={check.id} className="seo-audit-pro-success-item">✔ {check.label}</span>
+                          <span key={check.id} className="seo-audit-pro-success-item">&#10003; {check.label}</span>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
               </div>
+            </div>
 
-              <div className="seo-audit-pro-block-heading">
-                <h3>{auditUi.categoryScores}</h3>
-                <p>{auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}</p>
+            {/* ===== CATEGORY OVERVIEW ===== */}
+            <div className="seo-audit-pro-section-block">
+              <div className="seo-audit-pro-section-header">
+                <h3 className="seo-audit-pro-section-title">{auditUi.categoryScores}</h3>
+                <span className="seo-audit-pro-section-meta">{auditUi.checksCount(result.summary.checkedCount, result.summary.totalChecks)}</span>
               </div>
-
-              <div className="seo-audit-pro-category-grid">
+              <div className="seo-audit-pro-category-overview">
                 {result.categories.map((category) => (
                   <article key={category.id} className={`seo-audit-pro-category-card seo-audit-pro-category-card--${category.status}`}>
-                    <div className="seo-audit-pro-category-card__top">
-                      <span className="seo-audit-pro-category-card__title">{category.label}</span>
+                    <div className="seo-audit-pro-category-card__header">
+                      <span className="seo-audit-pro-category-card__name">{category.label}</span>
                       <span className={`seo-audit-pro-status seo-audit-pro-status--${category.status}`}>{auditUi.status[category.status]}</span>
                     </div>
                     <div className="seo-audit-pro-category-card__score">
-                      {category.score !== null ? `${category.score}/${category.maxScore}` : '—'}
+                      {category.score !== null ? `${category.score}` : '—'}
                     </div>
-                    <div className="seo-audit-pro-progress">
-                      <span style={{ width: `${category.percent}%` }} />
+                    <div className="seo-audit-pro-category-card__bar">
+                      <div className="seo-audit-pro-category-card__bar-fill" style={{ width: `${category.percent}%` }} />
                     </div>
-                    <div className="seo-audit-pro-category-card__meta">
-                      <span>{auditUi.checksCount(category.checks.length - category.counts.na, category.checks.length)}</span>
-                      <span>{auditUi.scoreOutOf(category.earned, category.available || 0)}</span>
+                    <div className="seo-audit-pro-category-card__footer">
+                      <div className="seo-audit-pro-category-card__chips">
+                        {category.counts.fail > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--fail">{category.counts.fail} fail</span> : null}
+                        {category.counts.warning > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--warning">{category.counts.warning} warn</span> : null}
+                        {category.counts.pass > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--pass">{category.counts.pass} pass</span> : null}
+                      </div>
+                      <span className="seo-audit-pro-category-card__weight">{auditUi.scoreOutOf(category.earned, category.available || 0)}</span>
                     </div>
                   </article>
                 ))}
               </div>
+            </div>
 
-              <div className="seo-audit-pro-report__footer">
-                <ResultActions align="center">
-                  <button onClick={handleShare} className="seo-share-button">📤 {t('seoAuditPro.share')}</button>
-                </ResultActions>
-
-                {notice && (
-                  <ResultNotice tone="warning" className="seo-audit-pro-notice-panel">
-                    <p>{notice}</p>
-                  </ResultNotice>
-                )}
-              </div>
-            </ResultSection>
-
-            <ResultSection className="seo-audit-pro-filters-panel">
-              <div className="seo-audit-pro-filters-head">
-                <strong>{auditUi.scoreBreakdown}</strong>
-                <span>{auditUi.checksCount(visibleCheckCount, result.checks.length)}</span>
-              </div>
-              <div className="seo-audit-pro-filter-group">
-                <span className="seo-audit-pro-filter-group__label">{auditUi.filtersTitle}</span>
+            {/* ===== FILTERS ===== */}
+            <div className="seo-audit-pro-section-block">
+              <div className="seo-audit-pro-filters-bar">
+                <strong className="seo-audit-pro-filters-label">{auditUi.scoreBreakdown}</strong>
+                <span className="seo-audit-pro-filters-count">{auditUi.checksCount(visibleCheckCount, result.checks.length)}</span>
                 <div className="seo-audit-pro-filter-row">
-                {filterOptions.map((option) => (
-                  <button
-                    key={option.key}
-                    type="button"
-                    className={`secondary seo-audit-pro-filter ${checkFilter === option.key ? 'is-active' : ''}`.trim()}
-                    onClick={() => setCheckFilter(option.key)}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                  {filterOptions.map((option) => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      className={`seo-audit-pro-filter ${checkFilter === option.key ? 'is-active' : ''}`.trim()}
+                      onClick={() => setCheckFilter(option.key)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </ResultSection>
+            </div>
 
+            {/* ===== CHECK DETAILS ===== */}
             {visibleCategories.map((category) => (
               <ResultDetails key={category.id} title={category.label} className="seo-audit-pro-section">
-                <div className="surface-panel surface-panel--subtle seo-audit-pro-category-panel">
-                  <div className="seo-audit-pro-category-panel__header">
-                    <div className="seo-audit-pro-category-panel__summary">
-                      <p>{auditUi.checksCount(category.checks.length - category.counts.na, category.checks.length)}</p>
-                      <div className="seo-audit-pro-category-panel__chips">
-                        {category.counts.fail > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--fail">{auditUi.status.fail}: {category.counts.fail}</span> : null}
-                        {category.counts.warning > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--warning">{auditUi.status.warning}: {category.counts.warning}</span> : null}
-                        {category.counts.pass > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--pass">{auditUi.status.pass}: {category.counts.pass}</span> : null}
-                        {category.counts.na > 0 ? <span className="seo-audit-pro-chip seo-audit-pro-chip--na">{auditUi.status.na}: {category.counts.na}</span> : null}
+                <div className="seo-audit-pro-check-list">
+                  {category.visibleChecks.map((check) => (
+                    <article key={check.id} className={`seo-audit-pro-check seo-audit-pro-check--${check.status}`}>
+                      <div className="seo-audit-pro-check__row">
+                        <div className="seo-audit-pro-check__name">
+                          <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
+                          <strong>{check.label}</strong>
+                        </div>
+                        <div className="seo-audit-pro-check__value-block">
+                          <span className="seo-audit-pro-check__value">{check.value}</span>
+                          <span className="seo-audit-pro-points">{check.status === 'na' ? '—' : auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="seo-audit-pro-category-panel__score">
-                      <span>{category.score !== null ? `${category.score}/${category.maxScore}` : '—'}</span>
-                      <span className={`seo-audit-pro-status seo-audit-pro-status--${category.status}`}>{auditUi.status[category.status]}</span>
-                    </div>
-                  </div>
-
-                  <div className="seo-audit-pro-check-list">
-                    {category.visibleChecks.map((check) => (
-                      <article key={check.id} className={`seo-audit-pro-check seo-audit-pro-check--${check.status}`}>
-                        <div className="seo-audit-pro-check__top">
-                          <div className="seo-audit-pro-check__heading">
-                            <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
-                            <strong>{check.label}</strong>
-                          </div>
-                          <div className="seo-audit-pro-check__meta">
-                            <span className="seo-audit-pro-check__value">{check.value}</span>
-                            <span className="seo-audit-pro-points">{check.status === 'na' ? '—' : auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
-                          </div>
+                      <p className="seo-audit-pro-check__summary">{check.summary}</p>
+                      <div className="seo-audit-pro-check__details">
+                        <div className="seo-audit-pro-check__detail">
+                          <span className="seo-audit-pro-check__detail-label">{auditUi.whyItMatters}</span>
+                          <p>{check.whyItMatters}</p>
                         </div>
-
-                        <p className="seo-audit-pro-check__summary">{check.summary}</p>
-
-                        <div className="seo-audit-pro-check__details">
-                          <div className="seo-audit-pro-check__detail-card">
-                            <span className="seo-audit-pro-check__label">{auditUi.whyItMatters}</span>
-                            <p>{check.whyItMatters}</p>
-                          </div>
-                          <div className="seo-audit-pro-check__detail-card">
-                            <span className="seo-audit-pro-check__label">{auditUi.benchmark}</span>
-                            <p>{check.benchmark || '—'}</p>
-                          </div>
-                          <div className="seo-audit-pro-check__detail-card">
-                            <span className="seo-audit-pro-check__label">{auditUi.recommendation}</span>
-                            <p>{check.recommendation || auditUi.noRecommendation}</p>
-                          </div>
+                        <div className="seo-audit-pro-check__detail seo-audit-pro-check__detail--center">
+                          <span className="seo-audit-pro-check__detail-label">{auditUi.benchmark}</span>
+                          <p>{check.benchmark || '—'}</p>
                         </div>
-                      </article>
-                    ))}
-                  </div>
+                        <div className="seo-audit-pro-check__detail">
+                          <span className="seo-audit-pro-check__detail-label">{auditUi.recommendation}</span>
+                          <p>{check.recommendation || auditUi.noRecommendation}</p>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
                 </div>
               </ResultDetails>
             ))}
 
             {!visibleCategories.length && (
-              <ResultNotice tone="info" className="seo-audit-pro-empty-filter">
+              <div className="seo-audit-pro-empty-state">
                 <p>{language === 'en' ? 'No checks match the selected filter.' : 'Для выбранного фильтра нет подходящих проверок.'}</p>
-              </ResultNotice>
+              </div>
             )}
 
-            <ResultDetails title={auditUi.rawSignals} className="seo-audit-pro-section">
-              <div className="surface-panel surface-panel--subtle seo-audit-pro-raw-panel">
+            {/* ===== RAW DATA ===== */}
+            <div className="seo-audit-pro-raw-wrapper">
+              <button
+                type="button"
+                className="seo-audit-pro-raw-toggle"
+                onClick={() => setRawOpen((o) => !o)}
+                aria-expanded={rawOpen}
+              >
+                <ChevronIcon className={rawOpen ? 'seo-audit-pro-raw-toggle-icon--open' : ''} />
+                {auditUi.rawSignals}
+              </button>
+              <div className={`seo-audit-pro-raw-panel ${rawOpen ? 'seo-audit-pro-raw-panel--open' : ''}`}>
                 <p className="seo-audit-pro-raw-hint">{auditUi.rawHint}</p>
-                <div className="meta-grid seo-audit-pro-raw-grid">
+                <div className="seo-audit-pro-raw-grid">
                   <div className="meta-item">
                     <strong>Title</strong>
                     <div className="meta-item-value">{renderSignal(result.data.title)}</div>
@@ -1742,19 +1781,21 @@ function SEOAuditPro() {
                   )}
                 </div>
               </div>
-            </ResultDetails>
-          </>
-        )}
+            </div>
 
-        </ToolControls>
+            {/* ===== SHARE FOOTER ===== */}
+            <ResultActions align="center">
+              <button onClick={handleShare} className="seo-share-button">&#128228; {t('seoAuditPro.share')}</button>
+            </ResultActions>
+
+          </ToolPageLayout>
+        )}
 
         <ToolHelp>
         <ToolDescriptionSection>
           <div className="tool-help-prose">
           <h2 className="tool-help-heading">{t('seoAuditPro.infoTitle')}</h2>
-          <p>
-            {t('seoAuditPro.infoDescription')}
-          </p>
+          <p>{t('seoAuditPro.infoDescription')}</p>
 
           <h3 className="tool-help-subheading">{t('seoAuditPro.checksTitle')}</h3>
           <ul>
@@ -1763,7 +1804,7 @@ function SEOAuditPro() {
 
           <h3 className="tool-help-subheading">{t('seoAuditPro.benefitsTitle')}</h3>
           <ul>
-            {Object.values(t('seoAuditPro.benefits')).map((item) => <li key={item}>✅ {item}</li>)}
+            {Object.values(t('seoAuditPro.benefits')).map((item) => <li key={item}>&#10003; {item}</li>)}
           </ul>
 
           <h3 className="tool-help-subheading">{t('seoAuditPro.ratingTitle')}</h3>
@@ -1771,10 +1812,9 @@ function SEOAuditPro() {
             {Object.values(t('seoAuditPro.rating')).map((item) => <li key={item}>{item}</li>)}
           </ul>
 
-          <ToolFaq title={t('seoAuditPro.faqTitle')} items={Object.entries(t('seoAuditPro.faq')).reduce((acc, [key, val], idx) => { if (key.startsWith('q')) { const num = key.slice(1); const aKey = 'a' + num; const aVal = t('seoAuditPro.faq.' + aKey); acc.push({ q: val, a: aVal || '' }); } return acc; }, []).filter(item => item.q && item.a)} />
+          <ToolFaq title={t('seoAuditPro.faqTitle')} items={Object.entries(t('seoAuditPro.faq')).reduce((acc, [key, val]) => { if (key.startsWith('q')) { const num = key.slice(1); const aKey = 'a' + num; const aVal = t('seoAuditPro.faq.' + aKey); acc.push({ q: val, a: aVal || '' }); } return acc; }, []).filter(item => item.q && item.a)} />
           </div>
         </ToolDescriptionSection>
-
         </ToolHelp>
 
         <ToolRelated>
