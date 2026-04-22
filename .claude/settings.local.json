@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('dist/index.html','utf8'\\); const idx=c.indexOf\\('boot-veil'\\); console.log\\(c.substring\\(idx-5, idx+100\\)\\)\")",
+      "Bash(git reset *)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
