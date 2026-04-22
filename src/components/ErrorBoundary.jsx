@@ -16,7 +16,9 @@ class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
-      const isEnglish = window.location.pathname.startsWith('/en')
+      const isEnglish = this.props.language === 'en'
+      const isEnglishFallback = typeof window !== 'undefined' && window.location.pathname.startsWith('/en')
+      const useEnglish = isEnglish !== undefined ? isEnglish : isEnglishFallback
 
       return (
         <div style={{
@@ -26,10 +28,10 @@ class ErrorBoundary extends Component {
           margin: '4rem auto'
         }}>
           <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--error)' }}>
-            {isEnglish ? 'Something went wrong' : 'Что-то пошло не так'}
+            {useEnglish ? 'Something went wrong' : 'Что-то пошло не так'}
           </h1>
           <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-            {isEnglish
+            {useEnglish
               ? 'An error occurred while loading the page. Try refreshing it or go back to the homepage.'
               : 'Произошла ошибка при загрузке страницы. Попробуйте обновить страницу или вернуться на главную.'}
           </p>
@@ -47,7 +49,7 @@ class ErrorBoundary extends Component {
                 color: 'white'
               }}
             >
-              {isEnglish ? 'Refresh page' : 'Обновить страницу'}
+              {useEnglish ? 'Refresh page' : 'Обновить страницу'}
             </button>
             <button
               onClick={() => window.location.href = '/'}
@@ -62,7 +64,7 @@ class ErrorBoundary extends Component {
                 color: 'var(--text)'
               }}
             >
-              {isEnglish ? 'Home' : 'На главную'}
+              {useEnglish ? 'Home' : 'На главную'}
             </button>
           </div>
         </div>

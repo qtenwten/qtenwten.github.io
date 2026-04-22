@@ -250,7 +250,7 @@ function MetaTagsGenerator() {
                   {metaTags}
                 </pre>
                 <div style={{ marginTop: '1rem' }}>
-                  <CopyButton text={metaTags} />
+                  <CopyButton text={metaTags} analytics={{ toolSlug: 'meta-tags-generator', linkType: 'result' }} />
                 </div>
               </div>
             </div>

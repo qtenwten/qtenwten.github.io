@@ -4,8 +4,10 @@ import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
+import { ResultNotice } from '../components/ResultSection'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator'
+import { analytics } from '../utils/analytics'
 import './PasswordGenerator.css'
 
 function PasswordGenerator() {
@@ -22,6 +24,7 @@ function PasswordGenerator() {
   })
   const [showPassword, setShowPassword] = useState(true)
   const [strength, setStrength] = useState({ score: 0, label: '', color: '' })
+  const [generationError, setGenerationError] = useState('')
 
   const errorMessages = language === 'en'
     ? {
@@ -73,10 +76,16 @@ function PasswordGenerator() {
   const handleGenerate = () => {
     const result = generatePassword({ length, ...options })
     if (result.error) {
-      alert(errorMessages[result.error] || result.error)
+      setGenerationError(errorMessages[result.error] || result.error)
       return
     }
+    setGenerationError('')
     setPassword(result.password)
+    analytics.trackPasswordGenerated(length, options.symbols, options.numbers, {
+      has_uppercase: options.uppercase,
+      has_lowercase: options.lowercase,
+      strength_score: strength.score,
+    })
   }
 
   const handleOptionChange = (key, value) => {
@@ -135,12 +144,18 @@ function PasswordGenerator() {
               {strength.label}
             </span>
           </div>
+          {generationError && (
+            <ResultNotice tone="error" className="password-generation-error">
+              {generationError}
+            </ResultNotice>
+          )}
+
           <div className="password-actions">
             <button onClick={handleGenerate} className="btn-primary">
               <Icon name="refresh" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
               {t('passwordGenerator.generate')}
             </button>
-            <CopyButton text={password} />
+            <CopyButton text={password} analytics={{ toolSlug: 'password-generator', linkType: 'result' }} />
           </div>
 
           {strength.reasons && strength.reasons.filter(r => !r.passed).length > 0 && (

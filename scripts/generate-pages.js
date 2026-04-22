@@ -197,9 +197,15 @@ async function fetchArticlesIndex() {
 
     const data = await response.json()
     if (data?.error) throw new Error(data.error)
-    return Array.isArray(data?.results)
-      ? data.results.map(normalizeArticleIndexItem)
-      : Array.isArray(data) ? data.map(normalizeArticleIndexItem) : []
+    const items = Array.isArray(data?.articles)
+      ? data.articles.map(normalizeArticleIndexItem)
+      : Array.isArray(data?.results)
+        ? data.results.map(normalizeArticleIndexItem)
+        : Array.isArray(data) ? data.map(normalizeArticleIndexItem) : []
+    if (items.length === 0) {
+      throw new Error(`Articles index returned 0 items — check Worker response format`)
+    }
+    return items
   } finally {
     clearTimeout(timeoutId)
   }
@@ -377,6 +383,16 @@ function buildHomePrerenderContent(page, articlesIndex = []) {
   return `<div class="home"><div class="container"><section class="home-hero" aria-labelledby="home-heading"><h1 id="home-heading">${escapeHtml(page.h1)}</h1><p>${escapeHtml(copy.subtitle)}</p>${trustBadges}</section>${toolsGridMarkup}${latestArticlesMarkup}${initialDataScript}</div></div>`
 }
 
+function buildQRCodeGeneratorPrerenderContent(page) {
+  const hero = getToolHeroContent(page)
+  const heroClasses = ['tool-page-hero', 'is-centered']
+  if (hero.eyebrow) heroClasses.push('has-eyebrow')
+  if (hero.subtitle) heroClasses.push('has-subtitle')
+  if (hero.note) heroClasses.push('has-note')
+
+  return `<div class="tool-container tool-page-shell qr-code-generator-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section><div class="qr-generator-shell"><div class="qr-type-selector-skeleton"><div class="qr-type-skeleton-item"></div><div class="qr-type-skeleton-item"></div><div class="qr-type-skeleton-item"></div></div><div class="qr-preview-shell-skeleton"><div class="qr-preview-skeleton-inner"></div></div></div></div>`
+}
+
 function buildToolPageShellPrerenderContent(page) {
   const hero = getToolHeroContent(page)
   const heroClasses = ['tool-page-hero', 'is-centered']
@@ -530,6 +546,7 @@ function buildArticleDetailPage(language, article, availableLanguages) {
     },
     robots: 'index,follow',
     includeInSitemap: true,
+    datePublished: article.publishedAt || undefined,
   }
 }
 
@@ -571,14 +588,17 @@ function injectSeo(template, page, { articlesIndex = [], customPrerenderContent 
     || /^\/?(?:ru|en)\/?$/.test(page.path)
     || /^\/?(?:ru|en)\/?$/.test(page.route)
   const isRandomNumberPage = page.path === '/random-number'
+  const isQRCodeGeneratorPage = page.path === '/qr-code-generator'
   const usesToolPageShell = TOOL_PAGE_SHELL_PATHS.has(page.path)
   const shouldSkipHydration = CLIENT_RENDER_TOOL_PATHS.has(page.path)
 
   const prerenderContent = customPrerenderContent || (page.path === '/articles'
     ? buildArticlesIndexPrerenderContent(page, articlesIndex)
-    : usesToolPageShell
-      ? buildToolPageShellPrerenderContent(page)
-      : buildLegacyToolPrerenderContent(page))
+    : isQRCodeGeneratorPage
+      ? buildQRCodeGeneratorPrerenderContent(page)
+      : usesToolPageShell
+        ? buildToolPageShellPrerenderContent(page)
+        : buildLegacyToolPrerenderContent(page))
   const skipHydration = customSkipHydration ?? shouldSkipHydration
 
   const prerenderRoot = isHomePage
@@ -663,10 +683,14 @@ function buildSitemap(pages) {
       alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${ruUrl}" />`)
     }
 
+    const lastmod = page.datePublished
+      ? new Date(page.datePublished).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10)
+
     return `  <url>
     <loc>${page.url}</loc>
 ${alternateLinks.join('\n')}
-    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${cleanPath === '/' ? 'weekly' : 'monthly'}</changefreq>
     <priority>${cleanPath === '/' ? '1.0' : cleanPath === '/seo-audit-pro' ? '0.9' : '0.8'}</priority>
   </url>`

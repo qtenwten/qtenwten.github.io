@@ -158,7 +158,7 @@ function URLShortener() {
               title={<a href={shortUrl} target="_blank" rel="noopener noreferrer" className="inline-link">{shortUrl}</a>}
             />
             <ResultActions>
-              <CopyButton text={shortUrl} />
+              <CopyButton text={shortUrl} analytics={{ toolSlug: 'url-shortener', linkType: 'result' }} />
             </ResultActions>
           </ResultSection>
         )}

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
@@ -7,6 +8,7 @@ import { LoadingState } from '../components/LoadingState'
 import { useArticlesIndex } from '../contexts/ArticleStoreContext'
 import { ROUTE_REGISTRY } from '../config/routeRegistry'
 import { preloadRoute } from '../routes/lazyPages'
+import { analytics } from '../utils/analytics'
 import './Articles.css'
 
 function pickCoverAlt(article, language, t) {
@@ -27,6 +29,13 @@ function getToolDisplayInfo(toolSlug, t) {
 function ArticlesIndex() {
   const { t, language } = useLanguage()
   const { articles, status, error, refetch } = useArticlesIndex(language)
+
+  useEffect(() => {
+    if (status === 'success') {
+      analytics.trackArticleListViewed({ language })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, language])
 
   const featuredArticle = articles[0] || null
   const sidebarArticles = articles.slice(1, 4)
@@ -57,6 +66,7 @@ function ArticlesIndex() {
           errorTitle={t('articles.errorTitle')}
           errorDescription={t('articles.errors.list')}
           onRetry={refetch}
+          language={language}
         >
           {articles.length === 0 && status === 'success' ? (
             <section className="articles-list-state">

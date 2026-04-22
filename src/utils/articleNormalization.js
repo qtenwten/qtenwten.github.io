@@ -11,6 +11,7 @@ export function normalizeArticleBase(item = {}) {
     author: item.author || '',
     coverImage: item.cover_image || null,
     publishedAt: item.published_at || '',
+    updatedAt: item.updated_at || item.updatedAt || '',
     toolSlug: item.tool_slug || null,
   }
 }

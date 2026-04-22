@@ -2,11 +2,26 @@ import { Helmet } from 'react-helmet-async'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getLocalizedRouteUrl, getRouteSeo, normalizeSeoPath } from '../config/routeSeo'
 
+export const OG_IMAGE_WIDTH = 1200
+export const OG_IMAGE_HEIGHT = 630
+
+export function validateOgImageDimensions(src) {
+  return new Promise((resolve) => {
+    if (!src) {
+      resolve(null)
+      return
+    }
+    const img = new Image()
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    img.onerror = () => resolve(null)
+    img.src = src
+  })
+}
+
 function SEO({
   title,
   description,
   path = '',
-  keywords = '',
   image = 'https://qsen.ru/og-image.png',
   robots = 'index,follow',
   ogType = 'website',
@@ -19,7 +34,6 @@ function SEO({
   const siteName = 'QSEN.RU'
   const fullTitle = title || routeSeo.title
   const fullDescription = description || routeSeo.description
-  const fullKeywords = keywords || routeSeo.keywords
   const fullImage = image || routeSeo.image
   const fullUrl = getLocalizedRouteUrl(language, cleanPath)
   const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
@@ -46,7 +60,10 @@ function SEO({
     },
     potentialAction: {
       '@type': 'SearchAction',
-      target: `https://qsen.ru/${language}/?search={search_term_string}`,
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `https://qsen.ru/${language}/?search={search_term_string}`,
+      },
       'query-input': 'required name=search_term_string',
     },
   }
@@ -57,7 +74,6 @@ function SEO({
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
-      <meta name="keywords" content={fullKeywords} />
       <link rel="canonical" href={fullUrl} />
       <html lang={language} />
 
@@ -84,10 +100,8 @@ function SEO({
       <meta name="twitter:description" content={fullDescription} />
       <meta name="twitter:image" content={fullImage} />
 
-      {/* Additional SEO */}
+      {/* Robots */}
       <meta name="robots" content={robots} />
-      <meta name="googlebot" content={robots} />
-      <meta name="yandex" content={robots} />
 
       {/* JSON-LD Structured Data */}
       <script type="application/ld+json">

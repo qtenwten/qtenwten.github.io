@@ -1,17 +1,24 @@
 import { useLanguage } from '../contexts/LanguageContext'
-import { useEffect } from 'react'
+import { useLanguageSwitcher } from '../hooks/useLanguageSwitcher'
+import { analytics } from '../utils/analytics'
 import './LanguageSwitcher.css'
 
 function LanguageSwitcher() {
-  const { language, changeLanguage, t } = useLanguage()
+  const { language, t } = useLanguage()
+  const { switchLanguage } = useLanguageSwitcher()
   const nextLanguage = language === 'ru' ? 'en' : 'ru'
   const ariaLabel = nextLanguage === 'en' ? t('common.switchToEn') : t('common.switchToRu')
+
+  const handleSwitch = () => {
+    analytics.trackLanguageSwitched(language, nextLanguage)
+    switchLanguage(nextLanguage)
+  }
 
   return (
     <button
       type="button"
       className={`language-switcher ${language === 'en' ? 'is-en' : 'is-ru'}`}
-      onClick={() => changeLanguage(nextLanguage)}
+      onClick={handleSwitch}
       aria-label={ariaLabel}
       aria-pressed={language === 'en'}
       title={ariaLabel}

@@ -6,6 +6,7 @@ import Breadcrumbs from './components/Breadcrumbs'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import RouteSkeleton from './components/RouteSkeleton'
 import PageTransition from './components/PageTransition'
+import PageViewTracker from './components/PageViewTracker'
 import { useLanguage } from './contexts/LanguageContext'
 import { ArticleStoreProvider } from './contexts/ArticleStoreContext'
 import { BreadcrumbsProvider } from './contexts/BreadcrumbsContext'
@@ -175,6 +176,7 @@ function App() {
           <Suspense fallback={<RouteSkeleton />}>
             <PageTransition key={pageTransitionKey}>
               <Routes location={location}>
+                <Route element={<PageViewTracker />} />
                 {/* Корень остаётся dev/runtime fallback, production redirect генерируется статически */}
                 <Route path="/" element={<Home searchValue={homeSearch} onSearchChange={setHomeSearch} />} />
 
@@ -224,7 +226,9 @@ function App() {
 
 function LegacyArticleRedirect() {
   const { slug = '' } = useParams()
-  return <Navigate to={`/ru/articles/${slug}`} replace />
+  const { language } = useLanguage()
+  const safeSlug = slug.length > 200 ? slug.slice(0, 200) : slug
+  return <Navigate to={`/${language}/articles/${safeSlug}`} replace />
 }
 
 export default App

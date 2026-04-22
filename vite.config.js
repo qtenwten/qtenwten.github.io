@@ -23,10 +23,6 @@ export default defineConfig({
             return 'chart-vendor'
           }
 
-          if (id.includes('mathjs')) {
-            return 'math-vendor'
-          }
-
           if (id.includes('qrcode')) {
             return 'qr-vendor'
           }

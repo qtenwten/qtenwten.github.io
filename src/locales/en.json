@@ -796,6 +796,7 @@
     "logoWarning": "A center logo reduces the usable QR area. Keep it small and always test the final code before sharing or printing.",
     "unicodeHint": "QR codes support Cyrillic, Latin characters, numbers, and symbols directly — your original text is preserved.",
     "sizeHint": "The preview is visually capped by the container, while export works up to 1000×1000 px.",
+    "loading": "Loading...",
     "errorGenerate": "Could not generate the QR code. Check the entered data and try again.",
     "downloadButton": "Download QR",
     "formats": {

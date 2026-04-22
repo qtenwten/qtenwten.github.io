@@ -6,6 +6,7 @@ import Icon from '../components/Icon'
 import { buildSearchIndex, searchRoutes } from '../config/searchIndex'
 import { preloadRoute } from '../routes/lazyPages'
 import ToolPageShell, { ToolPageHero, ToolResult } from '../components/ToolPageShell'
+import { analytics } from '../utils/analytics'
 import './SearchResults.css'
 
 function SearchResults() {
@@ -27,6 +28,7 @@ function SearchResults() {
     const params = new URLSearchParams()
     if (trimmedQuery) {
       params.set('q', trimmedQuery)
+      analytics.trackSearchPerformed(trimmedQuery, results.length, { source: 'search_page' })
     }
     setSearchParams(params, { replace: false })
   }

@@ -4,6 +4,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 import ThemeSwitcher from './ThemeSwitcher'
 import Icon from './Icon'
 import { preloadRoute } from '../routes/lazyPages'
+import { analytics } from '../utils/analytics'
 import qsenLogo from '../assets/qsen-logo-transparent.png'
 import './Header.css'
 
@@ -26,6 +27,7 @@ function Header({ searchValue, onSearchChange }) {
     if (event.key === 'Enter') {
       const query = (searchValue || '').trim()
       if (!query) return
+      analytics.trackSearchPerformed(query, null, { source: 'header' })
       navigate(`/${routeLanguage}/search?q=${encodeURIComponent(query)}`)
     }
   }

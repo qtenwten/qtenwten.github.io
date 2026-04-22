@@ -3,7 +3,7 @@ import { normalizeArticleListItem as sharedNormalizeListItem, normalizeArticle a
 
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 12000
-const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v4'
+const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v5'
 const ARTICLE_DETAIL_CACHE_PREFIX = 'qsen:articles:detail:'
 const ARTICLES_CACHE_TTL_MS = 10 * 60 * 1000
 
@@ -188,6 +188,11 @@ export function writeCachedArticleDetail(article) {
 
 export async function fetchArticles(language) {
   const data = await requestJson('/articles')
+  if (data === null || data === undefined) {
+    const error = new Error('Failed to load articles — empty response')
+    error.status = 502
+    throw error
+  }
   const items = Array.isArray(data)
     ? data.map(sharedNormalizeListItem)
     : (Array.isArray(data?.articles) ? data.articles.map(sharedNormalizeListItem) : [])
@@ -197,7 +202,7 @@ export async function fetchArticles(language) {
 export async function fetchArticleBySlug(slug, language) {
   const data = await requestJson(`/articles/${encodeURIComponent(slug)}`)
   if (!data || typeof data !== 'object') {
-    const error = new Error('Invalid response')
+    const error = new Error('Invalid article response')
     error.status = 502
     throw error
   }

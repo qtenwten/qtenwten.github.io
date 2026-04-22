@@ -595,6 +595,7 @@
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  overflow: hidden;
   padding: 1rem;
   text-align: center;
 }
@@ -603,6 +604,9 @@
   margin-bottom: 0;
   opacity: 0.25;
   color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
 }
 
 .qr-preview-empty p,
@@ -869,44 +873,55 @@
 }
 
 @media (max-width: 768px) {
-  .qr-tool-page {
-    padding: 0 0.5rem;
-  }
+.qr-generator-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
 
-  .qr-section {
-    padding: 0.85rem 0.9rem;
-  }
-
-  .qr-preview-shell {
-    padding: 0.85rem;
-  }
-
-  .qr-preview-metrics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .qr-types-grid,
-  .qr-field-grid,
-  .qr-style-grid,
-  .qr-color-grid {
+@media (max-width: 900px) {
+  .qr-generator-shell {
     grid-template-columns: 1fr;
   }
+}
 
-  .qr-preview-frame {
-    height: clamp(240px, 45vw, 320px);
-  }
+.qr-type-selector-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
 
-  .qr-type-button {
-    min-height: 70px;
-  }
+.qr-type-skeleton-item {
+  height: 72px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--bg-secondary) 0%, rgba(var(--primary-rgb), 0.08) 45%, var(--bg-secondary) 100%);
+  background-size: 220% 100%;
+  animation: article-skeleton-shimmer 1.2s ease-in-out infinite;
+}
 
-  .qr-logo-preview-card {
-    grid-template-columns: 72px minmax(0, 1fr);
-  }
+.qr-preview-shell-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  padding: 2rem;
+}
 
-  .qr-logo-preview-frame {
-    width: 72px;
-  }
+.qr-preview-skeleton-inner {
+  width: 200px;
+  height: 200px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, var(--bg-secondary) 0%, rgba(var(--primary-rgb), 0.08) 45%, var(--bg-secondary) 100%);
+  background-size: 220% 100%;
+animation: article-skeleton-shimmer 1.2s ease-in-out infinite;
 }
 
 @media (max-width: 560px) {

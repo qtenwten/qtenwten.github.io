@@ -1,3 +1,5 @@
+import { OutboundLink } from '../OutboundLink'
+
 function parseMarkdown(content = '') {
   const lines = content.replace(/\r\n/g, '\n').split('\n')
   const blocks = []
@@ -198,9 +200,9 @@ function renderInline(text = '') {
 
       if (isSafeHref(href)) {
         parts.push(
-          <a key={`link-${index}-${start}`} href={href} target="_blank" rel="noreferrer">
+          <OutboundLink key={`link-${index}-${start}`} href={href} target="_blank" rel="noreferrer">
             {label}
-          </a>
+          </OutboundLink>
         )
       } else {
         parts.push(full)
@@ -235,9 +237,9 @@ function renderInline(text = '') {
 
         if (isSafeHref(href)) {
           autoParts.push(
-            <a key={`autolink-${index}-${partIndex}-${start}`} href={href} target="_blank" rel="noreferrer">
+            <OutboundLink key={`autolink-${index}-${partIndex}-${start}`} href={href} target="_blank" rel="noreferrer">
               {href}
-            </a>
+            </OutboundLink>
           )
         } else {
           autoParts.push(href)
@@ -341,9 +343,9 @@ function ArticleMarkdown({ content, title = '', lead = '' }) {
         if (ctaLink) {
           return (
             <div key={`cta-${index}`} className="article-cta-row">
-              <a href={ctaLink.href} className="article-cta-button">
+              <OutboundLink href={ctaLink.href} className="article-cta-button">
                 {ctaLink.label}
-              </a>
+              </OutboundLink>
             </div>
           )
         }

@@ -24,13 +24,13 @@ export function ArticleStoreProvider({ children }) {
 
   const [articlesIndex, setArticlesIndex] = useState(() => {
     if (typeof window === 'undefined') return []
-    const initial = readInitialArticlesIndex('ru')
+    const initialLang = typeof window !== 'undefined' && window.__QSEN_INITIAL_LANGUAGE__ ? window.__QSEN_INITIAL_LANGUAGE__ : 'ru'
+    const initial = readInitialArticlesIndex(initialLang)
     return initial.length ? initial : readCachedArticlesIndex()
   })
 
   const [currentArticle, setCurrentArticle] = useState(null)
 
-  const languageRef = useRef('ru')
   const articlesIndexRef = useRef(articlesIndex)
   const refreshTimerRef = useRef(null)
 
@@ -38,16 +38,12 @@ export function ArticleStoreProvider({ children }) {
     articlesIndexRef.current = articlesIndex
   }, [articlesIndex])
 
-  const setLanguage = useCallback((lang) => {
-    languageRef.current = lang
-  }, [])
-
   const getVisibleArticles = useCallback((language) => {
     return filterArticlesForLanguage(articlesIndex, language)
   }, [articlesIndex])
 
   const fetchIndex = useCallback(async (language, { force = false } = {}) => {
-    const lang = language || languageRef.current
+    const lang = language || 'ru'
 
     if (!force && articlesIndexRef.current.length > 0) {
       return articlesIndexRef.current
@@ -70,7 +66,7 @@ export function ArticleStoreProvider({ children }) {
   }, [])
 
   const fetchDetail = useCallback(async (slug, language) => {
-    const lang = language || languageRef.current
+    const lang = language || 'ru'
 
     const initial = readInitialArticleDetail(slug, lang)
     if (initial) {
@@ -135,7 +131,6 @@ export function ArticleStoreProvider({ children }) {
     fetchDetail,
     clearDetail,
     refreshIndex,
-    setLanguage,
   }
 
   return (

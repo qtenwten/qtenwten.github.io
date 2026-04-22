@@ -1,6 +1,7 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { useEffect, useState } from 'react'
+import { analytics } from '../utils/analytics'
 import './ThemeSwitcher.css'
 
 function ThemeSwitcher() {
@@ -13,11 +14,16 @@ function ThemeSwitcher() {
     setIsMounted(true)
   }, [])
 
+  const handleToggle = () => {
+    analytics.trackThemeSwitched(!isDark)
+    toggleTheme()
+  }
+
   return (
     <button
       type="button"
       className={`theme-switcher${isDark ? ' is-dark' : ''}`}
-      onClick={toggleTheme}
+      onClick={handleToggle}
       aria-label={t('common.switchTheme')}
       {...(isMounted ? { 'aria-pressed': isDark } : {})}
       title={t('common.switchTheme')}

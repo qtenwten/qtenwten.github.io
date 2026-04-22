@@ -1,17 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import ruTranslations from '../locales/ru.json'
 import enTranslations from '../locales/en.json'
 import { safeGetItem, safeSetItem } from '../utils/storage'
-import {
-  fetchArticles,
-  fetchArticleBySlug,
-  readCachedArticleDetail,
-  readCachedArticlesIndex,
-  readInitialArticleDetail,
-  readInitialArticlesIndex,
-  writeCachedArticlesIndex,
-} from '../api/articlesApi'
 
 const translations = {
   ru: ruTranslations,
@@ -22,48 +13,36 @@ const LanguageContext = createContext()
 
 export function LanguageProvider({ children }) {
   const location = useLocation()
-  const navigate = useNavigate()
   const [language, setLanguage] = useState(() => {
-    // Read from the global set by the blocking inline script to ensure consistency
     if (typeof window !== 'undefined' && (window.__QSEN_INITIAL_LANGUAGE__ === 'ru' || window.__QSEN_INITIAL_LANGUAGE__ === 'en')) {
       return window.__QSEN_INITIAL_LANGUAGE__
     }
     return 'ru'
   })
 
-  // Определение языка из URL
   useEffect(() => {
-    console.log('🌐 [LanguageProvider] useEffect lang detection, path:', location.pathname)
     try {
       const pathLang = location.pathname.split('/')[1]
-        if (pathLang === 'ru' || pathLang === 'en') {
-          console.log('🌐 [LanguageProvider] Setting lang from URL:', pathLang)
-          setLanguage(pathLang)
-          safeSetItem('language', pathLang)
-        } else {
-          // Если язык не указан в URL, определяем из localStorage или браузера
-          const savedLang = safeGetItem('language')
-
+      if (pathLang === 'ru' || pathLang === 'en') {
+        setLanguage(pathLang)
+        safeSetItem('language', pathLang)
+      } else {
+        const savedLang = safeGetItem('language')
         if (savedLang && (savedLang === 'ru' || savedLang === 'en')) {
-          console.log('🌐 [LanguageProvider] Setting lang from localStorage:', savedLang)
           setLanguage(savedLang)
         } else {
-          // Определяем по языку браузера
           const browserLang = navigator.language.toLowerCase()
           const detectedLang = browserLang.startsWith('ru') ? 'ru' : 'en'
-          console.log('🌐 [LanguageProvider] Setting lang from browser:', detectedLang)
           setLanguage(detectedLang)
           safeSetItem('language', detectedLang)
         }
       }
     } catch (error) {
       console.error('Error in language detection:', error)
-      // Fallback to Russian
       setLanguage('ru')
     }
   }, [location.pathname])
 
-  // Функция для получения перевода по ключу
   const t = (key) => {
     if (typeof key !== 'string' || key.length === 0) {
       if (import.meta.env.DEV) {
@@ -79,127 +58,15 @@ export function LanguageProvider({ children }) {
       if (value && typeof value === 'object') {
         value = value[k]
       } else {
-        return key // Возвращаем ключ, если перевод не найден
+        return key
       }
     }
 
     return value || key
   }
 
-  // Функция смены языка
-  const changeLanguage = (newLang) => {
-    try {
-      if (newLang !== 'ru' && newLang !== 'en') return
-
-      const currentPath = location.pathname
-      const currentLang = currentPath.split('/')[1]
-
-      if (currentLang === newLang) return
-
-      const nextUrlState = {
-        localeSwitch: true,
-        scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
-      }
-
-      const applyLocalePrefix = (pathname) => {
-        if (typeof pathname !== 'string' || pathname.length === 0) {
-          return `/${newLang}/`
-        }
-
-        const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`
-        if (normalized === '/') {
-          return `/${newLang}/`
-        }
-
-        if (normalized.startsWith('/ru/') || normalized.startsWith('/en/') || normalized === '/ru' || normalized === '/en') {
-          const replaced = normalized.replace(/^\/(ru|en)(?=\/|$)/, `/${newLang}`)
-          return replaced === `/${newLang}` ? `/${newLang}/` : replaced
-        }
-
-        return `/${newLang}${normalized}`
-      }
-
-      const navigateLocalized = (pathname) => {
-        navigate(`${pathname}${location.search}${location.hash}`, { state: nextUrlState })
-        safeSetItem('language', newLang)
-      }
-
-      const findTranslatedSlug = (items, translationKey, targetLanguage) => {
-        if (!translationKey || !Array.isArray(items) || items.length === 0) {
-          return ''
-        }
-
-        const match = items.find((item) => (
-          (item?.translationKey || item?.translation_key) === translationKey
-          && (item?.language === targetLanguage || item?.lang === targetLanguage)
-          && item?.slug
-        ))
-
-        return match?.slug || ''
-      }
-
-      const readTranslationKeyForCurrentArticle = (slug) => {
-        const seeded = readInitialArticleDetail(slug, currentLang)
-        const cached = seeded || readCachedArticleDetail(slug, currentLang)
-        return cached?.translationKey || cached?.translation_key || ''
-      }
-
-      // Article detail page locale switch must be translation_key-driven.
-      const articleMatch = currentPath.match(/^\/(ru|en)\/articles\/([^/?#]+)/)
-      if (articleMatch) {
-        const slug = decodeURIComponent(articleMatch[2] || '')
-        const translationKey = readTranslationKeyForCurrentArticle(slug)
-
-        const seededTargetIndex = readInitialArticlesIndex(newLang)
-        const cachedTargetIndex = readCachedArticlesIndex()
-        const translatedFromCache = findTranslatedSlug(
-          seededTargetIndex.length ? seededTargetIndex : cachedTargetIndex,
-          translationKey,
-          newLang,
-        )
-
-        if (translatedFromCache) {
-          navigateLocalized(`/${newLang}/articles/${encodeURIComponent(translatedFromCache)}`)
-          return
-        }
-
-        // If cache is missing/stale, refresh the index once before falling back.
-        fetchArticles(newLang)
-          .then((items) => {
-            writeCachedArticlesIndex(items)
-            const translated = findTranslatedSlug(items, translationKey, newLang)
-            if (translated) {
-              navigateLocalized(`/${newLang}/articles/${encodeURIComponent(translated)}`)
-              return
-            }
-
-            // Only if there is truly no translation, fall back to the hub.
-            navigateLocalized(`/${newLang}/articles/`)
-          })
-          .catch(() => {
-            // As a last resort: keep UX safe (no broken article error).
-            navigateLocalized(`/${newLang}/articles/`)
-          })
-
-        return
-      }
-
-      // Если текущий путь начинается с языка, заменяем его
-      if (currentLang === 'ru' || currentLang === 'en') {
-        const newPath = applyLocalePrefix(currentPath)
-        navigateLocalized(newPath)
-      } else {
-        // Если языка нет в пути, добавляем новый язык
-        const newPath = applyLocalePrefix(currentPath)
-        navigateLocalized(newPath)
-      }
-    } catch (error) {
-      console.error('Error changing language:', error)
-    }
-  }
-
   return (
-    <LanguageContext.Provider value={{ language, t, changeLanguage }}>
+    <LanguageContext.Provider value={{ language, t }}>
       {children}
     </LanguageContext.Provider>
   )

@@ -11,6 +11,7 @@ import { useArticleDetail, useArticlesIndex } from '../contexts/ArticleStoreCont
 import { articleMatchesLanguage, filterArticlesForLanguage } from '../utils/articleLanguage'
 import { getLocalizedRouteUrl } from '../config/routeSeo'
 import { analytics, ANALYTICS_EVENTS } from '../utils/analytics'
+import { validateOgImageDimensions, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '../components/SEO'
 import './Articles.css'
 
 function pickCoverAlt(article, language, t) {
@@ -50,6 +51,15 @@ function ArticlePage() {
       analytics.trackArticleViewed(visibleArticle.slug, visibleArticle.translationKey)
     }
   }, [visibleArticle?.slug, visibleArticle?.translationKey])
+
+  useEffect(() => {
+    if (!visibleArticle?.coverImage) return
+    validateOgImageDimensions(visibleArticle.coverImage).then((dims) => {
+      if (dims && (dims.width !== OG_IMAGE_WIDTH || dims.height !== OG_IMAGE_HEIGHT)) {
+        console.warn(`[SEO] Article cover image has non-standard dimensions: ${dims.width}x${dims.height} (expected ${OG_IMAGE_WIDTH}x${OG_IMAGE_HEIGHT}) — ${visibleArticle.slug}`)
+      }
+    })
+  }, [visibleArticle?.coverImage, visibleArticle?.slug])
 
   useEffect(() => {
     const refreshKey = `${language}:${slug}`
@@ -94,22 +104,53 @@ function ArticlePage() {
       .slice(0, 3)
   }, [localizedRelatedArticles, slug])
 
-  const structuredData = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: articleTitle,
-    description: articleDescription,
-    author: visibleArticle?.author ? { '@type': 'Person', name: visibleArticle.author } : undefined,
-    datePublished: visibleArticle?.publishedAt || undefined,
-    mainEntityOfPage: canonicalUrl,
-    url: canonicalUrl,
-    image: visibleArticle?.coverImage ? [visibleArticle.coverImage] : undefined,
-    publisher: {
-      '@type': 'Organization',
-      name: 'QSEN.RU',
-      url: 'https://qsen.ru',
-    },
-  }), [visibleArticle?.author, visibleArticle?.coverImage, visibleArticle?.publishedAt, articleDescription, articleTitle, canonicalUrl])
+  const structuredData = useMemo(() => {
+    const baseUrl = `https://qsen.ru`
+    const articleSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: articleTitle,
+      description: articleDescription,
+      author: visibleArticle?.author ? { '@type': 'Person', name: visibleArticle.author } : undefined,
+      datePublished: visibleArticle?.publishedAt || undefined,
+      dateModified: visibleArticle?.updatedAt || undefined,
+      mainEntityOfPage: canonicalUrl,
+      url: canonicalUrl,
+      image: visibleArticle?.coverImage ? [visibleArticle.coverImage] : undefined,
+      publisher: {
+        '@type': 'Organization',
+        name: 'QSEN.RU',
+        url: baseUrl,
+      },
+    }
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: language === 'en' ? 'Home' : 'Главная',
+          item: `${baseUrl}/${language}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: language === 'en' ? 'Articles' : 'Статьи',
+          item: `${baseUrl}/${language}/articles`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: articleTitle,
+        },
+      ],
+    }
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [articleSchema, breadcrumbSchema],
+    }
+  }, [visibleArticle, language, articleTitle, articleDescription, canonicalUrl])
 
   return (
     <>
@@ -146,6 +187,7 @@ function ArticlePage() {
           errorTitle={t('articles.errorTitle')}
           errorDescription={error?.status === 404 ? t('articles.errors.notFound') : t('articles.errors.single')}
           onRetry={refetch}
+          language={language}
         >
           {visibleArticle && (
             <div className={`article-layout ${visibleRelatedArticles.length ? 'article-layout--with-related' : ''}`.trim()}>

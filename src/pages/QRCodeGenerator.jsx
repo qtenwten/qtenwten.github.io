@@ -4,11 +4,13 @@ import { useState, useEffect, useRef } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
+import InlineSpinner from '../components/InlineSpinner'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { useAsyncRequest } from '../hooks/useAsyncRequest'
 import { ResultActions, ResultMetric, ResultMetrics, ResultNotice, ResultSection, ResultSummary } from '../components/ResultSection'
 import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult, ToolSectionHeading } from '../components/ToolPageShell'
 import { CustomSelect } from '../components/CustomSelect'
+import { analytics } from '../utils/analytics'
 import './QRCodeGenerator.css'
 
 const QR_THEME_PRESETS = {
@@ -914,18 +916,19 @@ ${bgRect}  <g>
   }
 
   const downloadPDF = async (canvas) => {
-    const { jsPDF } = await import('jspdf')
+    const { PDFDocument } = await import('pdf-lib')
     const size = canvas.width / (window.devicePixelRatio || 1)
     const imgData = canvas.toDataURL('image/png')
+    const imgBytes = await fetch(imgData).then((r) => r.arrayBuffer())
 
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: [size, size],
-    })
+    const doc = await PDFDocument.create()
+    const img = await doc.embedPng(imgBytes)
+    const page = doc.addPage([size, size])
+    page.drawImage(img, { x: 0, y: 0, width: size, height: size })
 
-    pdf.addImage(imgData, 'PNG', 0, 0, size, size)
-    pdf.save(getQrFileName(qrType, qrForm, 'pdf'))
+    const pdfBytes = await doc.save()
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+    triggerDownload(blob, getQrFileName(qrType, qrForm, 'pdf'))
   }
 
   const handleDownload = () => {
@@ -936,6 +939,10 @@ ${bgRect}  <g>
     }
 
     setShowFormatDropdown(false)
+
+    analytics.trackQRGenerated(downloadFormat, Boolean(logoDataUrl), {
+      qr_type: qrType,
+    })
 
     switch (downloadFormat) {
       case 'svg':
@@ -1382,7 +1389,9 @@ ${bgRect}  <g>
                 <div className="qr-preview-stage" style={{ '--qr-preview-size': `${qrSize}px` }}>
                   <canvas ref={canvasRef} className={`qr-preview-canvas ${shouldShowQR ? 'is-visible' : 'is-hidden'}`} />
 
-                  {!shouldShowQR && (
+                  {qrCodeLib === null ? (
+                    <InlineSpinner label={t('qrCodeGenerator.loading')} />
+                  ) : !shouldShowQR && (
                     <div className={generationError || hasBlockingValidation ? 'qr-preview-placeholder' : 'qr-preview-empty'}>
                       <Icon name="qr_code" size={48} className="qr-preview-icon" />
                       <p>{generationError || validationMessage || t('qrCodeGenerator.emptyState')}</p>

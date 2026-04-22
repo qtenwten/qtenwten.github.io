@@ -1,3 +1,58 @@
+import { normalizeUrl } from './urlUtils'
+
+function isPrivateIPv4(address) {
+  const octets = address.split('.').map(Number)
+  if (octets.length !== 4 || octets.some(Number.isNaN)) return false
+  const [a, b] = octets
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 100 && b >= 64 && b <= 127) ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 198 && (b === 18 || b === 19)) ||
+    a >= 224
+  )
+}
+
+function isPrivateIPv6(address) {
+  const normalized = address.toLowerCase()
+  if (normalized === '::1' || normalized === '::') return true
+  if (normalized.startsWith('::ffff:')) return isPrivateIPv4(normalized.slice(7))
+  return (
+    normalized.startsWith('fc') ||
+    normalized.startsWith('fd') ||
+    normalized.startsWith('fe8') ||
+    normalized.startsWith('fe9') ||
+    normalized.startsWith('fea') ||
+    normalized.startsWith('feb') ||
+    normalized.startsWith('ff')
+  )
+}
+
+const BLOCKED_HOSTNAMES = new Set(['localhost'])
+const BLOCKED_SUFFIXES = ['.localhost', '.local', '.internal', '.home.arpa']
+
+function isPrivateHost(hostname) {
+  const normalized = hostname.toLowerCase()
+  if (BLOCKED_HOSTNAMES.has(normalized)) return true
+  if (BLOCKED_SUFFIXES.some((s) => normalized.endsWith(s))) return true
+  if (netIsIP(normalized)) {
+    return netIsIP(normalized) === 4 ? isPrivateIPv4(normalized) : isPrivateIPv6(normalized)
+  }
+  return false
+}
+
+function netIsIP(addr) {
+  if (!addr) return 0
+  const parts = addr.split('.')
+  if (parts.length === 4 && parts.every((p) => /^\d+$/.test(p))) return 4
+  if (addr.includes(':')) return 6
+  return 0
+}
+
 export function createAnalyzeSEO(getMessage) {
   async function analyzeSEO(url) {
     const msg = (key, ...args) => {
@@ -8,10 +63,14 @@ export function createAnalyzeSEO(getMessage) {
     }
 
     try {
-      const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`
+      const normalizedUrl = normalizeUrl(url)
       const urlObj = new URL(normalizedUrl)
       if (!urlObj.protocol.startsWith('http')) {
         return { error: msg('invalidProtocol') }
+      }
+
+      if (isPrivateHost(urlObj.hostname)) {
+        return { error: msg('privateHost') }
       }
 
       const response = await fetch(normalizedUrl, { mode: 'cors' })
@@ -32,7 +91,7 @@ export function createAnalyzeSEO(getMessage) {
         message: msg('cors'),
         url: url,
         details: {
-          finalUrl: /^https?:\/\//i.test((url || '').trim()) ? url.trim() : `https://${(url || '').trim()}`,
+          finalUrl: normalizeUrl(url),
           status: null,
           ok: false,
           contentType: null,
@@ -226,6 +285,7 @@ export function createAnalyzeSEO(getMessage) {
 const DEFAULT_MESSAGES = {
   ru: {
     invalidProtocol: 'URL должен начинаться с http:// или https://',
+    privateHost: 'Анализ локальных и внутренних адресов невозможен.',
     cors: 'Невозможно проанализировать сайт из-за ограничений CORS. Для анализа внешних сайтов используйте расширение браузера или серверный инструмент.',
     missingTitle: 'Отсутствует тег <title>',
     addTitle: 'Добавьте уникальный заголовок страницы (50-60 символов)',
@@ -256,6 +316,7 @@ const DEFAULT_MESSAGES = {
   },
   en: {
     invalidProtocol: 'URL must start with http:// or https://',
+    privateHost: 'Analysis of local and internal network addresses is not possible.',
     cors: 'Unable to analyze this website because of CORS restrictions. Use a browser extension or the server-side audit tool for external websites.',
     missingTitle: 'Missing <title> tag',
     addTitle: 'Add a unique page title (50-60 characters)',

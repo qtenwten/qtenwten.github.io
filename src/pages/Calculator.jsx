@@ -8,6 +8,7 @@ import ModeSwitcher from '../components/calculator/ModeSwitcher'
 import CalculatorPanel from '../components/calculator/CalculatorPanel'
 import HistoryPanel from '../components/calculator/HistoryPanel'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
+import { analytics } from '../utils/analytics'
 import '../styles/calculator.css'
 
 const GraphPanel = lazy(() => import('../components/calculator/GraphPanel'))
@@ -29,6 +30,10 @@ function Calculator() {
   const handleHistoryAdd = (item) => {
     if (history[0] && JSON.stringify(history[0]) === JSON.stringify(item)) {
       return
+    }
+
+    if (item.type === 'calculation') {
+      analytics.trackCalculatorUsed(item.expression, String(item.result))
     }
 
     const newHistory = [item, ...history.slice(0, 19)]

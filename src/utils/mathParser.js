@@ -50,18 +50,30 @@ export async function calculateExpression(expression) {
       return { error: 'Введите выражение' }
     }
 
-    const parser = await getConfiguredParser()
-    const result = parser.evaluate(normalizeExpression(expression))
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    if (typeof result === 'number') {
-      if (!isFinite(result)) {
-        return { error: 'Результат вне допустимого диапазона' }
+    try {
+      const parser = await getConfiguredParser()
+      const result = parser.evaluate(normalizeExpression(expression))
+      clearTimeout(timeoutId)
+
+      if (typeof result === 'number') {
+        if (!isFinite(result)) {
+          return { error: 'Результат вне допустимого диапазона' }
+        }
+
+        return { result: parseFloat(result.toFixed(10)) }
       }
 
-      return { result: parseFloat(result.toFixed(10)) }
+      return { result: String(result) }
+    } catch (innerErr) {
+      clearTimeout(timeoutId)
+      if (innerErr.name === 'AbortError' || innerErr.message?.includes('abort')) {
+        return { error: 'Превышено время вычисления' }
+      }
+      return { error: 'Ошибка вычисления' }
     }
-
-    return { result: String(result) }
   } catch {
     return { error: 'Ошибка вычисления' }
   }

@@ -7,6 +7,7 @@ export function LoadingState({
   errorTitle,
   errorDescription,
   onRetry,
+  language = 'ru',
   children,
   className = '',
 }) {
@@ -28,12 +29,13 @@ export function LoadingState({
   }
 
   if (status === 'error' && error) {
+    const isEnglish = language === 'en'
     return (
       <div className={`loading-state loading-state--error ${className}`}>
         <div className="loading-state__error">
           <span className="loading-state__error-icon">⚠️</span>
           <h2 className="loading-state__error-title">
-            {errorTitle || (typeof window !== 'undefined' && window.location.pathname.startsWith('/en')
+            {errorTitle || (isEnglish
               ? 'Could not load data'
               : 'Не удалось загрузить данные')}
           </h2>
@@ -42,9 +44,7 @@ export function LoadingState({
           )}
           {onRetry && (
             <button className="loading-state__retry-btn" onClick={onRetry}>
-              {typeof window !== 'undefined' && window.location.pathname.startsWith('/en')
-                ? 'Try again'
-                : 'Попробовать снова'}
+              {isEnglish ? 'Try again' : 'Попробовать снова'}
             </button>
           )}
         </div>
@@ -55,11 +55,4 @@ export function LoadingState({
   return children || null
 }
 
-export function LoadingSpinner({ label, size = 'medium' }) {
-  return (
-    <div className={`loading-spinner loading-spinner--${size}`} role="status">
-      <span className="loading-spinner__circle" aria-hidden="true" />
-      {label && <span className="loading-spinner__label">{label}</span>}
-    </div>
-  )
-}
+
