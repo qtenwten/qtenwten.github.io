@@ -59,7 +59,7 @@ export function preloadRoute(path) {
 }
 
 export function preloadLikelyRoutes() {
-  ;['/vat-calculator', '/number-to-words', '/seo-audit-pro', '/feedback', '/search'].forEach((path) => {
+  ;['/vat-calculator', '/number-to-words', '/seo-audit-pro', '/feedback'].forEach((path) => {
     preloadRoute(path)
   })
 }
