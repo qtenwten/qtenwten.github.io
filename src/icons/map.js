@@ -9,6 +9,7 @@ import {
   Dice5,
   Eye,
   EyeOff,
+  ExternalLink,
   FileText,
   LayoutDashboard,
   Lightbulb,
@@ -50,4 +51,5 @@ export const iconMap = {
   visibility: Eye,
   visibility_off: EyeOff,
   refresh: RefreshCw,
+  open_in_new: ExternalLink,
 }
