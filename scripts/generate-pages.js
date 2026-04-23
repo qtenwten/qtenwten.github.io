@@ -12,25 +12,10 @@ const distPath = path.resolve(__dirname, '../dist')
 const publicPath = path.resolve(__dirname, '../public')
 const templatePath = path.join(distPath, 'index.html')
 const localesPath = path.resolve(__dirname, '../src/locales')
-const headerLogoPath = path.resolve(__dirname, '../src/assets/qsen-logo-transparent.png')
 const ROOT_REDIRECT_URL = 'https://qsen.ru/ru/'
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 20000
-// Find the actual hashed logo filename from the built assets directory.
-// Vite adds content hashes to imported images, so we must use the exact
-// hashed filename to match what React renders during hydration.
-function getHeaderLogoPath() {
-  const assetsDir = path.join(distPath, 'assets')
-  if (!fs.existsSync(assetsDir)) {
-    return '/assets/qsen-logo-transparent.png'
-  }
-  const files = fs.readdirSync(assetsDir).filter((f) => f.startsWith('qsen-logo-transparent-') && f.endsWith('.png'))
-  if (files.length > 0) {
-    return `/assets/${files[0]}`
-  }
-  return '/assets/qsen-logo-transparent.png'
-}
-const HEADER_LOGO_PATH = getHeaderLogoPath()
+const HEADER_LOGO_PATH = '/qsen-logo.png'
 
 const localeMessages = {
   ru: JSON.parse(fs.readFileSync(path.join(localesPath, 'ru.json'), 'utf-8')),
