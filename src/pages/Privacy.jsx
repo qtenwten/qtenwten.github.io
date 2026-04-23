@@ -90,26 +90,30 @@ function Privacy() {
               <section className="legal-section">
                 <h2>5. Файлы cookies и технологии веб-аналитики</h2>
 
-                <h3>5.1. Яндекс.Метрика</h3>
-                <p>5.1.1. Для сбора и анализа статистики посещаемости Сайта используется сервис Яндекс.Метрика (далее — «Метрика»), предоставляемый компанией ООО «Яндекс» (ОГРН 1027700132195, ИНН 7736207543, адрес: 119021, г. Москва, ул. Льва Толстого, д. 16) (далее — «Яндекс»).</p>
-                <p>5.1.2. Метрика собирает следующие данные:</p>
+                <h3>5.1. Сторонние сервисы веб-аналитики</h3>
+                <p>5.1.1. Для сбора и анализа статистики посещаемости Сайта могут использоваться сторонние сервисы веб-аналитики (далее — «Сервисы аналитики»).</p>
+                <p>5.1.2. Сервисы аналитики собирают и обрабатывают следующие данные:</p>
                 <ul>
-                  <li>информацию о поведении Пользователя на Сайте (просмотренные страницы, время, проведённое на Сайте, переходы между страницами);</li>
-                  <li>технические данные об устройстве и браузере Пользователя;</li>
-                  <li>IP-адрес Пользователя (доступен в обезличенном виде для определения региона);</li>
-                  <li>данные, передаваемые браузером Пользователя в HTTP-заголовках.</li>
+                  <li>информацию о поведении Пользователя на Сайте (просмотренные страницы, время, проведённое на Сайте, переходы между страницами, клики, прокрутка страниц, движение курсора мыши);</li>
+                  <li>технические данные об устройстве Пользователя (тип устройства, операционная система, разрешение экрана);</li>
+                  <li>тип и версию браузера Пользователя;</li>
+                  <li>IP-адрес Пользователя (может использоваться для определения географического региона);</li>
+                  <li>данные, передаваемые браузером Пользователя в HTTP-заголовках;</li>
+                  <li>информацию об источнике перехода на Сайт (прямой вход, поисковая система, ссылка с другого сайта);</li>
+                  <li>данные, передаваемые через файлы cookies и иные технологии отслеживания.</li>
                 </ul>
-                <p>5.1.3. Яндекс обрабатывает данные в соответствии с Пользовательским соглашением Яндекса (<a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener noreferrer">https://yandex.ru/legal/confidential/</a>) и Политикой конфиденциальности Яндекса (<a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener noreferrer">https://yandex.ru/legal/confidential/</a>).</p>
-                <p>5.1.4. При использовании Метрики применяется технология получения данных о посетителях сайтов — JavaScript-cчётчик (Webvisor). Технология Webvisor позволяет собирать информацию о действиях Пользователя на Сайте, включая движение мыши, клики, прокрутку страниц и иные действия.</p>
-                <p>5.1.5. Яндекс использует файлы cookies первых и третьих лиц для:</p>
+                <p>5.1.3. Сервисы аналитики используют собранные данные для следующих целей:</p>
                 <ul>
-                  <li>запоминания настроек отображения страниц (например, язык интерфейса);</li>
-                  <li>анализа действий Пользователя на Сайте;</li>
-                  <li>определения активности Пользователя на различных страницах Сайта;</li>
-                  <li>определения источников перехода на Сайт;</li>
-                  <li>оценки эффективности размещения рекламы.</li>
+                  <li>анализ посещаемости и поведения Пользователей на Сайте;</li>
+                  <li>определение популярности разделов и функций Сайта;</li>
+                  <li>выявление технических проблем и ошибок в работе Сайта;</li>
+                  <li>оптимизация работы Сайта и улучшение пользовательского опыта;</li>
+                  <li>определение эффективности маркетинговых мероприятий и рекламных кампаний;</li>
+                  <li>формирование статистических отчётов для Администрации;</li>
+                  <li>обеспечение безопасности и выявление подозрительной активности.</li>
                 </ul>
-                <p>5.1.6. Для отказа от использования cookies Яндексом Пользователь может воспользоваться настройками своего браузера или специальными настройками Яндекс.Метрики. Отказ от cookies может повлиять на функциональность отдельных элементов Сайта.</p>
+                <p>5.1.4. Сервисы аналитики могут использовать файлы cookies первых и третьих лиц, а также иные технологии отслеживания (веб-маяки, пиксельные теги, JavaScript-счётчики) для сбора и обработки данных. Подробная информация о принципах работы и политике конфиденциальности конкретных сервисов аналитики доступна на их официальных сайтах.</p>
+                <p>5.1.5. Для отказа от использования cookies сторонними сервисами Пользователь может воспользоваться настройками своего браузера или специальными инструментами, предоставляемыми сервисами аналитики. Отказ от cookies может повлиять на функциональность отдельных элементов Сайта.</p>
 
                 <h3>5.2. Локальное хранение данных браузера</h3>
                 <p>5.2.1. Для сохранения пользовательских настроек Сайт использует механизмы хранения данных браузера (localStorage и sessionStorage):</p>
@@ -140,7 +144,7 @@ function Privacy() {
                   <li><strong>Обработка, необходимая для исполнения договора</strong> (пункт 5 части 1 статьи 6 ФЗ-152) — при использовании Пользователем сервисов Сайта;</li>
                   <li><strong>Осуществление обработки, необходимой для обеспечения работоспособности Сайта</strong> (пункт 2 части 1 статьи 6 ФЗ-152) — для технического функционирования Сайта и обеспечения связи с Пользователем.</li>
                 </ul>
-                <p>6.2. Обработка данных с использованием Метрики осуществляется на основании согласия Пользователя с условиями настоящей Политики и Пользовательского соглашения Яндекса.</p>
+                <p>6.2. Обработка данных с использованием сервисов веб-аналитики осуществляется на основании согласия Пользователя с условиями настоящей Политики.</p>
               </section>
 
               <section className="legal-section">
@@ -150,7 +154,7 @@ function Privacy() {
                 <ul>
                   <li>получения явного согласия Пользователя на такие действия;</li>
                   <li>требования законодательства Российской Федерации;</li>
-                  <li>необходимости передачи данных для функционирования сервисов Сайта (в том числе Метрики), при условии соблюдения третьими лицами требований законодательства о защите персональных данных.</li>
+                  <li>необходимости передачи данных для функционирования сервисов Сайта (в том числе сервисов веб-аналитики), при условии соблюдения третьими лицами требований законодательства о защите персональных данных.</li>
                 </ul>
                 <p>7.3. Персональные данные, предоставленные через форму обратной связи, обрабатываются в течение срока, необходимого для рассмотрения обращения Пользователя, но не более 3 (трёх) лет с момента последнего взаимодействия.</p>
                 <p>7.4. Данные, собираемые через Метрику, хранятся на серверах Яндекса в соответствии с политикой Яндекса.</p>
@@ -185,10 +189,31 @@ function Privacy() {
               </section>
 
               <section className="legal-section">
-                <h2>10. Использование данных внешними сервисами</h2>
-                <p>10.1. При использовании отдельных функций Сайта (в частности, SEO-аудит) запросы могут направляться к внешним API и веб-сервисам третьих лиц. Такие сервисы имеют собственные политики конфиденциальности и самостоятельно определяют цели и способы обработки данных.</p>
-                <p>10.2. Администрация не несёт ответственности за действия внешних сервисов и рекомендует Пользователям ознакомиться с условиями использования и политиками конфиденциальности таких сервисов.</p>
-                <p>10.3. Переход Пользователя на внешние ресурсы осуществляется по собственному усмотрению Пользователя.</p>
+                <h2>10. Передача данных сторонним сервисам и внешние API</h2>
+                <p>10.1. Для обеспечения отдельных функций Сайта данные Пользователя могут передаваться сторонним сервисам и внешним API. Ниже описаны категории таких передач и цели передачи данных:</p>
+
+                <h3>10.1.1. Сервисы веб-аналитики</h3>
+                <p>При работе сервисов веб-аналитики (раздел 5.1 настоящей Политики) данные о поведении Пользователя на Сайте, технические данные устройства и браузера, а также данные cookies передаются сторонним провайдерам этих сервисов для сбора статистики и анализа посещаемости.</p>
+
+                <h3>10.1.2. Сервисы проверки SEO и работоспособности сайтов</h3>
+                <p>При использовании функций SEO-анализа сайтов URL проверяемого сайта и связанные данные передаются внешним API для получения информации о техническом состоянии, индексации и позициях сайта в поисковых системах.</p>
+
+                <h3>10.1.3. Сервисы генерации QR-кодов и коротких ссылок</h3>
+                <p>При использовании генератора QR-кодов или сокращателя ссылок введённые Пользователем данные (текст, URL) могут передаваться внешним сервисам для генерации соответствующего изображения или сокращённой ссылки.</p>
+
+                <h3>10.1.4. Сервисы обратной связи</h3>
+                <p>При отправке обращения через форму обратной связи данные Пользователя (имя, email, текст обращения) передаются внешнему сервису для обработки и доставки сообщения Администрации.</p>
+
+                <p>10.2. Конкретный состав передаваемых данных зависит от используемой функции Сайта и может включать:</p>
+                <ul>
+                  <li>URL или текст, введённые Пользователем для обработки;</li>
+                  <li>IP-адрес и технические данные браузера Пользователя;</li>
+                  <li>данные о действиях Пользователя на Сайте (для аналитических сервисов);</li>
+                  <li>данные формы обратной связи (имя, email, текст обращения).</li>
+                </ul>
+                <p>10.3. Все сторонние сервисы, используемые на Сайте, имеют собственные политики конфиденциальности и самостоятельно определяют цели и способы обработки передаваемых данных. Администрация не несёт ответственности за действия сторонних сервисов и рекомендует Пользователям ознакомиться с условиями использования и политиками конфиденциальности таких сервисов.</p>
+                <p>10.4. Передача данных сторонним сервисам осуществляется на основании согласия Пользователя с условиями настоящей Политики. Используя функции Сайта, требующие обращения к внешним сервисам, Пользователь выражает согласие на передачу необходимых данных.</p>
+                <p>10.5. Переход Пользователя на внешние ресурсы по ссылкам с Сайта осуществляется по собственному усмотрению Пользователя.</p>
               </section>
 
               <section className="legal-section">
@@ -284,16 +309,30 @@ function Privacy() {
               <section className="legal-section">
                 <h2>5. Cookies and Web Analytics</h2>
 
-                <h3>5.1. Yandex.Metrica</h3>
-                <p>5.1.1. The Yandex.Metrica service (hereinafter — "Metrica") provided by Yandex LLC (Primary State Registration Number 1027700132195, Tax ID 7736207543, address: 119021, Moscow, Lva Tolstogo St., Bld. 16) (hereinafter — "Yandex") is used to collect and analyze Website visit statistics.</p>
-                <p>5.1.2. Metrica collects the following data:</p>
+                <h3>5.1. Third-Party Analytics Services</h3>
+                <p>5.1.1. Third-party web analytics services (hereinafter — "Analytics Services") may be used to collect and analyze Website traffic statistics.</p>
+                <p>5.1.2. Analytics Services collect and process the following data:</p>
                 <ul>
-                  <li>information about User behavior on the Website (viewed pages, time spent on the Website, transitions between pages);</li>
-                  <li>technical data about the User's device and browser;</li>
-                  <li>User's IP address (available in anonymized form for region determination);</li>
-                  <li>data transmitted by the User's browser in HTTP headers.</li>
+                  <li>information about User behavior on the Website (viewed pages, time spent on the Website, page transitions, clicks, scrolling, cursor movement);</li>
+                  <li>technical data about the User's device (device type, operating system, screen resolution);</li>
+                  <li>browser type and version;</li>
+                  <li>User's IP address (may be used for geographical region determination);</li>
+                  <li>data transmitted by the User's browser in HTTP headers;</li>
+                  <li>information about the source of transition to the Website (direct access, search engine, link from another site);</li>
+                  <li>data transmitted through cookies and other tracking technologies.</li>
                 </ul>
-                <p>5.1.3. Yandex processes data in accordance with the Yandex User Agreement (<a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener noreferrer">https://yandex.ru/legal/confidential/</a>) and Yandex Privacy Policy (<a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener noreferrer">https://yandex.ru/legal/confidential/</a>).</p>
+                <p>5.1.3. Analytics Services use collected data for the following purposes:</p>
+                <ul>
+                  <li>analysis of Website traffic and User behavior;</li>
+                  <li>determining the popularity of sections and functions;</li>
+                  <li>identifying technical problems and errors;</li>
+                  <li>Website optimization and user experience improvement;</li>
+                  <li>measuring the effectiveness of marketing activities and advertising campaigns;</li>
+                  <li>generating statistical reports for the Administration;</li>
+                  <li>ensuring security and detecting suspicious activity.</li>
+                </ul>
+                <p>5.1.4. Analytics Services may use first-party and third-party cookies, as well as other tracking technologies (web beacons, pixel tags, JavaScript counters) for data collection and processing. Detailed information about the operation principles and privacy policies of specific analytics services is available on their official websites.</p>
+                <p>5.1.5. To opt out of third-party analytics services using cookies, the User may use browser settings or special tools provided by analytics services. Disabling cookies may affect the functionality of certain Website elements.</p>
 
                 <h3>5.2. Local Browser Storage</h3>
                 <p>5.2.1. To save user preferences, the Website uses browser storage mechanisms (localStorage and sessionStorage):</p>
@@ -321,7 +360,7 @@ function Privacy() {
                 <ul>
                   <li>obtaining explicit User consent for such actions;</li>
                   <li>requirement of the Russian Federation legislation;</li>
-                  <li>necessity of data transfer for Website services functioning (including Metrica), provided that third parties comply with personal data protection legislation requirements.</li>
+                  <li>necessity of data transfer for Website services functioning (including analytics services), provided that third parties comply with personal data protection legislation requirements.</li>
                 </ul>
                 <p>7.3. Personal data provided through the feedback form is processed during the time necessary to consider the User's request, but no more than 3 (three) years from the last interaction.</p>
               </section>
@@ -351,7 +390,35 @@ function Privacy() {
               </section>
 
               <section className="legal-section">
-                <h2>10. Changes to the Policy</h2>
+                <h2>10. Data Transfer to Third-Party Services and External APIs</h2>
+                <p>10.1. To provide certain Website functions, User data may be transferred to third-party services and external APIs. The categories of such transfers and purposes of data transfer are described below:</p>
+
+                <h3>10.1.1. Web Analytics Services</h3>
+                <p>When web analytics services are operating (Section 5.1 of this Policy), data about User behavior on the Website, device and browser technical data, and cookie data are transferred to third-party providers of these services for statistics collection and traffic analysis.</p>
+
+                <h3>10.1.2. SEO and Website Availability Check Services</h3>
+                <p>When using SEO analysis features, the URL of the website being checked and related data are transferred to external APIs to obtain information about the technical condition, indexing, and search engine positions of the website.</p>
+
+                <h3>10.1.3. QR Code and Short Link Generation Services</h3>
+                <p>When using the QR code generator or URL shortener, data entered by the User (text, URL) may be transferred to external services to generate the corresponding image or shortened link.</p>
+
+                <h3>10.1.4. Feedback Services</h3>
+                <p>When submitting a request through the feedback form, User data (name, email, message text) is transferred to an external service for processing and delivering the message to the Administration.</p>
+
+                <p>10.2. The specific composition of transferred data depends on the Website function being used and may include:</p>
+                <ul>
+                  <li>URL or text entered by the User for processing;</li>
+                  <li>User's IP address and browser technical data;</li>
+                  <li>data about User actions on the Website (for analytics services);</li>
+                  <li>feedback form data (name, email, message text).</li>
+                </ul>
+                <p>10.3. All third-party services used on the Website have their own privacy policies and independently determine the purposes and methods of data processing. The Administration is not responsible for the actions of third-party services and recommends that Users familiarize themselves with the terms of use and privacy policies of such services.</p>
+                <p>10.4. Data transfer to third-party services is carried out based on the User's consent to this Policy. By using Website functions that require access to external services, the User consents to the transfer of necessary data.</p>
+                <p>10.5. The User's transition to external resources via links on the Website is at the User's own discretion.</p>
+              </section>
+
+              <section className="legal-section">
+                <h2>11. Changes to the Policy</h2>
                 <p>10.1. The Administration reserves the right to change this Policy at any time without prior notice to the User.</p>
                 <p>10.2. The new version of the Policy takes effect from the moment it is posted on the Website, unless otherwise provided by the new version.</p>
                 <p>10.3. Continued use of the Website after changes to the Policy constitutes the User's consent to the new version of the Policy.</p>
