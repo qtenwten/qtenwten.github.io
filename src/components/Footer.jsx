@@ -35,6 +35,24 @@ function Footer() {
           >
             {t('nav.articles')}
           </Link>
+          <Link
+            to={`/${language}/terms`}
+            className="footer-link"
+            onMouseEnter={() => preloadRoute('/terms')}
+            onFocus={() => preloadRoute('/terms')}
+            onTouchStart={() => preloadRoute('/terms')}
+          >
+            {t('footer.terms')}
+          </Link>
+          <Link
+            to={`/${language}/privacy`}
+            className="footer-link"
+            onMouseEnter={() => preloadRoute('/privacy')}
+            onFocus={() => preloadRoute('/privacy')}
+            onTouchStart={() => preloadRoute('/privacy')}
+          >
+            {t('footer.privacy')}
+          </Link>
         </nav>
         <p className="footer-copyright">{t('footer.copyright')}</p>
       </div>
