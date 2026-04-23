@@ -27,6 +27,8 @@ export const ArticlesIndex = createLazyPage(() => import('../pages/ArticlesIndex
 export const ArticlePage = createLazyPage(() => import('../pages/ArticlePage'))
 export const NotFound = createLazyPage(() => import('../pages/NotFound'))
 export const SearchResults = createLazyPage(() => import('../pages/SearchResults'))
+export const Terms = createLazyPage(() => import('../pages/Terms'))
+export const Privacy = createLazyPage(() => import('../pages/Privacy'))
 
 const routePreloaders = {
   '/': Home.preload,
@@ -45,6 +47,8 @@ const routePreloaders = {
   '/feedback': Feedback.preload,
   '/password-generator': PasswordGenerator.preload,
   '/articles': ArticlesIndex.preload,
+  '/terms': Terms.preload,
+  '/privacy': Privacy.preload,
 }
 
 export function preloadRoute(path) {

@@ -7,6 +7,7 @@ import AppErrorBoundary from './components/AppErrorBoundary'
 import RouteSkeleton from './components/RouteSkeleton'
 import PageTransition from './components/PageTransition'
 import PageViewTracker from './components/PageViewTracker'
+import CookieConsent from './components/CookieConsent'
 import { useLanguage } from './contexts/LanguageContext'
 import { ArticleStoreProvider } from './contexts/ArticleStoreContext'
 import { BreadcrumbsProvider } from './contexts/BreadcrumbsContext'
@@ -32,6 +33,8 @@ import {
   ArticlePage,
   NotFound,
   SearchResults,
+  Terms,
+  Privacy,
   preloadLikelyRoutes,
 } from './routes/lazyPages'
 
@@ -203,6 +206,11 @@ function App() {
                 <Route path="/ru/articles/:slug" element={<ArticlePage />} />
                 <Route path="/en/articles/:slug" element={<ArticlePage />} />
 
+                <Route path="/ru/terms" element={<Terms />} />
+                <Route path="/en/terms" element={<Terms />} />
+                <Route path="/ru/privacy" element={<Privacy />} />
+                <Route path="/en/privacy" element={<Privacy />} />
+
                 {/* Редиректы со старых URL без языка на /ru */}
                 {Object.entries(LEGACY_ROUTE_REDIRECTS).map(([fromPath, toPath]) => (
                   <Route key={fromPath} path={fromPath} element={<Navigate to={toPath} replace />} />
@@ -218,6 +226,7 @@ function App() {
           </Suspense>
         </main>
         <Footer />
+        <CookieConsent />
       </AppErrorBoundary>
     </BreadcrumbsProvider>
     </ArticleStoreProvider>
