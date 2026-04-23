@@ -69,11 +69,12 @@ function Header({ searchValue, onSearchChange }) {
           <Link
             to={`/${routeLanguage}/articles/`}
             className="header-nav-link"
+            aria-label={t('nav.articles')}
             onMouseEnter={() => preloadRoute('/articles')}
             onFocus={() => preloadRoute('/articles')}
             onTouchStart={() => preloadRoute('/articles')}
           >
-            <Icon name="article" size={16} />
+            <Icon name="article" size={16} aria-hidden="true" />
             <span>{t('nav.articles')}</span>
           </Link>
 
