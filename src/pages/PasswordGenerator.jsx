@@ -179,6 +179,10 @@ function PasswordGenerator() {
         { q: t('passwordGenerator.info.faqList.q3'), a: t('passwordGenerator.info.faqList.a3') },
         { q: t('passwordGenerator.info.faqList.q4'), a: t('passwordGenerator.info.faqList.a4') },
         { q: t('passwordGenerator.info.faqList.q5'), a: t('passwordGenerator.info.faqList.a5') },
+        { q: t('passwordGenerator.info.dictationFaqList.q1'), a: t('passwordGenerator.info.dictationFaqList.a1') },
+        { q: t('passwordGenerator.info.dictationFaqList.q2'), a: t('passwordGenerator.info.dictationFaqList.a2') },
+        { q: t('passwordGenerator.info.dictationFaqList.q3'), a: t('passwordGenerator.info.dictationFaqList.a3') },
+        { q: t('passwordGenerator.info.dictationFaqList.q4'), a: t('passwordGenerator.info.dictationFaqList.a4') },
       ]
     : []
 
@@ -392,6 +396,33 @@ function PasswordGenerator() {
             <li>{t('passwordGenerator.info.formatScenarios.reading')}</li>
             <li>{t('passwordGenerator.info.formatScenarios.comparing')}</li>
           </ul>
+
+          <h3>{t('passwordGenerator.info.dictationTitle')}</h3>
+          <p>{t('passwordGenerator.info.dictationDescription')}</p>
+
+          <h4>{t('passwordGenerator.info.dictationWhenTitle')}</h4>
+          <ul>
+            <li>{t('passwordGenerator.info.dictationScenarios.anotherDevice')}</li>
+            <li>{t('passwordGenerator.info.dictationScenarios.deviceSetup')}</li>
+            <li>{t('passwordGenerator.info.dictationScenarios.noPaste')}</li>
+            <li>{t('passwordGenerator.info.dictationScenarios.mobileApp')}</li>
+            <li>{t('passwordGenerator.info.dictationScenarios.manualTyping')}</li>
+            <li>{t('passwordGenerator.info.dictationScenarios.doubleCheck')}</li>
+          </ul>
+
+          <h4>{t('passwordGenerator.info.dictationHowTitle')}</h4>
+          <ol>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step1')}</li>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step2')}</li>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step3')}</li>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step4')}</li>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step5')}</li>
+            <li>{t('passwordGenerator.info.dictationHowSteps.step6')}</li>
+          </ol>
+
+          <h4>{t('passwordGenerator.info.dictationSecurityTitle')}</h4>
+          <p>{t('passwordGenerator.info.dictationSecurityText')}</p>
+          <p>{t('passwordGenerator.info.dictationPrivacyText')}</p>
 
           <ToolFaq title={t('passwordGenerator.info.faqTitle')} items={faqItems} />
         </ToolDescriptionSection>

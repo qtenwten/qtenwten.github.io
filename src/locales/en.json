@@ -361,6 +361,40 @@
         "writing": "Writing the password down on paper",
         "reading": "Reading it aloud over a call or video",
         "comparing": "Comparing two passwords character by character to verify they match"
+      },
+      "dictationTitle": "Voice password dictation",
+      "dictationDescription": "Voice dictation helps you manually enter a generated password on another device or in an app where copy and paste is not convenient. Click \"Dictate\", and the browser will read the password in small character groups, making long passwords easier to type by hand.",
+      "dictationWhenTitle": "When voice dictation is useful",
+      "dictationScenarios": {
+        "anotherDevice": "Entering a password on another phone, tablet, or computer",
+        "deviceSetup": "Setting up Wi-Fi, a router, a TV, a console, or another device",
+        "noPaste": "Creating a password for an app that does not allow paste from clipboard",
+        "mobileApp": "Moving a password from a browser to a mobile app",
+        "manualTyping": "Typing a complex password manually without writing it down",
+        "doubleCheck": "Double-checking a generated password before saving it"
+      },
+      "dictationHowTitle": "How to use dictation",
+      "dictationHowSteps": {
+        "step1": "Choose the password length and character types",
+        "step2": "Click \"Generate\"",
+        "step3": "Optionally enable the xxxx-xxxx-xxxx-xxxx format",
+        "step4": "Click \"Dictate\"",
+        "step5": "Type the password manually while listening to the character groups",
+        "step6": "Click \"Stop\" to interrupt the voice playback"
+      },
+      "dictationSecurityTitle": "Security note",
+      "dictationSecurityText": "Use voice dictation only where nobody else can hear the password. Dictation is designed for convenient manual entry, but the password is still sensitive information. Avoid using it in public places, during screen sharing, or near other people.",
+      "dictationPrivacyText": "The password is generated in the browser. Dictation uses the browser and device speech features. QSEN does not send the password to its server or to external TTS APIs for voice playback.",
+      "dictationFaqTitle": "FAQ about voice dictation",
+      "dictationFaqList": {
+        "q1": "What is voice password dictation for?",
+        "a1": "It helps you manually type a generated password on another device or in an app where copy and paste is inconvenient. The password is read in small character groups.",
+        "q2": "Is password dictation safe?",
+        "a2": "It is safe when used in a private place. Do not use voice playback near other people, because the password will be spoken aloud.",
+        "q3": "Does dictation read formatting dashes?",
+        "a3": "No. Formatting dashes are used only for visual display. Dictation reads the original password characters in small groups.",
+        "q4": "Can I stop the voice playback?",
+        "a4": "Yes. While dictation is active, the button changes to \"Stop\", and you can interrupt playback at any time."
       }
     }
   },
