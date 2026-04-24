@@ -7,7 +7,7 @@ import Icon from '../components/Icon'
 import { ResultNotice } from '../components/ResultSection'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator'
-import { buildPasswordSpeechText, canUseSpeechSynthesis } from '../utils/passwordSpeech'
+import { buildPasswordSpeechText, canUseSpeechSynthesis, selectBestVoice } from '../utils/passwordSpeech'
 import { analytics } from '../utils/analytics'
 import './PasswordGenerator.css'
 
@@ -140,8 +140,15 @@ function PasswordGenerator() {
     const text = buildPasswordSpeechText(rawPassword, language)
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = language === 'ru' ? 'ru-RU' : 'en-US'
-    utterance.rate = 0.75
+    utterance.rate = 0.65
     utterance.pitch = 1
+    utterance.volume = 1
+
+    const voice = selectBestVoice(language)
+    if (voice) {
+      utterance.voice = voice
+    }
+
     utterance.onend = () => setIsSpeaking(false)
     utterance.onerror = () => setIsSpeaking(false)
 
@@ -223,14 +230,14 @@ function PasswordGenerator() {
           )}
 
           <div className="password-actions">
-            <button onClick={handleGenerate} className="btn-primary">
+            <button onClick={handleGenerate} className="password-action-btn generate-btn">
               <Icon name="refresh" size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
               {t('passwordGenerator.generate')}
             </button>
             <CopyButton text={displayPassword} analytics={{ toolSlug: 'password-generator', linkType: 'result' }} />
             <button
               onClick={handleSpeakPassword}
-              className={`dictate-btn${isSpeaking ? ' speaking' : ''}`}
+              className={`password-action-btn dictate-btn${isSpeaking ? ' speaking' : ''}`}
               disabled={!canSpeak}
               title={canSpeak ? t('passwordGenerator.dictationPrivacyHint') : t('passwordGenerator.speechNotSupported')}
             >
