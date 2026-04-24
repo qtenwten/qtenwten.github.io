@@ -20,9 +20,11 @@ import {
   RefreshCw,
   Rocket,
   Search,
+  Square,
   Tag,
   TrendingUp,
   Type,
+  Volume2,
   Wrench,
 } from 'lucide-react'
 
@@ -52,4 +54,6 @@ export const iconMap = {
   visibility_off: EyeOff,
   refresh: RefreshCw,
   open_in_new: ExternalLink,
+  volume_up: Volume2,
+  stop: Square,
 }

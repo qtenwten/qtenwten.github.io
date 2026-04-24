@@ -295,6 +295,10 @@
     "length": "Password length",
     "symbols": "characters",
     "withFormat": "with formatting",
+    "dictate": "Dictate",
+    "stopDictation": "Stop",
+    "speechNotSupported": "Speech synthesis is not supported in this browser",
+    "dictationPrivacyHint": "Use dictation only where nobody else can hear the password.",
     "options": {
       "lowercase": "Lowercase letters (a-z)",
       "uppercase": "Uppercase letters (A-Z)",

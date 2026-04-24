@@ -7,6 +7,7 @@ import Icon from '../components/Icon'
 import { ResultNotice } from '../components/ResultSection'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator'
+import { buildPasswordSpeechText, canUseSpeechSynthesis } from '../utils/passwordSpeech'
 import { analytics } from '../utils/analytics'
 import './PasswordGenerator.css'
 
@@ -26,6 +27,9 @@ function PasswordGenerator() {
   const [showPassword, setShowPassword] = useState(true)
   const [strength, setStrength] = useState({ score: 0, label: '', color: '' })
   const [generationError, setGenerationError] = useState('')
+  const [isSpeaking, setIsSpeaking] = useState(false)
+
+  const canSpeak = useMemo(() => canUseSpeechSynthesis(), [])
 
   const displayPassword = useMemo(() => {
     if (!rawPassword) return ''
@@ -124,6 +128,41 @@ function PasswordGenerator() {
     generateAndUpdate(newLength, options, strengthLabels)
   }
 
+  const handleSpeakPassword = () => {
+    if (!rawPassword) return
+
+    if (isSpeaking) {
+      speechSynthesis.cancel()
+      setIsSpeaking(false)
+      return
+    }
+
+    const text = buildPasswordSpeechText(rawPassword, language)
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = language === 'ru' ? 'ru-RU' : 'en-US'
+    utterance.rate = 0.75
+    utterance.pitch = 1
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    speechSynthesis.cancel()
+    speechSynthesis.speak(utterance)
+    setIsSpeaking(true)
+  }
+
+  useEffect(() => {
+    return () => {
+      speechSynthesis.cancel()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (rawPassword && isSpeaking) {
+      speechSynthesis.cancel()
+      setIsSpeaking(false)
+    }
+  }, [rawPassword])
+
   const strengthPercentage = (strength.score / 4) * 100
 
   const faqItems = t('passwordGenerator.info.faqTitle')
@@ -189,6 +228,15 @@ function PasswordGenerator() {
               {t('passwordGenerator.generate')}
             </button>
             <CopyButton text={displayPassword} analytics={{ toolSlug: 'password-generator', linkType: 'result' }} />
+            <button
+              onClick={handleSpeakPassword}
+              className={`dictate-btn${isSpeaking ? ' speaking' : ''}`}
+              disabled={!canSpeak}
+              title={canSpeak ? t('passwordGenerator.dictationPrivacyHint') : t('passwordGenerator.speechNotSupported')}
+            >
+              <Icon name={isSpeaking ? 'stop' : 'volume_up'} size={18} style={{ verticalAlign: 'middle', marginRight: '0.25rem' }} />
+              {isSpeaking ? t('passwordGenerator.stopDictation') : t('passwordGenerator.dictate')}
+            </button>
           </div>
         </div>
 
