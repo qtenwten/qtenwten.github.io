@@ -13,16 +13,6 @@ export function chunkPassword(password, size = 4) {
   return chunks
 }
 
-const NATO_PHONETIC = {
-  A: 'Alpha', B: 'Bravo', C: 'Charlie', D: 'Delta',
-  E: 'Echo', F: 'Foxtrot', G: 'Golf', H: 'Hotel',
-  I: 'India', J: 'Juliett', K: 'Kilo', L: 'Lima',
-  M: 'Mike', N: 'November', O: 'Oscar', P: 'Papa',
-  Q: 'Quebec', R: 'Romeo', S: 'Sierra', T: 'Tango',
-  U: 'Uniform', V: 'Victor', W: 'Whiskey', X: 'X-ray',
-  Y: 'Yankee', Z: 'Zulu'
-}
-
 const RU_CHAR_NAMES = {
   '!': 'восклицательный знак',
   '@': 'собака',
@@ -83,31 +73,22 @@ const RU_DIGIT_NAMES = ['ноль', 'один', 'два', 'три', 'четыр�
 const EN_DIGIT_NAMES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
 /**
- * Describe a single character for speech with phonetic hint
+ * Describe a single character for speech
  */
 export function describePasswordChar(char, language) {
   const isRU = language === 'ru'
 
   if (char >= 'A' && char <= 'Z') {
-    const phonetic = NATO_PHONETIC[char]
-    return isRU
-      ? `заглавная ${char}, как ${phonetic}`
-      : `capital ${char} as in ${phonetic}`
+    return isRU ? `заглавная ${char}` : `capital ${char}`
   }
 
   if (char >= 'a' && char <= 'z') {
-    const upperChar = char.toUpperCase()
-    const phonetic = NATO_PHONETIC[upperChar]
-    return isRU
-      ? `маленькая ${char}, как ${phonetic}`
-      : `lowercase ${char} as in ${phonetic}`
+    return isRU ? `маленькая ${char}` : `lowercase ${char}`
   }
 
   if (char >= '0' && char <= '9') {
     const digit = parseInt(char, 10)
-    return isRU
-      ? `цифра ${RU_DIGIT_NAMES[digit]}`
-      : `digit ${EN_DIGIT_NAMES[digit]}`
+    return isRU ? `цифра ${RU_DIGIT_NAMES[digit]}` : `digit ${EN_DIGIT_NAMES[digit]}`
   }
 
   const charNames = isRU ? RU_CHAR_NAMES : EN_CHAR_NAMES
@@ -115,7 +96,7 @@ export function describePasswordChar(char, language) {
 }
 
 /**
- * Build complete speech text for a password with group repetition
+ * Build speech text for a password (single pass, no repeat)
  */
 export function buildPasswordSpeechText(rawPassword, language) {
   const isRU = language === 'ru'
@@ -134,17 +115,6 @@ export function buildPasswordSpeechText(rawPassword, language) {
 
     if (index < chunks.length - 1) {
       parts.push(isRU ? 'Пауза.' : 'Pause.')
-    }
-  })
-
-  parts.push(isRU ? 'Повтор.' : 'Repeat.')
-  parts.push(isRU ? 'Группа 1:' : 'Group 1:')
-
-  chunks.forEach((chunk, index) => {
-    const charDescriptions = chunk.split('').map(char => describePasswordChar(char, language))
-    parts.push(charDescriptions.join('. '))
-    if (index < chunks.length - 1) {
-      parts.push(isRU ? `Группа ${index + 2}:` : `Group ${index + 2}:`)
     }
   })
 

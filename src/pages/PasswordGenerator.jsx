@@ -140,7 +140,7 @@ function PasswordGenerator() {
     const text = buildPasswordSpeechText(rawPassword, language)
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = language === 'ru' ? 'ru-RU' : 'en-US'
-    utterance.rate = 0.65
+    utterance.rate = 0.7
     utterance.pitch = 1
     utterance.volume = 1
 
