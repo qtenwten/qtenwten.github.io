@@ -128,11 +128,11 @@ function PasswordGenerator() {
 
   const faqItems = t('passwordGenerator.info.faqTitle')
     ? [
-        { q: t('passwordGenerator.info.faqList.q1'), a: t('passwordGenerator.info.faqList.q1') },
-        { q: t('passwordGenerator.info.faqList.q2'), a: t('passwordGenerator.info.faqList.q2') },
-        { q: t('passwordGenerator.info.faqList.q3'), a: t('passwordGenerator.info.faqList.q3') },
-        { q: t('passwordGenerator.info.faqList.q4'), a: t('passwordGenerator.info.faqList.q4') },
-        { q: t('passwordGenerator.info.faqList.q5'), a: t('passwordGenerator.info.faqList.q5') },
+        { q: t('passwordGenerator.info.faqList.q1'), a: t('passwordGenerator.info.faqList.a1') },
+        { q: t('passwordGenerator.info.faqList.q2'), a: t('passwordGenerator.info.faqList.a2') },
+        { q: t('passwordGenerator.info.faqList.q3'), a: t('passwordGenerator.info.faqList.a3') },
+        { q: t('passwordGenerator.info.faqList.q4'), a: t('passwordGenerator.info.faqList.a4') },
+        { q: t('passwordGenerator.info.faqList.q5'), a: t('passwordGenerator.info.faqList.a5') },
       ]
     : []
 
