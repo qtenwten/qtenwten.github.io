@@ -1,6 +1,50 @@
 import { createElement } from 'react'
 import HomePage from '../pages/Home'
 
+const ROUTE_MODULE_RELOAD_KEY = 'qsen:route-module-error-reloaded'
+const ROUTE_MODULE_ERROR_PATTERNS = [
+  /Failed to fetch dynamically imported module/i,
+  /Importing a module script failed/i,
+  /error loading dynamically imported module/i,
+  /Route module did not expose a default component/i,
+]
+
+function clearRouteModuleReloadFlag() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    sessionStorage.removeItem(ROUTE_MODULE_RELOAD_KEY)
+  } catch {
+    // Ignore storage access errors; route rendering should not depend on storage.
+  }
+}
+
+function scheduleRouteModuleReload(error) {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const message = error?.message || ''
+  if (!ROUTE_MODULE_ERROR_PATTERNS.some((pattern) => pattern.test(message))) {
+    return false
+  }
+
+  try {
+    if (sessionStorage.getItem(ROUTE_MODULE_RELOAD_KEY)) {
+      return false
+    }
+
+    sessionStorage.setItem(ROUTE_MODULE_RELOAD_KEY, '1')
+  } catch {
+    return false
+  }
+
+  window.location.reload()
+  return true
+}
+
 function createLazyPage(importer) {
   let LoadedComponent = null
   let loadPromise = null
@@ -9,11 +53,22 @@ function createLazyPage(importer) {
     if (!loadPromise) {
       loadPromise = importer()
         .then((module) => {
-          LoadedComponent = module.default || module
+          const Component = module?.default
+          if (!Component) {
+            throw new TypeError('Route module did not expose a default component')
+          }
+
+          LoadedComponent = Component
+          clearRouteModuleReloadFlag()
           return module
         })
         .catch((error) => {
           loadPromise = null
+
+          if (scheduleRouteModuleReload(error)) {
+            return new Promise(() => {})
+          }
+
           throw error
         })
     }
