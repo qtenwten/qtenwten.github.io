@@ -346,11 +346,113 @@ function buildHeaderPrerender(page, { isHomePage = false } = {}) {
   return `<header class="header"><div class="container header-content ${isHomePage ? 'is-home-search' : 'is-compact'}"><a href="${homePath}" class="logo"><img src="${HEADER_LOGO_PATH}" alt="" class="logo-icon logo-image" aria-hidden="true" width="48" height="48" /><div class="logo-wrapper"><span class="logo-text">QSEN</span><span class="logo-subtitle">${escapeHtml(copy.headerSubtitle)}</span></div></a>${isHomePage ? `<div class="header-search-box"><label for="header-search" class="sr-only">${escapeHtml(copy.search)}</label><input id="header-search" type="search" placeholder="${escapeHtml(copy.search)}" aria-label="${escapeHtml(copy.search)}" value="" /></div>` : ''}<div class="header-actions"><a href="${articlesPath}" class="header-nav-link"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg><span>${escapeHtml(copy.articles)}</span></a>${isHomePage ? '' : `<a href="${searchPath}" class="header-search-link"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><span>${escapeHtml(copy.search)}</span></a>`}<button type="button" class="theme-switcher" aria-label="${escapeHtml(copy.switchToDarkTheme)}" title="${escapeHtml(copy.switchToDarkTheme)}"><span class="theme-switcher__thumb" aria-hidden="true"></span><span class="theme-switcher__labels" aria-hidden="true"><span class="theme-switcher__label">☀</span><span class="theme-switcher__label">☾</span></span></button>${buildLanguageSwitcherPrerender(page.language)}</div></div></header>`
 }
 
+function normalizePrerenderPath(pathname = '/') {
+  if (!pathname || pathname === '/') {
+    return '/'
+  }
+
+  return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+}
+
+function formatPrerenderFallbackLabel(pathname) {
+  const lastSegment = pathname.split('/').filter(Boolean).pop() || ''
+  if (!lastSegment) {
+    return ''
+  }
+
+  const humanized = decodeURIComponent(lastSegment).replace(/[-_]+/g, ' ')
+  return humanized.charAt(0).toUpperCase() + humanized.slice(1)
+}
+
+function getPrerenderRouteEntry(cleanPath) {
+  return ROUTE_REGISTRY.find((entry) => entry.path === cleanPath) || null
+}
+
+function buildBreadcrumbsPrerender(page) {
+  const cleanPath = normalizePrerenderPath(page.path || '/')
+  if (cleanPath === '/') {
+    return ''
+  }
+
+  const language = page.language || 'ru'
+  const navLabel = getLocaleValue(language, 'breadcrumbs.navigation', 'Breadcrumbs')
+  const homeLabel = getLocaleValue(language, 'breadcrumbs.home', 'Home')
+  const homePath = getLocalizedRoutePath(language, '/')
+  const separator = '<li class="breadcrumbs-separator" aria-hidden="true">&#8594;</li>'
+
+  if (/^\/articles\/[^/]+$/.test(cleanPath)) {
+    const articlesLabel = getLocaleValue(language, 'articles.title', 'Articles')
+    const currentLabel = page.h1 || page.title || formatPrerenderFallbackLabel(cleanPath)
+
+    return `<nav class="breadcrumbs" aria-label="${escapeHtml(navLabel)}"><ol class="breadcrumbs-list"><li class="breadcrumbs-item"><a href="${homePath}" class="breadcrumbs-link">${escapeHtml(homeLabel)}</a></li>${separator}<li class="breadcrumbs-item"><a href="${getLocalizedRoutePath(language, '/articles')}" class="breadcrumbs-link">${escapeHtml(articlesLabel)}</a></li>${separator}<li class="breadcrumbs-item"><span class="breadcrumbs-current" aria-current="page">${escapeHtml(currentLabel)}</span></li></ol></nav>`
+  }
+
+  const config = getPrerenderRouteEntry(cleanPath)
+  const fallbackLabel = page.h1 || formatPrerenderFallbackLabel(cleanPath)
+  const currentLabel = getLocaleValue(language, config?.titleKey, fallbackLabel)
+  const categoryLabel = config?.categoryKey ? getLocaleValue(language, config.categoryKey, '') : ''
+  const categoryHref = categoryLabel && config?.categorySlug
+    ? `${homePath}?category=${encodeURIComponent(config.categorySlug)}`
+    : ''
+  const categoryCrumb = categoryLabel && categoryHref
+    ? `${separator}<li class="breadcrumbs-item"><a href="${categoryHref}" class="breadcrumbs-link">${escapeHtml(categoryLabel)}</a></li>`
+    : ''
+
+  return `<nav class="breadcrumbs" aria-label="${escapeHtml(navLabel)}"><ol class="breadcrumbs-list"><li class="breadcrumbs-item"><a href="${homePath}" class="breadcrumbs-link">${escapeHtml(homeLabel)}</a></li>${categoryCrumb}${separator}<li class="breadcrumbs-item"><span class="breadcrumbs-current" aria-current="page">${escapeHtml(currentLabel)}</span></li></ol></nav>`
+}
+
 function buildAppPrerenderRoot(page, content, { isHomePage = false, skipHydration = false } = {}) {
   const copy = getPrerenderCopy(page.language)
   const rootAttributes = skipHydration ? ' data-no-hydrate="true"' : ''
+  const breadcrumbsContainer = isHomePage
+    ? '<div class="container"></div>'
+    : `<div class="container">${buildBreadcrumbsPrerender(page)}</div>`
 
-  return `<div id="root"${rootAttributes}><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${isHomePage ? '<div class="container"></div>' : `<div class="container"><nav class="breadcrumbs" aria-label="${escapeHtml(copy.breadcrumbsNav)}"><ol class="breadcrumbs-list"></ol></nav></div>`}<div class="page-transition-wrapper">${content}</div></main>${buildFooterPrerender(page.language)}</div>`
+  return `<div id="root"${rootAttributes}><a href="#main-content" class="skip-link">${escapeHtml(copy.skipLink)}</a>${buildHeaderPrerender(page, { isHomePage })}<main id="main-content" class="app-main" tabindex="-1">${breadcrumbsContainer}<div class="page-transition-wrapper">${content}</div></main>${buildFooterPrerender(page.language)}</div>`
+}
+
+function buildRandomNumberDescriptionPrerenderContent(page) {
+  const language = page.language
+  const featureKeys = ['range', 'sets', 'noRepeat', 'withRepeat', 'persist']
+  const popularKeys = ['oneToHundred', 'randomizer', 'unique', 'oneToTen', 'noDuplicates']
+  const faqItems = ['1', '2', '3', '4'].map((number) => ({
+    question: getLocaleValue(language, `randomNumber.faq.q${number}`, ''),
+    answer: getLocaleValue(language, `randomNumber.faq.a${number}`, ''),
+  })).filter((item) => item.question && item.answer)
+
+  const features = featureKeys
+    .map((key) => `<li>${escapeHtml(getLocaleValue(language, `randomNumber.features.${key}`, ''))}</li>`)
+    .join('')
+  const popular = popularKeys
+    .map((key) => `<li>${escapeHtml(getLocaleValue(language, `randomNumber.popular.${key}`, ''))}</li>`)
+    .join('')
+  const examples = [
+    ['lotteryLabel', 'lotteryText'],
+    ['gamesLabel', 'gamesText'],
+    ['sampleLabel', 'sampleText'],
+  ].map(([labelKey, textKey]) => `<p><strong>${escapeHtml(getLocaleValue(language, `randomNumber.${labelKey}`, ''))}</strong> ${escapeHtml(getLocaleValue(language, `randomNumber.${textKey}`, ''))}</p>`).join('')
+  const faq = faqItems.length
+    ? `<section class="tool-description-faq-block"><h3>${escapeHtml(getLocaleValue(language, 'randomNumber.faqTitle', 'FAQ'))}</h3><div class="tool-description-faq">${faqItems.map((item) => `<div class="tool-description-faq-item"><p class="tool-description-faq-question">${escapeHtml(item.question)}</p><p class="tool-description-faq-answer">${escapeHtml(item.answer)}</p></div>`).join('')}</div></section>`
+    : ''
+
+  return `<section class="tool-description-section"><div class="tool-description-section__eyebrow">${escapeHtml(getLocaleValue(language, 'common.helpfulGuide', 'Helpful Guide'))}</div><div class="tool-description-section__content"><h2>${escapeHtml(getLocaleValue(language, 'randomNumber.infoTitle', ''))}</h2><div class="tool-description-lead"><p>${escapeHtml(getLocaleValue(language, 'randomNumber.infoDescription', ''))}</p></div><h3>${escapeHtml(getLocaleValue(language, 'randomNumber.featuresTitle', ''))}</h3><ul>${features}</ul><h3>${escapeHtml(getLocaleValue(language, 'randomNumber.popularTitle', ''))}</h3><ul>${popular}</ul><h3>${escapeHtml(getLocaleValue(language, 'randomNumber.examplesTitle', ''))}</h3><div class="tool-description-paragraph-stack">${examples}</div>${faq}</div></section>`
+}
+
+function buildRelatedToolsPrerenderContent(page) {
+  const language = page.language
+  const relatedTools = ROUTE_REGISTRY.filter((entry) => entry.showOnHome && entry.path !== page.path)
+  if (!relatedTools.length) {
+    return ''
+  }
+
+  const cards = relatedTools.map((entry) => {
+    const title = escapeHtml(getLocaleValue(language, entry.titleKey, entry.titleKey))
+    const description = escapeHtml(getLocaleValue(language, entry.descriptionKey, entry.descriptionKey))
+    const iconSvg = addSvgClass(getIconSvg(entry.icon), 'tool-icon')
+    return `<a href="${getLocalizedRoutePath(language, entry.path)}" class="tool-card">${iconSvg}<h3>${title}</h3><p>${description}</p></a>`
+  }).join('')
+
+  return `<div class="related-tools"><h2>${escapeHtml(getLocaleValue(language, 'home.relatedTools', 'Other useful tools'))}</h2><div class="tools-grid">${cards}</div></div>`
 }
 
 function buildRandomNumberPrerenderContent(page) {
@@ -363,7 +465,7 @@ function buildRandomNumberPrerenderContent(page) {
   const generateLabel = getLocaleValue(page.language, 'randomNumber.generate', page.language === 'en' ? 'Generate' : 'Сгенерировать')
   const clearLabel = getLocaleValue(page.language, 'randomNumber.clear', page.language === 'en' ? 'Clear' : 'Очистить')
 
-  return `<div class="tool-container random-number-page"><section class="random-number-hero" aria-labelledby="random-number-heading"><h1 id="random-number-heading" class="random-number-hero__title"><span class="random-number-hero__title-wrap"><svg aria-hidden="true" class="random-number-hero__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1"></circle><circle cx="15.5" cy="8.5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="8.5" cy="15.5" r="1"></circle><circle cx="15.5" cy="15.5" r="1"></circle></svg><span class="random-number-hero__title-text">${escapeHtml(title)}</span></span></h1><p class="random-number-hero__subtitle">${escapeHtml(subtitle)}</p></section><div class="field"><label for="min">${escapeHtml(minLabel)}</label><input id="min" type="text" value="1" placeholder="1" /></div><div class="field"><label for="max">${escapeHtml(maxLabel)}</label><input id="max" type="text" value="100" placeholder="100" /></div><div class="field"><label for="count">${escapeHtml(countLabel)}</label><input id="count" type="text" value="1" placeholder="1" min="1" max="10000" /></div><div class="field"><label style="display: flex; align-items: center; gap: 0.5rem;"><input id="unique" type="checkbox" />${escapeHtml(uniqueLabel)}</label></div><div class="btn-group"><button>${escapeHtml(generateLabel)}</button><button class="secondary">${escapeHtml(clearLabel)}</button></div></div>`
+  return `<div class="tool-container random-number-page"><section class="random-number-hero" aria-labelledby="random-number-heading"><h1 id="random-number-heading" class="random-number-hero__title"><span class="random-number-hero__title-wrap"><svg aria-hidden="true" class="random-number-hero__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1"></circle><circle cx="15.5" cy="8.5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="8.5" cy="15.5" r="1"></circle><circle cx="15.5" cy="15.5" r="1"></circle></svg><span class="random-number-hero__title-text">${escapeHtml(title)}</span></span></h1><p class="random-number-hero__subtitle">${escapeHtml(subtitle)}</p></section><div class="field"><label for="min">${escapeHtml(minLabel)}</label><input id="min" type="text" value="1" placeholder="1" /></div><div class="field"><label for="max">${escapeHtml(maxLabel)}</label><input id="max" type="text" value="100" placeholder="100" /></div><div class="field"><label for="count">${escapeHtml(countLabel)}</label><input id="count" type="text" value="1" placeholder="1" min="1" max="10000" /></div><div class="field"><label style="display: flex; align-items: center; gap: 0.5rem;"><input id="unique" type="checkbox" />${escapeHtml(uniqueLabel)}</label></div><div class="btn-group"><button>${escapeHtml(generateLabel)}</button><button class="secondary">${escapeHtml(clearLabel)}</button></div>${buildRandomNumberDescriptionPrerenderContent(page)}${buildRelatedToolsPrerenderContent(page)}</div>`
 }
 
 function buildHomePrerenderContent(page, articlesIndex = []) {

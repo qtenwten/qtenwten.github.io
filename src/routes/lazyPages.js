@@ -1,10 +1,36 @@
-import { lazy } from 'react'
+import { createElement } from 'react'
 import HomePage from '../pages/Home'
 
 function createLazyPage(importer) {
-  const LazyComponent = lazy(importer)
-  LazyComponent.preload = importer
-  return LazyComponent
+  let LoadedComponent = null
+  let loadPromise = null
+
+  function load() {
+    if (!loadPromise) {
+      loadPromise = importer()
+        .then((module) => {
+          LoadedComponent = module.default || module
+          return module
+        })
+        .catch((error) => {
+          loadPromise = null
+          throw error
+        })
+    }
+
+    return loadPromise
+  }
+
+  function PreloadablePage(props) {
+    if (LoadedComponent) {
+      return createElement(LoadedComponent, props)
+    }
+
+    throw load()
+  }
+
+  PreloadablePage.preload = load
+  return PreloadablePage
 }
 
 export const Home = Object.assign(HomePage, {
