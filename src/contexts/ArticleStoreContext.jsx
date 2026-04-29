@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   fetchArticles,
   fetchArticleBySlug,
@@ -166,21 +166,48 @@ export function useArticlesIndex(language) {
 }
 
 export function useArticleDetail(slug, language) {
-  const { fetchDetail, currentArticle, detailStatus, detailError, clearDetail } = useArticleStore()
+  const {
+    fetchDetail,
+    currentArticle,
+    detailStatus,
+    detailError,
+    clearDetail,
+  } = useArticleStore()
+
+  const initialArticle = useMemo(() => {
+    if (!slug) return null
+    return readInitialArticleDetail(slug, language)
+  }, [slug, language])
+
+  const isMatchingArticle = (article, checkSlug, checkLanguage) => {
+    if (!article || !checkSlug) return false
+    const articleSlug = article.slug || article.article_slug
+    const articleLanguage = article.language || article.lang
+    if (articleSlug !== checkSlug) return false
+    if (checkLanguage && articleLanguage && articleLanguage !== checkLanguage) return false
+    return true
+  }
+
+  const matchingCurrentArticle = isMatchingArticle(currentArticle, slug, language)
+    ? currentArticle
+    : null
+
+  const matchingInitialArticle = isMatchingArticle(initialArticle, slug, language)
+    ? initialArticle
+    : null
+
+  const article = matchingCurrentArticle || matchingInitialArticle
+  const status = article ? 'success' : detailStatus
 
   useEffect(() => {
-    if (slug) {
-      fetchDetail(slug, language)
-    }
-    return () => {
-      clearDetail()
-    }
-  }, [slug, language, fetchDetail, clearDetail])
+    if (!slug) return
+    fetchDetail(slug, language)
+  }, [slug, language, fetchDetail])
 
   return {
-    article: currentArticle,
-    status: detailStatus,
-    error: detailError,
+    article,
+    status,
+    error: article ? null : detailError,
     refetch: () => fetchDetail(slug, language),
   }
 }
