@@ -262,6 +262,10 @@ Instead:
 ---
 
 ## File workflow
+
+For the complete publish-and-verify workflow, use:
+- `BD/ARTICLE_PUBLISHING_RUNBOOK.md`
+
 ### 1. Create article JSON
 Place it in:
 - `BD/content-staging/`

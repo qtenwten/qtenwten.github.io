@@ -1,5 +1,9 @@
 # Article management quick guide
 
+For the full production publishing process, including D1 inventory, duplicate checks, UTF-8 safety, pagination, repair, build, deploy, and live verification, read:
+
+- `BD/ARTICLE_PUBLISHING_RUNBOOK.md`
+
 ## Где хранятся статьи
 Статьи хранятся в **Cloudflare D1**.
 Публично сайт показывает только статьи со статусом:

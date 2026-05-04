@@ -63,6 +63,7 @@ The following files are used for local article publishing:
 - `BD/content-staging/` — temporary article JSON files
 - `BD/publish-article.ps1` — publishes article to Worker API
 - `BD/check-article.ps1` — checks article by slug
+- `BD/ARTICLE_PUBLISHING_RUNBOOK.md` — full agent runbook from planning through live verification and repair
 
 ---
 
