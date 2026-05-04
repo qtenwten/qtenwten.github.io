@@ -704,7 +704,18 @@
   </url>
   <url>
     <loc>https://qsen.ru/en/articles/random-number-generator-online/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
