@@ -13,7 +13,7 @@ import { articleMatchesLanguage, filterArticlesForLanguage } from '../utils/arti
 
 const ArticleStoreContext = createContext(null)
 
-export const ARTICLE_INDEX_KEY = 'qsen:articles:index:v5'
+export const ARTICLE_INDEX_KEY = 'qsen:articles:index:v6'
 export const ARTICLE_DETAIL_KEY = (slug) => `qsen:articles:detail:${slug}`
 
 export function ArticleStoreProvider({ children }) {

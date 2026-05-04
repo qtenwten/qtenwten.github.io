@@ -3,7 +3,7 @@ import { normalizeArticleListItem as sharedNormalizeListItem, normalizeArticle a
 
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 12000
-const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v5'
+const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v6'
 const ARTICLE_DETAIL_CACHE_PREFIX = 'qsen:articles:detail:'
 const ARTICLES_CACHE_TTL_MS = 10 * 60 * 1000
 const ARTICLES_PAGE_SIZE = 50
