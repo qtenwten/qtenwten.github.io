@@ -133,10 +133,14 @@ class ConfettiSystem {
 function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placeholder }) {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
+  const pointerRef = useRef(null)
+  const sparkContainerRef = useRef(null)
   const [currentRotation, setCurrentRotation] = useState(0)
   const audioContextRef = useRef(null)
   const animationRef = useRef(null)
-  const lastTickAngleRef = useRef(0)
+  const lastPointerIndexRef = useRef(-1)
+  const pointerKickAnimationRef = useRef(null)
+  const sparkTimeoutsRef = useRef(new Set())
 
   const drawWheel = useCallback((ctx, items, size) => {
     if (!items || items.length === 0) return
@@ -245,16 +249,14 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
     }
 
     const result = calculateSpinResult(items, duration, currentRotation)
-    const { targetAngle, winnerIndex } = result
+    const { targetAngle } = result
 
     const startTime = performance.now()
     const startAngle = currentRotation
     const totalRotation = targetAngle - startAngle
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
-    const segmentAngle = (2 * Math.PI) / items.length
-    const tickEveryAngle = segmentAngle * 0.5
-
-    lastTickAngleRef.current = startAngle
+    lastPointerIndexRef.current = getIndexAtPointer(startAngle, items.length)
 
     const playTick = () => {
       if (soundEnabled && audioContextRef.current) {
@@ -271,6 +273,84 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       }
     }
 
+    const kickPointer = () => {
+      const pointer = pointerRef.current
+      if (!pointer || reduceMotion) return
+
+      if (pointer.animate) {
+        if (pointerKickAnimationRef.current) {
+          pointerKickAnimationRef.current.cancel()
+        }
+
+        const animation = pointer.animate(
+          [
+            { transform: 'translateX(-50%) rotate(0deg)' },
+            { transform: 'translateX(-50%) rotate(-7deg)', offset: 0.34 },
+            { transform: 'translateX(-50%) rotate(3deg)', offset: 0.72 },
+            { transform: 'translateX(-50%) rotate(0deg)' },
+          ],
+          {
+            duration: 170,
+            easing: 'cubic-bezier(0.2, 0.9, 0.24, 1)',
+          }
+        )
+
+        pointerKickAnimationRef.current = animation
+
+        animation.onfinish = () => {
+          if (pointerKickAnimationRef.current === animation) {
+            pointerKickAnimationRef.current = null
+          }
+        }
+        animation.oncancel = () => {
+          if (pointerKickAnimationRef.current === animation) {
+            pointerKickAnimationRef.current = null
+          }
+        }
+        return
+      }
+
+      pointer.classList.remove('is-ticking')
+      void pointer.offsetWidth
+      pointer.classList.add('is-ticking')
+    }
+
+    const emitPointerSparks = () => {
+      const sparkContainer = sparkContainerRef.current
+      if (!sparkContainer || reduceMotion) return
+
+      const sparkCount = 4 + Math.floor(Math.random() * 3)
+
+      for (let i = 0; i < sparkCount; i++) {
+        const spark = document.createElement('span')
+        const angle = -155 + Math.random() * 130
+        const distance = 12 + Math.random() * 12
+        const x = Math.cos((angle * Math.PI) / 180) * distance
+        const y = Math.sin((angle * Math.PI) / 180) * distance
+
+        spark.className = 'wheel-spark'
+        spark.style.setProperty('--spark-x', `${x.toFixed(1)}px`)
+        spark.style.setProperty('--spark-y', `${y.toFixed(1)}px`)
+        spark.style.setProperty('--spark-rotate', `${Math.round(angle)}deg`)
+        spark.style.setProperty('--spark-delay', `${i * 12}ms`)
+
+        sparkContainer.appendChild(spark)
+
+        const timeoutId = window.setTimeout(() => {
+          spark.remove()
+          sparkTimeoutsRef.current.delete(timeoutId)
+        }, 360)
+
+        sparkTimeoutsRef.current.add(timeoutId)
+      }
+    }
+
+    const handleDividerHit = () => {
+      playTick()
+      kickPointer()
+      emitPointerSparks()
+    }
+
     const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
 
     const animate = (time) => {
@@ -281,11 +361,11 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       const easeProgress = easeOutQuart(progress)
       const newAngle = startAngle + totalRotation * easeProgress
 
-      const angleDiff = Math.abs(newAngle - lastTickAngleRef.current)
+      const pointerIndex = getIndexAtPointer(newAngle, items.length)
 
-      if (angleDiff >= tickEveryAngle) {
-        playTick()
-        lastTickAngleRef.current = newAngle
+      if (pointerIndex !== lastPointerIndexRef.current) {
+        handleDividerHit()
+        lastPointerIndexRef.current = pointerIndex
       }
 
       setCurrentRotation(newAngle)
@@ -325,6 +405,13 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       if (audioContextRef.current) {
         audioContextRef.current.close()
       }
+
+      if (pointerKickAnimationRef.current) {
+        pointerKickAnimationRef.current.cancel()
+      }
+
+      sparkTimeoutsRef.current.forEach(timeoutId => window.clearTimeout(timeoutId))
+      sparkTimeoutsRef.current.clear()
     }
   }, [])
 
@@ -340,7 +427,8 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
           </div>
         ) : (
           <>
-            <div className="wheel-pointer" />
+            <div ref={pointerRef} className="wheel-pointer" />
+            <div ref={sparkContainerRef} className="wheel-spark-burst" aria-hidden="true" />
             <canvas
               ref={canvasRef}
               className="wheel-canvas"
