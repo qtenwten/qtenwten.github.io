@@ -410,7 +410,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
   return (
     <div className="wheel-container">
       <div className="wheel-wrapper" ref={wheelRef}>
-        {items.length === 0 ? (
+{items.length === 0 ? (
           <div className="wheel-placeholder">
             <Icon name="pointer" size={48} />
             <p>{placeholder}</p>
@@ -419,16 +419,18 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
           <>
             <div ref={pointerRef} className="wheel-pointer" />
             <div ref={sparkContainerRef} className="wheel-spark-burst" aria-hidden="true" />
-            <canvas
-              ref={canvasRef}
-              className="wheel-canvas"
-              width={canvasSize}
-              height={canvasSize}
-              style={{
-                willChange: 'transform',
-                transform: `rotate(${currentRotation}rad)`,
-              }}
-            />
+            <div className="wheel-canvas-wrapper">
+              <canvas
+                ref={canvasRef}
+                className="wheel-canvas"
+                width={canvasSize}
+                height={canvasSize}
+                style={{
+                  willChange: 'transform',
+                  transform: `rotate(${currentRotation}rad)`,
+                }}
+              />
+            </div>
             <div className="wheel-center">
               <Icon name="casino" size={24} />
             </div>
@@ -1000,7 +1002,7 @@ function RandomNumber() {
                   </>
                 ) : (
                   <>
-                    <Icon name="play" size={20} />
+                    <Icon name="refresh" size={20} />
                     {t('randomNumber.picker.spin')}
                   </>
                 )}
