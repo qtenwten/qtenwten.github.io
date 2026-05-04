@@ -711,13 +711,42 @@
   },
   "randomNumber": {
     "title": "Free Random Number Generator",
-    "subtitle": "Generate random numbers online for raffles, games, sampling, and quick picks",
+    "subtitle": "Random picker for raffles, draws, and fair selection",
     "min": "Minimum",
     "max": "Maximum",
     "count": "Number of values",
     "unique": "No duplicates",
     "generate": "Generate",
     "clear": "Clear",
+    "modes": {
+      "numbers": "Numbers",
+      "picker": "Picker",
+      "sequence": "Sequence"
+    },
+    "picker": {
+      "title": "Items to choose from",
+      "textareaPlaceholder": "Enter your option",
+      "wheelPlaceholder": "Enter options to spin",
+      "itemsCount": "Added: {{count}}",
+      "duration": "Duration",
+      "spin": "SPIN!",
+      "reSpin": "Spin again",
+      "spinning": "Spinning...",
+      "soundOn": "Sound on",
+      "soundOff": "Sound off",
+      "addItem": "Add option",
+      "itemPlaceholder": "Enter option",
+      "durationPlaceholder": "Enter seconds",
+      "chance": "Winning chance"
+    },
+    "sequence": {
+      "title": "Sequential Selection",
+      "excludeChosen": "Exclude already selected",
+      "history": "Selected:",
+      "remaining": "Remaining: <strong>{{remaining}}</strong> of {{total}}",
+      "allChosen": "All options have been chosen!",
+      "reset": "Start over"
+    },
     "errors": {
       "INVALID_PARAMS": "Invalid input values",
       "MIN_NOT_LESS_THAN_MAX": "Minimum must be less than maximum",
