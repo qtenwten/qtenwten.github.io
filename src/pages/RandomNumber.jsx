@@ -315,7 +315,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
 
     lastPointerIndexRef.current = getIndexAtPointer(startAngle, items.length)
 
-    const playTick = () => {
+const playTick = () => {
       if (!soundEnabled) return
 
       void getAudioController().playTone({
@@ -323,6 +323,15 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         gainValue: 0.08,
         duration: 0.04,
         fadeDuration: 0.08,
+      })
+
+      const baseFreq = 1800 + Math.random() * 500
+      void getAudioController().playTone({
+        frequency: baseFreq,
+        type: 'sine',
+        gainValue: 0.015,
+        duration: 0.015,
+        fadeDuration: 0.03,
       })
     }
 
