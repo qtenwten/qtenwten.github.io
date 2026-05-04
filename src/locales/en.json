@@ -716,6 +716,7 @@
     "max": "Maximum",
     "count": "Number of values",
     "unique": "No duplicates",
+    "wheel": "Wheel",
     "generate": "Generate",
     "clear": "Clear",
     "modes": {
@@ -747,6 +748,10 @@
       "allChosen": "All options have been chosen!",
       "reset": "Start over"
     },
+    "numbers": {
+      "previewPlaceholder": "Click generate to see result",
+      "result": "Result"
+    },
     "errors": {
       "INVALID_PARAMS": "Invalid input values",
       "MIN_NOT_LESS_THAN_MAX": "Minimum must be less than maximum",
@@ -755,6 +760,16 @@
     },
     "infoTitle": "A simple random number generator for quick picks",
     "infoDescription": "Use this free random number generator to pick one or more numbers from a custom range. It works well for raffles, classroom activities, test data, games, and any situation where you need a quick random result.",
+    "wheelModeTitle": "Wheel of Fortune — let the wheel decide",
+    "wheelModeDescription": "The wheel mode lets you pick from a list of options using an animated spinner. This is handy when you cannot decide and want to leave the choice to chance.",
+    "wheelUseCases": {
+      "movies": "Movies for tonight — add the titles you want to watch and spin the wheel to pick tonight's movie",
+      "games": "Board game choice — when a group cannot agree on which game to play, the wheel helps pick a random game from the list",
+      "tasks": "Random task picker — add your tasks and let the wheel decide which one to tackle next so you do not get stuck deciding",
+      "food": "What to cook — write down dish options and spin when you cannot decide what to make for dinner",
+      "decisions": "Tough decisions — when two options seem equal, the wheel helps clear the doubt",
+      "raffle": "Prize drawing — for contests and quizzes where you need to randomly select a winner from a list of participants"
+    },
     "featuresTitle": "What you can do with it",
     "features": {
       "range": "Generate numbers in any custom range",

@@ -117,15 +117,94 @@
 }
 
 /* Numbers Mode */
+.numbers-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
 .numbers-controls {
   display: grid;
   gap: 1rem;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem;
   background: var(--bg-elevated);
   border-radius: 16px;
   border: 1px solid var(--border);
+  width: 385px;
+  height: 477px;
+  box-sizing: border-box;
+}
+
+.numbers-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.numbers-preview-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.wheel-with-spin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.numbers-preview-result {
+  text-align: center;
+}
+
+.numbers-preview-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.numbers-preview-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.numbers-preview-chance {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.numbers-simple-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  min-height: 200px;
+}
+
+.numbers-simple-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.numbers-simple-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 .numbers-row {
@@ -174,6 +253,18 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+}
+
+.unique-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.clear-btn-inline {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .btn-group {
@@ -249,7 +340,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .picker-input-panel {
@@ -459,7 +550,8 @@
 .duration-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .duration-label {
@@ -499,7 +591,8 @@
 }
 
 .duration-custom-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 0.65rem 0.875rem;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -578,7 +671,7 @@
     0 0 0 1px rgba(255, 255, 255, 0.08),
     inset 0 2px 4px rgba(255, 255, 255, 0.05),
     0 2px 4px -1px rgba(0, 0, 0, 0.1),
-    0 4px 12px -2px rgba(0, 0, 0, 0.12),
+    0 4px 12px -2px rgba(0, 0, 0, 0.10),
     0 8px 24px -4px rgba(0, 0, 0, 0.15);
 }
 
@@ -592,62 +685,14 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 280px;
-  height: 280px;
+  width: 300px;
+  height: 300px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 8deg,
-    rgba(var(--primary-rgb), 0.15) 8deg 16deg,
-    transparent 16deg 24deg,
-    rgba(var(--primary-rgb), 0.15) 24deg 32deg,
-    transparent 32deg 40deg,
-    rgba(var(--primary-rgb), 0.15) 40deg 48deg,
-    transparent 48deg 56deg,
-    rgba(var(--primary-rgb), 0.15) 56deg 64deg,
-    transparent 64deg 72deg,
-    rgba(var(--primary-rgb), 0.15) 72deg 80deg,
-    transparent 80deg 88deg,
-    rgba(var(--primary-rgb), 0.15) 88deg 96deg,
-    transparent 96deg 104deg,
-    rgba(var(--primary-rgb), 0.15) 104deg 112deg,
-    transparent 112deg 120deg,
-    rgba(var(--primary-rgb), 0.15) 120deg 128deg,
-    transparent 128deg 136deg,
-    rgba(var(--primary-rgb), 0.15) 136deg 144deg,
-    transparent 144deg 152deg,
-    rgba(var(--primary-rgb), 0.15) 152deg 160deg,
-    transparent 160deg 168deg,
-    rgba(var(--primary-rgb), 0.15) 168deg 176deg,
-    transparent 176deg 184deg,
-    rgba(var(--primary-rgb), 0.15) 184deg 192deg,
-    transparent 192deg 200deg,
-    rgba(var(--primary-rgb), 0.15) 200deg 208deg,
-    transparent 208deg 216deg,
-    rgba(var(--primary-rgb), 0.15) 216deg 224deg,
-    transparent 224deg 232deg,
-    rgba(var(--primary-rgb), 0.15) 232deg 240deg,
-    transparent 240deg 248deg,
-    rgba(var(--primary-rgb), 0.15) 248deg 256deg,
-    transparent 256deg 264deg,
-    rgba(var(--primary-rgb), 0.15) 264deg 272deg,
-    transparent 272deg 280deg,
-    rgba(var(--primary-rgb), 0.15) 280deg 288deg,
-    transparent 288deg 296deg,
-    rgba(var(--primary-rgb), 0.15) 296deg 304deg,
-    transparent 304deg 312deg,
-    rgba(var(--primary-rgb), 0.15) 312deg 320deg,
-    transparent 320deg 328deg,
-    rgba(var(--primary-rgb), 0.15) 328deg 336deg,
-    transparent 336deg 344deg,
-    rgba(var(--primary-rgb), 0.15) 344deg 352deg,
-    transparent 352deg 360deg
-  );
   pointer-events: none;
   z-index: 2;
   will-change: transform, opacity;
-  transition: opacity 0.05s ease;
+  filter: blur(2px);
 }
 
 .wheel-pointer {

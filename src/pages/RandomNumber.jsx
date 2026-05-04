@@ -6,6 +6,9 @@ import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
 import {
+  ToolHelp,
+} from '../components/ToolPageShell'
+import {
   generateRandomNumbers,
   calculateSpinResult,
   normalizeItems,
@@ -134,10 +137,55 @@ class ConfettiSystem {
     } else {
       this.isRunning = false
     }
-  }
 }
+  }
 
-function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placeholder, getAudioController }) {
+  function WheelWithSpin({ items, result, onSpinEnd, soundEnabled, duration, placeholder, getAudioController, t }) {
+    const [isSpinning, setIsSpinning] = useState(false)
+    const [spinResult, setSpinResult] = useState(null)
+
+    const handleSpin = () => {
+      if (!items || items.length === 0 || isSpinning) return
+      if (soundEnabled) {
+        void getAudioController().warmUp()
+      }
+      setIsSpinning(true)
+      setSpinResult(null)
+    }
+
+    const handleSpinEnd = (spinResult) => {
+      setIsSpinning(false)
+      setSpinResult(spinResult)
+      onSpinEnd(spinResult)
+    }
+
+    return (
+      <div className="wheel-with-spin">
+        <Wheel
+          items={items}
+          isSpinning={isSpinning}
+          onSpinEnd={handleSpinEnd}
+          soundEnabled={soundEnabled}
+          duration={duration}
+          placeholder={placeholder}
+          getAudioController={getAudioController}
+        />
+        <button onClick={handleSpin} className="primary spin-btn" disabled={!items || items.length === 0 || isSpinning}>
+          <Icon name="refresh" size={18} />
+          {t('randomNumber.picker.spin')}
+        </button>
+        {spinResult && !isSpinning && (
+          <div className="numbers-preview-result">
+            <div className="numbers-preview-label">{t('randomNumber.numbers.result')}</div>
+            <div className="numbers-preview-value">{spinResult.winnerItem}</div>
+            <div className="numbers-preview-chance">{t('randomNumber.picker.chance')}: {spinResult.chance}%</div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placeholder, getAudioController }) {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
   const pointerRef = useRef(null)
@@ -147,8 +195,39 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
   const [currentRotation, setCurrentRotation] = useState(0)
   const animationRef = useRef(null)
   const lastPointerIndexRef = useRef(-1)
+  const lastPointerIndexForHumRef = useRef(-1)
   const pointerKickAnimationRef = useRef(null)
   const sparkTimeoutsRef = useRef(new Set())
+
+  function getWheelRaysGradient(items) {
+    if (!items || items.length === 0) return { background: 'none' }
+
+    const segmentAngle = 360 / items.length
+    const rays = []
+    const opacity = 0.4
+
+    for (let i = 0; i < items.length; i++) {
+      const colorPair = SEGMENT_COLORS[i % SEGMENT_COLORS.length]
+      const startAngle = i * segmentAngle
+      const midAngle = startAngle + segmentAngle * 0.35
+      const endAngle = startAngle + segmentAngle * 0.5
+
+      rays.push(`${hexToRgba(colorPair[1], opacity)} ${startAngle}deg ${midAngle}deg`)
+      rays.push(`${hexToRgba(colorPair[1], 0)} ${midAngle}deg ${endAngle}deg`)
+    }
+
+    return { background: `conic-gradient(from 0deg, ${rays.join(', ')})` }
+  }
+
+  function hexToRgba(hex, alpha) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    if (result) {
+      return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`
+    }
+    return `rgba(255, 255, 255, ${alpha})`
+  }
+
+  const raysStyle = getWheelRaysGradient(items)
 
   const drawWheel = useCallback((ctx, items, size) => {
     if (!items || items.length === 0) return
@@ -335,6 +414,21 @@ const playTick = () => {
       })
     }
 
+    const playHum = (progress) => {
+      if (!soundEnabled) return
+
+      const humFreq = 80 + (1 - progress) * 40
+      const humGain = 0.02 * (1 - progress)
+
+      void getAudioController().playTone({
+        frequency: humFreq,
+        type: 'sine',
+        gainValue: humGain,
+        duration: 0.1,
+        fadeDuration: 0.15,
+      })
+    }
+
 const kickPointer = () => {
       const pointer = pointerRef.current
       if (!pointer || reduceMotion) return
@@ -407,13 +501,13 @@ const emitPointerSparks = () => {
       }
     }
 
-    const handleDividerHit = () => {
+const handleDividerHit = () => {
       playTick()
       kickPointer()
       emitPointerSparks()
     }
 
-const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
+    const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
 
     const updateCenterPulse = (progress) => {
       const wheelCenter = wheelCenterRef.current
@@ -428,8 +522,10 @@ const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
       wheelCenter.style.boxShadow = `0 4px 12px rgba(0, 0, 0, 0.2)${glowIntensity > 0.05 ? `, 0 0 ${30 * glowIntensity}px rgba(var(--primary-rgb), ${glowIntensity * 1.5}), 0 0 ${60 * glowIntensity}px rgba(var(--primary-rgb), ${glowIntensity * 0.8})` : ''}`
 
       if (wheelRays) {
-        wheelRays.style.transform = `translate(-50%, -50%) scale(${scale})`
-        wheelRays.style.opacity = glowIntensity > 0.05 ? glowIntensity * 0.8 : 0
+        const baseOpacity = 0.25 + 0.35 * (1 - progress)
+        const pulseBoost = 0.2 * Math.abs(pulseValue) * (1 - progress)
+        const raysOpacity = Math.min(baseOpacity + pulseBoost, 0.7)
+        wheelRays.style.opacity = raysOpacity
       }
     }
 
@@ -446,6 +542,11 @@ const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
       if (pointerIndex !== lastPointerIndexRef.current) {
         handleDividerHit()
         lastPointerIndexRef.current = pointerIndex
+      }
+
+      if (pointerIndex !== lastPointerIndexForHumRef.current) {
+        lastPointerIndexForHumRef.current = pointerIndex
+        playHum(easeProgress)
       }
 
       updateCenterPulse(easeProgress)
@@ -467,10 +568,6 @@ const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
         if (wheelCenterRef.current) {
           wheelCenterRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
           wheelCenterRef.current.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)'
-        }
-        if (wheelRaysRef.current) {
-          wheelRaysRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
-          wheelRaysRef.current.style.opacity = '0'
         }
       }
     }
@@ -511,7 +608,7 @@ const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
             <div ref={pointerRef} className="wheel-pointer" />
             <div ref={sparkContainerRef} className="wheel-spark-burst" aria-hidden="true" />
             <div className="wheel-canvas-wrapper">
-              <div ref={wheelRaysRef} className="wheel-rays" />
+              <div ref={wheelRaysRef} className="wheel-rays" style={{ ...raysStyle, willChange: 'transform', transform: `translate(-50%, -50%) rotate(${currentRotation}rad)` }} />
               <canvas
                 ref={canvasRef}
                 className="wheel-canvas"
@@ -539,9 +636,10 @@ function RandomNumber() {
   const [mode, setMode] = useState('numbers')
 
   const [min, setMin] = useState('1')
-  const [max, setMax] = useState('100')
+  const [max, setMax] = useState('50')
   const [count, setCount] = useState('1')
   const [unique, setUnique] = useState(false)
+  const [wheelEnabled, setWheelEnabled] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
@@ -573,7 +671,8 @@ function RandomNumber() {
     if (saved) {
       const data = safeParseJSON(saved, {})
       setMin(data.min || '1')
-      setMax(data.max || '100')
+      const savedMax = data.max ? parseInt(data.max) : null
+      setMax(savedMax && savedMax > 0 ? String(savedMax) : '50')
       setCount(data.count || '1')
       setUnique(data.unique || false)
     }
@@ -613,7 +712,7 @@ function RandomNumber() {
 
   const handleClear = () => {
     setMin('1')
-    setMax('100')
+    setMax('50')
     setCount('1')
     setUnique(false)
     setResult(null)
@@ -834,7 +933,7 @@ function RandomNumber() {
         </nav>
 
         {mode === 'numbers' && (
-          <>
+          <div className="numbers-layout">
             <div className="numbers-controls">
               <div className="numbers-row">
                 <div className="field">
@@ -856,7 +955,7 @@ function RandomNumber() {
                     value={max}
                     onChange={(e) => setMax(filterNumberInput(e.target.value))}
                     onKeyDown={handleNumberKeyDown}
-                    placeholder="100"
+                    placeholder="50"
                   />
                 </div>
               </div>
@@ -873,7 +972,7 @@ function RandomNumber() {
                 />
               </div>
 
-              <div className="field">
+              <div className="field unique-row">
                 <label className="field-checkbox">
                   <input
                     id="unique"
@@ -883,52 +982,98 @@ function RandomNumber() {
                   />
                   {t('randomNumber.unique')}
                 </label>
+                <label className="field-checkbox">
+                  <input
+                    id="wheelEnabled"
+                    type="checkbox"
+                    checked={wheelEnabled}
+                    onChange={(e) => setWheelEnabled(e.target.checked)}
+                  />
+                  {t('randomNumber.wheel')}
+                </label>
               </div>
+
+              {wheelEnabled && (
+                <>
+                  <div className="duration-row">
+                    <span className="duration-label">{t('randomNumber.picker.duration')}:</span>
+                    <div className="duration-btns">
+                      {DURATION_OPTIONS.map(d => (
+                        <button
+                          key={d}
+                          className={`duration-btn ${spinDuration === d && !customDuration ? 'is-active' : ''}`}
+                          onClick={() => {
+                            setSpinDuration(d)
+                            setCustomDuration(null)
+                          }}
+                        >
+                          {d}s
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <input
+                    type="number"
+                    className="duration-custom-input"
+                    value={customDuration ?? ''}
+                    onChange={(e) => {
+                      handleCustomDurationChange(e)
+                    }}
+                    placeholder={t('randomNumber.picker.durationPlaceholder')}
+                    min={1}
+                    max={60}
+                  />
+                </>
+              )}
 
               {error && <div className="error">{error}</div>}
 
-              {result && (
-                <div className="result-box success">
-                  <div className="result-value">{result.join(', ')}</div>
-                  <CopyButton text={result.join(', ')} />
+              {!wheelEnabled && (
+                <div className="btn-group">
+                  <button onClick={handleGenerate} className="primary">
+                    {t('randomNumber.generate')}
+                  </button>
                 </div>
               )}
-
-              <div className="btn-group">
-                <button onClick={handleGenerate} className="primary">
-                  {t('randomNumber.generate')}
-                </button>
-                <button onClick={handleClear} className="secondary">
-                  {t('randomNumber.clear')}
-                </button>
-              </div>
             </div>
 
-            <ToolDescriptionSection>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{t('randomNumber.infoTitle')}</h2>
-              <div className="tool-description-lead">
-                <p style={{ marginBottom: '1rem', color: 'var(--text)' }}>
-                  {t('randomNumber.infoDescription')}
-                </p>
-              </div>
-
-              <h3 style={{ fontSize: '1.2rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('randomNumber.featuresTitle')}</h3>
-              <ul style={{ marginLeft: '1.5rem', color: 'var(--text)', lineHeight: '1.8' }}>
-                <li key="range">{t('randomNumber.features.range')}</li>
-                <li key="sets">{t('randomNumber.features.sets')}</li>
-                <li key="noRepeat">{t('randomNumber.features.noRepeat')}</li>
-                <li key="withRepeat">{t('randomNumber.features.withRepeat')}</li>
-                <li key="persist">{t('randomNumber.features.persist')}</li>
-              </ul>
-
-              <ToolFaq title={t('randomNumber.faqTitle')} items={[
-                { q: t('randomNumber.faq.q1'), a: t('randomNumber.faq.a1') },
-                { q: t('randomNumber.faq.q2'), a: t('randomNumber.faq.a2') },
-                { q: t('randomNumber.faq.q3'), a: t('randomNumber.faq.a3') },
-                { q: t('randomNumber.faq.q4'), a: t('randomNumber.faq.a4') },
-              ]} />
-            </ToolDescriptionSection>
-          </>
+            <div className="numbers-preview">
+              {wheelEnabled ? (
+                <div className="numbers-preview-wheel">
+                  <WheelWithSpin
+                    items={(() => {
+                      const minNum = parseInt(min) || 1
+                      const maxNum = parseInt(max) || 100
+                      const count = maxNum - minNum + 1
+                      if (count > 0 && count <= 1000) {
+                        return Array.from({length: count}, (_, i) => String(minNum + i))
+                      }
+                      return Array.from({length: 100}, (_, i) => String(i + 1))
+                    })()}
+                    result={result}
+                    onSpinEnd={(spinResult) => {
+                      if (spinResult && spinResult.winnerItem) {
+                        const winningNum = parseInt(spinResult.winnerItem)
+                        if (!isNaN(winningNum) && winningNum >= parseInt(min) && winningNum <= parseInt(max)) {
+                          setResult([winningNum])
+                        }
+                      }
+                    }}
+                    soundEnabled={soundEnabled}
+                    duration={finalDuration}
+                    placeholder={t('randomNumber.numbers.previewPlaceholder')}
+                    getAudioController={getAudioController}
+                    t={t}
+                  />
+                </div>
+              ) : (
+                <div className="numbers-simple-result">
+                  <div className="numbers-simple-label">{t('randomNumber.numbers.result')}</div>
+                  <div className="numbers-simple-value">{result ? result[0] : '—'}</div>
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {(mode === 'picker' || mode === 'sequence') && (
@@ -1110,7 +1255,7 @@ function RandomNumber() {
                     {t('randomNumber.picker.chance')}: {spinResult.chance}%
                   </div>
                   <div className="picker-result__actions">
-                    {canSpin && (
+{canSpin && (
                       <button className="re-spin-btn" onClick={handleReSpin}>
                         {t('randomNumber.picker.reSpin')}
                       </button>
@@ -1122,6 +1267,51 @@ function RandomNumber() {
             </div>
           </div>
         )}
+
+        <ToolHelp>
+          <ToolDescriptionSection>
+            <div className="tool-help-prose">
+              <h2 className="tool-help-heading">{t('randomNumber.infoTitle')}</h2>
+              <p>{t('randomNumber.infoDescription')}</p>
+
+              <h3 className="tool-help-subheading">{t('randomNumber.featuresTitle')}</h3>
+              <ul>
+                <li key="range">{t('randomNumber.features.range')}</li>
+                <li key="sets">{t('randomNumber.features.sets')}</li>
+                <li key="noRepeat">{t('randomNumber.features.noRepeat')}</li>
+                <li key="withRepeat">{t('randomNumber.features.withRepeat')}</li>
+                <li key="persist">{t('randomNumber.features.persist')}</li>
+              </ul>
+
+              <h3 className="tool-help-subheading">{t('randomNumber.wheelModeTitle')}</h3>
+              <p>{t('randomNumber.wheelModeDescription')}</p>
+              <ul>
+                <li key="movies">{t('randomNumber.wheelUseCases.movies')}</li>
+                <li key="games">{t('randomNumber.wheelUseCases.games')}</li>
+                <li key="tasks">{t('randomNumber.wheelUseCases.tasks')}</li>
+                <li key="food">{t('randomNumber.wheelUseCases.food')}</li>
+                <li key="decisions">{t('randomNumber.wheelUseCases.decisions')}</li>
+                <li key="raffle">{t('randomNumber.wheelUseCases.raffle')}</li>
+              </ul>
+
+              <h3 className="tool-help-subheading">{t('randomNumber.popularTitle')}</h3>
+              <ul>
+                <li key="oneToHundred">{t('randomNumber.popular.oneToHundred')}</li>
+                <li key="randomizer">{t('randomNumber.popular.randomizer')}</li>
+                <li key="unique">{t('randomNumber.popular.unique')}</li>
+                <li key="oneToTen">{t('randomNumber.popular.oneToTen')}</li>
+                <li key="noDuplicates">{t('randomNumber.popular.noDuplicates')}</li>
+              </ul>
+
+              <ToolFaq title={t('randomNumber.faqTitle')} items={[
+                { q: t('randomNumber.faq.q1'), a: t('randomNumber.faq.a1') },
+                { q: t('randomNumber.faq.q2'), a: t('randomNumber.faq.a2') },
+                { q: t('randomNumber.faq.q3'), a: t('randomNumber.faq.a3') },
+                { q: t('randomNumber.faq.q4'), a: t('randomNumber.faq.a4') },
+              ]} />
+            </div>
+          </ToolDescriptionSection>
+        </ToolHelp>
 
         <RelatedTools currentPath={`/${language}/random-number`} />
       </div>
