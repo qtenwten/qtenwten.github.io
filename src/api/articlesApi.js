@@ -6,6 +6,7 @@ const ARTICLES_REQUEST_TIMEOUT_MS = 12000
 const ARTICLES_INDEX_CACHE_KEY = 'qsen:articles:index:v5'
 const ARTICLE_DETAIL_CACHE_PREFIX = 'qsen:articles:detail:'
 const ARTICLES_CACHE_TTL_MS = 10 * 60 * 1000
+const ARTICLES_PAGE_SIZE = 50
 
 function buildApiUrl(pathname) {
   return `${ARTICLES_API_BASE_URL}${pathname}`
@@ -187,16 +188,36 @@ export function writeCachedArticleDetail(article) {
 }
 
 export async function fetchArticles(language) {
-  const data = await requestJson('/articles')
-  if (data === null || data === undefined) {
-    const error = new Error('Failed to load articles — empty response')
-    error.status = 502
-    throw error
+  const allItems = []
+  let offset = 0
+  let total = null
+
+  while (total === null || offset < total) {
+    const data = await requestJson(`/articles?limit=${ARTICLES_PAGE_SIZE}&offset=${offset}`)
+    if (data === null || data === undefined) {
+      const error = new Error('Failed to load articles — empty response')
+      error.status = 502
+      throw error
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(sharedNormalizeListItem)
+    }
+
+    const pageItems = Array.isArray(data?.articles)
+      ? data.articles.map(sharedNormalizeListItem)
+      : []
+
+    allItems.push(...pageItems)
+
+    total = Number.isFinite(Number(data?.total)) ? Number(data.total) : allItems.length
+    if (pageItems.length === 0 || pageItems.length < ARTICLES_PAGE_SIZE) {
+      break
+    }
+    offset += pageItems.length
   }
-  const items = Array.isArray(data)
-    ? data.map(sharedNormalizeListItem)
-    : (Array.isArray(data?.articles) ? data.articles.map(sharedNormalizeListItem) : [])
-  return items
+
+  return allItems
 }
 
 export async function fetchArticleBySlug(slug, language) {

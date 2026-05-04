@@ -16,6 +16,7 @@ const ROOT_REDIRECT_URL = 'https://qsen.ru/ru/'
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 20000
 const HEADER_LOGO_PATH = '/qsen-logo.png'
+const ARTICLES_PAGE_SIZE = 50
 
 const localeMessages = {
   ru: JSON.parse(fs.readFileSync(path.join(localesPath, 'ru.json'), 'utf-8')),
@@ -209,23 +210,45 @@ async function fetchArticlesIndex() {
   const timeoutId = setTimeout(() => controller.abort(), ARTICLES_REQUEST_TIMEOUT_MS)
 
   try {
-    const response = await fetch(`${ARTICLES_API_BASE_URL}/articles`, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    })
+    const items = []
+    let offset = 0
+    let total = null
 
-    if (!response.ok) {
-      throw new Error(`Articles request failed with status ${response.status}`)
+    while (total === null || offset < total) {
+      const response = await fetch(`${ARTICLES_API_BASE_URL}/articles?limit=${ARTICLES_PAGE_SIZE}&offset=${offset}`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Articles request failed with status ${response.status}`)
+      }
+
+      const data = await response.json()
+      if (data?.error) throw new Error(data.error)
+
+      if (Array.isArray(data)) {
+        items.push(...data.map(normalizeArticleIndexItem))
+        break
+      }
+
+      const pageItems = Array.isArray(data?.articles)
+        ? data.articles.map(normalizeArticleIndexItem)
+        : Array.isArray(data?.results)
+          ? data.results.map(normalizeArticleIndexItem)
+          : []
+
+      items.push(...pageItems)
+      total = Number.isFinite(Number(data?.total)) ? Number(data.total) : items.length
+
+      if (pageItems.length === 0 || pageItems.length < ARTICLES_PAGE_SIZE) {
+        break
+      }
+
+      offset += pageItems.length
     }
 
-    const data = await response.json()
-    if (data?.error) throw new Error(data.error)
-    const items = Array.isArray(data?.articles)
-      ? data.articles.map(normalizeArticleIndexItem)
-      : Array.isArray(data?.results)
-        ? data.results.map(normalizeArticleIndexItem)
-        : Array.isArray(data) ? data.map(normalizeArticleIndexItem) : []
     if (items.length === 0) {
       throw new Error(`Articles index returned 0 items — check Worker response format`)
     }
@@ -634,23 +657,23 @@ function buildStructuredData({ language, title, description, url, structuredData
   })
 }
 
-function buildAlternateLinks(pathName, availableLanguages = ['ru', 'en']) {
+function buildAlternateLinks(pathName, availableLanguages = ['ru', 'en'], alternateUrls = null) {
   const links = []
   if (availableLanguages.includes('ru')) {
-    links.push(`<link rel="alternate" hreflang="ru" href="${getLocalizedRouteUrl('ru', pathName)}" />`)
+    links.push(`<link rel="alternate" hreflang="ru" href="${alternateUrls?.ru || getLocalizedRouteUrl('ru', pathName)}" />`)
   }
   if (availableLanguages.includes('en')) {
-    links.push(`<link rel="alternate" hreflang="en" href="${getLocalizedRouteUrl('en', pathName)}" />`)
+    links.push(`<link rel="alternate" hreflang="en" href="${alternateUrls?.en || getLocalizedRouteUrl('en', pathName)}" />`)
   }
   if (links.length > 1) {
-    links.push(`<link rel="alternate" hreflang="x-default" href="${getLocalizedRouteUrl('ru', pathName)}" />`)
+    links.push(`<link rel="alternate" hreflang="x-default" href="${alternateUrls?.ru || getLocalizedRouteUrl('ru', pathName)}" />`)
   }
   return links.join('\n    ')
 }
 
 function buildSeoTags(page) {
   const availableLangs = page.availableLanguages || ['ru', 'en']
-  const alternateLinks = buildAlternateLinks(page.path, availableLangs)
+  const alternateLinks = buildAlternateLinks(page.path, availableLangs, page.alternateUrls)
 
   return `
     <meta name="description" content="${escapeHtml(page.description)}" />
@@ -677,7 +700,7 @@ function buildSeoTags(page) {
   `.trim()
 }
 
-function buildArticleDetailPage(language, article, availableLanguages) {
+function buildArticleDetailPage(language, article, availableLanguages, alternateUrls) {
   const articlePath = `/articles/${article.slug}`
 
   return {
@@ -693,6 +716,8 @@ function buildArticleDetailPage(language, article, availableLanguages) {
     image: article.coverImage || 'https://qsen.ru/og-image.png',
     ogType: 'article',
     availableLanguages,
+    alternateUrls,
+    translationKey: article.translationKey || article.translation_key || '',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -868,17 +893,17 @@ function writeLegacyRedirectPages() {
 function buildSitemap(pages) {
   const filteredPages = pages.filter((page) => page.includeInSitemap !== false)
 
-  // For article detail pages, build a map of slug -> available languages
-  // so we only generate hreflang for languages that actually exist
-  const articleSlugLanguages = {}
+  // For article detail pages, group alternates by translation key because
+  // translated articles can use different slugs in each language.
+  const articleAlternates = {}
   filteredPages
     .filter((page) => page.ogType === 'article')
     .forEach((page) => {
-      const slug = page.path.replace('/articles/', '')
-      if (!articleSlugLanguages[slug]) {
-        articleSlugLanguages[slug] = []
+      const groupKey = page.translationKey || page.path
+      if (!articleAlternates[groupKey]) {
+        articleAlternates[groupKey] = {}
       }
-      articleSlugLanguages[slug].push(page.language)
+      articleAlternates[groupKey][page.language] = page.url
     })
 
   const items = filteredPages.map((page) => {
@@ -886,18 +911,22 @@ function buildSitemap(pages) {
     const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
     const enUrl = getLocalizedRouteUrl('en', cleanPath)
     const isArticle = page.ogType === 'article'
-    const slug = isArticle ? cleanPath.replace('/articles/', '') : null
-    const availableLangs = slug ? (articleSlugLanguages[slug] || []) : ['ru', 'en']
+    const articleAlternateUrls = isArticle
+      ? (articleAlternates[page.translationKey || page.path] || {})
+      : null
+    const availableLangs = articleAlternateUrls
+      ? Object.keys(articleAlternateUrls)
+      : ['ru', 'en']
 
     const alternateLinks = []
     if (availableLangs.includes('ru')) {
-      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="ru" href="${ruUrl}" />`)
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="ru" href="${articleAlternateUrls?.ru || ruUrl}" />`)
     }
     if (availableLangs.includes('en')) {
-      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />`)
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="en" href="${articleAlternateUrls?.en || enUrl}" />`)
     }
     if (availableLangs.length > 1) {
-      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${ruUrl}" />`)
+      alternateLinks.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${articleAlternateUrls?.ru || ruUrl}" />`)
     }
 
     const lastmod = page.datePublished
@@ -939,6 +968,19 @@ function main() {
   fetchArticlesIndex()
     .then(async (articlesIndex) => {
       const articleDetails = await fetchArticleDetails(articlesIndex)
+      const articleTranslations = articleDetails.reduce((accumulator, article) => {
+        const translationKey = article.translationKey || article.translation_key || article.slug
+        if (!accumulator[translationKey]) {
+          accumulator[translationKey] = {}
+        }
+        if (articleMatchesLanguage(article, 'ru')) {
+          accumulator[translationKey].ru = article
+        }
+        if (articleMatchesLanguage(article, 'en')) {
+          accumulator[translationKey].en = article
+        }
+        return accumulator
+      }, {})
 
       const articlePages = []
 
@@ -948,13 +990,19 @@ function main() {
       })
 
       articleDetails.forEach((article) => {
-        const availableLanguages = (['ru', 'en']).filter((lang) => articleMatchesLanguage(article, lang))
+        const translationKey = article.translationKey || article.translation_key || article.slug
+        const translationGroup = articleTranslations[translationKey] || {}
+        const availableLanguages = (['ru', 'en']).filter((lang) => Boolean(translationGroup[lang]))
+        const alternateUrls = availableLanguages.reduce((accumulator, lang) => {
+          accumulator[lang] = getLocalizedRouteUrl(lang, `/articles/${translationGroup[lang].slug}`)
+          return accumulator
+        }, {})
         ;['ru', 'en'].forEach((language) => {
           if (!articleMatchesLanguage(article, language)) {
             return
           }
 
-          const page = buildArticleDetailPage(language, article, availableLanguages)
+          const page = buildArticleDetailPage(language, article, availableLanguages, alternateUrls)
           articlePages.push(page)
           const localizedArticlesIndex = filterArticlesForLanguage(articlesIndex, language)
           const html = injectSeo(template, page, {
