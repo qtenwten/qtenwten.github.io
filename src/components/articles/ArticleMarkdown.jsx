@@ -146,7 +146,29 @@ function parseMarkdown(content = '') {
 
 function isSafeHref(href) {
   if (typeof href !== 'string') return false
-  return href.startsWith('http://') || href.startsWith('https://')
+  return href.startsWith('http://')
+    || href.startsWith('https://')
+    || (/^\/(?!\/)[^\s]*$/.test(href) && !href.includes('\\'))
+}
+
+function isExternalHref(href) {
+  return typeof href === 'string' && (href.startsWith('http://') || href.startsWith('https://'))
+}
+
+function MarkdownLink({ href, children, className }) {
+  if (isExternalHref(href)) {
+    return (
+      <OutboundLink href={href} className={className} target="_blank" rel="noreferrer">
+        {children}
+      </OutboundLink>
+    )
+  }
+
+  return (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  )
 }
 
 function getSingleMarkdownLink(text = '') {
@@ -159,13 +181,13 @@ function getSingleMarkdownLink(text = '') {
     return null
   }
 
-  const strictMatch = trimmedText.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/)
+  const strictMatch = trimmedText.match(/^\[([^\]]+)\]\(([^\s)]+)\)$/)
   if (strictMatch) {
     const [, label, href] = strictMatch
     return isSafeHref(href) ? { label, href } : null
   }
 
-  const linkMatch = trimmedText.match(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/)
+  const linkMatch = trimmedText.match(/\[([^\]]+)\]\(([^\s)]+)\)/)
   if (linkMatch) {
     const [, label, href] = linkMatch
     return isSafeHref(href) ? { label, href } : null
@@ -185,7 +207,7 @@ function renderInline(text = '') {
 
     const parts = []
     let remaining = segment
-    const linkRe = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g
+    const linkRe = /\[([^\]]+)\]\(([^\s)]+)\)/g
     let match
     let lastIndex = 0
 
@@ -200,9 +222,9 @@ function renderInline(text = '') {
 
       if (isSafeHref(href)) {
         parts.push(
-          <OutboundLink key={`link-${index}-${start}`} href={href} target="_blank" rel="noreferrer">
+          <MarkdownLink key={`link-${index}-${start}`} href={href}>
             {label}
-          </OutboundLink>
+          </MarkdownLink>
         )
       } else {
         parts.push(full)
@@ -237,9 +259,9 @@ function renderInline(text = '') {
 
         if (isSafeHref(href)) {
           autoParts.push(
-            <OutboundLink key={`autolink-${index}-${partIndex}-${start}`} href={href} target="_blank" rel="noreferrer">
+            <MarkdownLink key={`autolink-${index}-${partIndex}-${start}`} href={href}>
               {href}
-            </OutboundLink>
+            </MarkdownLink>
           )
         } else {
           autoParts.push(href)
@@ -343,9 +365,9 @@ function ArticleMarkdown({ content, title = '', lead = '' }) {
         if (ctaLink) {
           return (
             <div key={`cta-${index}`} className="article-cta-row">
-              <OutboundLink href={ctaLink.href} className="article-cta-button">
+              <MarkdownLink href={ctaLink.href} className="article-cta-button">
                 {ctaLink.label}
-              </OutboundLink>
+              </MarkdownLink>
             </div>
           )
         }

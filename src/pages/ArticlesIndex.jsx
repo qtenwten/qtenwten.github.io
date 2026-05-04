@@ -39,7 +39,7 @@ function ArticlesIndex() {
 
   const featuredArticle = articles[0] || null
   const sidebarArticles = articles.slice(1, 4)
-  const editorialArticles = articles.slice(1, 7)
+  const editorialArticles = articles.slice(1)
 
   return (
     <>
