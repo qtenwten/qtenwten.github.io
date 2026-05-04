@@ -65,6 +65,158 @@ test.describe('QR Code Generator', () => {
   })
 })
 
+test.describe('SEO Audit Pro', () => {
+  const auditPayload = {
+    finalUrl: 'https://example.com/',
+    status: 200,
+    ok: true,
+    contentType: 'text/html; charset=utf-8',
+    title: 'Example landing page for product research',
+    description: 'A concise page description that is long enough for a search snippet and short enough to avoid unnecessary truncation in search results.',
+    robots: 'index,follow',
+    canonical: 'https://example.com/',
+    h1Text: 'Hi',
+    h1Count: 1,
+    h2Count: 2,
+    h3Count: 1,
+    imagesTotal: 4,
+    imagesWithoutAlt: 2,
+    hasStructuredData: true,
+    openGraph: {
+      title: 'Example landing page for product research',
+      description: 'A concise Open Graph description.',
+      image: 'https://example.com/og.png',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Example landing page for product research',
+      description: 'A concise Twitter card description.',
+      image: 'https://example.com/twitter.png',
+    },
+    lang: 'ru',
+    viewport: 'width=device-width, initial-scale=1',
+    internalLinks: 12,
+    externalLinks: 3,
+    wordCount: 320,
+  }
+
+  async function mockSeoAudit(page) {
+    await page.route('https://seo-audit-api.qten.workers.dev/**', async (route) => {
+      await route.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify(auditPayload),
+      })
+    })
+  }
+
+  async function runAudit(page) {
+    await mockSeoAudit(page)
+    await page.goto('/ru/seo-audit-pro/')
+    await page.locator('#url').fill('https://example.com/')
+    await page.locator('.seo-audit-pro-analyze-btn').click()
+    await expect(page.locator('.seo-audit-pro-hero')).toBeVisible({ timeout: 10000 })
+  }
+
+  async function getCategoryCardLayout(page) {
+    return page.evaluate(() => {
+      const roundRect = (element) => {
+        const rect = element.getBoundingClientRect()
+
+        return {
+          x: Math.round(rect.x),
+          y: Math.round(rect.y),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          right: Math.round(rect.right),
+        }
+      }
+
+      return [...document.querySelectorAll('.seo-audit-pro-category-card')].map((card) => ({
+        card: roundRect(card),
+        header: roundRect(card.querySelector('.seo-audit-pro-category-card__header')),
+        score: roundRect(card.querySelector('.seo-audit-pro-category-card__score')),
+        bar: roundRect(card.querySelector('.seo-audit-pro-category-card__bar')),
+        footer: roundRect(card.querySelector('.seo-audit-pro-category-card__footer')),
+        barFill: roundRect(card.querySelector('.seo-audit-pro-category-card__bar-fill')),
+      }))
+    })
+  }
+
+  test('should render the issue-first SEO dashboard', async ({ page }) => {
+    await runAudit(page)
+
+    const ringBox = await page.locator('.seo-audit-pro-score-ring-svg').boundingBox()
+    expect(Math.round(ringBox.width)).toBeGreaterThanOrEqual(140)
+    expect(Math.round(ringBox.width)).toBeLessThanOrEqual(170)
+
+    await expect.poll(() => page.locator('.seo-audit-pro-score-ring-track').evaluate((el) => getComputedStyle(el).fill)).toBe('none')
+
+    const firstBar = await page.locator('.seo-audit-pro-category-card__bar-fill').first().boundingBox()
+    expect(Math.round(firstBar.height)).toBeGreaterThan(0)
+
+    await expect(page.locator('.seo-audit-pro-check')).toHaveCount(2)
+
+    await page.locator('.seo-audit-pro-filter').nth(4).click()
+    await expect(page.locator('.seo-audit-pro-check--pass').first()).toBeVisible()
+    await expect(page.locator('.seo-audit-pro-check__details')).toHaveCount(0)
+
+    await page.locator('.seo-audit-pro-check__toggle').first().click()
+    await expect(page.locator('.seo-audit-pro-check__details').first()).toBeVisible()
+  })
+
+  test('should keep category dashboard cards aligned and interactive', async ({ page }) => {
+    await runAudit(page)
+
+    const layout = await getCategoryCardLayout(page)
+    expect(layout).toHaveLength(5)
+    expect(layout.every((item) => item.barFill.height > 0)).toBe(true)
+
+    for (const item of layout) {
+      expect(item.header.x).toBeGreaterThanOrEqual(item.card.x)
+      expect(item.header.right).toBeLessThanOrEqual(item.card.right)
+      expect(item.score.x).toBeGreaterThanOrEqual(item.card.x)
+      expect(item.score.right).toBeLessThanOrEqual(item.card.right)
+      expect(item.bar.x).toBeGreaterThanOrEqual(item.card.x)
+      expect(item.bar.right).toBeLessThanOrEqual(item.card.right)
+      expect(item.footer.x).toBeGreaterThanOrEqual(item.card.x)
+      expect(item.footer.right).toBeLessThanOrEqual(item.card.right)
+    }
+
+    for (const row of [layout.slice(0, 3), layout.slice(3)]) {
+      const headerY = row[0].header.y
+      const scoreY = row[0].score.y
+      const barY = row[0].bar.y
+      const footerY = row[0].footer.y
+
+      expect(row.every((item) => item.header.y === headerY)).toBe(true)
+      expect(row.every((item) => item.score.y === scoreY)).toBe(true)
+      expect(row.every((item) => item.bar.y === barY)).toBe(true)
+      expect(row.every((item) => item.footer.y === footerY)).toBe(true)
+    }
+
+    await page.locator('.seo-audit-pro-category-card').filter({ hasText: 'Контент' }).click()
+    await expect(page.locator('.seo-audit-pro-check')).toHaveCount(1)
+    await expect(page.locator('.seo-audit-pro-check')).toContainText('Длина H1')
+  })
+
+  test('should keep the SEO dashboard stable on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 900 })
+    await runAudit(page)
+
+    const ringBox = await page.locator('.seo-audit-pro-score-ring-svg').boundingBox()
+    expect(Math.round(ringBox.width)).toBeGreaterThanOrEqual(104)
+    expect(Math.round(ringBox.width)).toBeLessThanOrEqual(120)
+
+    const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)
+    expect(hasHorizontalOverflow).toBe(false)
+
+    const layout = await getCategoryCardLayout(page)
+    expect(layout).toHaveLength(5)
+    expect(layout.every((item) => item.card.x >= 0 && item.card.right <= 390)).toBe(true)
+    expect(layout.every((item) => item.barFill.height > 0)).toBe(true)
+  })
+})
+
 test.describe('Random Number Generator', () => {
   async function fillWheelItems(page, first = 'Арам', second = 'Сен') {
     await page.locator('.item-input').nth(0).fill(first)

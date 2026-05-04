@@ -804,12 +804,33 @@ function getScoreTone(score) {
 }
 
 function matchesCheckFilter(check, filter) {
+  if (filter === 'issues') return check.status === 'fail' || check.status === 'warning'
   if (filter === 'all') return true
   if (filter === 'errors') return check.status === 'fail'
   if (filter === 'warnings') return check.status === 'warning'
   if (filter === 'passed') return check.status === 'pass'
   if (filter === 'na') return check.status === 'na'
   return true
+}
+
+function getVisibleAuditCategories(analysis, { checkFilter = 'all', activeCategoryId = null } = {}) {
+  if (!analysis?.categories) return []
+
+  return analysis.categories
+    .filter((category) => !activeCategoryId || category.id === activeCategoryId)
+    .map((category) => ({
+      ...category,
+      visibleChecks: category.checks.filter((check) => matchesCheckFilter(check, checkFilter)),
+    }))
+    .filter((category) => category.visibleChecks.length > 0)
+}
+
+function getVisibleAuditCheckCount(categories) {
+  return categories.reduce((sum, category) => sum + category.visibleChecks.length, 0)
+}
+
+function getDefaultExpandedCheckIds(analysis) {
+  return new Set((analysis?.highlights?.topFixes || []).map((check) => check.id))
 }
 
 function createWorkerAnalysis(data, language) {
@@ -852,7 +873,10 @@ export {
   buildAuditReport,
   createWorkerAnalysis,
   createFallbackAnalysis,
+  getDefaultExpandedCheckIds,
   getScoreColor,
   getScoreTone,
+  getVisibleAuditCategories,
+  getVisibleAuditCheckCount,
   matchesCheckFilter,
 }

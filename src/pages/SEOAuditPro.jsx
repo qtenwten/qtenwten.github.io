@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import SEO from '../components/SEO'
 import RelatedTools from '../components/RelatedTools'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import Icon from '../components/Icon'
 import { seoAuditCache } from '../utils/apiCache'
 import { analyzeSEO } from '../utils/seoAudit'
 import InlineSpinner from '../components/InlineSpinner'
@@ -15,12 +16,12 @@ import './SEOAuditPro.css'
 import { normalizeAuditUrl, requestWorkerAudit } from '../utils/seoAuditApi'
 import { AUDIT_UI_COPY } from '../utils/seoAuditUiCopy'
 import {
-  buildAuditReport,
   createWorkerAnalysis,
   createFallbackAnalysis,
+  getDefaultExpandedCheckIds,
   getScoreColor,
-  getScoreTone,
-  matchesCheckFilter,
+  getVisibleAuditCategories,
+  getVisibleAuditCheckCount,
 } from '../utils/seoAuditChecks'
 
 function WorkerIcon() {
@@ -56,10 +57,20 @@ function SEOAuditPro() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
-  const [checkFilter, setCheckFilter] = useState('all')
+  const [checkFilter, setCheckFilter] = useState('issues')
+  const [activeCategoryId, setActiveCategoryId] = useState(null)
+  const [expandedCheckIds, setExpandedCheckIds] = useState(() => new Set())
   const [rawOpen, setRawOpen] = useState(false)
   const [shareSuccess, setShareSuccess] = useState(false)
   const auditUi = AUDIT_UI_COPY[language] || AUDIT_UI_COPY.ru
+
+  const applyAnalysisResult = (analysis) => {
+    setResult(analysis)
+    setCheckFilter('issues')
+    setActiveCategoryId(null)
+    setExpandedCheckIds(getDefaultExpandedCheckIds(analysis))
+    setRawOpen(false)
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -95,13 +106,15 @@ function SEOAuditPro() {
 
     if (cachedResult) {
       setError('')
-      setResult(cachedResult)
+      applyAnalysisResult(cachedResult)
       return
     }
 
     setLoading(true)
     setError('')
     setResult(null)
+    setActiveCategoryId(null)
+    setExpandedCheckIds(new Set())
 
     const outcome = await runRequest(async ({ isCurrent, signal }) => {
       try {
@@ -146,7 +159,7 @@ function SEOAuditPro() {
 
     if (outcome.status === 'success' && outcome.result?.analysis) {
       seoAuditCache.set(cacheKey, outcome.result.analysis)
-      setResult(outcome.result.analysis)
+      applyAnalysisResult(outcome.result.analysis)
       const analysis = outcome.result.analysis
       let urlDomain = ''
       try { urlDomain = new URL(normalizedUrl).hostname } catch {}
@@ -184,25 +197,38 @@ function SEOAuditPro() {
 
   const isFallbackResult = result?.data?.source === 'browser'
   const visibleCategories = useMemo(() => {
-    if (!result) return []
+    return getVisibleAuditCategories(result, { checkFilter, activeCategoryId })
+  }, [result, checkFilter, activeCategoryId])
 
-    return result.categories
-      .map((category) => ({
-        ...category,
-        visibleChecks: category.checks.filter((check) => matchesCheckFilter(check, checkFilter)),
-      }))
-      .filter((category) => category.visibleChecks.length > 0)
-  }, [result, checkFilter])
-
-  const visibleCheckCount = visibleCategories.reduce((sum, category) => sum + category.visibleChecks.length, 0)
+  const visibleCheckCount = getVisibleAuditCheckCount(visibleCategories)
+  const activeCategory = result?.categories?.find((category) => category.id === activeCategoryId) || null
 
   const filterOptions = [
+    { key: 'issues', label: auditUi.filterIssues },
     { key: 'all', label: auditUi.filterAll },
     { key: 'errors', label: auditUi.filterErrors },
     { key: 'warnings', label: auditUi.filterWarnings },
     { key: 'passed', label: auditUi.filterPassed },
     { key: 'na', label: auditUi.filterUnavailable },
   ]
+
+  const toggleCategoryFilter = (categoryId) => {
+    setActiveCategoryId(prev => (prev === categoryId ? null : categoryId))
+  }
+
+  const toggleCheckDetails = (checkId) => {
+    setExpandedCheckIds(prev => {
+      const next = new Set(prev)
+
+      if (next.has(checkId)) {
+        next.delete(checkId)
+      } else {
+        next.add(checkId)
+      }
+
+      return next
+    })
+  }
 
   const renderSignal = (value, { missing = t('seoAuditPro.missing'), unknown = t('seoAuditPro.notAvailable') } = {}) => {
     if (value === undefined) return unknown
@@ -256,26 +282,25 @@ function SEOAuditPro() {
               <p>{error}</p>
               <button
                 onClick={handleAnalyze}
-                className="btn-primary"
-                style={{ marginTop: '0.75rem', alignSelf: 'flex-start' }}
+                className="btn-primary seo-audit-pro-error-action"
               >
                 {t('seoAuditPro.retry')}
               </button>
             </div>
           )}
 
-          <div className="field" style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="field seo-audit-pro-action-row">
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="btn-primary"
-              style={{ flex: 1 }}
+              className="btn-primary seo-audit-pro-analyze-btn"
             >
               {loading ? <><InlineSpinner /> {t('seoAuditPro.analyzing')}</> : t('seoAuditPro.analyze')}
             </button>
             {result && (
-              <button onClick={handleShare} className="btn-secondary">
-                &#128228; {t('seoAuditPro.share')}
+              <button onClick={handleShare} className="btn-secondary seo-audit-pro-share-btn">
+                <Icon name="content_copy" size={16} />
+                {t('seoAuditPro.share')}
               </button>
             )}
             {shareSuccess && (
@@ -305,12 +330,11 @@ function SEOAuditPro() {
               <ResultSection>
 
                 {isFallbackResult && (
-                  <ResultNotice type="warning">
+                  <ResultNotice tone="warning">
                     <p>{auditUi.fallbackNoticeBody}</p>
                   </ResultNotice>
                 )}
 
-                {/* ===== HERO SCORE + BADGES ===== */}
                 <div className="seo-audit-pro-hero">
                   <div className="seo-audit-pro-hero-left">
                     <div className="seo-audit-pro-score-ring">
@@ -399,7 +423,13 @@ function SEOAuditPro() {
                 </div>
                 <div className="seo-audit-pro-category-overview">
                   {result.categories.map((category) => (
-                    <article key={category.id} className={`seo-audit-pro-category-card seo-audit-pro-category-card--${category.status}`}>
+                    <button
+                      key={category.id}
+                      type="button"
+                      className={`seo-audit-pro-category-card seo-audit-pro-category-card--${category.status} ${activeCategoryId === category.id ? 'is-active' : ''}`.trim()}
+                      onClick={() => toggleCategoryFilter(category.id)}
+                      aria-pressed={activeCategoryId === category.id}
+                    >
                       <div className="seo-audit-pro-category-card__header">
                         <span className="seo-audit-pro-category-card__name">{category.label}</span>
                         <span className={`seo-audit-pro-status seo-audit-pro-status--${category.status}`}>{auditUi.status[category.status]}</span>
@@ -418,7 +448,7 @@ function SEOAuditPro() {
                         </div>
                         <span className="seo-audit-pro-category-card__weight">{auditUi.scoreOutOf(category.earned, category.available || 0)}</span>
                       </div>
-                    </article>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -426,7 +456,10 @@ function SEOAuditPro() {
               <div className="seo-audit-pro-section-block">
                 <div className="seo-audit-pro-filters-bar">
                   <strong className="seo-audit-pro-filters-label">{auditUi.scoreBreakdown}</strong>
-                  <span className="seo-audit-pro-filters-count">{auditUi.checksCount(visibleCheckCount, result.checks.length)}</span>
+                  <span className="seo-audit-pro-filters-count">
+                    {activeCategory ? `${activeCategory.label}: ` : ''}
+                    {auditUi.checksCount(visibleCheckCount, result.checks.length)}
+                  </span>
                   <div className="seo-audit-pro-filter-row">
                     {filterOptions.map((option) => (
                       <button
@@ -445,20 +478,34 @@ function SEOAuditPro() {
               {visibleCategories.map((category) => (
                 <ResultDetails key={category.id} title={category.label} className="seo-audit-pro-section">
                   <div className="seo-audit-pro-check-list">
-                    {category.visibleChecks.map((check) => (
-                      <article key={check.id} className={`seo-audit-pro-check seo-audit-pro-check--${check.status}`}>
-                        <div className="seo-audit-pro-check__row">
-                          <div className="seo-audit-pro-check__name">
+                    {category.visibleChecks.map((check) => {
+                      const isExpanded = expandedCheckIds.has(check.id)
+                      const detailsId = `seo-audit-pro-check-${check.id}`
+
+                      return (
+                        <article key={check.id} className={`seo-audit-pro-check seo-audit-pro-check--${check.status}`}>
+                          <button
+                            type="button"
+                            className="seo-audit-pro-check__toggle"
+                            onClick={() => toggleCheckDetails(check.id)}
+                            aria-expanded={isExpanded}
+                            aria-controls={detailsId}
+                          >
+                            <span className="seo-audit-pro-check__row">
+                          <span className="seo-audit-pro-check__name">
                             <span className={`seo-audit-pro-status seo-audit-pro-status--${check.status}`}>{auditUi.status[check.status]}</span>
                             <strong>{check.label}</strong>
-                          </div>
-                          <div className="seo-audit-pro-check__value-block">
+                          </span>
+                          <span className="seo-audit-pro-check__value-block">
                             <span className="seo-audit-pro-check__value">{check.value}</span>
                             <span className="seo-audit-pro-points">{check.status === 'na' ? '—' : auditUi.scoreOutOf(check.scoreEarned ?? 0, check.weight)}</span>
-                          </div>
-                        </div>
-                        <p className="seo-audit-pro-check__summary">{check.summary}</p>
-                        <div className="seo-audit-pro-check__details">
+                            <ChevronIcon className={isExpanded ? 'seo-audit-pro-raw-toggle-icon--open' : ''} />
+                          </span>
+                        </span>
+                        <span className="seo-audit-pro-check__summary">{check.summary}</span>
+                          </button>
+                        {isExpanded && (
+                        <div id={detailsId} className="seo-audit-pro-check__details">
                           <div className="seo-audit-pro-check__detail">
                             <span className="seo-audit-pro-check__detail-label">{auditUi.whyItMatters}</span>
                             <p>{check.whyItMatters}</p>
@@ -472,8 +519,10 @@ function SEOAuditPro() {
                             <p>{check.recommendation || auditUi.noRecommendation}</p>
                           </div>
                         </div>
-                      </article>
-                    ))}
+                        )}
+                        </article>
+                      )
+                    })}
                   </div>
                 </ResultDetails>
               ))}
@@ -609,7 +658,10 @@ function SEOAuditPro() {
               </div>
 
               <ResultActions align="center">
-                <button onClick={handleShare} className="seo-share-button">&#128228; {t('seoAuditPro.share')}</button>
+                <button onClick={handleShare} className="seo-share-button">
+                  <Icon name="content_copy" size={16} />
+                  {t('seoAuditPro.share')}
+                </button>
               </ResultActions>
 
             </ResultSection>
