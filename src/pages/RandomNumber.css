@@ -434,6 +434,16 @@
   background: var(--bg-secondary);
 }
 
+.sound-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sound-toggle:disabled:hover {
+  color: var(--text-secondary);
+  background: transparent;
+}
+
 .sound-toggle.is-muted {
   color: var(--text-secondary);
   opacity: 0.6;

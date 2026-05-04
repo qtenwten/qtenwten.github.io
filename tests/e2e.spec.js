@@ -127,4 +127,101 @@ test.describe('Random Number Generator', () => {
 
     await spinAndWaitForResult(page)
   })
+
+  test('should restore a suspended wheel audio context', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__wheelAudioEvents = []
+      window.__wheelAudioContexts = []
+
+      class MockAudioContext {
+        constructor() {
+          this.state = 'running'
+          this.currentTime = 1
+          this.destination = {}
+          window.__wheelAudioContexts.push(this)
+          window.__wheelAudioEvents.push({ type: 'create-context' })
+        }
+
+        createOscillator() {
+          const context = this
+          window.__wheelAudioEvents.push({ type: 'create-oscillator', state: context.state })
+
+          return {
+            frequency: { value: 0 },
+            type: 'sine',
+            connect() {},
+            start() {
+              window.__wheelAudioEvents.push({ type: 'oscillator-start', state: context.state })
+            },
+            stop() {},
+          }
+        }
+
+        createGain() {
+          return {
+            connect() {},
+            gain: {
+              setValueAtTime() {},
+              exponentialRampToValueAtTime() {},
+            },
+          }
+        }
+
+        async suspend() {
+          this.state = 'suspended'
+          window.__wheelAudioEvents.push({ type: 'suspend-called' })
+        }
+
+        async resume() {
+          window.__wheelAudioEvents.push({ type: 'resume-called' })
+          this.state = 'running'
+        }
+
+        async close() {
+          this.state = 'closed'
+          window.__wheelAudioEvents.push({ type: 'close-called' })
+        }
+      }
+
+      Object.defineProperty(window, 'AudioContext', {
+        configurable: true,
+        writable: true,
+        value: MockAudioContext,
+      })
+      Object.defineProperty(window, 'webkitAudioContext', {
+        configurable: true,
+        writable: true,
+        value: MockAudioContext,
+      })
+    })
+
+    await page.goto('/ru/random-number/')
+    await page.locator('.mode-tab').nth(1).click()
+    await fillWheelItems(page, 'Alpha', 'Beta')
+
+    await spinAndWaitForResult(page)
+    await expect.poll(() => page.evaluate(() => window.__wheelAudioEvents.some(event => event.type === 'create-context'))).toBe(true)
+
+    await page.evaluate(async () => {
+      window.__wheelAudioEvents = []
+      await window.__wheelAudioContexts.at(-1).suspend()
+      window.__wheelAudioEvents = []
+    })
+
+    await page.locator('.re-spin-btn').click()
+    await expect.poll(() => page.evaluate(() => window.__wheelAudioEvents.some(event => event.type === 'resume-called'))).toBe(true)
+    await expect(page.locator('.picker-result')).toBeVisible({ timeout: 6000 })
+
+    await page.evaluate(async () => {
+      window.__wheelAudioEvents = []
+      await window.__wheelAudioContexts.at(-1).suspend()
+      window.__wheelAudioEvents = []
+    })
+
+    const soundToggle = page.locator('.sound-toggle')
+    await soundToggle.click()
+    await expect(soundToggle).toHaveClass(/is-muted/)
+    await soundToggle.click()
+    await expect.poll(() => page.evaluate(() => window.__wheelAudioEvents.some(event => event.type === 'resume-called'))).toBe(true)
+  })
 })

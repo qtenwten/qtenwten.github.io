@@ -12,6 +12,7 @@ import {
   getIndexAtPointer,
   getWheelSelectionState,
 } from '../utils/randomGenerator'
+import { createWheelAudioController } from '../utils/wheelAudio'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
 import './RandomNumber.css'
@@ -136,13 +137,12 @@ class ConfettiSystem {
   }
 }
 
-function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placeholder }) {
+function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placeholder, getAudioController }) {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
   const pointerRef = useRef(null)
   const sparkContainerRef = useRef(null)
   const [currentRotation, setCurrentRotation] = useState(0)
-  const audioContextRef = useRef(null)
   const animationRef = useRef(null)
   const lastPointerIndexRef = useRef(-1)
   const pointerKickAnimationRef = useRef(null)
@@ -250,10 +250,6 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
   useEffect(() => {
     if (!isSpinning || items.length === 0) return
 
-    if (soundEnabled && !audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
-    }
-
     const result = calculateSpinResult(items, duration, currentRotation)
     const { targetAngle } = result
 
@@ -265,18 +261,14 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
     lastPointerIndexRef.current = getIndexAtPointer(startAngle, items.length)
 
     const playTick = () => {
-      if (soundEnabled && audioContextRef.current) {
-        const osc = audioContextRef.current.createOscillator()
-        const gain = audioContextRef.current.createGain()
-        osc.connect(gain)
-        gain.connect(audioContextRef.current.destination)
-        osc.frequency.value = 600 + Math.random() * 200
-        osc.type = 'sine'
-        gain.gain.setValueAtTime(0.08, audioContextRef.current.currentTime)
-        gain.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.08)
-        osc.start()
-        osc.stop(audioContextRef.current.currentTime + 0.04)
-      }
+      if (!soundEnabled) return
+
+      void getAudioController().playTone({
+        frequency: 600 + Math.random() * 200,
+        gainValue: 0.08,
+        duration: 0.04,
+        fadeDuration: 0.08,
+      })
     }
 
     const kickPointer = () => {
@@ -380,17 +372,13 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         animationRef.current = requestAnimationFrame(animate)
       } else {
         setCurrentRotation(targetAngle)
-        if (soundEnabled && audioContextRef.current) {
-          const osc = audioContextRef.current.createOscillator()
-          const gain = audioContextRef.current.createGain()
-          osc.connect(gain)
-          gain.connect(audioContextRef.current.destination)
-          osc.frequency.value = 880
-          osc.type = 'sine'
-          gain.gain.setValueAtTime(0.15, audioContextRef.current.currentTime)
-          gain.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.5)
-          osc.start()
-          osc.stop(audioContextRef.current.currentTime + 0.5)
+        if (soundEnabled) {
+          void getAudioController().playTone({
+            frequency: 880,
+            gainValue: 0.15,
+            duration: 0.5,
+            fadeDuration: 0.5,
+          })
         }
         onSpinEnd(result)
       }
@@ -404,14 +392,10 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         animationRef.current = null
       }
     }
-  }, [isSpinning, items, soundEnabled, duration])
+  }, [isSpinning, items, duration, getAudioController])
 
   useEffect(() => {
     return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close()
-      }
-
       if (pointerKickAnimationRef.current) {
         pointerKickAnimationRef.current.cancel()
       }
@@ -480,6 +464,15 @@ function RandomNumber() {
   const confettiCanvasRef = useRef(null)
   const confettiRef = useRef(null)
   const wheelWrapperRef = useRef(null)
+  const audioControllerRef = useRef(null)
+
+  const getAudioController = useCallback(() => {
+    if (!audioControllerRef.current) {
+      audioControllerRef.current = createWheelAudioController()
+    }
+
+    return audioControllerRef.current
+  }, [])
 
   useEffect(() => {
     const saved = safeGetItem('randomNumber')
@@ -502,6 +495,14 @@ function RandomNumber() {
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (audioControllerRef.current) {
+        void audioControllerRef.current.close()
+      }
+    }
   }, [])
 
   const handleGenerate = () => {
@@ -561,9 +562,27 @@ function RandomNumber() {
 
   const handleSpin = () => {
     if (!canSpin || isSpinning) return
+    if (soundEnabled) {
+      void getAudioController().warmUp()
+    }
+
     setWheelItemsSnapshot(spinItems)
     setSpinResult(null)
     setIsSpinning(true)
+  }
+
+  const handleSoundToggle = () => {
+    if (isSpinning) return
+
+    setSoundEnabled(prev => {
+      const nextValue = !prev
+
+      if (nextValue) {
+        void getAudioController().warmUp()
+      }
+
+      return nextValue
+    })
   }
 
   const handleSpinEnd = (result) => {
@@ -946,7 +965,8 @@ function RandomNumber() {
                 />
                 <button
                   className={`sound-toggle ${!soundEnabled ? 'is-muted' : ''}`}
-                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  onClick={handleSoundToggle}
+                  disabled={isSpinning}
                 >
                   <Icon name={soundEnabled ? 'volume_2' : 'volume_x'} size={16} />
                   {soundEnabled ? t('randomNumber.picker.soundOn') : t('randomNumber.picker.soundOff')}
@@ -963,6 +983,7 @@ function RandomNumber() {
                   soundEnabled={soundEnabled}
                   duration={finalDuration}
                   placeholder={t('randomNumber.picker.wheelPlaceholder')}
+                  getAudioController={getAudioController}
                 />
               </div>
 
