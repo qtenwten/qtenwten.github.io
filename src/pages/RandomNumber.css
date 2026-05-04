@@ -95,6 +95,16 @@
   background: var(--bg-elevated);
 }
 
+.mode-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.mode-tab:disabled:hover {
+  color: var(--text-secondary);
+  background: transparent;
+}
+
 .mode-tab.is-active {
   background: var(--bg-elevated);
   border-color: var(--primary);

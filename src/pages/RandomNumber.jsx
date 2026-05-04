@@ -5,7 +5,13 @@ import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
-import { generateRandomNumbers, calculateSpinResult, normalizeItems, getIndexAtPointer } from '../utils/randomGenerator'
+import {
+  generateRandomNumbers,
+  calculateSpinResult,
+  normalizeItems,
+  getIndexAtPointer,
+  getWheelSelectionState,
+} from '../utils/randomGenerator'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
 import './RandomNumber.css'
@@ -469,7 +475,6 @@ function RandomNumber() {
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [history, setHistory] = useState([])
   const [excludeChosen, setExcludeChosen] = useState(true)
-  const [currentRotation, setCurrentRotation] = useState(0)
   const [wheelItemsSnapshot, setWheelItemsSnapshot] = useState(null)
 
   const confettiCanvasRef = useRef(null)
@@ -548,9 +553,15 @@ function RandomNumber() {
     setWheelItemsSnapshot(null)
   }
 
+  const handleModeChange = (nextMode) => {
+    if (isSpinning) return
+    setMode(nextMode)
+    clearWheelResult()
+  }
+
   const handleSpin = () => {
-    if (availableItems.length < 2 || isSpinning) return
-    setWheelItemsSnapshot(availableItems)
+    if (!canSpin || isSpinning) return
+    setWheelItemsSnapshot(spinItems)
     setSpinResult(null)
     setIsSpinning(true)
   }
@@ -590,6 +601,7 @@ function RandomNumber() {
   }
 
   const handleReSpin = () => {
+    if (!canSpin) return
     setSpinResult(null)
     setWheelItemsSnapshot(null)
     handleSpin()
@@ -601,16 +613,55 @@ function RandomNumber() {
     setWheelItemsSnapshot(null)
   }
 
-  const availableItems = excludeChosen
-    ? normalizedItems.filter(item => !history.some(h => h.item.toLowerCase() === item.toLowerCase()))
-    : normalizedItems
+  const {
+    remainingItems,
+    spinItems,
+    wheelItems,
+    hasEnoughItems,
+    canSpin: canSpinBeforeAnimation,
+    allSequenceItemsChosen,
+  } = getWheelSelectionState({
+    mode,
+    normalizedItems,
+    history,
+    excludeChosen,
+    wheelItemsSnapshot,
+    isSpinning,
+    hasSpinResult: Boolean(spinResult),
+  })
 
-  const wheelItems = wheelItemsSnapshot && (isSpinning || spinResult)
-    ? wheelItemsSnapshot
-    : availableItems
+  const finalDuration = customDuration ?? spinDuration
+  const canSpin = canSpinBeforeAnimation && !isSpinning
+  const spinButtonTitle = isSpinning
+    ? t('randomNumber.picker.spinning')
+    : !hasEnoughItems
+      ? t('randomNumber.picker.wheelPlaceholder')
+      : allSequenceItemsChosen
+        ? t('randomNumber.sequence.allChosen')
+        : !canSpin
+          ? t('randomNumber.picker.wheelPlaceholder')
+          : ''
 
-  const finalDuration = customDuration || spinDuration
-  const canSpin = availableItems.length >= 2 && !isSpinning
+  const remainingTemplate = t('randomNumber.sequence.remaining')
+  const hasFormattedRemaining = remainingTemplate.includes('<strong>{{remaining}}</strong>')
+  const [remainingPrefix, remainingRest = ''] = remainingTemplate.split('<strong>{{remaining}}</strong>')
+  const remainingSuffix = remainingRest.replace('{{total}}', normalizedItems.length)
+  const remainingPlainText = remainingTemplate
+    .replace('<strong>{{remaining}}</strong>', String(remainingItems.length))
+    .replace('{{remaining}}', String(remainingItems.length))
+    .replace('{{total}}', String(normalizedItems.length))
+
+  const handleCustomDurationChange = (e) => {
+    if (!e.target.value) {
+      setCustomDuration(null)
+      return
+    }
+
+    const value = parseInt(e.target.value, 10)
+    if (Number.isNaN(value)) return
+
+    setCustomDuration(Math.min(60, Math.max(1, value)))
+  }
 
   return (
     <>
@@ -639,27 +690,30 @@ function RandomNumber() {
         <nav className="mode-tabs" role="tablist">
           <button
             className={`mode-tab ${mode === 'numbers' ? 'is-active' : ''}`}
-            onClick={() => { setMode('numbers'); if (!isSpinning) clearWheelResult() }}
+            onClick={() => handleModeChange('numbers')}
             role="tab"
             aria-selected={mode === 'numbers'}
+            disabled={isSpinning}
           >
             <Icon name="casino" size={18} />
             {t('randomNumber.modes.numbers')}
           </button>
           <button
             className={`mode-tab ${mode === 'picker' ? 'is-active' : ''}`}
-            onClick={() => { setMode('picker'); if (!isSpinning) clearWheelResult() }}
+            onClick={() => handleModeChange('picker')}
             role="tab"
             aria-selected={mode === 'picker'}
+            disabled={isSpinning}
           >
             <Icon name="pointer" size={18} />
             {t('randomNumber.modes.picker')}
           </button>
           <button
             className={`mode-tab ${mode === 'sequence' ? 'is-active' : ''}`}
-            onClick={() => { setMode('sequence'); if (!isSpinning) clearWheelResult() }}
+            onClick={() => handleModeChange('sequence')}
             role="tab"
             aria-selected={mode === 'sequence'}
+            disabled={isSpinning}
           >
             <Icon name="list_ordered" size={18} />
             {t('randomNumber.modes.sequence')}
@@ -820,6 +874,45 @@ function RandomNumber() {
                 </div>
               )}
 
+              {mode === 'sequence' && excludeChosen && hasEnoughItems && (
+                <div className="history-section">
+                  <h4>{t('randomNumber.sequence.history')}</h4>
+                  {history.length > 0 && (
+                    <div className="history-list">
+                      {history.map((entry, index) => (
+                        <div className="history-item" key={`${entry.item}-${index}`}>
+                          <span className="history-item__number">{index + 1}</span>
+                          <span className="history-item__text">{entry.item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="remaining-counter">
+                    {hasFormattedRemaining ? (
+                      <>
+                        {remainingPrefix}
+                        <strong>{remainingItems.length}</strong>
+                        {remainingSuffix}
+                      </>
+                    ) : (
+                      remainingPlainText
+                    )}
+                  </div>
+                  {allSequenceItemsChosen ? (
+                    <div className="all-chosen-message">
+                      <p>{t('randomNumber.sequence.allChosen')}</p>
+                      <button className="reset-history-btn" onClick={handleResetHistory}>
+                        {t('randomNumber.sequence.reset')}
+                      </button>
+                    </div>
+                  ) : history.length > 0 && (
+                    <button className="reset-history-btn" onClick={handleResetHistory}>
+                      {t('randomNumber.sequence.reset')}
+                    </button>
+                  )}
+                </div>
+              )}
+
               <div className="picker-actions">
                 <div className="duration-row">
                   <span className="duration-label">{t('randomNumber.picker.duration')}:</span>
@@ -842,10 +935,9 @@ function RandomNumber() {
                 <input
                   type="number"
                   className="duration-custom-input"
-                  value={customDuration || ''}
+                  value={customDuration ?? ''}
                   onChange={(e) => {
-                    const val = e.target.value ? parseInt(e.target.value) : null
-                    setCustomDuration(val)
+                    handleCustomDurationChange(e)
                   }}
                   placeholder={t('randomNumber.picker.durationPlaceholder')}
                   min={1}
@@ -874,25 +966,24 @@ function RandomNumber() {
                 />
               </div>
 
-              {normalizedItems.length >= 2 && (
-                <button
-                  className={`spin-btn ${isSpinning ? 'is-spinning' : ''}`}
-                  onClick={handleSpin}
-                  disabled={!canSpin}
-                >
-                  {isSpinning ? (
-                    <>
-                      <Icon name="loader_2" size={20} />
-                      {t('randomNumber.picker.spinning')}
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="play" size={20} />
-                      {t('randomNumber.picker.spin')}
-                    </>
-                  )}
-                </button>
-              )}
+              <button
+                className={`spin-btn ${isSpinning ? 'is-spinning' : ''}`}
+                onClick={handleSpin}
+                disabled={!canSpin}
+                title={spinButtonTitle}
+              >
+                {isSpinning ? (
+                  <>
+                    <Icon name="loader_2" size={20} />
+                    {t('randomNumber.picker.spinning')}
+                  </>
+                ) : (
+                  <>
+                    <Icon name="play" size={20} />
+                    {t('randomNumber.picker.spin')}
+                  </>
+                )}
+              </button>
 
               {spinResult && !isSpinning && (
                 <div className="picker-result">
@@ -904,9 +995,11 @@ function RandomNumber() {
                     {t('randomNumber.picker.chance')}: {spinResult.chance}%
                   </div>
                   <div className="picker-result__actions">
-                    <button className="re-spin-btn" onClick={handleReSpin}>
-                      {t('randomNumber.picker.reSpin')}
-                    </button>
+                    {canSpin && (
+                      <button className="re-spin-btn" onClick={handleReSpin}>
+                        {t('randomNumber.picker.reSpin')}
+                      </button>
+                    )}
                     <CopyButton text={spinResult.winnerItem} />
                   </div>
                 </div>

@@ -24,15 +24,32 @@ export function generateRandomNumbers(min, max, count, unique = false) {
   const numbers = []
 
   if (unique) {
-    const available = []
-    for (let i = minNum; i <= maxNum; i++) {
-      available.push(i)
+    const rangeSize = maxNum - minNum + 1
+
+    if (!Number.isSafeInteger(rangeSize) || rangeSize < 1) {
+      return { error: 'INVALID_PARAMS' }
     }
 
-    for (let i = 0; i < countNum; i++) {
-      const randomIndex = Math.floor(Math.random() * available.length)
-      numbers.push(available[randomIndex])
-      available.splice(randomIndex, 1)
+    if (rangeSize <= countNum * 3) {
+      const available = []
+      for (let i = minNum; i <= maxNum; i++) {
+        available.push(i)
+      }
+
+      for (let i = 0; i < countNum; i++) {
+        const randomIndex = Math.floor(Math.random() * available.length)
+        numbers.push(available[randomIndex])
+        available.splice(randomIndex, 1)
+      }
+    } else {
+      const picked = new Set()
+      while (picked.size < countNum) {
+        const randomNum = Math.floor(Math.random() * rangeSize) + minNum
+        if (!picked.has(randomNum)) {
+          picked.add(randomNum)
+          numbers.push(randomNum)
+        }
+      }
     }
   } else {
     for (let i = 0; i < countNum; i++) {
@@ -61,7 +78,7 @@ export function getIndexAtPointer(rotation, itemsCount) {
 }
 
 export function calculateSpinResult(items, duration, currentAngleRad = 0) {
-  if (!items || items.length < 2) {
+  if (!items || items.length < 1) {
     return { error: 'NOT_ENOUGH_ITEMS' }
   }
 
@@ -120,4 +137,42 @@ export function normalizeItems(rawItems) {
       return index === self.findIndex(t => t.toLowerCase() === lower)
     })
   return items
+}
+
+export function getWheelSelectionState({
+  mode,
+  normalizedItems,
+  history = [],
+  excludeChosen = true,
+  wheelItemsSnapshot = null,
+  isSpinning = false,
+  hasSpinResult = false,
+}) {
+  const historyKeys = new Set(
+    history.map(entry => String(entry.item || '').toLowerCase())
+  )
+
+  const remainingItems = excludeChosen
+    ? normalizedItems.filter(item => !historyKeys.has(item.toLowerCase()))
+    : normalizedItems
+
+  const isSequenceMode = mode === 'sequence'
+  const spinItems = isSequenceMode ? remainingItems : normalizedItems
+  const wheelItems = wheelItemsSnapshot && (isSpinning || hasSpinResult)
+    ? wheelItemsSnapshot
+    : spinItems
+
+  const hasEnoughItems = normalizedItems.length >= 2
+  const minimumSpinItems = isSequenceMode ? 1 : 2
+  const allSequenceItemsChosen =
+    isSequenceMode && excludeChosen && hasEnoughItems && remainingItems.length === 0
+
+  return {
+    remainingItems,
+    spinItems,
+    wheelItems,
+    hasEnoughItems,
+    canSpin: hasEnoughItems && spinItems.length >= minimumSpinItems && !allSequenceItemsChosen,
+    allSequenceItemsChosen,
+  }
 }
