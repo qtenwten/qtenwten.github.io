@@ -575,15 +575,79 @@
   border-radius: 50%;
   overflow: hidden;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 8px 16px -2px rgba(0, 0, 0, 0.15),
-    0 16px 32px -4px rgba(0, 0, 0, 0.2);
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.1),
+    0 4px 12px -2px rgba(0, 0, 0, 0.12),
+    0 8px 24px -4px rgba(0, 0, 0, 0.15);
 }
 
 .wheel-canvas-wrapper .wheel-canvas {
   display: block;
   border-radius: 50%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.wheel-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 8deg,
+    rgba(var(--primary-rgb), 0.15) 8deg 16deg,
+    transparent 16deg 24deg,
+    rgba(var(--primary-rgb), 0.15) 24deg 32deg,
+    transparent 32deg 40deg,
+    rgba(var(--primary-rgb), 0.15) 40deg 48deg,
+    transparent 48deg 56deg,
+    rgba(var(--primary-rgb), 0.15) 56deg 64deg,
+    transparent 64deg 72deg,
+    rgba(var(--primary-rgb), 0.15) 72deg 80deg,
+    transparent 80deg 88deg,
+    rgba(var(--primary-rgb), 0.15) 88deg 96deg,
+    transparent 96deg 104deg,
+    rgba(var(--primary-rgb), 0.15) 104deg 112deg,
+    transparent 112deg 120deg,
+    rgba(var(--primary-rgb), 0.15) 120deg 128deg,
+    transparent 128deg 136deg,
+    rgba(var(--primary-rgb), 0.15) 136deg 144deg,
+    transparent 144deg 152deg,
+    rgba(var(--primary-rgb), 0.15) 152deg 160deg,
+    transparent 160deg 168deg,
+    rgba(var(--primary-rgb), 0.15) 168deg 176deg,
+    transparent 176deg 184deg,
+    rgba(var(--primary-rgb), 0.15) 184deg 192deg,
+    transparent 192deg 200deg,
+    rgba(var(--primary-rgb), 0.15) 200deg 208deg,
+    transparent 208deg 216deg,
+    rgba(var(--primary-rgb), 0.15) 216deg 224deg,
+    transparent 224deg 232deg,
+    rgba(var(--primary-rgb), 0.15) 232deg 240deg,
+    transparent 240deg 248deg,
+    rgba(var(--primary-rgb), 0.15) 248deg 256deg,
+    transparent 256deg 264deg,
+    rgba(var(--primary-rgb), 0.15) 264deg 272deg,
+    transparent 272deg 280deg,
+    rgba(var(--primary-rgb), 0.15) 280deg 288deg,
+    transparent 288deg 296deg,
+    rgba(var(--primary-rgb), 0.15) 296deg 304deg,
+    transparent 304deg 312deg,
+    rgba(var(--primary-rgb), 0.15) 312deg 320deg,
+    transparent 320deg 328deg,
+    rgba(var(--primary-rgb), 0.15) 328deg 336deg,
+    transparent 336deg 344deg,
+    rgba(var(--primary-rgb), 0.15) 344deg 352deg,
+    transparent 352deg 360deg
+  );
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform, opacity;
+  transition: opacity 0.05s ease;
 }
 
 .wheel-pointer {
@@ -597,7 +661,7 @@
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-top: 28px solid var(--primary);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   will-change: transform;
   z-index: 10;
 }
@@ -626,22 +690,25 @@
   height: 0;
   pointer-events: none;
   z-index: 12;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .wheel-spark {
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: #facc15;
+  background: #fef08a;
   box-shadow:
-    0 0 8px rgba(250, 204, 21, 0.95),
-    0 0 14px rgba(251, 146, 60, 0.65);
+    0 0 6px rgba(254, 240, 138, 0.95),
+    0 0 12px rgba(250, 204, 21, 0.8),
+    0 0 20px rgba(251, 146, 60, 0.7),
+    0 0 32px rgba(251, 146, 60, 0.4);
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.4) rotate(var(--spark-rotate));
-  animation: wheelSparkBurst 280ms ease-out forwards;
+  animation: wheelSparkBurst 320ms ease-out forwards;
   animation-delay: var(--spark-delay);
 }
 
@@ -705,17 +772,50 @@
   width: 60px;
   height: 60px;
   background: var(--bg-elevated);
-  border: 3px solid var(--primary);
+  border: 5px solid var(--primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 5;
 }
 
 .wheel-center svg {
   color: var(--primary);
+}
+
+@keyframes wheelCenterPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.5), 0 0 30px rgba(var(--primary-rgb), 0.3);
+  }
+}
+
+.wheel-center svg {
+  color: var(--primary);
+  transition: filter 0.3s ease;
+}
+
+.wheel-center.is-spinning svg {
+  animation: wheelIconGlow 1s ease-in-out infinite;
+}
+
+@keyframes wheelIconGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(var(--primary-rgb), 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.8));
+  }
 }
 
 .wheel-placeholder {

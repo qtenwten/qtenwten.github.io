@@ -142,6 +142,8 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
   const wheelRef = useRef(null)
   const pointerRef = useRef(null)
   const sparkContainerRef = useRef(null)
+  const wheelCenterRef = useRef(null)
+  const wheelRaysRef = useRef(null)
   const [currentRotation, setCurrentRotation] = useState(0)
   const animationRef = useRef(null)
   const lastPointerIndexRef = useRef(-1)
@@ -158,17 +160,22 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
     ctx.clearRect(0, 0, size, size)
     ctx.save()
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.25)'
-    ctx.shadowBlur = 20
-    ctx.shadowOffsetY = 8
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)'
+    ctx.shadowBlur = 30
+    ctx.shadowOffsetY = 10
     ctx.beginPath()
     ctx.arc(center, center, radius, 0, 2 * Math.PI)
-    ctx.fillStyle = '#1e293b'
+
+    const baseGradient = ctx.createRadialGradient(center, center, 0, center, center, radius)
+    baseGradient.addColorStop(0, '#2d3a4d')
+    baseGradient.addColorStop(0.7, '#1e293b')
+    baseGradient.addColorStop(1, '#151f2d')
+    ctx.fillStyle = baseGradient
     ctx.fill()
     ctx.restore()
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-    ctx.lineWidth = 2
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.lineWidth = 1
     ctx.stroke()
 
     items.forEach((item, i) => {
@@ -176,25 +183,45 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       const endAngle = startAngle + segmentAngle
 
       const colorPair = SEGMENT_COLORS[i % SEGMENT_COLORS.length]
-      const gradient = ctx.createLinearGradient(
-        center + Math.cos(startAngle) * radius * 0.3,
-        center + Math.sin(startAngle) * radius * 0.3,
-        center + Math.cos(startAngle) * radius,
-        center + Math.sin(startAngle) * radius
-      )
-      gradient.addColorStop(0, colorPair[0])
-      gradient.addColorStop(1, colorPair[1])
 
       ctx.beginPath()
       ctx.moveTo(center, center)
       ctx.arc(center, center, radius - 4, startAngle, endAngle)
       ctx.closePath()
-      ctx.fillStyle = gradient
+
+      const segmentGradient = ctx.createLinearGradient(
+        center + Math.cos(startAngle + segmentAngle / 2) * radius * 0.15,
+        center + Math.sin(startAngle + segmentAngle / 2) * radius * 0.15,
+        center + Math.cos(startAngle + segmentAngle / 2) * radius,
+        center + Math.sin(startAngle + segmentAngle / 2) * radius
+      )
+      segmentGradient.addColorStop(0, colorPair[0])
+      segmentGradient.addColorStop(1, colorPair[1])
+      ctx.fillStyle = segmentGradient
       ctx.fill()
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'
-      ctx.lineWidth = 1.5
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.lineWidth = 1
       ctx.stroke()
+
+      ctx.save()
+      ctx.translate(center, center)
+      ctx.rotate(startAngle + segmentAngle / 2)
+      ctx.globalAlpha = 0.08
+      ctx.beginPath()
+      ctx.moveTo(0, -radius * 0.1)
+      ctx.lineTo(0, radius * 0.1)
+      const highlightGrad = ctx.createLinearGradient(radius * 0.2, 0, radius * 0.8, 0)
+      highlightGrad.addColorStop(0, 'rgba(255, 255, 255, 0)')
+      highlightGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)')
+      highlightGrad.addColorStop(0.7, 'rgba(255, 255, 255, 0.15)')
+      highlightGrad.addColorStop(1, 'rgba(255, 255, 255, 0)')
+      ctx.strokeStyle = highlightGrad
+      ctx.lineWidth = radius * 0.3
+      ctx.lineCap = 'round'
+      ctx.stroke()
+      ctx.globalAlpha = 1
+      ctx.restore()
 
       ctx.save()
       ctx.translate(center, center)
@@ -229,12 +256,40 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       ctx.restore()
     })
 
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(center, center, radius - 4, 0, 2 * Math.PI)
+    const outerRingGrad = ctx.createRadialGradient(center, center, radius - 6, center, center, radius)
+    outerRingGrad.addColorStop(0, 'rgba(255, 255, 255, 0)')
+    outerRingGrad.addColorStop(1, 'rgba(255, 255, 255, 0.1)')
+    ctx.strokeStyle = outerRingGrad
+    ctx.lineWidth = 6
+    ctx.stroke()
+    ctx.restore()
+
+    ctx.save()
+    ctx.globalAlpha = 0.2
+    ctx.beginPath()
+    ctx.arc(center, center, radius - 4, 0, 2 * Math.PI)
+    const glassOverlay = ctx.createLinearGradient(center - radius, center - radius, center + radius, center + radius)
+    glassOverlay.addColorStop(0, 'rgba(255, 255, 255, 0.12)')
+    glassOverlay.addColorStop(0.4, 'rgba(255, 255, 255, 0.04)')
+    glassOverlay.addColorStop(0.6, 'rgba(255, 255, 255, 0.04)')
+    glassOverlay.addColorStop(1, 'rgba(255, 255, 255, 0.08)')
+    ctx.fillStyle = glassOverlay
+    ctx.fill()
+    ctx.globalAlpha = 1
+    ctx.restore()
+
     ctx.beginPath()
     ctx.arc(center, center, 35, 0, 2 * Math.PI)
-    ctx.fillStyle = '#1e293b'
+    const centerGrad = ctx.createRadialGradient(center, center - 10, 5, center, center, 35)
+    centerGrad.addColorStop(0, '#3d4f66')
+    centerGrad.addColorStop(1, '#1e293b')
+    ctx.fillStyle = centerGrad
     ctx.fill()
     ctx.strokeStyle = 'rgba(var(--primary-rgb), 0.8)'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 5
     ctx.stroke()
   }, [])
 
@@ -271,7 +326,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       })
     }
 
-    const kickPointer = () => {
+const kickPointer = () => {
       const pointer = pointerRef.current
       if (!pointer || reduceMotion) return
 
@@ -283,12 +338,12 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         const animation = pointer.animate(
           [
             { transform: 'translateX(-50%) rotate(0deg)' },
-            { transform: 'translateX(-50%) rotate(-7deg)', offset: 0.34 },
-            { transform: 'translateX(-50%) rotate(3deg)', offset: 0.72 },
+            { transform: 'translateX(-50%) rotate(-14deg)', offset: 0.34 },
+            { transform: 'translateX(-50%) rotate(6deg)', offset: 0.72 },
             { transform: 'translateX(-50%) rotate(0deg)' },
           ],
           {
-            duration: 170,
+            duration: 200,
             easing: 'cubic-bezier(0.2, 0.9, 0.24, 1)',
           }
         )
@@ -313,16 +368,16 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       pointer.classList.add('is-ticking')
     }
 
-    const emitPointerSparks = () => {
+const emitPointerSparks = () => {
       const sparkContainer = sparkContainerRef.current
       if (!sparkContainer || reduceMotion) return
 
-      const sparkCount = 4 + Math.floor(Math.random() * 3)
+      const sparkCount = 8 + Math.floor(Math.random() * 4)
 
       for (let i = 0; i < sparkCount; i++) {
         const spark = document.createElement('span')
-        const angle = -155 + Math.random() * 130
-        const distance = 12 + Math.random() * 12
+        const angle = -160 + Math.random() * 140
+        const distance = 16 + Math.random() * 16
         const x = Math.cos((angle * Math.PI) / 180) * distance
         const y = Math.sin((angle * Math.PI) / 180) * distance
 
@@ -330,14 +385,14 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         spark.style.setProperty('--spark-x', `${x.toFixed(1)}px`)
         spark.style.setProperty('--spark-y', `${y.toFixed(1)}px`)
         spark.style.setProperty('--spark-rotate', `${Math.round(angle)}deg`)
-        spark.style.setProperty('--spark-delay', `${i * 12}ms`)
+        spark.style.setProperty('--spark-delay', `${i * 8}ms`)
 
         sparkContainer.appendChild(spark)
 
         const timeoutId = window.setTimeout(() => {
           spark.remove()
           sparkTimeoutsRef.current.delete(timeoutId)
-        }, 360)
+        }, 400)
 
         sparkTimeoutsRef.current.add(timeoutId)
       }
@@ -349,7 +404,25 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
       emitPointerSparks()
     }
 
-    const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
+const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
+
+    const updateCenterPulse = (progress) => {
+      const wheelCenter = wheelCenterRef.current
+      const wheelRays = wheelRaysRef.current
+      if (!wheelCenter) return
+
+      const pulsePhase = progress * Math.PI * 4
+      const pulseValue = Math.sin(pulsePhase)
+      const scale = 1 + 0.25 * (1 - progress) * Math.abs(pulseValue)
+      const glowIntensity = (1 - progress) * 0.7 * Math.abs(pulseValue)
+      wheelCenter.style.transform = `translate(-50%, -50%) scale(${scale})`
+      wheelCenter.style.boxShadow = `0 4px 12px rgba(0, 0, 0, 0.2)${glowIntensity > 0.05 ? `, 0 0 ${30 * glowIntensity}px rgba(var(--primary-rgb), ${glowIntensity * 1.5}), 0 0 ${60 * glowIntensity}px rgba(var(--primary-rgb), ${glowIntensity * 0.8})` : ''}`
+
+      if (wheelRays) {
+        wheelRays.style.transform = `translate(-50%, -50%) scale(${scale})`
+        wheelRays.style.opacity = glowIntensity > 0.05 ? glowIntensity * 0.8 : 0
+      }
+    }
 
     const animate = (time) => {
       const elapsed = time - startTime
@@ -366,6 +439,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
         lastPointerIndexRef.current = pointerIndex
       }
 
+      updateCenterPulse(easeProgress)
       setCurrentRotation(newAngle)
 
       if (progress < 1) {
@@ -381,6 +455,14 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
           })
         }
         onSpinEnd(result)
+        if (wheelCenterRef.current) {
+          wheelCenterRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
+          wheelCenterRef.current.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }
+        if (wheelRaysRef.current) {
+          wheelRaysRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
+          wheelRaysRef.current.style.opacity = '0'
+        }
       }
     }
 
@@ -420,6 +502,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
             <div ref={pointerRef} className="wheel-pointer" />
             <div ref={sparkContainerRef} className="wheel-spark-burst" aria-hidden="true" />
             <div className="wheel-canvas-wrapper">
+              <div ref={wheelRaysRef} className="wheel-rays" />
               <canvas
                 ref={canvasRef}
                 className="wheel-canvas"
@@ -431,7 +514,7 @@ function Wheel({ items, isSpinning, onSpinEnd, soundEnabled, duration, placehold
                 }}
               />
             </div>
-            <div className="wheel-center">
+            <div ref={wheelCenterRef} className="wheel-center">
               <Icon name="casino" size={24} />
             </div>
             <div className="wheel-glow" />
