@@ -720,7 +720,7 @@
     "clear": "Очистить",
     "modes": {
       "numbers": "Числа",
-      "picker": "Выбор",
+      "picker": "Колесо",
       "sequence": "Последоват."
     },
     "picker": {

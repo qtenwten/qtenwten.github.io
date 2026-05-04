@@ -720,7 +720,7 @@
     "clear": "Clear",
     "modes": {
       "numbers": "Numbers",
-      "picker": "Picker",
+      "picker": "Wheel",
       "sequence": "Sequence"
     },
     "picker": {
