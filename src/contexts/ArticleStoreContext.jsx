@@ -86,6 +86,29 @@ export function ArticleStoreProvider({ children }) {
     setDetailStatus('loading')
     setDetailError(null)
 
+    const tryReadFromDom = () => {
+      const element = document.getElementById('__ARTICLE_DETAIL_DATA__')
+      if (element && element.tagName === 'SCRIPT' && element.textContent) {
+        try {
+          const data = JSON.parse(element.textContent)
+          if (data && data.slug === slug) {
+            return data
+          }
+        } catch {
+          // ignore parse errors
+        }
+      }
+      return null
+    }
+
+    const domArticle = tryReadFromDom()
+    if (domArticle) {
+      setCurrentArticle(domArticle)
+      writeCachedArticleDetail(domArticle)
+      setDetailStatus('success')
+      return domArticle
+    }
+
     try {
       const article = await fetchArticleBySlug(slug, lang)
       setCurrentArticle(article)
