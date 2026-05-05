@@ -229,6 +229,59 @@ class ConfettiSystem {
 
   const raysStyle = getWheelRaysGradient(items)
 
+  function wrapTextForWheel(ctx, text, maxWidth, maxLines = 2) {
+    const lineHeight = 14
+    const words = text.split(' ')
+    const lines = []
+    let currentLine = ''
+
+    if (words.length === 1) {
+      const chars = text.split('')
+      currentLine = ''
+      for (const char of chars) {
+        const test = currentLine + char
+        if (ctx.measureText(test).width > maxWidth) {
+          lines.push(currentLine)
+          currentLine = char
+          if (lines.length >= maxLines) break
+        } else {
+          currentLine = test
+        }
+      }
+      if (currentLine && lines.length < maxLines) {
+        lines.push(currentLine)
+      }
+    } else {
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word
+        const testWidth = ctx.measureText(testLine).width
+
+        if (testWidth > maxWidth && currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+          if (lines.length >= maxLines) break
+        } else {
+          currentLine = testLine
+        }
+      }
+      if (currentLine && lines.length < maxLines) {
+        lines.push(currentLine)
+      }
+    }
+
+    if (lines.length === 2) {
+      let lastLine = lines[1]
+      while (ctx.measureText(lastLine).width > maxWidth && lastLine.length > 1) {
+        lastLine = lastLine.slice(0, -1)
+      }
+      if (lastLine.length < lines[1].length) {
+        lines[1] = lastLine + '…'
+      }
+    }
+
+    return lines
+  }
+
   const drawWheel = useCallback((ctx, items, size) => {
     if (!items || items.length === 0) return
 
@@ -314,23 +367,15 @@ class ConfettiSystem {
       ctx.textAlign = 'right'
       ctx.textBaseline = 'middle'
 
-      const maxChars = items.length > 8 ? 10 : items.length > 4 ? 14 : 18
-      let displayText = item
-      if (displayText.length > maxChars) {
-        displayText = displayText.substring(0, maxChars - 2) + '…'
-      }
+      const textX = radius - 15
+      const maxTextWidth = 82
+      const lines = wrapTextForWheel(ctx, item, maxTextWidth)
 
-      const lines = displayText.split(' ')
-      if (lines.length > 1 && items.length <= 6) {
-        const lineHeight = 14
-        const textWidth = radius - 30
-        lines.forEach((line, idx) => {
-          const yOffset = (idx - (lines.length - 1) / 2) * lineHeight
-          ctx.fillText(line, textWidth, yOffset)
-        })
-      } else {
-        ctx.fillText(displayText, radius - 20, 0)
-      }
+      const yOffsetBase = lines.length === 2 ? -7 : 0
+      lines.forEach((line, idx) => {
+        const yOffset = yOffsetBase + (idx - (lines.length - 1) / 2) * 14
+        ctx.fillText(line, textX, yOffset)
+      })
 
       ctx.restore()
     })
