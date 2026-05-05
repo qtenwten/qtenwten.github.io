@@ -46,6 +46,7 @@ export function ArticleStoreProvider({ children }) {
     const lang = language || 'ru'
 
     if (!force && articlesIndexRef.current.length > 0) {
+      setIndexStatus('success')
       return articlesIndexRef.current
     }
 
