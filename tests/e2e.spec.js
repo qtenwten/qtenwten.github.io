@@ -142,6 +142,35 @@ test.describe('SEO Audit Pro', () => {
     })
   }
 
+  async function getHeroSummaryLayout(page) {
+    return page.evaluate(() => {
+      const roundRect = (element) => {
+        const rect = element.getBoundingClientRect()
+
+        return {
+          x: Math.round(rect.x),
+          y: Math.round(rect.y),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          right: Math.round(rect.right),
+          bottom: Math.round(rect.bottom),
+        }
+      }
+
+      return {
+        description: roundRect(document.querySelector('.seo-audit-pro-score-description')),
+        badges: roundRect(document.querySelector('.seo-audit-pro-badges')),
+      }
+    })
+  }
+
+  function rectsOverlap(first, second) {
+    return first.x < second.right
+      && first.right > second.x
+      && first.y < second.bottom
+      && first.bottom > second.y
+  }
+
   test('should render the issue-first SEO dashboard', async ({ page }) => {
     await runAudit(page)
 
@@ -153,6 +182,9 @@ test.describe('SEO Audit Pro', () => {
 
     const firstBar = await page.locator('.seo-audit-pro-category-card__bar-fill').first().boundingBox()
     expect(Math.round(firstBar.height)).toBeGreaterThan(0)
+
+    const heroLayout = await getHeroSummaryLayout(page)
+    expect(rectsOverlap(heroLayout.description, heroLayout.badges)).toBe(false)
 
     await expect(page.locator('.seo-audit-pro-check')).toHaveCount(2)
 
