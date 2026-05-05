@@ -242,10 +242,10 @@ export function getRouteEntry(pathname) {
   // Try parent paths for sub-path routes (e.g., /random-number/picker -> /random-number)
   const segments = normalizedPath.split('/').filter(Boolean)
   while (segments.length > 1) {
+    segments.pop()
     const parentPath = '/' + segments.join('/')
     const parentMatch = ROUTE_REGISTRY.find((entry) => entry.path === parentPath)
     if (parentMatch) return parentMatch
-    segments.pop()
   }
 
   return null
