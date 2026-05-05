@@ -1287,7 +1287,7 @@
     display: none;
   }
 
-  .picker-result__icon {
+.picker-result__icon {
     animation: none;
   }
 }

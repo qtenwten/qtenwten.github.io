@@ -3,6 +3,7 @@ import {
   Calendar,
   Calculator,
   Check,
+  Circle,
   Clock3,
   Copy,
   CreditCard,

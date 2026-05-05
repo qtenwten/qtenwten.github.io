@@ -920,7 +920,7 @@ function RandomNumber() {
             <Icon name="pointer" size={18} />
             {t('randomNumber.modes.picker')}
           </button>
-          <button
+<button
             className={`mode-tab ${mode === 'sequence' ? 'is-active' : ''}`}
             onClick={() => handleModeChange('sequence')}
             role="tab"
