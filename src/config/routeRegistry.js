@@ -234,7 +234,21 @@ export const LEGACY_ROUTE_REDIRECTS = {
 
 export function getRouteEntry(pathname) {
   const normalizedPath = normalizeRegistryPath(pathname)
-  return ROUTE_REGISTRY.find((entry) => entry.path === normalizedPath) || null
+
+  // Try exact match first
+  const exactMatch = ROUTE_REGISTRY.find((entry) => entry.path === normalizedPath)
+  if (exactMatch) return exactMatch
+
+  // Try parent paths for sub-path routes (e.g., /random-number/picker -> /random-number)
+  const segments = normalizedPath.split('/').filter(Boolean)
+  while (segments.length > 1) {
+    const parentPath = '/' + segments.join('/')
+    const parentMatch = ROUTE_REGISTRY.find((entry) => entry.path === parentPath)
+    if (parentMatch) return parentMatch
+    segments.pop()
+  }
+
+  return null
 }
 
 export function getHomeRouteEntries() {

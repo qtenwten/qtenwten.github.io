@@ -137,12 +137,23 @@ function Breadcrumbs() {
 
   // If no category, skip category crumb
   const showCategory = Boolean(config?.categoryKey && config?.categorySlug)
+
+  // Detect mode segment for sub-path routes (e.g., /random-number/picker)
+  const cleanSegments = cleanPath.split('/').filter(Boolean)
+  const configSegments = config.path.split('/').filter(Boolean)
+  const modeSegment = cleanSegments.length > configSegments.length ? cleanSegments[configSegments.length] : null
+  const modeLabel = modeSegment ? t(`randomNumber.modes.${modeSegment}`) : null
+  const showMode = modeSegment && modeLabel && modeLabel !== `randomNumber.modes.${modeSegment}`
+
   const breadcrumbs = [
     { name: t('breadcrumbs.home'), url: `https://qsen.ru/${language}/`, path: `/${language}/` },
     ...(showCategory
       ? [{ name: getSafeLabel(t, config?.categoryKey, ''), url: `https://qsen.ru/${language}/?category=${config?.categorySlug}`, path: `/${language}/?category=${config?.categorySlug}` }]
       : []),
-    { name: getSafeLabel(t, config?.titleKey, fallbackLabel), url: `https://qsen.ru${pathname}`, path: null }
+    { name: getSafeLabel(t, config.titleKey, fallbackLabel), url: `https://qsen.ru${pathname}`, path: null },
+    ...(showMode
+      ? [{ name: modeLabel, url: `https://qsen.ru${pathname}`, path: null }]
+      : [])
   ]
 
   // JSON-LD структурированные данные для SEO
