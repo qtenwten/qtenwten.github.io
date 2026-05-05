@@ -206,7 +206,22 @@
     "randomNumber": {
       "title": "Random Number Generator Online | Free Number Picker",
       "description": "Generate random numbers online with custom ranges and optional no-repeat mode. Great for raffles, giveaways, games, and sampling.",
-      "keywords": "random number generator online, free number picker, randomizer, random number tool, no repeat number generator"
+      "keywords": "random number generator online, free number picker, randomizer, random number tool, no repeat number generator",
+      "numbers": {
+        "title": "Random Number Generator Online | Free Number Picker",
+        "description": "Generate random numbers online with custom ranges and optional no-repeat mode. Great for raffles, giveaways, games, and sampling.",
+        "keywords": "random number generator online, free number picker, randomizer, random number tool, no repeat number generator"
+      },
+      "picker": {
+        "title": "Random Participant Picker Wheel Online | Raffle Wheel",
+        "description": "Spin the wheel to randomly pick winners, participants, or prizes. Perfect for raffles in VK, Telegram, and live events.",
+        "keywords": "random picker wheel, raffle wheel, random winner selector, spin wheel, prize wheel"
+      },
+      "sequence": {
+        "title": "Random Sequence Generator Online | Shuffle Order",
+        "description": "Generate random sequences and shuffle order of items, participants, or tasks. Great for randomizing presentations, assignments, and sampling.",
+        "keywords": "random sequence generator, shuffle order, randomizer tool, random ordering, sequence randomizer"
+      }
     },
     "calculator": {
       "title": "Free Graphing Calculator Online | Plot Functions Fast",

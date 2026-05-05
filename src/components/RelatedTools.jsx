@@ -19,7 +19,7 @@ function RelatedTools({ currentPath, title }) {
     descriptionKey: entry.descriptionKey,
   }))
 
-  const otherTools = tools.filter(tool => tool.path !== cleanCurrentPath)
+  const otherTools = tools.filter(tool => !cleanCurrentPath.startsWith(tool.path))
 
   return (
     <div className="related-tools">

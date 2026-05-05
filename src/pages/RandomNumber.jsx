@@ -1,5 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
@@ -678,7 +679,10 @@ const handleDividerHit = () => {
 
 function RandomNumber() {
   const { t, language } = useLanguage()
-  const [mode, setMode] = useState('numbers')
+  const { mode: urlMode } = useParams()
+  const navigate = useNavigate()
+  const validModes = ['numbers', 'picker', 'sequence']
+  const [mode, setMode] = useState(urlMode && validModes.includes(urlMode) ? urlMode : 'numbers')
 
   const [min, setMin] = useState('1')
   const [max, setMax] = useState('50')
@@ -796,6 +800,10 @@ function RandomNumber() {
     if (isSpinning) return
     setMode(nextMode)
     clearWheelResult()
+    const newPath = nextMode === 'numbers'
+      ? `/${language}/random-number`
+      : `/${language}/random-number/${nextMode}`
+    navigate(newPath)
   }
 
   const handleSpin = () => {
@@ -923,10 +931,10 @@ function RandomNumber() {
   return (
     <>
       <SEO
-        title={t('seo.randomNumber.title')}
-        description={t('seo.randomNumber.description')}
-        path={`/${language}/random-number`}
-        keywords={t('seo.randomNumber.keywords')}
+        title={t(`seo.randomNumber.${mode}.title`) || t('seo.randomNumber.title')}
+        description={t(`seo.randomNumber.${mode}.description`) || t('seo.randomNumber.description')}
+        path={`/${language}/random-number${mode !== 'numbers' ? '/' + mode : ''}`}
+        keywords={t(`seo.randomNumber.${mode}.keywords`) || t('seo.randomNumber.keywords')}
       />
 
       <div className="confetti-container">

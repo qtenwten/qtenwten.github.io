@@ -74,6 +74,9 @@ const TOOL_PAGE_SHELL_PATHS = new Set([
   '/articles',
   '/meta-tags-generator',
   '/random-number',
+  '/random-number/numbers',
+  '/random-number/picker',
+  '/random-number/sequence',
   '/terms',
   '/privacy',
 ])
@@ -92,6 +95,9 @@ const CLIENT_RENDER_TOOL_PATHS = new Set([
   '/password-generator',
   '/vat-calculator',
   '/random-number',
+  '/random-number/numbers',
+  '/random-number/picker',
+  '/random-number/sequence',
   '/compound-interest',
   '/meta-tags-generator',
   '/terms',
@@ -778,6 +784,9 @@ function injectSeo(template, page, { articlesIndex = [], customPrerenderContent 
     || /^\/?(?:ru|en)\/?$/.test(page.path)
     || /^\/?(?:ru|en)\/?$/.test(page.route)
   const isRandomNumberPage = page.path === '/random-number'
+    || page.path === '/random-number/numbers'
+    || page.path === '/random-number/picker'
+    || page.path === '/random-number/sequence'
   const isQRCodeGeneratorPage = page.path === '/qr-code-generator'
   const usesToolPageShell = TOOL_PAGE_SHELL_PATHS.has(page.path)
   const shouldSkipHydration = CLIENT_RENDER_TOOL_PATHS.has(page.path)

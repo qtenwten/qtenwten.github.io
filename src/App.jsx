@@ -203,6 +203,9 @@ function App() {
                   )
                 })}
 
+                <Route path="/ru/random-number/:mode" element={<RandomNumber />} />
+                <Route path="/en/random-number/:mode" element={<RandomNumber />} />
+
                 <Route path="/ru/articles/:slug" element={<ArticlePage />} />
                 <Route path="/en/articles/:slug" element={<ArticlePage />} />
 

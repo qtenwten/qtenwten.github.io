@@ -103,6 +103,54 @@ export const ROUTE_SEO = {
       image: 'https://qsen.ru/og-image.png',
     },
   },
+  '/random-number/numbers': {
+    ru: {
+      title: 'Генератор случайных чисел онлайн — рандомайзер от 1 до 100',
+      description: 'Генератор случайных чисел онлайн для розыгрышей, выборки, лотерей и игр. Задайте диапазон, количество чисел и режим без повторений.',
+      keywords: 'генератор случайных чисел, генератор случайных чисел онлайн, рандомайзер, генератор чисел без повторений, случайное число от 1 до 100',
+      h1: 'Генератор случайных чисел онлайн',
+      image: 'https://qsen.ru/og-image.png',
+    },
+    en: {
+      title: 'Random Number Generator Online | Free Number Picker',
+      description: 'Generate random numbers online with custom ranges and optional no-repeat mode. Great for raffles, giveaways, games, and sampling.',
+      keywords: 'random number generator online, free number picker, randomizer, random number tool, no repeat number generator',
+      h1: 'Free Random Number Generator',
+      image: 'https://qsen.ru/og-image.png',
+    },
+  },
+  '/random-number/picker': {
+    ru: {
+      title: 'Колесо выбора случайных участников онлайн — розыгрыш без повторений',
+      description: 'Колесо рулетка для случайного выбора участников, призов и задач. Подходит для розыгрышей в VK, Telegram и на мероприятиях.',
+      keywords: 'колесо выбора, колесо рулетка, случайный выбор участников, розыгрыш призов, колесо для розыгрыша',
+      h1: 'Колесо выбора',
+      image: 'https://qsen.ru/og-image.png',
+    },
+    en: {
+      title: 'Random Participant Picker Wheel Online | Raffle Wheel',
+      description: 'Spin the wheel to randomly pick winners, participants, or prizes. Perfect for raffles in VK, Telegram, and live events.',
+      keywords: 'random picker wheel, raffle wheel, random winner selector, spin wheel, prize wheel',
+      h1: 'Random Participant Picker Wheel',
+      image: 'https://qsen.ru/og-image.png',
+    },
+  },
+  '/random-number/sequence': {
+    ru: {
+      title: 'Генератор случайной последовательности онлайн — перемешать порядок',
+      description: 'Генератор случайной последовательности для определения порядка выступлений, задач и случайной выборки без повторений.',
+      keywords: 'генератор последовательности, перемешать порядок, случайный порядок, случайная выборка, порядок выступлений',
+      h1: 'Генератор случайной последовательности',
+      image: 'https://qsen.ru/og-image.png',
+    },
+    en: {
+      title: 'Random Sequence Generator Online | Shuffle Order',
+      description: 'Generate random sequences and shuffle order of items, participants, or tasks. Great for randomizing presentations, assignments, and sampling.',
+      keywords: 'random sequence generator, shuffle order, randomizer tool, random ordering, sequence randomizer',
+      h1: 'Random Sequence Generator',
+      image: 'https://qsen.ru/og-image.png',
+    },
+  },
   '/calculator': {
     ru: {
       title: 'Графический калькулятор онлайн — графики функций и инженерные расчеты',
