@@ -80,6 +80,7 @@ export function ArticleStoreProvider({ children }) {
     if (cached) {
       setCurrentArticle(cached)
       setDetailStatus('success')
+      return cached
     }
 
     setDetailStatus('loading')
