@@ -168,7 +168,7 @@ export function createAnalyzeSEO(getMessage) {
     const images = doc.querySelectorAll('img')
     let imagesWithoutAlt = 0
     images.forEach(img => {
-      if (!img.hasAttribute('alt') || !img.getAttribute('alt').trim()) {
+      if (!img.hasAttribute('alt')) {
         imagesWithoutAlt++
       }
     })
