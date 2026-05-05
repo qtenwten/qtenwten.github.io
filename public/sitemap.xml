@@ -343,6 +343,13 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/en/articles/donation-wheel-for-streamers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/donation-wheel-for-streamers" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/en/articles/choice-wheel-when-you-dont-know-what-to-pick</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/choice-wheel-when-you-dont-know-what-to-pick" />
