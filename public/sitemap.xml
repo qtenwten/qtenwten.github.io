@@ -19,865 +19,937 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/number-to-words/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/number-to-words/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/number-to-words/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/number-to-words/" />
+    <loc>https://qsen.ru/ru/number-to-words</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/number-to-words" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/number-to-words" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/number-to-words" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/number-to-words/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/number-to-words/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/number-to-words/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/number-to-words/" />
+    <loc>https://qsen.ru/en/number-to-words</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/number-to-words" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/number-to-words" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/number-to-words" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/vat-calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/vat-calculator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/vat-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/vat-calculator/" />
+    <loc>https://qsen.ru/ru/vat-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/vat-calculator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/vat-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/vat-calculator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/vat-calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/vat-calculator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/vat-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/vat-calculator/" />
+    <loc>https://qsen.ru/en/vat-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/vat-calculator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/vat-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/vat-calculator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/random-number/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/" />
+    <loc>https://qsen.ru/ru/random-number</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/random-number/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/" />
+    <loc>https://qsen.ru/en/random-number</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/calculator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/calculator/" />
+    <loc>https://qsen.ru/ru/random-number/numbers</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/numbers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/numbers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/numbers" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/calculator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/calculator/" />
+    <loc>https://qsen.ru/en/random-number/numbers</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/numbers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/numbers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/numbers" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/date-difference/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/date-difference/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/date-difference/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/date-difference/" />
+    <loc>https://qsen.ru/ru/random-number/picker</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/picker" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/picker" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/picker" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/date-difference/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/date-difference/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/date-difference/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/date-difference/" />
+    <loc>https://qsen.ru/en/random-number/picker</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/picker" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/picker" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/picker" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/compound-interest/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/compound-interest/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/compound-interest/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/compound-interest/" />
+    <loc>https://qsen.ru/ru/random-number/sequence</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/sequence" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/sequence" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/sequence" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/compound-interest/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/compound-interest/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/compound-interest/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/compound-interest/" />
+    <loc>https://qsen.ru/en/random-number/sequence</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/sequence" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/sequence" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/random-number/sequence" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/seo-audit/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit/" />
+    <loc>https://qsen.ru/ru/calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/calculator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/calculator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/seo-audit/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit/" />
+    <loc>https://qsen.ru/en/calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/calculator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/calculator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/meta-tags-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/meta-tags-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/meta-tags-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/meta-tags-generator/" />
+    <loc>https://qsen.ru/ru/date-difference</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/date-difference" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/date-difference" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/date-difference" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/meta-tags-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/meta-tags-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/meta-tags-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/meta-tags-generator/" />
+    <loc>https://qsen.ru/en/date-difference</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/date-difference" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/date-difference" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/date-difference" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/seo-audit-pro/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit-pro/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit-pro/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit-pro/" />
+    <loc>https://qsen.ru/ru/compound-interest</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/compound-interest" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/compound-interest" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/compound-interest" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/compound-interest</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/compound-interest" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/compound-interest" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/compound-interest" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/seo-audit</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/seo-audit</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/meta-tags-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/meta-tags-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/meta-tags-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/meta-tags-generator" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/meta-tags-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/meta-tags-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/meta-tags-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/meta-tags-generator" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/seo-audit-pro</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit-pro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit-pro" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit-pro" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/seo-audit-pro/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit-pro/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit-pro/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit-pro/" />
+    <loc>https://qsen.ru/en/seo-audit-pro</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit-pro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit-pro" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit-pro" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/qr-code-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/qr-code-generator/" />
+    <loc>https://qsen.ru/ru/qr-code-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/qr-code-generator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/qr-code-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/qr-code-generator/" />
+    <loc>https://qsen.ru/en/qr-code-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/qr-code-generator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/url-shortener/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/url-shortener/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/url-shortener/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/url-shortener/" />
+    <loc>https://qsen.ru/ru/url-shortener</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/url-shortener" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/url-shortener" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/url-shortener" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/url-shortener/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/url-shortener/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/url-shortener/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/url-shortener/" />
+    <loc>https://qsen.ru/en/url-shortener</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/url-shortener" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/url-shortener" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/url-shortener" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/feedback/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/feedback/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/feedback/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/feedback/" />
+    <loc>https://qsen.ru/ru/feedback</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/feedback" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/feedback" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/feedback" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/feedback/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/feedback/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/feedback/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/feedback/" />
+    <loc>https://qsen.ru/en/feedback</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/feedback" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/feedback" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/feedback" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/password-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/password-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/password-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/password-generator/" />
+    <loc>https://qsen.ru/ru/password-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/password-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/password-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/password-generator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/password-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/password-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/password-generator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/password-generator/" />
+    <loc>https://qsen.ru/en/password-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/password-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/password-generator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/password-generator" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/terms/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/terms/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/terms/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/terms/" />
+    <loc>https://qsen.ru/ru/terms</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/terms" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/terms/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/terms/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/terms/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/terms/" />
+    <loc>https://qsen.ru/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/terms" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/privacy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/privacy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/privacy/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/privacy/" />
+    <loc>https://qsen.ru/ru/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/privacy" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/privacy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/privacy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/privacy/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/privacy/" />
+    <loc>https://qsen.ru/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/privacy" />
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa/" />
+    <loc>https://qsen.ru/en/articles/choice-wheel-when-you-dont-know-what-to-pick</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/choice-wheel-when-you-dont-know-what-to-pick" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/choice-wheel-when-you-dont-know-what-to-pick" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat" />
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste/" />
+    <loc>https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-vat-clause/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete/" />
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-vat-clause" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy/" />
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-payment-order/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya/" />
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-payment-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez/" />
+    <loc>https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-order-for-presentations-and-tasks/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach/" />
+    <loc>https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-order-for-presentations-and-tasks" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-sample-orders-for-checking/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki/" />
+    <loc>https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-sample-orders-for-checking" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley/" />
+    <loc>https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-on-business-card-contact/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov/" />
+    <loc>https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-on-business-card-contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-menu-flyer-print/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati/" />
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-menu-flyer-print" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-guest-wifi/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/" />
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-guest-wifi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy/" />
+    <loc>https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-router-password-length-and-settings/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny/" />
+    <loc>https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-router-password-length-and-settings" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-for-manual-entry-on-another-device/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve/" />
+    <loc>https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-for-manual-entry-on-another-device" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/wifi-router-password-length-and-settings/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-router-password-length-and-settings/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny/" />
+    <loc>https://qsen.ru/en/articles/wifi-router-password-length-and-settings</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-router-password-length-and-settings" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-routera-kakoy-dliny" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa/" />
+    <loc>https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/temporary-password-for-contractor-or-guest-access" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/vremennyy-parol-dlya-podryadchika-i-gostevogo-dostupa" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/random-sample-orders-for-checking/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-sample-orders-for-checking/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki/" />
+    <loc>https://qsen.ru/en/articles/random-sample-orders-for-checking</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-sample-orders-for-checking" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynaya-vyborka-zakazov-dlya-proverki" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/random-order-for-presentations-and-tasks/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-order-for-presentations-and-tasks/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach/" />
+    <loc>https://qsen.ru/en/articles/random-order-for-presentations-and-tasks</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-order-for-presentations-and-tasks" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sluchaynyy-poryadok-vystupleniy-i-zadach" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley/" />
+    <loc>https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-raffle-winners-no-duplicates" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/randomayzer-dlya-rozygrysha-pobediteley" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/qr-code-on-business-card-contact/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-on-business-card-contact/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov/" />
+    <loc>https://qsen.ru/en/articles/qr-code-on-business-card-contact</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-on-business-card-contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-na-vizitke-dlya-kontaktov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/qr-code-for-menu-flyer-print/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-menu-flyer-print/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati/" />
+    <loc>https://qsen.ru/en/articles/qr-code-for-menu-flyer-print</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-menu-flyer-print" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-menyu-listovki-pechati" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/qr-code-for-guest-wifi/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-guest-wifi/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/" />
+    <loc>https://qsen.ru/en/articles/qr-code-for-guest-wifi</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-guest-wifi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/password-for-manual-entry-on-another-device/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-for-manual-entry-on-another-device/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve/" />
+    <loc>https://qsen.ru/en/articles/password-for-manual-entry-on-another-device</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-for-manual-entry-on-another-device" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste/" />
+    <loc>https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/net-and-gross-prices-in-vat-price-list" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/tsena-s-nds-i-bez-nds-v-prays-liste" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez/" />
+    <loc>https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compare-supplier-prices-with-and-without-vat" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sravnit-tseny-postavschikov-s-nds-i-bez" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy/" />
+    <loc>https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/check-vat-in-invoice-receipt-document" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/proverit-nds-v-schete-akte-nakladnoy" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/amount-in-words-with-vat-clause/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-vat-clause/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete/" />
+    <loc>https://qsen.ru/en/articles/amount-in-words-with-vat-clause</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-vat-clause" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-nds-v-dogovore-i-schete" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy/" />
+    <loc>https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-with-cents-and-decimals" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-s-kopeykami-i-zapyatoy" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/amount-in-words-for-payment-order/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-payment-order/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya/" />
+    <loc>https://qsen.ru/en/articles/amount-in-words-for-payment-order</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-payment-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-platezhnogo-porucheniya" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/free-seo-audit/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/free-seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-besplatno/" />
+    <loc>https://qsen.ru/en/articles/free-seo-audit</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/free-seo-audit" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/seo-audit-besplatno/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/free-seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-besplatno/" />
+    <loc>https://qsen.ru/ru/articles/seo-audit-besplatno</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/free-seo-audit" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/password-generator-online/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-paroley-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-paroley-onlayn/" />
+    <loc>https://qsen.ru/en/articles/password-generator-online</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-paroley-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-paroley-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/url-shortener-online/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/url-shortener-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/" />
+    <loc>https://qsen.ru/en/articles/url-shortener-online</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/url-shortener-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/generator-paroley-onlayn/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-paroley-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-paroley-onlayn/" />
+    <loc>https://qsen.ru/ru/articles/generator-paroley-onlayn</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-paroley-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/password-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-paroley-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/url-shortener-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/" />
+    <loc>https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/url-shortener-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/meta-tags-generator-tool/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-meta-tegov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/meta-tags-generator-tool/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-meta-tegov/" />
+    <loc>https://qsen.ru/en/articles/meta-tags-generator-tool</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-meta-tegov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/meta-tags-generator-tool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-meta-tegov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/seo-audit-pro-tool/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/seo-audit-pro-tool/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument/" />
+    <loc>https://qsen.ru/en/articles/seo-audit-pro-tool</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/seo-audit-pro-tool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/generator-meta-tegov/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-meta-tegov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/meta-tags-generator-tool/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-meta-tegov/" />
+    <loc>https://qsen.ru/ru/articles/generator-meta-tegov</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-meta-tegov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/meta-tags-generator-tool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-meta-tegov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/seo-audit-pro-instrument/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/seo-audit-pro-tool/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument/" />
+    <loc>https://qsen.ru/ru/articles/seo-audit-pro-instrument</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/seo-audit-pro-tool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-pro-instrument" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/compound-interest-calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compound-interest-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/" />
+    <loc>https://qsen.ru/en/articles/compound-interest-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compound-interest-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compound-interest-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/" />
+    <loc>https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compound-interest-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/date-difference-calculator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/date-difference-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat/" />
+    <loc>https://qsen.ru/en/articles/date-difference-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/date-difference-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/date-difference-calculator/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat/" />
+    <loc>https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/date-difference-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kalkulyator-raznitsy-dat" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/online-calculator-free/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/online-calculator-free/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno/" />
+    <loc>https://qsen.ru/en/articles/online-calculator-free</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/online-calculator-free" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/online-calculator-free/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno/" />
+    <loc>https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/online-calculator-free" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/onlayn-kalkulyator-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/random-number-generator-online/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
+    <loc>https://qsen.ru/en/articles/random-number-generator-online</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel/" />
+    <loc>https://qsen.ru/ru/articles/generator-sluchaynyh-chisel</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/random-number-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/generator-sluchaynyh-chisel" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/nds-kalkulyator-onlayn/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/vat-calculator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn/" />
+    <loc>https://qsen.ru/ru/articles/nds-kalkulyator-onlayn</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/vat-calculator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/vat-calculator-online/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/vat-calculator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn/" />
+    <loc>https://qsen.ru/en/articles/vat-calculator-online</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/vat-calculator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-kalkulyator-onlayn" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/number-to-words-online-converter/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/number-to-words-online-converter/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno/" />
+    <loc>https://qsen.ru/en/articles/number-to-words-online-converter</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/number-to-words-online-converter" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/number-to-words-online-converter/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno/" />
+    <loc>https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/number-to-words-online-converter" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/chislo-propisyu-onlayn-besplatno" />
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu/" />
+    <loc>https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu/" />
+    <loc>https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/extract-vat-and-add-vat-without-mistakes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-vydelit-nds-iz-summy-i-nachislit-sverhu" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki/" />
+    <loc>https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki/" />
+    <loc>https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/how-many-days-left-until-new-year/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-left-until-new-year/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda/" />
+    <loc>https://qsen.ru/en/articles/how-many-days-left-until-new-year</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-left-until-new-year" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-left-until-new-year/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda/" />
+    <loc>https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-left-until-new-year" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ostalos-do-novogo-goda" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego/" />
+    <loc>https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego/" />
+    <loc>https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-to-create-a-strong-password-and-remember-it" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/qr-code-generator-online/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-code-generator/" />
+    <loc>https://qsen.ru/en/articles/qr-code-generator-online</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-code-generator" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/how-many-days-have-i-lived/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-have-i-lived/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu/" />
+    <loc>https://qsen.ru/en/articles/how-many-days-have-i-lived</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-have-i-lived" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta/" />
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta/" />
+    <loc>https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/amount-in-words-for-invoices-contracts-and-payment-documents" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-dlya-scheta-dogovora-i-akta" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/skolko-dney-ya-zhivu/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-have-i-lived/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu/" />
+    <loc>https://qsen.ru/ru/articles/skolko-dney-ya-zhivu</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/how-many-days-have-i-lived" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-ya-zhivu" />
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/articles/qr-code-generator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-code-generator/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-generator-online/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-code-generator/" />
+    <loc>https://qsen.ru/ru/articles/qr-code-generator</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-code-generator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-generator-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-code-generator" />
     <lastmod>2026-04-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
