@@ -298,7 +298,7 @@ export const ROUTE_SEO = {
 }
 
 export function normalizeSeoPath(path = '/') {
-  const cleanPath = path.replace(/^\/(ru|en)(?=\/|$)/, '') || '/'
+  const cleanPath = path.replace(/^\/(ru|en)\//, '/') || '/'
   const noSlash = cleanPath !== '/' && cleanPath.endsWith('/') ? cleanPath.slice(0, -1) : cleanPath
   return noSlash
 }
