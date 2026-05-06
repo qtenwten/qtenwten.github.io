@@ -83,6 +83,10 @@
       "title": "Password Generator",
       "description": "Strong passwords with settings"
     },
+    "addresseeGenerator": {
+      "title": "Addressee & Salutation Generator",
+      "description": "Ready blocks for To, From and Salutation"
+    },
     "metaTagsGenerator": {
       "title": "Meta Tags Generator",
       "description": "Title, description, OG tags"
@@ -276,6 +280,11 @@
       "title": "Date Difference Calculator | Days Between Dates Online",
       "description": "Calculate days between dates, compare date and time values, or run a live countdown. Great for planning, deadlines, and event timing.",
       "keywords": "date difference calculator, days between dates online, date calculator, countdown calculator, date and time calculator"
+    },
+    "addresseeGenerator": {
+      "title": "Addressee & Salutation Generator — online tool for business letters",
+      "description": "Create a clean addressee block, salutation and To / From lines for business letters, applications, orders or powers of attorney.",
+      "keywords": "addressee generator, salutation generator, to from block, business letter, name declension, position wording"
     }
   },
   "passwordGenerator": {
@@ -1434,6 +1443,143 @@
       "missingOgImage": "Missing og:image",
       "missingStructuredData": "Missing structured data (JSON-LD)",
       "addStructuredData": "Add Schema.org markup to improve search appearance"
+    }
+  },
+  "addresseeGenerator": {
+    "heroEyebrow": "Document helper",
+    "title": "Addressee & Salutation Generator",
+    "subtitle": "Enter a name, position and organization — get ready-to-use blocks for letters, applications and documents.",
+    "benefitsLabel": "Generator capabilities",
+    "benefits": {
+      "readyBlock": "Ready To / From block",
+      "salutation": "Business letter salutation",
+      "csv": "CSV export",
+      "warnings": "Warnings for ambiguous cases"
+    },
+    "formKicker": "Input → settings → result",
+    "formTitle": "Recipient Data",
+    "formDescription": "Fill in the recipient details and choose the salutation format. The result appears on the right.",
+    "recipientTitle": "Recipient details",
+    "settingsTitle": "Salutation settings",
+    "resultKicker": "Ready to copy",
+    "resultTitle": "Document block",
+    "resultSubtitle": "Review warnings and copy a single fragment or the full letter block.",
+    "resultBlockLabel": "Fragment",
+    "emptyStateTitle": "The result will appear here",
+    "emptyState": "Enter a name, position and organization to generate a document block.",
+    "flow": {
+      "input": "Input",
+      "settings": "Settings",
+      "result": "Result"
+    },
+    "examplesLabel": "Quick examples",
+    "examplesHint": "Fill the form in one click",
+    "examples": {
+      "businessLetter": "Business Letter",
+      "application": "Application",
+      "neutral": "Neutral"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "position": "Position",
+      "organization": "Organization",
+      "gender": "Gender",
+      "greetingMode": "Greeting Format",
+      "punctuation": "Punctuation after Greeting"
+    },
+    "placeholders": {
+      "fullName": "John Smith",
+      "position": "General Director",
+      "organization": "Company LLC"
+    },
+    "hints": {
+      "fullName": "Use the full surname, first name and patronymic when available.",
+      "position": "For example: chief accountant, sales director, specialist.",
+      "organization": "Enter the legal entity or department exactly as it should appear in the document."
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "unknown": "Not specified"
+    },
+    "greetingMode": {
+      "namePatronymic": "First name & patronymic",
+      "fullName": "Full name",
+      "colleagues": "Colleagues"
+    },
+    "punctuation": {
+      "exclamation": "!",
+      "comma": ","
+    },
+    "buttons": {
+      "generate": "Generate",
+      "clear": "Clear",
+      "example": "Load Example",
+      "copyAll": "Copy all",
+      "copiedAll": "Copied all",
+      "exportCsv": "Export CSV",
+      "downloadDocx": "Download DOCX",
+      "comingSoon": "Coming Soon",
+      "bulkComingSoon": "Bulk processing soon",
+      "docxComingSoon": "Feature in development"
+    },
+    "blocks": {
+      "to": "To",
+      "from": "From",
+      "greeting": "Salutation",
+      "letter": "Letter Block"
+    },
+    "warningsTitle": "Review ambiguous details",
+    "warningsDescription": "The tool helps prepare a document block, but ambiguous cases should still be checked manually.",
+    "manualReview": "Manual review is recommended before sending or printing.",
+    "confidence": {
+      "label": "Result reliability",
+      "high": "high",
+      "medium": "medium",
+      "low": "check required"
+    },
+    "bulkTitle": "Bulk CSV Processing",
+    "bulkDescription": "CSV export for the current result is already available. Bulk processing for multiple addressees will be added later.",
+    "bulkPlaceholder": "Upload CSV or paste data...",
+    "bulkHint": "This block is intentionally locked: the feature is still in development.",
+    "exportNote": "CSV is available now. DOCX and bulk processing will be added later.",
+    "info": {
+      "title": "How to use the Addressee Generator",
+      "description": "The generator creates ready-to-use To, From and Salutation blocks for business letters, applications, orders and powers of attorney. It also highlights ambiguous cases that should be reviewed manually.",
+      "forWhatTitle": "What is this generator for",
+      "forWhatText": "This tool helps quickly prepare To, From and Salutation lines for business letters, applications, orders or powers of attorney. It is useful when you need a formal addressee block, a business salutation and consistent document wording.",
+      "howTitle": "How name and position handling works",
+      "howText": "The generator is not a full grammatical declension engine and does not promise 100% accuracy. It uses cautious rules and a dictionary of common positions to prepare a practical document block.",
+      "accuracyTitle": "When to review manually",
+      "accuracyText": "Review the result manually for rare surnames, foreign names, undeclinable surnames and unusual positions. This is especially important for official letters, powers of attorney, orders and applications.",
+      "useCasesTitle": "Use cases",
+      "useCases": {
+        "businessLetter": "business letters",
+        "application": "applications",
+        "powerOfAttorney": "powers of attorney",
+        "order": "orders",
+        "memo": "memos",
+        "crm": "CRM and mass mailings"
+      },
+      "faqTitle": "FAQ",
+      "faqList": {
+        "q1": "How should I write the To block in a business letter?",
+        "a1": "Enter the organization, recipient position and full name. The generator will assemble a clean To block and use known position forms where available.",
+        "q2": "Can the tool handle the position together with the name?",
+        "a2": "Yes, common positions are converted into a suitable dative form. Names are handled cautiously, and ambiguous cases should be checked manually.",
+        "q3": "Why does the tool show warnings?",
+        "a3": "Warnings appear when the name is incomplete, gender is unknown, the position is not in the dictionary or the surname may be undeclinable.",
+        "q4": "Can I use the result in an official document?",
+        "a4": "Yes, as a prepared draft for a letter, application, order or power of attorney. Always review ambiguous names and positions before sending or printing.",
+        "q5": "How is this different from a name declension tool?",
+        "a5": "It prepares the full document block: To, From, Salutation and letter text. It is closer to a business letter helper than a pure declension tool.",
+        "q6": "Will bulk CSV processing be available?",
+        "a6": "CSV export for the current result is already available. Bulk processing is planned separately and marked as coming soon.",
+        "q7": "Will DOCX export be available?",
+        "a7": "DOCX export is not enabled yet. The button is intentionally disabled so it is clear that the feature is planned, not broken.",
+        "q8": "What should I do if a surname is undeclinable?",
+        "a8": "Leave the surname unchanged and review the wording manually. The tool highlights several ambiguous or undeclinable surname patterns."
+      }
     }
   }
 }

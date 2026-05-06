@@ -104,6 +104,7 @@ export const QRCodeGenerator = createLazyPage(() => import('../pages/QRCodeGener
 export const URLShortener = createLazyPage(() => import('../pages/URLShortener'))
 export const Feedback = createLazyPage(() => import('../pages/Feedback'))
 export const PasswordGenerator = createLazyPage(() => import('../pages/PasswordGenerator'))
+export const AddresseeGenerator = createLazyPage(() => import('../pages/AddresseeGenerator'))
 export const ArticlesIndex = createLazyPage(() => import('../pages/ArticlesIndex'))
 export const ArticlePage = createLazyPage(() => import('../pages/ArticlePage'))
 export const NotFound = createLazyPage(() => import('../pages/NotFound'))
@@ -127,6 +128,7 @@ const routePreloaders = {
   '/search': SearchResults.preload,
   '/feedback': Feedback.preload,
   '/password-generator': PasswordGenerator.preload,
+  '/generator-adresata': AddresseeGenerator.preload,
   '/articles': ArticlesIndex.preload,
   '/terms': Terms.preload,
   '/privacy': Privacy.preload,

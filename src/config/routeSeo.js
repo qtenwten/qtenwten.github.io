@@ -295,7 +295,127 @@ export const ROUTE_SEO = {
       image: 'https://qsen.ru/og-image.png',
     },
   },
-'/password-generator': {
+  '/generator-adresata': {
+    ru: {
+      title: 'Генератор адресата и обращения — кому, от кого и уважаемый онлайн',
+      description: 'Составьте правильный блок адресата, обращение и строки «кому / от кого» для делового письма, заявления, приказа или доверенности.',
+      keywords: 'генератор адресата, обращение, кому от кого, склонение ФИО онлайн, склонение ФИО по падежам, как правильно написать адресата, уважаемый уважаемая в письме, обращение по имени отчеству, адресат делового письма, склонение должности, склонение должности и ФИО, генератор делового письма',
+      h1: 'Генератор адресата и обращения',
+      image: 'https://qsen.ru/og-image.png',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebApplication',
+            name: 'Генератор адресата и обращения',
+            url: 'https://qsen.ru/ru/generator-adresata',
+            description: 'Составьте правильный блок адресата, обращение и строки «кому / от кого» для делового письма, заявления, приказа или доверенности.',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            inLanguage: 'ru',
+          },
+          {
+            '@type': 'FAQPage',
+            inLanguage: 'ru',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'Как правильно написать «кому» в деловом письме?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Укажите организацию, должность адресата и ФИО. Генератор соберёт эти данные в блок «Кому» и подставит известные должности в дательном падеже.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Можно ли склонять должность вместе с ФИО?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Да, для частых должностей инструмент подставляет дательную форму. ФИО не склоняется агрессивно: спорные случаи лучше проверить вручную.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Почему инструмент показывает предупреждения?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Предупреждения появляются, если не указано полное ФИО, род неизвестен, должность не найдена в словаре или фамилия может быть несклоняемой.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Можно ли использовать результат в официальном документе?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Да, результат можно использовать как черновик для письма, заявления, приказа или доверенности, но перед отправкой или печатью лучше проверить спорные фамилии и должности вручную.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Что делать, если фамилия не склоняется?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Оставьте фамилию без склонения и проверьте формулировку вручную. Для спорных фамилий инструмент показывает предупреждение.',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+    en: {
+      title: 'Addressee & Salutation Generator — online tool for business letters',
+      description: 'Create a clean addressee block, salutation and To / From lines for business letters, applications, orders or powers of attorney.',
+      keywords: 'addressee generator, salutation generator, to from block, business letter, name declension, position wording',
+      h1: 'Addressee & Salutation Generator',
+      image: 'https://qsen.ru/og-image.png',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebApplication',
+            name: 'Addressee & Salutation Generator',
+            url: 'https://qsen.ru/en/generator-adresata',
+            description: 'Create a clean addressee block, salutation and To / From lines for business letters, applications, orders or powers of attorney.',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            inLanguage: 'en',
+          },
+          {
+            '@type': 'FAQPage',
+            inLanguage: 'en',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'How should I write the To block in a business letter?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Enter the organization, recipient position and full name. The generator will assemble a clean To block and use known position forms where available.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Why does the tool show warnings?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Warnings appear when the name is incomplete, gender is unknown, the position is not in the dictionary or the surname may be undeclinable.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Can I use the result in an official document?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes, as a prepared draft for a letter, application, order or power of attorney. Always review ambiguous names and positions before sending or printing.',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  '/password-generator': {
     ru: {
       title: 'Генератор паролей онлайн — создать надёжный пароль бесплатно',
       description: 'Генератор надёжных паролей онлайн с настройкой длины и набора символов. Создайте случайный пароль для почты, банков, Wi-Fi и социальных сетей.',

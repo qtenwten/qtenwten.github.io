@@ -18,6 +18,7 @@ import {
   ListOrdered,
   Loader2,
   Lock,
+User,
   Pin,
   Play,
   Plus,
@@ -72,4 +73,5 @@ export const iconMap = {
   x: X,
   sparkles: Sparkles,
   loader_2: Loader2,
+  person: User,
 }

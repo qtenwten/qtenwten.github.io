@@ -29,6 +29,7 @@ import {
   URLShortener,
   Feedback,
   PasswordGenerator,
+  AddresseeGenerator,
   ArticlesIndex,
   ArticlePage,
   NotFound,
@@ -159,6 +160,7 @@ function App() {
     URLShortener,
     Feedback,
     PasswordGenerator,
+    AddresseeGenerator,
     ArticlesIndex,
     SearchResults,
   }
