@@ -21,6 +21,7 @@ export function validateOgImageDimensions(src) {
 function SEO({
   title,
   description,
+  keywords,
   path = '',
   image = 'https://qsen.ru/og-image.png',
   robots = 'index,follow',
@@ -34,6 +35,7 @@ function SEO({
   const siteName = 'QSEN.RU'
   const fullTitle = title || routeSeo.title
   const fullDescription = description || routeSeo.description
+  const fullKeywords = keywords || routeSeo.keywords
   const fullImage = image || routeSeo.image
   const fullUrl = getLocalizedRouteUrl(language, cleanPath)
   const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
@@ -74,6 +76,7 @@ function SEO({
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
+      {fullKeywords && <meta name="keywords" content={fullKeywords} />}
       <link rel="canonical" href={fullUrl} />
       <html lang={language} />
 

@@ -77,6 +77,7 @@ const TOOL_PAGE_SHELL_PATHS = new Set([
   '/random-number/numbers',
   '/random-number/picker',
   '/random-number/sequence',
+  '/generator-adresata',
   '/terms',
   '/privacy',
 ])
@@ -100,6 +101,7 @@ const CLIENT_RENDER_TOOL_PATHS = new Set([
   '/random-number/sequence',
   '/compound-interest',
   '/meta-tags-generator',
+  '/generator-adresata',
   '/terms',
   '/privacy',
 ])
@@ -173,6 +175,10 @@ const PRERENDER_TOOL_HERO_CONFIG = {
     titleKey: 'articles.title',
     subtitleKey: 'articles.subtitle',
     noteKey: 'articles.note',
+  },
+  '/generator-adresata': {
+    titleKey: 'addresseeGenerator.title',
+    subtitleKey: 'addresseeGenerator.subtitle',
   },
 }
 

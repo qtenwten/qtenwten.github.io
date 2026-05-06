@@ -5,6 +5,7 @@ import {
   Check,
   Circle,
   Clock3,
+  Code,
   Copy,
   CreditCard,
   Dice5,
@@ -18,7 +19,7 @@ import {
   ListOrdered,
   Loader2,
   Lock,
-User,
+  User,
   Pin,
   Play,
   Plus,
@@ -74,4 +75,6 @@ export const iconMap = {
   sparkles: Sparkles,
   loader_2: Loader2,
   person: User,
+  file_text: FileText,
+  code: Code,
 }

@@ -15,6 +15,11 @@ import {
   COMMON_FEMALE_NAMES,
   ABBREVIATION_PATTERNS,
   POSITION_DICTIONARY,
+  DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+  DOCUMENT_TEMPLATE_APPLICATION,
+  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+  DOCUMENT_TEMPLATE_ORDER,
+  DOCUMENT_TEMPLATE_MEMO,
 } from './addresseeTypes.js';
 
 function splitFullName(fullName) {
@@ -222,6 +227,62 @@ function buildFromBlock(fullName, position, organization) {
   };
 }
 
+function buildDocumentText({ template, to, from, greeting, fullName, position, organization }) {
+  const safeTemplate = template || DOCUMENT_TEMPLATE_BUSINESS_LETTER;
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_APPLICATION) {
+    return [
+      to,
+      '',
+      from,
+      '',
+      'Заявление',
+      '',
+      'Прошу рассмотреть обращение по указанному вопросу.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY) {
+    return [
+      'Доверенность',
+      '',
+      to,
+      '',
+      from,
+      '',
+      'Настоящая доверенность подготовлена как черновой текстовый блок. Перед использованием проверьте данные и формулировки вручную.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_ORDER) {
+    return [
+      'Приказ',
+      '',
+      to,
+      '',
+      'О подготовке документа',
+      '',
+      'Настоящий блок является черновиком для подготовки приказа и требует проверки ответственным сотрудником.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_MEMO) {
+    return [
+      'Служебная записка',
+      '',
+      to,
+      '',
+      from,
+      '',
+      greeting,
+      '',
+      'Прошу принять к сведению указанную информацию.',
+    ].filter(Boolean).join('\n');
+  }
+
+  return [to, '', greeting, ''].filter(Boolean).join('\n');
+}
+
 export function formatAddressee(input) {
   const {
     fullName = '',
@@ -230,6 +291,7 @@ export function formatAddressee(input) {
     gender = GENDER_UNKNOWN,
     greetingMode = GREETING_NAME_PATRONYMIC,
     punctuation = PUNCTUATION_EXCLAMATION,
+    documentTemplate = DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   } = input || {};
 
   const warnings = [];
@@ -251,6 +313,13 @@ export function formatAddressee(input) {
     });
   }
 
+  if (nameParts.length > 3) {
+    warnings.push({
+      code: WARNING_CODES.EXTRA_NAME_PARTS,
+      message: 'ФИО содержит больше трёх частей. Проверьте порядок фамилии, имени и отчества вручную.',
+    });
+  }
+
   if (gender === GENDER_UNKNOWN) {
     warnings.push({
       code: WARNING_CODES.UNKNOWN_GENDER,
@@ -262,6 +331,13 @@ export function formatAddressee(input) {
         message: 'Род обращения определён автоматически по имени и требует проверки.',
       });
     }
+  }
+
+  if (/[a-zA-Z]/.test(fullName)) {
+    warnings.push({
+      code: WARNING_CODES.LATIN_NAME,
+      message: 'ФИО содержит латинские буквы. Проверьте написание вручную.',
+    });
   }
 
   if (parsedName.surname && isPotentiallyUndeclinableSurname(parsedName.surname)) {
@@ -289,6 +365,15 @@ export function formatAddressee(input) {
   }
 
   const letterBlock = [toResult.block, '', greeting, ''].join('\n').trim();
+  const documentText = buildDocumentText({
+    template: documentTemplate,
+    to: toResult.block,
+    from: fromResult.block,
+    greeting,
+    fullName,
+    position,
+    organization,
+  });
 
   let confidence = 0.95;
   const hasIncompleteName = warnings.some((w) => w.code === WARNING_CODES.INCOMPLETE_NAME);
@@ -298,6 +383,8 @@ export function formatAddressee(input) {
       WARNING_CODES.AUTO_DETECTED_GENDER,
       WARNING_CODES.UNKNOWN_POSITION,
       WARNING_CODES.UNDECLINABLE_SURNAME,
+      WARNING_CODES.EXTRA_NAME_PARTS,
+      WARNING_CODES.LATIN_NAME,
     ].includes(w.code)
   );
   if (hasIncompleteName) {
@@ -314,6 +401,7 @@ export function formatAddressee(input) {
       from: fromResult.block,
       greeting,
       letter: letterBlock,
+      documentText,
     },
     warnings,
     confidence,

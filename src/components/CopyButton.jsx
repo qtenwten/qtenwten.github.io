@@ -32,13 +32,14 @@ function CopyButton({ text, className = '', analytics: analyticsContext = null }
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
       className={`copy-btn ${copyError ? 'copy-btn--error' : ''} ${className}`}
       disabled={!text}
     >
       {copyError ? (
         <>
-          <Icon name="close" size={14} />
+          <Icon name="x" size={14} />
           {t('common.copyFailed') || 'Не вышло'}
         </>
       ) : copied ? (

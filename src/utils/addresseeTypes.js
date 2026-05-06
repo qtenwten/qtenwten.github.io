@@ -9,6 +9,12 @@ export const GREETING_COLLEAGUES = 'colleagues';
 export const PUNCTUATION_EXCLAMATION = '!';
 export const PUNCTUATION_COMMA = ',';
 
+export const DOCUMENT_TEMPLATE_BUSINESS_LETTER = 'businessLetter';
+export const DOCUMENT_TEMPLATE_APPLICATION = 'application';
+export const DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY = 'powerOfAttorney';
+export const DOCUMENT_TEMPLATE_ORDER = 'order';
+export const DOCUMENT_TEMPLATE_MEMO = 'memo';
+
 export const GENDER_OPTIONS = [
   { value: GENDER_MALE, labelKey: 'addresseeGenerator.gender.male' },
   { value: GENDER_FEMALE, labelKey: 'addresseeGenerator.gender.female' },
@@ -26,6 +32,14 @@ export const PUNCTUATION_OPTIONS = [
   { value: PUNCTUATION_COMMA, labelKey: 'addresseeGenerator.punctuation.comma' },
 ];
 
+export const DOCUMENT_TEMPLATE_OPTIONS = [
+  { value: DOCUMENT_TEMPLATE_BUSINESS_LETTER, labelKey: 'addresseeGenerator.documentTemplate.businessLetter' },
+  { value: DOCUMENT_TEMPLATE_APPLICATION, labelKey: 'addresseeGenerator.documentTemplate.application' },
+  { value: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY, labelKey: 'addresseeGenerator.documentTemplate.powerOfAttorney' },
+  { value: DOCUMENT_TEMPLATE_ORDER, labelKey: 'addresseeGenerator.documentTemplate.order' },
+  { value: DOCUMENT_TEMPLATE_MEMO, labelKey: 'addresseeGenerator.documentTemplate.memo' },
+];
+
 export const CONJUNCTION_BY_GENDER = {
   [GENDER_MALE]: 'Уважаемый',
   [GENDER_FEMALE]: 'Уважаемая',
@@ -41,6 +55,8 @@ export const WARNING_CODES = {
   UNDECLINABLE_SURNAME: 'UNDECLINABLE_SURNAME',
   UNKNOWN_POSITION: 'UNKNOWN_POSITION',
   ORGANIZATION_ABBREVIATION: 'ORGANIZATION_ABBREVIATION',
+  EXTRA_NAME_PARTS: 'EXTRA_NAME_PARTS',
+  LATIN_NAME: 'LATIN_NAME',
 };
 
 export const UNDECLINABLE_SUFFIXES = ['ко', 'ых', 'их', 'о'];

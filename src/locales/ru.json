@@ -1507,9 +1507,17 @@
       "fullName": "Полное ФИО",
       "colleagues": "Коллеги"
     },
-    "punctuation": {
+"punctuation": {
       "exclamation": "!",
       "comma": ","
+    },
+    "documentTemplate": {
+      "label": "Тип документа",
+      "businessLetter": "Деловое письмо",
+      "application": "Заявление",
+      "powerOfAttorney": "Доверенность",
+      "order": "Приказ",
+      "memo": "Служебная записка"
     },
     "buttons": {
       "generate": "Сформировать",
@@ -1518,16 +1526,22 @@
       "copyAll": "Скопировать всё",
       "copiedAll": "Всё скопировано",
       "exportCsv": "Экспорт CSV",
+      "exportTxt": "Скачать TXT",
+      "exportHtml": "Скачать HTML",
       "downloadDocx": "Скачать DOCX",
       "comingSoon": "Скоро",
       "bulkComingSoon": "Массовая обработка скоро",
       "docxComingSoon": "Функция в разработке"
     },
+    "export": {
+      "disclaimer": "Черновой текст. Проверьте данные перед использованием."
+    },
     "blocks": {
       "to": "Кому",
       "from": "От кого",
       "greeting": "Обращение",
-      "letter": "Блок для письма"
+      "letter": "Блок для письма",
+      "documentText": "Текст по шаблону"
     },
     "warningsTitle": "Проверьте спорные места",
     "warningsDescription": "Инструмент помогает подготовить документный блок, но спорные случаи лучше проверить вручную.",
@@ -1538,10 +1552,32 @@
       "medium": "средняя",
       "low": "требуется проверка"
     },
-    "bulkTitle": "Массовая обработка CSV",
-    "bulkDescription": "CSV экспорт текущего результата уже доступен. Массовая обработка нескольких адресатов будет добавлена позже.",
-    "bulkPlaceholder": "Загрузите CSV или вставьте данные...",
-    "bulkHint": "Этот блок заблокирован намеренно: функция ещё в разработке.",
+"bulk": {
+      "title": "Массовая обработка CSV",
+      "description": "Вставьте до 50 строк с ФИО, должностью и организацией. Инструмент обработает данные в браузере и покажет предварительный результат.",
+      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate\nИванов Иван Петрович;генеральный директор;ООО «Ромашка»;male;namePatronymic;!;businessLetter\nПетрова Анна Сергеевна;руководитель;АО «Север»;female;namePatronymic;!;application",
+      "process": "Обработать CSV",
+      "clear": "Очистить CSV",
+      "download": "Скачать результат CSV",
+      "hint": "Максимум 50 строк. Разделитель: точка с запятой.",
+      "summary": "Обработано строк: {processed} | С предупреждениями: {warnings}",
+      "rowsProcessed": "Обработано",
+      "rowsWithWarnings": "С предупреждениями",
+      "previewTitle": "Предварительный просмотр",
+      "empty": "Вставьте данные для обработки",
+      "tooManyRows": "Слишком много строк: максимум 50",
+      "unrecognized": "Не удалось распознать данные. Проверьте формат.",
+      "noDownloadData": "Нет данных для скачивания",
+      "columns": {
+        "index": "#",
+        "fullName": "ФИО",
+        "position": "Должность",
+        "organization": "Организация",
+        "template": "Шаблон",
+        "confidence": "Надёжность",
+        "warnings": "Предупреждения"
+      }
+    },
     "exportNote": "CSV доступен сейчас. DOCX и массовая обработка будут добавлены позже.",
     "info": {
       "title": "Как пользоваться генератором адресата и обращения",

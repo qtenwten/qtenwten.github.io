@@ -9,6 +9,11 @@ import {
   PUNCTUATION_EXCLAMATION,
   PUNCTUATION_COMMA,
   WARNING_CODES,
+  DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+  DOCUMENT_TEMPLATE_APPLICATION,
+  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+  DOCUMENT_TEMPLATE_ORDER,
+  DOCUMENT_TEMPLATE_MEMO,
 } from '../src/utils/addresseeTypes.js'
 
 let passed = 0
@@ -342,6 +347,73 @@ function run() {
 
   const rRegressionColleagues = formatAddressee({ fullName: 'Иванов Иван Петрович', gender: GENDER_UNKNOWN, greetingMode: GREETING_COLLEAGUES })
   assert(rRegressionColleagues.blocks.greeting === 'Уважаемые коллеги!', 'Q4: colleagues mode still gives "Уважаемые коллеги"')
+
+  // R. Document templates
+  console.log('\nR. Document templates')
+
+  const rNoTemplate = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE })
+  assert(typeof rNoTemplate.blocks.documentText === 'string', 'R1: documentTemplate defaults to businessLetter')
+  assert(rNoTemplate.blocks.greeting, 'R1: greeting exists without documentTemplate')
+  assert(rNoTemplate.confidence > 0, 'R1: confidence is not broken by missing documentTemplate')
+
+  const rBusinessLetter = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER })
+  assert(typeof rBusinessLetter.blocks.documentText === 'string', 'R2: businessLetter returns documentText string')
+  assert(rBusinessLetter.blocks.documentText.includes(rBusinessLetter.blocks.greeting), 'R2: businessLetter contains greeting')
+
+  const rApplication = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_APPLICATION })
+  assert(typeof rApplication.blocks.documentText === 'string', 'R3: application returns documentText string')
+  assert(rApplication.blocks.documentText.includes('Заявление'), 'R3: application contains "Заявление"')
+  assert(rApplication.blocks.documentText.includes(rApplication.blocks.from), 'R3: application contains from block')
+
+  const rPowerOfAttorney = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY })
+  assert(typeof rPowerOfAttorney.blocks.documentText === 'string', 'R4: powerOfAttorney returns documentText string')
+  assert(rPowerOfAttorney.blocks.documentText.includes('Доверенность'), 'R4: powerOfAttorney contains "Доверенность"')
+
+  const rOrder = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_ORDER })
+  assert(typeof rOrder.blocks.documentText === 'string', 'R5: order returns documentText string')
+  assert(rOrder.blocks.documentText.includes('Приказ'), 'R5: order contains "Приказ"')
+
+  const rMemo = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_MEMO })
+  assert(typeof rMemo.blocks.documentText === 'string', 'R6: memo returns documentText string')
+  assert(rMemo.blocks.documentText.includes('Служебная записка'), 'R6: memo contains "Служебная записка"')
+  assert(rMemo.blocks.documentText.includes(rMemo.blocks.greeting), 'R6: memo contains greeting')
+
+  const rUnknownTemplate = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: 'unknownTemplate' })
+  assert(typeof rUnknownTemplate.blocks.documentText === 'string', 'R7: unknown template falls back to businessLetter')
+  assert(rUnknownTemplate.blocks.greeting, 'R7: unknown template does not break greeting')
+
+  const rTemplateWithWarnings = formatAddressee({ fullName: 'Иванов', position: 'unknown', gender: GENDER_UNKNOWN, documentTemplate: DOCUMENT_TEMPLATE_APPLICATION })
+  assert(typeof rTemplateWithWarnings.blocks.documentText === 'string', 'R8: template with warnings returns documentText')
+  assert(Array.isArray(rTemplateWithWarnings.warnings), 'R8: warnings work with documentTemplate')
+  assert(rTemplateWithWarnings.confidence < 0.95, 'R8: confidence works with documentTemplate')
+
+  // S. Extra name parts and Latin name warnings
+  console.log('\nS. Extra name parts and Latin name warnings')
+
+  const rExtraParts = formatAddressee({ fullName: 'Иванов Иван Петрович Николаевич', gender: GENDER_MALE })
+  const hasExtraPartsWarning = rExtraParts.warnings.some((w) => w.code === WARNING_CODES.EXTRA_NAME_PARTS)
+  assert(hasExtraPartsWarning, 'S1: 4-part name gives EXTRA_NAME_PARTS warning')
+  assert(rExtraParts.confidence < 0.95, 'S1: 4-part name reduces confidence')
+
+  const rExtraPartsUnknown = formatAddressee({ fullName: 'Петрова Анна Сергеевна Владимировна', gender: GENDER_FEMALE })
+  const hasExtraPartsWarningF = rExtraPartsUnknown.warnings.some((w) => w.code === WARNING_CODES.EXTRA_NAME_PARTS)
+  assert(hasExtraPartsWarningF, 'S2: 4-part female name gives EXTRA_NAME_PARTS warning')
+
+  const rLatinName = formatAddressee({ fullName: 'Ivanov Ivan Petrovich', gender: GENDER_MALE })
+  const hasLatinWarning = rLatinName.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
+  assert(hasLatinWarning, 'S3: Latin-only name gives LATIN_NAME warning')
+  assert(rLatinName.confidence < 0.95, 'S3: Latin name reduces confidence')
+
+  const rMixedName = formatAddressee({ fullName: 'Иванов Ivan Петрович', gender: GENDER_MALE })
+  const hasMixedLatinWarning = rMixedName.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
+  assert(hasMixedLatinWarning, 'S4: mixed Cyrillic/Latin name gives LATIN_NAME warning')
+
+  const rNormalName = formatAddressee({ fullName: 'Иванов Иван Петрович', gender: GENDER_MALE })
+  const hasNormalExtraParts = rNormalName.warnings.some((w) => w.code === WARNING_CODES.EXTRA_NAME_PARTS)
+  assert(!hasNormalExtraParts, 'S5: normal 3-part name has no EXTRA_NAME_PARTS warning')
+  const hasNormalLatin = rNormalName.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
+  assert(!hasNormalLatin, 'S5: normal Cyrillic name has no LATIN_NAME warning')
+  assert(rNormalName.confidence === 0.95, 'S5: normal name has confidence 0.95')
 
   // Summary
   console.log('\n=== Results ===')

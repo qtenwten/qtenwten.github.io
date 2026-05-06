@@ -295,7 +295,7 @@ export const ROUTE_SEO = {
       image: 'https://qsen.ru/og-image.png',
     },
   },
-  '/generator-adresata': {
+'/generator-adresata': {
     ru: {
       title: 'Генератор адресата и обращения — кому, от кого и уважаемый онлайн',
       description: 'Составьте правильный блок адресата, обращение и строки «кому / от кого» для делового письма, заявления, приказа или доверенности.',
@@ -331,7 +331,7 @@ export const ROUTE_SEO = {
                 name: 'Можно ли склонять должность вместе с ФИО?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Да, для частых должностей инструмент подставляет дательную форму. ФИО не склоняется агрессивно: спорные случаи лучше проверить вручную.',
+                  text: 'Да, для частых должностей инструмент подставляет дательную форму, например «генеральному директору» или «главному бухгалтеру». ФИО не склоняется агрессивно: спорные случаи лучше проверить вручную.',
                 },
               },
               {
@@ -352,10 +352,34 @@ export const ROUTE_SEO = {
               },
               {
                 '@type': 'Question',
+                name: 'Чем этот инструмент отличается от обычного склонения ФИО?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Он готовит не только ФИО, а весь документный блок: «Кому», «От кого», обращение и текст для письма. Это ближе к генератору делового письма, чем к обычному склонятелю.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Будет ли массовая обработка CSV?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'CSV экспорт текущего результата уже доступен. Массовая обработка списка адресатов запланирована отдельно и пока помечена как функция «скоро».',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Будет ли экспорт в DOCX?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'DOCX экспорт сейчас не включён. Кнопка специально заблокирована, чтобы было понятно: функция в разработке, а не сломана.',
+                },
+              },
+              {
+                '@type': 'Question',
                 name: 'Что делать, если фамилия не склоняется?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Оставьте фамилию без склонения и проверьте формулировку вручную. Для спорных фамилий инструмент показывает предупреждение.',
+                  text: 'Оставьте фамилию без склонения и проверьте формулировку вручную. Для фамилий вроде Шевченко, Ким, Ли или Цой инструмент показывает предупреждение о спорном случае.',
                 },
               },
             ],
@@ -395,6 +419,14 @@ export const ROUTE_SEO = {
               },
               {
                 '@type': 'Question',
+                name: 'Can the tool handle the position together with the name?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes, common positions are converted into a suitable dative form. Names are handled cautiously, and ambiguous cases should be checked manually.',
+                },
+              },
+              {
+                '@type': 'Question',
                 name: 'Why does the tool show warnings?',
                 acceptedAnswer: {
                   '@type': 'Answer',
@@ -407,6 +439,38 @@ export const ROUTE_SEO = {
                 acceptedAnswer: {
                   '@type': 'Answer',
                   text: 'Yes, as a prepared draft for a letter, application, order or power of attorney. Always review ambiguous names and positions before sending or printing.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How is this different from a name declension tool?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'It prepares the full document block: To, From, Salutation and letter text. It is closer to a business letter helper than a pure declension tool.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Will bulk CSV processing be available?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'CSV export for the current result is already available. Bulk processing is planned separately and marked as coming soon.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Will DOCX export be available?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'DOCX export is not enabled yet. The button is intentionally disabled so it is clear that the feature is planned, not broken.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'What should I do if a surname is undeclinable?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Leave the surname unchanged and review the wording manually. The tool highlights several ambiguous or undeclinable surname patterns.',
                 },
               },
             ],

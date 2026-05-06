@@ -17,6 +17,9 @@ import {
   GREETING_COLLEAGUES,
   PUNCTUATION_EXCLAMATION,
   PUNCTUATION_COMMA,
+  DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+  DOCUMENT_TEMPLATE_APPLICATION,
+  DOCUMENT_TEMPLATE_OPTIONS,
 } from '../utils/addresseeTypes'
 import './AddresseeGenerator.css'
 
@@ -29,6 +32,7 @@ const EXAMPLES = [
     gender: GENDER_MALE,
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
+    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   },
   {
     key: 'application',
@@ -38,6 +42,7 @@ const EXAMPLES = [
     gender: GENDER_FEMALE,
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
+    documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
   },
   {
     key: 'neutral',
@@ -47,6 +52,7 @@ const EXAMPLES = [
     gender: GENDER_UNKNOWN,
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_COMMA,
+    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   },
 ]
 
@@ -80,6 +86,135 @@ function serializeWarnings(warnings) {
     .join(' | ')
 }
 
+function detectDelimiter(line) {
+  if (line.includes('\t')) return '\t'
+  if (line.includes(';')) return ';'
+  return ';'
+}
+
+function parseCsvLine(line, delimiter) {
+  const result = []
+  let current = ''
+  let inQuotes = false
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"'
+        i++
+      } else {
+        inQuotes = !inQuotes
+      }
+    } else if (char === delimiter && !inQuotes) {
+      result.push(current.trim())
+      current = ''
+    } else {
+      current += char
+    }
+  }
+  result.push(current.trim())
+  return result
+}
+
+function parseBulkInput(text) {
+  if (!text || !text.trim()) return { rows: [], error: null }
+
+  const lines = text.trim().split('\n').filter((l) => l.trim())
+  if (lines.length === 0) return { rows: [], error: null }
+
+  const delimiter = detectDelimiter(lines[0])
+  const firstRow = parseCsvLine(lines[0], delimiter)
+
+  const hasHeader = firstRow.some((cell) =>
+    ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate'].includes(
+      cell.toLowerCase().replace(/[\s_-]/g, '')
+    )
+  )
+
+  const dataLines = hasHeader ? lines.slice(1) : lines
+  if (dataLines.length > 50) {
+    return { rows: [], error: 'tooManyRows' }
+  }
+
+  const defaultFields = {
+    fullName: '',
+    position: '',
+    organization: '',
+    gender: GENDER_UNKNOWN,
+    greetingMode: GREETING_NAME_PATRONYMIC,
+    punctuation: PUNCTUATION_EXCLAMATION,
+    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+  }
+
+  const fieldMap = {
+    0: 'fullName',
+    1: 'position',
+    2: 'organization',
+    3: 'gender',
+    4: 'greetingMode',
+    5: 'punctuation',
+    6: 'documentTemplate',
+  }
+
+  const rows = []
+  for (let i = 0; i < dataLines.length; i++) {
+    const cells = parseCsvLine(dataLines[i], delimiter)
+    if (cells.length === 0 || (cells.length === 1 && !cells[0])) continue
+
+    const row = { ...defaultFields }
+    let hasData = false
+
+    for (let j = 0; j < cells.length && j < 7; j++) {
+      const fieldName = fieldMap[j]
+      if (fieldName && cells[j]) {
+        row[fieldName] = cells[j]
+        if (fieldName === 'fullName' && cells[j].trim()) hasData = true
+      }
+    }
+
+    if (hasData || row.fullName) {
+      rows.push(row)
+    }
+  }
+
+  if (rows.length === 0) {
+    return { rows: [], error: 'unrecognized' }
+  }
+
+  return { rows, error: null }
+}
+
+function buildBulkCsvContent(results) {
+  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
+  const rows = [header]
+
+  for (const r of results) {
+    const blocks = r.blocks || {}
+    const rowData = [
+      r.input.fullName || '',
+      r.input.position || '',
+      r.input.organization || '',
+      r.input.gender || '',
+      r.input.greetingMode || '',
+      r.input.punctuation || '',
+      r.input.documentTemplate || '',
+      blocks.to || '',
+      blocks.from || '',
+      blocks.greeting || '',
+      blocks.letter || '',
+      blocks.documentText || '',
+      String(r.confidence),
+      Array.isArray(r.warnings) && r.warnings.length > 0
+        ? r.warnings.map((w) => w.code).join('; ')
+        : '',
+    ]
+    rows.push(rowData)
+  }
+
+  return '\uFEFF' + rows.map(toCsvRow).join('\r\n')
+}
+
 function AddresseeGenerator() {
   const { t, language } = useLanguage()
   const [form, setForm] = useState({
@@ -89,10 +224,15 @@ function AddresseeGenerator() {
     gender: GENDER_UNKNOWN,
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
+    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   })
   const [result, setResult] = useState(null)
   const [activeExampleKey, setActiveExampleKey] = useState('')
   const [copyAllState, setCopyAllState] = useState('idle')
+  const [bulkInput, setBulkInput] = useState('')
+  const [bulkResults, setBulkResults] = useState([])
+  const [bulkError, setBulkError] = useState(null)
+  const [bulkSummary, setBulkSummary] = useState(null)
 
   const handleFieldChange = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -113,11 +253,59 @@ function AddresseeGenerator() {
       gender: GENDER_UNKNOWN,
       greetingMode: GREETING_NAME_PATRONYMIC,
       punctuation: PUNCTUATION_EXCLAMATION,
+      documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
     })
     setResult(null)
     setActiveExampleKey('')
     setCopyAllState('idle')
   }, [])
+
+  const handleClearBulk = useCallback(() => {
+    setBulkInput('')
+    setBulkResults([])
+    setBulkError(null)
+    setBulkSummary(null)
+  }, [])
+
+  const handleProcessBulk = useCallback(() => {
+    setBulkError(null)
+    const { rows, error } = parseBulkInput(bulkInput)
+    if (error) {
+      setBulkError(error)
+      setBulkResults([])
+      setBulkSummary(null)
+      return
+    }
+    if (rows.length === 0) {
+      setBulkError('empty')
+      setBulkResults([])
+      setBulkSummary(null)
+      return
+    }
+    const processed = rows.map((row) => {
+      const formatted = formatAddressee(row)
+      return { input: row, ...formatted }
+    })
+    setBulkResults(processed)
+    setBulkSummary({
+      total: processed.length,
+      withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
+    })
+  }, [bulkInput])
+
+  const handleDownloadBulkCsv = useCallback(() => {
+    if (bulkResults.length === 0) return
+    const csv = buildBulkCsvContent(bulkResults)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'addressee-generator-bulk-result.csv'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }, [bulkResults])
 
   const handleLoadExample = useCallback((example) => {
     setForm({
@@ -127,8 +315,12 @@ function AddresseeGenerator() {
       gender: example.gender,
       greetingMode: example.greetingMode,
       punctuation: example.punctuation,
+      documentTemplate: example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
     })
-    const formatted = formatAddressee(example)
+    const formatted = formatAddressee({
+      ...example,
+      documentTemplate: example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    })
     setResult(formatted)
     setActiveExampleKey(example.key)
     setCopyAllState('idle')
@@ -137,27 +329,32 @@ function AddresseeGenerator() {
   const handleExportCsv = useCallback(() => {
     if (!result) return
     const blocks = result.blocks || {}
-    const lines = [
-      ['field', 'value'],
-      ['fullName', form.fullName],
-      ['position', form.position],
-      ['organization', form.organization],
-      ['gender', form.gender],
-      ['greetingMode', form.greetingMode],
-      ['punctuation', form.punctuation],
-      ['to', blocks.to],
-      ['from', blocks.from],
-      ['greeting', blocks.greeting],
-      ['letter', blocks.letter],
-      ['confidence', String(result.confidence)],
-      ['warnings', serializeWarnings(result.warnings)],
-    ].map(toCsvRow)
-    const csv = '\uFEFF' + lines.join('\r\n')
+    const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
+    const row = [
+      form.fullName,
+      form.position,
+      form.organization,
+      form.gender,
+      form.greetingMode,
+      form.punctuation,
+      form.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+      blocks.to || '',
+      blocks.from || '',
+      blocks.greeting || '',
+      blocks.letter || '',
+      blocks.documentText || '',
+      String(result.confidence),
+      Array.isArray(result.warnings) && result.warnings.length > 0
+        ? result.warnings.map((w) => w.code).join('; ')
+        : '',
+    ]
+    const csvContent = [header, row].map(toCsvRow).join('\r\n')
+    const csv = '\uFEFF' + csvContent
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'addressee-blocks.csv'
+    link.download = 'addressee-generator-result.csv'
     document.body.appendChild(link)
     link.click()
     link.remove()
@@ -166,7 +363,9 @@ function AddresseeGenerator() {
 
   const copyAllText = useMemo(() => {
     if (!result) return ''
-    return result.blocks.letter || [result.blocks.to, result.blocks.from, result.blocks.greeting].filter(Boolean).join('\n\n')
+    const textToCopy = result.blocks.documentText || result.blocks.letter
+    if (textToCopy) return textToCopy
+    return [result.blocks.to, result.blocks.from, result.blocks.greeting].filter(Boolean).join('\n\n')
   }, [result])
 
   const handleCopyAll = useCallback(async () => {
@@ -181,6 +380,82 @@ function AddresseeGenerator() {
       setTimeout(() => setCopyAllState('idle'), 2000)
     }
   }, [copyAllText])
+
+  const escapeHtml = useCallback((value) => {
+    if (value === null || value === undefined) return ''
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  }, [])
+
+  const getDocumentExportText = useCallback(() => {
+    if (!result) return ''
+    const docText = result.blocks && result.blocks.documentText
+    if (docText) return docText
+    const letter = result.blocks && result.blocks.letter
+    if (letter) return letter
+    return ''
+  }, [result])
+
+  const handleExportTxt = useCallback(() => {
+    if (!result) return
+    const text = getDocumentExportText()
+    if (!text) return
+    const content = '\uFEFF' + text
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'addressee-generator-document.txt'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }, [result, getDocumentExportText])
+
+  const handleExportHtml = useCallback(() => {
+    if (!result) return
+    const text = getDocumentExportText()
+    if (!text) return
+    const lang = language || 'ru'
+    const templateTitle = form.documentTemplate
+      ? t(`addresseeGenerator.documentTemplate.${form.documentTemplate}`)
+      : t('addresseeGenerator.documentTemplate.businessLetter')
+    const escapedText = escapeHtml(text)
+    const escapedTitle = escapeHtml(templateTitle)
+    const disclaimer = t('addresseeGenerator.export.disclaimer')
+    const escapedDisclaimer = escapeHtml(disclaimer)
+    const htmlContent = `<!doctype html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8">
+  <title>${escapedTitle}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; color: #333; line-height: 1.6; }
+    h1 { font-size: 1.2em; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 20px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #f9f9f9; padding: 16px; border-radius: 6px; border: 1px solid #e0e0e0; }
+    .disclaimer { margin-top: 30px; font-size: 0.85em; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>${escapedTitle}</h1>
+  <pre>${escapedText}</pre>
+  <p class="disclaimer">${escapedDisclaimer}</p>
+</body>
+</html>`
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'addressee-generator-document.html'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }, [result, form, getDocumentExportText, escapeHtml, t, language])
 
   const confidenceLabel = useMemo(() => {
     if (!result) return ''
@@ -203,6 +478,7 @@ function AddresseeGenerator() {
       { key: 'from', title: t('addresseeGenerator.blocks.from'), text: result.blocks.from },
       { key: 'greeting', title: t('addresseeGenerator.blocks.greeting'), text: result.blocks.greeting },
       { key: 'letter', title: t('addresseeGenerator.blocks.letter'), text: result.blocks.letter },
+      { key: 'documentText', title: t('addresseeGenerator.blocks.documentText'), text: result.blocks.documentText },
     ]
   }, [result, t])
 
@@ -374,16 +650,32 @@ function AddresseeGenerator() {
                   </select>
                 </div>
 
-                <div className="addr-gen-field addr-gen-field--setting">
+                <div className="addr-gen-field addr-gen-field--setting addr-gen-field--punctuation">
                   <label className="addr-gen-label" htmlFor="addrPunctuation">{t('addresseeGenerator.fields.punctuation')}</label>
                   <select
                     id="addrPunctuation"
                     value={form.punctuation}
                     onChange={(e) => handleFieldChange('punctuation', e.target.value)}
-                    className="addr-gen-select addr-gen-select--punctuation"
+                    className="addr-gen-select"
                   >
                     <option value={PUNCTUATION_EXCLAMATION}>{t('addresseeGenerator.punctuation.exclamation')}</option>
                     <option value={PUNCTUATION_COMMA}>{t('addresseeGenerator.punctuation.comma')}</option>
+                  </select>
+                </div>
+
+                <div className="addr-gen-field addr-gen-field--setting">
+                  <label className="addr-gen-label" htmlFor="addrDocumentTemplate">{t('addresseeGenerator.documentTemplate.label')}</label>
+                  <select
+                    id="addrDocumentTemplate"
+                    value={form.documentTemplate}
+                    onChange={(e) => handleFieldChange('documentTemplate', e.target.value)}
+                    className="addr-gen-select"
+                  >
+                    {DOCUMENT_TEMPLATE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(option.labelKey)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -419,29 +711,88 @@ function AddresseeGenerator() {
               </button>
             </div>
 
-            <section className="addr-gen-locked" aria-labelledby="addrBulkTitle">
-              <div className="addr-gen-locked-head">
-                <span className="addr-gen-locked-icon">
-                  <Icon name="lock" size={18} />
-                </span>
-                <div>
-                  <span className="addr-gen-coming-soon">{t('addresseeGenerator.buttons.comingSoon')}</span>
-                  <h2 id="addrBulkTitle">{t('addresseeGenerator.bulkTitle')}</h2>
-                </div>
+            <section className="addr-gen-bulk" aria-labelledby="addrBulkTitle">
+              <div className="addr-gen-bulk-header">
+                <h2 id="addrBulkTitle">{t('addresseeGenerator.bulk.title')}</h2>
+                <p className="addr-gen-bulk-desc">{t('addresseeGenerator.bulk.description')}</p>
               </div>
-              <p>{t('addresseeGenerator.bulkDescription')}</p>
+              <label htmlFor="bulkInput" className="sr-only">{t('addresseeGenerator.bulk.title')}</label>
               <textarea
-                className="addr-gen-textarea"
-                placeholder={t('addresseeGenerator.bulkPlaceholder')}
-                rows={4}
-                disabled
-                aria-describedby="addrBulkHint"
+                id="bulkInput"
+                className="addr-gen-textarea addr-gen-bulk-input"
+                value={bulkInput}
+                onChange={(e) => setBulkInput(e.target.value)}
+                placeholder={t('addresseeGenerator.bulk.placeholder')}
+                rows={6}
+                aria-describedby="bulkHint"
               />
-              <p className="addr-gen-hint" id="addrBulkHint">{t('addresseeGenerator.bulkHint')}</p>
-              <button type="button" className="addr-gen-btn addr-gen-btn--disabled" disabled>
-                <Icon name="schedule" size={16} />
-                {t('addresseeGenerator.buttons.bulkComingSoon')}
-              </button>
+              <p className="addr-gen-hint" id="bulkHint">{t('addresseeGenerator.bulk.hint')}</p>
+              {bulkError && (
+                <p className="addr-gen-bulk-error" role="alert">
+                  {bulkError === 'tooManyRows' && t('addresseeGenerator.bulk.tooManyRows')}
+                  {bulkError === 'unrecognized' && t('addresseeGenerator.bulk.unrecognized')}
+                  {bulkError === 'empty' && t('addresseeGenerator.bulk.empty')}
+                </p>
+              )}
+              <div className="addr-gen-bulk-actions">
+                <button type="button" className="addr-gen-btn addr-gen-btn--primary" onClick={handleProcessBulk}>
+                  {t('addresseeGenerator.bulk.process')}
+                </button>
+                <button type="button" className="addr-gen-btn addr-gen-btn--secondary" onClick={handleClearBulk}>
+                  {t('addresseeGenerator.bulk.clear')}
+                </button>
+                <button
+                  type="button"
+                  className="addr-gen-btn addr-gen-btn--secondary"
+                  onClick={handleDownloadBulkCsv}
+                  disabled={bulkResults.length === 0}
+                >
+                  {t('addresseeGenerator.bulk.download')}
+                </button>
+              </div>
+              {bulkSummary && (
+                <div className="addr-gen-bulk-summary">
+                  <span>{t('addresseeGenerator.bulk.rowsProcessed')}: {bulkSummary.total}</span>
+                  <span>{t('addresseeGenerator.bulk.rowsWithWarnings')}: {bulkSummary.withWarnings}</span>
+                </div>
+              )}
+              {bulkResults.length > 0 && (
+                <div className="addr-gen-bulk-preview">
+                  <h3 className="addr-gen-bulk-preview-title">{t('addresseeGenerator.bulk.previewTitle')}</h3>
+                  <div className="addr-gen-bulk-table-wrap">
+                    <table className="addr-gen-bulk-table">
+                      <thead>
+                        <tr>
+                          <th>{t('addresseeGenerator.bulk.columns.index')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.fullName')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.position')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.organization')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.template')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.confidence')}</th>
+                          <th>{t('addresseeGenerator.bulk.columns.warnings')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bulkResults.slice(0, 10).map((r, idx) => (
+                          <tr key={idx}>
+                            <td>{idx + 1}</td>
+                            <td>{r.input.fullName}</td>
+                            <td>{r.input.position}</td>
+                            <td>{r.input.organization}</td>
+                            <td>{r.input.documentTemplate}</td>
+                            <td>{Math.round(r.confidence * 100)}%</td>
+                            <td>
+                              {r.warnings && r.warnings.length > 0
+                                ? r.warnings.map((w) => w.code).join('; ')
+                                : '—'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </section>
           </ToolControls>
 
@@ -526,9 +877,28 @@ function AddresseeGenerator() {
                     type="button"
                     className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--export"
                     onClick={handleExportCsv}
+                    disabled={!result}
                   >
                     <Icon name="list_ordered" size={16} />
                     {t('addresseeGenerator.buttons.exportCsv')}
+                  </button>
+                  <button
+                    type="button"
+                    className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--export"
+                    onClick={handleExportTxt}
+                    disabled={!result}
+                  >
+                    <Icon name="file_text" size={16} />
+                    {t('addresseeGenerator.buttons.exportTxt')}
+                  </button>
+                  <button
+                    type="button"
+                    className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--export"
+                    onClick={handleExportHtml}
+                    disabled={!result}
+                  >
+                    <Icon name="code" size={16} />
+                    {t('addresseeGenerator.buttons.exportHtml')}
                   </button>
                   <button
                     type="button"

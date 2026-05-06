@@ -1517,17 +1517,31 @@
       "example": "Load Example",
       "copyAll": "Copy all",
       "copiedAll": "Copied all",
-      "exportCsv": "Export CSV",
+"exportCsv": "Export CSV",
+      "exportTxt": "Download TXT",
+      "exportHtml": "Download HTML",
       "downloadDocx": "Download DOCX",
       "comingSoon": "Coming Soon",
       "bulkComingSoon": "Bulk processing soon",
       "docxComingSoon": "Feature in development"
     },
+    "export": {
+      "disclaimer": "Draft text. Verify data before use."
+    },
+    "documentTemplate": {
+      "label": "Document Type",
+      "businessLetter": "Business Letter",
+      "application": "Application",
+      "powerOfAttorney": "Power of Attorney",
+      "order": "Order",
+      "memo": "Memo"
+    },
     "blocks": {
       "to": "To",
       "from": "From",
       "greeting": "Salutation",
-      "letter": "Letter Block"
+      "letter": "Letter Block",
+      "documentText": "Template Text"
     },
     "warningsTitle": "Review ambiguous details",
     "warningsDescription": "The tool helps prepare a document block, but ambiguous cases should still be checked manually.",
@@ -1538,10 +1552,31 @@
       "medium": "medium",
       "low": "check required"
     },
-    "bulkTitle": "Bulk CSV Processing",
-    "bulkDescription": "CSV export for the current result is already available. Bulk processing for multiple addressees will be added later.",
-    "bulkPlaceholder": "Upload CSV or paste data...",
-    "bulkHint": "This block is intentionally locked: the feature is still in development.",
+"bulk": {
+      "title": "Bulk CSV Processing",
+      "description": "Paste up to 50 rows with full name, position and organization. The tool will process the data in your browser and show a preview.",
+      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate\nИванов Иван Петрович;генеральный директор;ООО «Ромашка»;male;namePatronymic;!;businessLetter\nПетрова Анна Сергеевна;руководитель;АО «Север»;female;namePatronymic;!;application",
+      "process": "Process CSV",
+      "clear": "Clear CSV",
+      "download": "Download Result CSV",
+      "summary": "Processed: {processed} | With warnings: {warnings}",
+      "rowsProcessed": "Processed",
+      "rowsWithWarnings": "With warnings",
+      "previewTitle": "Preview",
+      "empty": "Paste data to process",
+      "tooManyRows": "Too many rows: maximum 50",
+      "unrecognized": "Could not recognize data. Check the format.",
+      "noDownloadData": "No data to download",
+      "columns": {
+        "index": "#",
+        "fullName": "Full Name",
+        "position": "Position",
+        "organization": "Organization",
+        "template": "Template",
+        "confidence": "Confidence",
+        "warnings": "Warnings"
+      }
+    },
     "exportNote": "CSV is available now. DOCX and bulk processing will be added later.",
     "info": {
       "title": "How to use the Addressee Generator",
