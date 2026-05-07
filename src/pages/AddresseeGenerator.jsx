@@ -136,10 +136,9 @@ function parseBulkInput(text) {
   const delimiter = detectDelimiter(lines[0])
   const firstRow = parseCsvLine(lines[0], delimiter)
 
+  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization']
   const hasHeader = firstRow.some((cell) =>
-    ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate'].includes(
-      cell.toLowerCase().replace(/[\s_-]/g, '')
-    )
+    headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
   )
 
   const dataLines = hasHeader ? lines.slice(1) : lines
@@ -155,6 +154,9 @@ function parseBulkInput(text) {
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    senderFullName: '',
+    senderPosition: '',
+    senderOrganization: '',
   }
 
   const fieldMap = {
@@ -165,6 +167,9 @@ function parseBulkInput(text) {
     4: 'greetingMode',
     5: 'punctuation',
     6: 'documentTemplate',
+    7: 'senderFullName',
+    8: 'senderPosition',
+    9: 'senderOrganization',
   }
 
   const rows = []
@@ -175,7 +180,7 @@ function parseBulkInput(text) {
     const row = { ...defaultFields }
     let hasData = false
 
-    for (let j = 0; j < cells.length && j < 7; j++) {
+    for (let j = 0; j < cells.length && j < 10; j++) {
       const fieldName = fieldMap[j]
       if (fieldName && cells[j]) {
         row[fieldName] = cells[j]
@@ -344,6 +349,51 @@ function AddresseeGenerator() {
     })
     setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }))
   }, [bulkInput, t])
+
+  const handleCsvFileChange = useCallback((e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const text = event.target?.result
+      if (typeof text === 'string') {
+        setBulkInput(text)
+        setBulkError(null)
+        const { rows, error } = parseBulkInput(text)
+        if (error) {
+          setBulkError(error)
+          setBulkResults([])
+          setBulkSummary(null)
+          setStatusMessage(error === 'tooManyRows' ? t('addresseeGenerator.bulk.tooManyRows') : t('addresseeGenerator.bulk.uploadError'))
+          return
+        }
+        if (rows.length === 0) {
+          setBulkError('empty')
+          setBulkResults([])
+          setBulkSummary(null)
+          return
+        }
+        const processed = rows.map((row) => {
+          const formatted = formatAddressee(row)
+          return { input: row, ...formatted }
+        })
+        setBulkResults(processed)
+        setBulkSummary({
+          total: processed.length,
+          withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
+        })
+        setStatusMessage(t('addresseeGenerator.bulk.uploadedCount', { count: processed.length }))
+      }
+    }
+    reader.onerror = () => {
+      setBulkError('unrecognized')
+      setBulkResults([])
+      setBulkSummary(null)
+      setStatusMessage(t('addresseeGenerator.bulk.uploadError'))
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }, [t])
 
   const handleDownloadBulkCsv = useCallback(() => {
     if (bulkResults.length === 0) return
@@ -891,6 +941,21 @@ function AddresseeGenerator() {
                 aria-describedby="bulkHint"
               />
               <p className="addr-gen-hint" id="bulkHint">{t('addresseeGenerator.bulk.hint')}</p>
+              <div className="addr-gen-upload-row">
+                <input
+                  type="file"
+                  id="bulkFileInput"
+                  accept=".csv,text/csv"
+                  className="addr-gen-upload-input"
+                  onChange={handleCsvFileChange}
+                  aria-describedby="bulkUploadHint"
+                />
+                <label htmlFor="bulkFileInput" className="addr-gen-btn addr-gen-btn--secondary">
+                  <Icon name="file_text" size={16} />
+                  {t('addresseeGenerator.bulk.uploadCsv')}
+                </label>
+                <span className="addr-gen-hint" id="bulkUploadHint">{t('addresseeGenerator.bulk.uploadHint')}</span>
+              </div>
               {bulkError && (
                 <p className="addr-gen-bulk-error" role="alert">
                   {bulkError === 'tooManyRows' && t('addresseeGenerator.bulk.tooManyRows')}

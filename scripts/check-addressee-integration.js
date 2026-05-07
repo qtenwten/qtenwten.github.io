@@ -362,6 +362,26 @@ for (const lang of ['ru', 'en']) {
   check(!staleValue || typeof staleValue !== 'string', `${lang}: does NOT have stale key "addresseeGenerator.sections.sender"`)
 }
 
+// 10f. CSV upload checks
+console.log('\n10f. CSV upload checks')
+check(agContent.includes('handleCsvFileChange'), 'JSX has handleCsvFileChange function')
+check(agContent.includes('type="file"') && agContent.includes('accept=".csv,text/csv"'), 'JSX has file input with CSV accept attribute')
+check(agContent.includes('addr-gen-upload-row'), 'JSX has addr-gen-upload-row element')
+check(agContent.includes('addr-gen-upload-input'), 'JSX has addr-gen-upload-input class')
+check(agContent.includes('bulkFileInput'), 'JSX has bulkFileInput id for file input')
+check(agContent.includes('htmlFor="bulkFileInput"') || agContent.includes('htmlFor={\"bulkFileInput\"}'), 'JSX file input has label with htmlFor')
+check(agContent.includes('FileReader'), 'JSX uses FileReader for CSV parsing')
+for (const lang of ['ru', 'en']) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const bulk = locale.addresseeGenerator?.bulk
+  check(bulk?.uploadCsv && typeof bulk.uploadCsv === 'string', `${lang}: bulk.uploadCsv exists`)
+  check(bulk?.uploadHint && typeof bulk.uploadHint === 'string', `${lang}: bulk.uploadHint exists`)
+  check(bulk?.uploadedCount && typeof bulk.uploadedCount === 'string', `${lang}: bulk.uploadedCount exists`)
+  check(bulk?.uploadError && typeof bulk.uploadError === 'string', `${lang}: bulk.uploadError exists`)
+}
+check(agCssContent.includes('.addr-gen-upload-row'), 'CSS has .addr-gen-upload-row styles')
+check(agCssContent.includes('.addr-gen-upload-input'), 'CSS has .addr-gen-upload-input styles')
+
 
 console.log('\n11. Sitemap')
 const distSitemapPath = path.join(rootDir, 'dist/sitemap.xml')
