@@ -177,6 +177,10 @@ async function main() {
   assert(txtText.includes('Отправитель'), 'TXT: has sender section header');
   assert(txtText.includes('Обращение'), 'TXT: has greeting section header');
   assert(txtText.includes('Готовый шаблон'), 'TXT: has document template section header');
+  assert(txtText.includes('Кому:'), 'TXT: documentText has addressee label');
+  assert(txtText.includes('От кого:'), 'TXT: documentText has sender label');
+  assert(txtText.includes('Дата:'), 'TXT: documentText has date placeholder');
+  assert(txtText.includes('Подпись:'), 'TXT: documentText has signature placeholder');
   assert(txtText.includes('Петровой'), 'TXT: contains sender full name in genitive');
   assert(txtText.includes('Иванову Ивану Петровичу'), 'TXT: contains declined recipient full name');
   assert(txtText.includes('Петровой Анны Сергеевны'), 'TXT: contains declined sender full name');
@@ -237,10 +241,14 @@ async function main() {
   });
   assert(htmlManual.includes('Генеральному директору Иванову Ивану Петровичу'), 'HTML: contains manual recipient form');
   assert(htmlManual.includes('Петровой Анны Сергеевны'), 'HTML: contains manual sender form');
+  assert(htmlManual.includes('Дата:'), 'HTML: contains document date placeholder');
+  assert(htmlManual.includes('Подпись:'), 'HTML: contains document signature placeholder');
   assert(htmlManual.includes('Manual &lt;case&gt; document'), 'HTML: escapes manual export title');
 
   const docText = multilineDocTextResult.blocks.documentText || multilineDocTextResult.blocks.letter || '';
   assert(docText.length > 0, 'HTML: documentText is non-empty for businessLetter');
+  assert(docText.includes('ДЕЛОВОЕ ПИСЬМО'), 'HTML: businessLetter documentText has document title');
+  assert(docText.includes('Кому:') && docText.includes('От кого:'), 'HTML: businessLetter documentText has document parties');
 
   assert(jsxSource.includes('handleExportHtml'), 'HTML: JSX has handleExportHtml');
   assert(jsxSource.includes('buildHtmlExport'), 'HTML: JSX uses buildHtmlExport from helper');
@@ -306,6 +314,8 @@ async function main() {
   assert(singleCsv.includes('senderGenitiveName'), 'CSV: buildSingleCsvExport includes senderGenitiveName column');
   assert(singleCsv.includes('Генеральному директору Иванову Ивану Петровичу'), 'CSV: buildSingleCsvExport contains manual recipient form');
   assert(singleCsv.includes('Петровой Анны Сергеевны'), 'CSV: buildSingleCsvExport contains manual sender form');
+  assert(singleCsv.includes('Дата:'), 'CSV: buildSingleCsvExport contains document date placeholder');
+  assert(singleCsv.includes('Подпись:'), 'CSV: buildSingleCsvExport contains document signature placeholder');
   assert(!singleCsv.includes('undefined'), 'CSV: buildSingleCsvExport has no undefined values');
   assert(!singleCsv.includes('null'), 'CSV: buildSingleCsvExport has no null values');
 
@@ -526,18 +536,18 @@ async function main() {
   console.log('\n7. Document Template Checks');
 
   const templates = [
-    { template: DOCUMENT_TEMPLATE_BUSINESS_LETTER, expected: 'Уважаемый' },
-    { template: DOCUMENT_TEMPLATE_APPLICATION, expected: 'Заявление' },
-    { template: DOCUMENT_TEMPLATE_COMPLAINT, expected: 'Жалоба' },
-    { template: DOCUMENT_TEMPLATE_REQUEST, expected: 'Запрос' },
-    { template: DOCUMENT_TEMPLATE_MEMO, expected: 'Служебная записка' },
-    { template: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE, expected: 'Объяснительная' },
-    { template: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY, expected: 'Доверенность' },
-    { template: DOCUMENT_TEMPLATE_COMMERCIAL_OFFER, expected: 'Коммерческое предложение' },
-    { template: DOCUMENT_TEMPLATE_ORDER, expected: 'Приказ' },
+    { template: DOCUMENT_TEMPLATE_BUSINESS_LETTER, expected: 'ДЕЛОВОЕ ПИСЬМО', shouldHaveGreeting: true },
+    { template: DOCUMENT_TEMPLATE_APPLICATION, expected: 'ЗАЯВЛЕНИЕ', shouldHaveGreeting: true, shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_COMPLAINT, expected: 'ЖАЛОБА', shouldHaveGreeting: true, shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_REQUEST, expected: 'ЗАПРОС', shouldHaveGreeting: true },
+    { template: DOCUMENT_TEMPLATE_MEMO, expected: 'СЛУЖЕБНАЯ ЗАПИСКА', shouldHaveGreeting: true },
+    { template: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE, expected: 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА', shouldHaveGreeting: true, shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY, expected: 'ДОВЕРЕННОСТЬ', shouldHaveGreeting: false, shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_COMMERCIAL_OFFER, expected: 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ', shouldHaveGreeting: true },
+    { template: DOCUMENT_TEMPLATE_ORDER, expected: 'ПРИКАЗ', shouldHaveGreeting: false },
   ];
 
-  templates.forEach(({ template, expected }) => {
+  templates.forEach(({ template, expected, shouldHaveGreeting, shouldHaveSensitiveNote }) => {
     const r = formatAddressee({
       fullName: 'Иванов Иван Петрович',
       position: 'директор',
@@ -546,11 +556,27 @@ async function main() {
       greetingMode: GREETING_NAME_PATRONYMIC,
       punctuation: PUNCTUATION_EXCLAMATION,
       documentTemplate: template,
+      senderFullName: 'Петрова Анна Сергеевна',
+      senderPosition: 'менеджер',
+      senderOrganization: 'ООО «Альфа»',
     });
     const docText = r.blocks.documentText || '';
     assert(docText.length > 0, `Template ${template}: produces non-empty documentText`);
-    if (expected) {
-      assert(docText.toLowerCase().includes(expected.toLowerCase()), `Template ${template}: contains "${expected}"`);
+    assert(docText.toLowerCase().includes(expected.toLowerCase()), `Template ${template}: contains title "${expected}"`);
+    assert(docText.includes('Кому:'), `Template ${template}: contains addressee label`);
+    assert(docText.includes('От кого:'), `Template ${template}: contains sender label`);
+    assert(docText.includes(r.blocks.to), `Template ${template}: contains formatted addressee block`);
+    assert(docText.includes(String(r.blocks.from || '').replace(/^от\s+/i, '')), `Template ${template}: contains formatted sender data`);
+    assert(docText.includes('Дата:'), `Template ${template}: contains date placeholder`);
+    assert(docText.includes('Подпись:'), `Template ${template}: contains signature placeholder`);
+    assert(!docText.includes('undefined') && !docText.includes('null'), `Template ${template}: has no undefined/null`);
+    if (shouldHaveGreeting) {
+      assert(docText.includes(r.blocks.greeting), `Template ${template}: contains greeting when appropriate`);
+    } else {
+      assert(!docText.includes(r.blocks.greeting), `Template ${template}: omits greeting when not appropriate`);
+    }
+    if (shouldHaveSensitiveNote) {
+      assert(docText.toLowerCase().includes('проверьте'), `Template ${template}: contains neutral review note`);
     }
   });
 
@@ -565,6 +591,7 @@ async function main() {
   });
   const blDoc = businessLetter.blocks.documentText || '';
   assert(blDoc.includes('Иванов Иван Петрович') || blDoc.includes('директору'), 'businessLetter: contains name or position');
+  assert(blDoc.includes('Дата:') && blDoc.includes('Подпись:'), 'businessLetter: contains date and signature placeholders');
 
   // ============================================================
   // 8. REGRESSION CHECKS

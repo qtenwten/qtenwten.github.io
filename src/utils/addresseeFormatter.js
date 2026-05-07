@@ -360,117 +360,190 @@ function buildFromBlock(senderFullName, senderPosition, senderOrganization, send
   };
 }
 
-function buildDocumentText({ template, to, from, greeting, fullName, position, organization }) {
+const DOCUMENT_SECTION_PLACEHOLDER = '____________________________';
+const DOCUMENT_SIGNATURE_LINE = 'Дата: ____________        Подпись: ____________';
+const SENSITIVE_TEMPLATE_NOTE = 'Примечание для редактирования: это заготовка, а не юридическая консультация. Перед отправкой проверьте факты, реквизиты и формулировки.';
+
+function cleanDocumentLine(value) {
+  return String(value || '').trim();
+}
+
+function buildNamedDocumentSection(label, content) {
+  const safeContent = cleanDocumentLine(content);
+  return `${label}\n${safeContent || DOCUMENT_SECTION_PLACEHOLDER}`;
+}
+
+function buildSenderDocumentSection(content) {
+  const safeContent = cleanDocumentLine(content).replace(/^от\s+/i, '');
+  return `От кого:\n${safeContent || DOCUMENT_SECTION_PLACEHOLDER}`;
+}
+
+function buildDocumentLines(lines) {
+  return (lines || [])
+    .map((line) => cleanDocumentLine(line))
+    .filter(Boolean)
+    .join('\n');
+}
+
+function buildDocumentDraft({
+  title,
+  to,
+  from,
+  greeting,
+  bodyLines,
+  noteLines,
+  includeGreeting = true,
+}) {
+  const sections = [
+    cleanDocumentLine(title),
+    buildNamedDocumentSection('Кому:', to),
+    buildSenderDocumentSection(from),
+  ];
+  const safeGreeting = cleanDocumentLine(greeting);
+  if (includeGreeting && safeGreeting) {
+    sections.push(safeGreeting);
+  }
+
+  const body = buildDocumentLines(bodyLines);
+  if (body) {
+    sections.push(body);
+  }
+
+  const note = buildDocumentLines(noteLines);
+  if (note) {
+    sections.push(note);
+  }
+
+  sections.push(DOCUMENT_SIGNATURE_LINE);
+  return sections.filter(Boolean).join('\n\n');
+}
+
+function buildDocumentText({ template, to, from, greeting }) {
   const safeTemplate = template || DOCUMENT_TEMPLATE_BUSINESS_LETTER;
 
   if (safeTemplate === DOCUMENT_TEMPLATE_APPLICATION) {
-    return [
+    return buildDocumentDraft({
+      title: 'ЗАЯВЛЕНИЕ',
       to,
-      '',
       from,
-      '',
-      'Заявление',
-      '',
-      'Прошу рассмотреть обращение по указанному вопросу.',
-    ].filter(Boolean).join('\n');
+      greeting,
+      bodyLines: [
+        'Прошу рассмотреть настоящее заявление по указанному вопросу.',
+        'Сведения, основания и желаемый результат укажите в этом разделе.',
+      ],
+      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY) {
-    return [
-      'Доверенность',
-      '',
+    return buildDocumentDraft({
+      title: 'ДОВЕРЕННОСТЬ',
       to,
-      '',
       from,
-      '',
-      'Настоящая доверенность подготовлена как черновой текстовый блок. Перед использованием проверьте данные и формулировки вручную.',
-    ].filter(Boolean).join('\n');
+      greeting,
+      includeGreeting: false,
+      bodyLines: [
+        'Настоящий текст является редактируемой заготовкой доверенности для дальнейшего заполнения.',
+        'Укажите представителя, перечень полномочий, срок действия и реквизиты документов.',
+      ],
+      noteLines: [
+        'Примечание для редактирования: это заготовка, а не юридическая консультация. Перед использованием проверьте требования к форме доверенности и необходимость удостоверения.',
+      ],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_ORDER) {
-    return [
-      'Приказ',
-      '',
+    return buildDocumentDraft({
+      title: 'ПРИКАЗ',
       to,
-      '',
-      'О подготовке документа',
-      '',
-      'Настоящий блок является черновиком для подготовки приказа и требует проверки ответственным сотрудником.',
-    ].filter(Boolean).join('\n');
+      from,
+      greeting,
+      includeGreeting: false,
+      bodyLines: [
+        'О подготовке документа',
+        'Проект приказа для внутреннего оформления решения.',
+        'Содержание поручения, ответственных лиц, сроки и основание укажите в этом разделе.',
+      ],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_MEMO) {
-    return [
-      'Служебная записка',
-      '',
+    return buildDocumentDraft({
+      title: 'СЛУЖЕБНАЯ ЗАПИСКА',
       to,
-      '',
       from,
-      '',
       greeting,
-      '',
-      'Прошу принять к сведению указанную информацию.',
-    ].filter(Boolean).join('\n');
+      bodyLines: [
+        'Довожу до сведения информацию по рабочему вопросу.',
+        'Предлагаемые действия, ответственных лиц и сроки укажите в этом разделе.',
+      ],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_COMPLAINT) {
-    return [
-      'Жалоба',
-      '',
+    return buildDocumentDraft({
+      title: 'ЖАЛОБА',
       to,
-      '',
       from,
-      '',
       greeting,
-      '',
-      'Настоящим выражаю недовольство качеством услуги/работы.',
-      'Прошу рассмотреть обращение и принять меры.',
-    ].filter(Boolean).join('\n');
+      bodyLines: [
+        'Прошу рассмотреть жалобу по указанной ситуации.',
+        'Описание обстоятельств, даты, номера документов и желаемый способ ответа укажите в этом разделе.',
+      ],
+      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_REQUEST) {
-    return [
-      'Запрос',
-      '',
+    return buildDocumentDraft({
+      title: 'ЗАПРОС',
       to,
-      '',
       from,
-      '',
       greeting,
-      '',
-      'Прошу предоставить информацию по указанному вопросу.',
-    ].filter(Boolean).join('\n');
+      bodyLines: [
+        'Прошу предоставить информацию или документы по указанному вопросу.',
+        'Перечень запрашиваемых сведений, срок ответа и удобный способ связи укажите в этом разделе.',
+      ],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_EXPLANATORY_NOTE) {
-    return [
-      'Объяснительная записка',
-      '',
+    return buildDocumentDraft({
+      title: 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА',
       to,
-      '',
       from,
-      '',
       greeting,
-      '',
-      'По существу изложенного сообщаю следующее.',
-    ].filter(Boolean).join('\n');
+      bodyLines: [
+        'По существу указанной ситуации сообщаю следующее.',
+        'Описание обстоятельств, даты и подтверждающие материалы укажите в этом разделе.',
+      ],
+      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+    });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_COMMERCIAL_OFFER) {
-    return [
-      'Коммерческое предложение',
-      '',
+    return buildDocumentDraft({
+      title: 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ',
       to,
-      '',
       from,
-      '',
       greeting,
-      '',
-      'Предлагаю вашему вниманию условия сотрудничества.',
-    ].filter(Boolean).join('\n');
+      bodyLines: [
+        'Предлагаем рассмотреть условия сотрудничества по указанному направлению.',
+        'Описание товара или услуги, стоимость, сроки, условия оплаты и контакты укажите в этом разделе.',
+      ],
+    });
   }
 
-  return [to, '', greeting, ''].filter(Boolean).join('\n');
+  return buildDocumentDraft({
+    title: 'ДЕЛОВОЕ ПИСЬМО',
+    to,
+    from,
+    greeting,
+    bodyLines: [
+      'Сообщаем информацию по указанному вопросу и просим рассмотреть её в рабочем порядке.',
+      'При необходимости дополните письмо деталями, сроками и приложениями.',
+    ],
+  });
 }
 
 export function formatAddressee(input) {

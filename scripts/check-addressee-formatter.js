@@ -360,61 +360,71 @@ function run() {
   // R. Document templates
   console.log('\nR. Document templates')
 
-  const rNoTemplate = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE })
+  const templateBaseInput = {
+    fullName: 'Иванов Иван Петрович',
+    position: 'директор',
+    organization: 'ООО «Ромашка»',
+    gender: GENDER_MALE,
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderPosition: 'менеджер',
+    senderOrganization: 'ООО «Альфа»',
+  }
+  const includesText = (value, expected) =>
+    String(value || '').toLowerCase().includes(String(expected || '').toLowerCase())
+  const assertDocumentDraftQuality = (result, label, title, options = {}) => {
+    const { shouldHaveGreeting = true, shouldHaveSensitiveNote = false } = options
+    const docText = result.blocks.documentText || ''
+    assert(typeof result.blocks.documentText === 'string', `${label}: returns documentText string`)
+    assert(includesText(docText, title), `${label}: contains title "${title}"`)
+    assert(docText.includes('Кому:'), `${label}: contains addressee label`)
+    assert(docText.includes('От кого:'), `${label}: contains sender label`)
+    assert(docText.includes(result.blocks.to), `${label}: contains formatted to block`)
+    assert(docText.includes(String(result.blocks.from || '').replace(/^от\s+/i, '')), `${label}: contains formatted sender data`)
+    assert(docText.includes('Дата:'), `${label}: contains date placeholder`)
+    assert(docText.includes('Подпись:'), `${label}: contains signature placeholder`)
+    assert(!docText.includes('undefined') && !docText.includes('null'), `${label}: has no undefined/null`)
+    if (shouldHaveGreeting) {
+      assert(docText.includes(result.blocks.greeting), `${label}: contains greeting`)
+    } else {
+      assert(!docText.includes(result.blocks.greeting), `${label}: omits greeting when not appropriate`)
+    }
+    if (shouldHaveSensitiveNote) {
+      assert(includesText(docText, 'заготовка'), `${label}: marks sensitive template as draft`)
+      assert(includesText(docText, 'проверьте'), `${label}: asks user to review sensitive draft`)
+    }
+  }
+
+  const rNoTemplate = formatAddressee(templateBaseInput)
   assert(typeof rNoTemplate.blocks.documentText === 'string', 'R1: documentTemplate defaults to businessLetter')
   assert(rNoTemplate.blocks.greeting, 'R1: greeting exists without documentTemplate')
   assert(rNoTemplate.confidence > 0, 'R1: confidence is not broken by missing documentTemplate')
+  assertDocumentDraftQuality(rNoTemplate, 'R1: default businessLetter draft', 'ДЕЛОВОЕ ПИСЬМО')
 
-  const rBusinessLetter = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER })
-  assert(typeof rBusinessLetter.blocks.documentText === 'string', 'R2: businessLetter returns documentText string')
-  assert(rBusinessLetter.blocks.documentText.includes(rBusinessLetter.blocks.greeting), 'R2: businessLetter contains greeting')
+  const templateQualityCases = [
+    { template: DOCUMENT_TEMPLATE_BUSINESS_LETTER, label: 'R2: businessLetter', title: 'ДЕЛОВОЕ ПИСЬМО' },
+    { template: DOCUMENT_TEMPLATE_APPLICATION, label: 'R3: application', title: 'ЗАЯВЛЕНИЕ', shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY, label: 'R4: powerOfAttorney', title: 'ДОВЕРЕННОСТЬ', shouldHaveGreeting: false, shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_ORDER, label: 'R5: order', title: 'ПРИКАЗ', shouldHaveGreeting: false },
+    { template: DOCUMENT_TEMPLATE_MEMO, label: 'R6: memo', title: 'СЛУЖЕБНАЯ ЗАПИСКА' },
+    { template: DOCUMENT_TEMPLATE_COMPLAINT, label: 'R9: complaint', title: 'ЖАЛОБА', shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_REQUEST, label: 'R10: request', title: 'ЗАПРОС' },
+    { template: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE, label: 'R11: explanatoryNote', title: 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА', shouldHaveSensitiveNote: true },
+    { template: DOCUMENT_TEMPLATE_COMMERCIAL_OFFER, label: 'R12: commercialOffer', title: 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ' },
+  ]
+  for (const item of templateQualityCases) {
+    const result = formatAddressee({ ...templateBaseInput, documentTemplate: item.template })
+    assertDocumentDraftQuality(result, item.label, item.title, item)
+  }
 
-  const rApplication = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_APPLICATION })
-  assert(typeof rApplication.blocks.documentText === 'string', 'R3: application returns documentText string')
-  assert(rApplication.blocks.documentText.includes('Заявление'), 'R3: application contains "Заявление"')
-  assert(rApplication.blocks.documentText.includes(rApplication.blocks.from), 'R3: application contains from block')
-
-  const rPowerOfAttorney = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY })
-  assert(typeof rPowerOfAttorney.blocks.documentText === 'string', 'R4: powerOfAttorney returns documentText string')
-  assert(rPowerOfAttorney.blocks.documentText.includes('Доверенность'), 'R4: powerOfAttorney contains "Доверенность"')
-
-  const rOrder = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_ORDER })
-  assert(typeof rOrder.blocks.documentText === 'string', 'R5: order returns documentText string')
-  assert(rOrder.blocks.documentText.includes('Приказ'), 'R5: order contains "Приказ"')
-
-  const rMemo = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_MEMO })
-  assert(typeof rMemo.blocks.documentText === 'string', 'R6: memo returns documentText string')
-  assert(rMemo.blocks.documentText.includes('Служебная записка'), 'R6: memo contains "Служебная записка"')
-  assert(rMemo.blocks.documentText.includes(rMemo.blocks.greeting), 'R6: memo contains greeting')
-
-  const rUnknownTemplate = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', gender: GENDER_MALE, documentTemplate: 'unknownTemplate' })
+  const rUnknownTemplate = formatAddressee({ ...templateBaseInput, documentTemplate: 'unknownTemplate' })
   assert(typeof rUnknownTemplate.blocks.documentText === 'string', 'R7: unknown template falls back to businessLetter')
   assert(rUnknownTemplate.blocks.greeting, 'R7: unknown template does not break greeting')
+  assertDocumentDraftQuality(rUnknownTemplate, 'R7: unknown template fallback draft', 'ДЕЛОВОЕ ПИСЬМО')
 
   const rTemplateWithWarnings = formatAddressee({ fullName: 'Иванов', position: 'unknown', gender: GENDER_UNKNOWN, documentTemplate: DOCUMENT_TEMPLATE_APPLICATION })
   assert(typeof rTemplateWithWarnings.blocks.documentText === 'string', 'R8: template with warnings returns documentText')
   assert(Array.isArray(rTemplateWithWarnings.warnings), 'R8: warnings work with documentTemplate')
   assert(rTemplateWithWarnings.confidence < 0.95, 'R8: confidence works with documentTemplate')
-
-  const rComplaint = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_COMPLAINT })
-  assert(typeof rComplaint.blocks.documentText === 'string', 'R9: complaint returns documentText string')
-  assert(rComplaint.blocks.documentText.includes('Жалоба'), 'R9: complaint contains "Жалоба"')
-  assert(rComplaint.blocks.documentText.length > 20, 'R9: complaint documentText is not empty')
-
-  const rRequest = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_REQUEST })
-  assert(typeof rRequest.blocks.documentText === 'string', 'R10: request returns documentText string')
-  assert(rRequest.blocks.documentText.includes('Запрос'), 'R10: request contains "Запрос"')
-  assert(rRequest.blocks.documentText.length > 10, 'R10: request documentText is not empty')
-
-  const rExplanatoryNote = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE })
-  assert(typeof rExplanatoryNote.blocks.documentText === 'string', 'R11: explanatoryNote returns documentText string')
-  assert(rExplanatoryNote.blocks.documentText.includes('Объяснительная'), 'R11: explanatoryNote contains "Объяснительная"')
-  assert(rExplanatoryNote.blocks.documentText.length > 20, 'R11: explanatoryNote documentText is not empty')
-
-  const rCommercialOffer = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_COMMERCIAL_OFFER })
-  assert(typeof rCommercialOffer.blocks.documentText === 'string', 'R12: commercialOffer returns documentText string')
-  assert(rCommercialOffer.blocks.documentText.includes('Коммерческое предложение'), 'R12: commercialOffer contains "Коммерческое предложение"')
-  assert(rCommercialOffer.blocks.documentText.length > 20, 'R12: commercialOffer documentText is not empty')
 
   const sensitiveTemplates = [
     { template: DOCUMENT_TEMPLATE_APPLICATION, name: 'application' },
@@ -423,10 +433,11 @@ function run() {
     { template: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE, name: 'explanatoryNote' },
   ]
   for (const { template, name } of sensitiveTemplates) {
-    const result = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: template })
+    const result = formatAddressee({ ...templateBaseInput, documentTemplate: template })
     const hasTemplateReview = result.warnings.some((w) => w.code === WARNING_CODES.TEMPLATE_REVIEW)
     assert(hasTemplateReview, `R13: ${name} returns TEMPLATE_REVIEW warning`)
     assert(typeof result.blocks.documentText === 'string' && result.blocks.documentText.length > 0, `R13: ${name} has non-empty documentText`)
+    assert(includesText(result.blocks.documentText, 'проверьте'), `R13: ${name} documentText has neutral review wording`)
   }
 
   // S. Extra name parts and Latin name warnings
