@@ -1555,7 +1555,8 @@
 "bulk": {
       "title": "Bulk CSV Processing",
       "description": "Paste up to 50 rows with full name, position and organization. The tool will process the data in your browser and show a preview.",
-      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate\nИванов Иван Петрович;генеральный директор;ООО «Ромашка»;male;namePatronymic;!;businessLetter\nПетрова Анна Сергеевна;руководитель;АО «Север»;female;namePatronymic;!;application",
+      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate\nJohn Smith;CEO;Acme Ltd;male;namePatronymic;!;businessLetter\nJane Cooper;Sales Manager;Beta LLC;female;namePatronymic;!;application\nMichael Brown;Account Manager;Vector Ltd;male;fullName;,;businessLetter",
+      "hint": "Maximum 50 rows. Separator: semicolon.",
       "process": "Process CSV",
       "clear": "Clear CSV",
       "download": "Download Result CSV",
@@ -1577,7 +1578,7 @@
         "warnings": "Warnings"
       }
     },
-    "exportNote": "CSV is available now. DOCX and bulk processing will be added later.",
+    "exportNote": "CSV, TXT and HTML exports are available now. DOCX export is coming soon.",
     "info": {
       "title": "How to use the Addressee Generator",
       "description": "The generator creates ready-to-use To, From and Salutation blocks for business letters, applications, orders and powers of attorney. It also highlights ambiguous cases that should be reviewed manually.",
@@ -1608,8 +1609,8 @@
         "a4": "Yes, as a prepared draft for a letter, application, order or power of attorney. Always review ambiguous names and positions before sending or printing.",
         "q5": "How is this different from a name declension tool?",
         "a5": "It prepares the full document block: To, From, Salutation and letter text. It is closer to a business letter helper than a pure declension tool.",
-        "q6": "Will bulk CSV processing be available?",
-        "a6": "CSV export for the current result is already available. Bulk processing is planned separately and marked as coming soon.",
+        "q6": "How does bulk processing work?",
+        "a6": "Paste up to 50 rows with name, position and organization into the text area. The result can be downloaded as CSV.",
         "q7": "Will DOCX export be available?",
         "a7": "DOCX export is not enabled yet. The button is intentionally disabled so it is clear that the feature is planned, not broken.",
         "q8": "What should I do if a surname is undeclinable?",

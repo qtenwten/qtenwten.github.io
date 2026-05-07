@@ -122,7 +122,12 @@ for (const lang of ['ru', 'en']) {
     'addresseeGenerator.buttons.exportCsv',
     'addresseeGenerator.buttons.exportTxt',
     'addresseeGenerator.buttons.exportHtml',
+    'addresseeGenerator.buttons.downloadDocx',
+    'addresseeGenerator.buttons.docxComingSoon',
     'addresseeGenerator.export.disclaimer',
+    'addresseeGenerator.bulk.hint',
+    'addresseeGenerator.bulk.placeholder',
+    'addresseeGenerator.exportNote',
     'addresseeGenerator.info.faqList.q1',
     'addresseeGenerator.info.faqList.a1',
     'addresseeGenerator.info.faqList.q2',
@@ -144,6 +149,51 @@ for (const lang of ['ru', 'en']) {
     const value = key.split('.').reduce((obj, k) => obj?.[k], locale)
     check(typeof value === 'string' && value.length > 0, `${lang}: ${key}`)
   }
+
+  if (lang === 'en') {
+    const enLocale = readJson('src/locales/en.json')
+    const bulkPlaceholder = enLocale.addresseeGenerator?.bulk?.placeholder || ''
+    const cyrillicRegex = /[\u0400-\u04FF]/
+    const hasCyrillic = cyrillicRegex.test(bulkPlaceholder)
+    check(!hasCyrillic, 'en: bulk.placeholder has no Cyrillic characters')
+  }
+
+  const exportNote = locale.addresseeGenerator?.exportNote || ''
+  if (exportNote.toLowerCase().includes('massovaya') || exportNote.toLowerCase().includes('mass processing') || exportNote.toLowerCase().includes('bulk processing') || exportNote.toLowerCase().includes('will be added')) {
+    if (!exportNote.toLowerCase().includes('csv') || !exportNote.toLowerCase().includes('available')) {
+      console.log(`  WARNING: ${lang}.json exportNote may contain outdated claims`)
+    }
+  }
+}
+
+// 6b. FAQ texts consistency
+console.log('\n6b. FAQ texts consistency')
+const ruLocale = readJson('src/locales/ru.json')
+const enLocale = readJson('src/locales/en.json')
+
+const ruFaq6 = ruLocale.addresseeGenerator?.info?.faqList?.q6 || ''
+const ruFaq6Answer = ruLocale.addresseeGenerator?.info?.faqList?.a6 || ''
+const ruExportNote = ruLocale.addresseeGenerator?.exportNote || ''
+
+const enFaq6 = enLocale.addresseeGenerator?.info?.faqList?.q6 || ''
+const enFaq6Answer = enLocale.addresseeGenerator?.info?.faqList?.a6 || ''
+const enExportNote = enLocale.addresseeGenerator?.exportNote || ''
+
+const outdatedPhrasesRu = ['будет добавлена позже', 'запланирована отдельно', 'скоро', 'массовая обработка csv?', 'massovaya']
+const outdatedPhrasesEn = ['will be added later', 'planned separately', 'coming soon', 'bulk csv processing?', 'planned']
+
+for (const phrase of outdatedPhrasesRu) {
+  check(!ruFaq6.toLowerCase().includes(phrase.toLowerCase()) || ruFaq6.toLowerCase().includes('массовая обработка'), `ru: FAQ q6 does not contain outdated phrase "${phrase}"`)
+}
+for (const phrase of outdatedPhrasesRu) {
+  check(!ruFaq6Answer.toLowerCase().includes(phrase.toLowerCase()), `ru: FAQ a6 does not contain outdated phrase "${phrase}"`)
+}
+
+for (const phrase of outdatedPhrasesEn) {
+  check(!enFaq6.toLowerCase().includes(phrase.toLowerCase()), `en: FAQ q6 does not contain outdated phrase "${phrase}"`)
+}
+for (const phrase of outdatedPhrasesEn) {
+  check(!enFaq6Answer.toLowerCase().includes(phrase.toLowerCase()), `en: FAQ a6 does not contain outdated phrase "${phrase}"`)
 }
 
 // 7. generate-pages.js

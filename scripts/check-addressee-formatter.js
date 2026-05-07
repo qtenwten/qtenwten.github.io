@@ -415,6 +415,39 @@ function run() {
   assert(!hasNormalLatin, 'S5: normal Cyrillic name has no LATIN_NAME warning')
   assert(rNormalName.confidence === 0.95, 'S5: normal name has confidence 0.95')
 
+  // T. New warning codes (INITIALS_DETECTED, HYPHENATED_NAME_REVIEW)
+  console.log('\nT. New warning codes')
+
+  const rInitials = formatAddressee({ fullName: 'Иванов И. И.', gender: GENDER_MALE })
+  const hasInitialsWarning = rInitials.warnings.some((w) => w.code === WARNING_CODES.INITIALS_DETECTED)
+  assert(hasInitialsWarning, 'T1: initials "Иванов И. И." gives INITIALS_DETECTED warning')
+  assert(rInitials.confidence < 0.95, 'T1: initials reduce confidence below high')
+
+  const rInitials2 = formatAddressee({ fullName: 'Иванов И.П.', gender: GENDER_MALE })
+  const hasInitialsWarning2 = rInitials2.warnings.some((w) => w.code === WARNING_CODES.INITIALS_DETECTED)
+  assert(hasInitialsWarning2, 'T2: initials "Иванов И.П." gives INITIALS_DETECTED warning')
+
+  const rHyphen = formatAddressee({ fullName: 'Анна-Мария Иванова', gender: GENDER_FEMALE })
+  const hasHyphenWarning = rHyphen.warnings.some((w) => w.code === WARNING_CODES.HYPHENATED_NAME_REVIEW)
+  assert(hasHyphenWarning, 'T3: hyphen name "Анна-Мария Иванова" gives HYPHENATED_NAME_REVIEW warning')
+  assert(rHyphen.blocks.to.includes('Анна-Мария'), 'T3: hyphen name is preserved in output')
+
+  const rHyphenSalted = formatAddressee({ fullName: 'Салтыков-Щедрин Михаил Евграфович', gender: GENDER_MALE })
+  const hasHyphenSaltedWarning = rHyphenSalted.warnings.some((w) => w.code === WARNING_CODES.HYPHENATED_NAME_REVIEW)
+  assert(hasHyphenSaltedWarning, 'T4: hyphen surname "Салтыков-Щедрин" gives HYPHENATED_NAME_REVIEW warning')
+  assert(rHyphenSalted.blocks.to.includes('Салтыков-Щедрин'), 'T4: hyphen surname is preserved in output')
+
+  const rLatinJohn = formatAddressee({ fullName: 'John Smith', gender: GENDER_MALE })
+  const latinJohnHasWarning = rLatinJohn.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
+  assert(latinJohnHasWarning, 'T5: Latin name "John Smith" gives LATIN_NAME warning')
+  assert(rLatinJohn.confidence < 0.95, 'T5: Latin name confidence is not high')
+  assert(rLatinJohn.blocks.to.includes('John Smith'), 'T5: Latin name is preserved in output')
+
+  const rMixed = formatAddressee({ fullName: 'Иванов Ivan Петрович', gender: GENDER_MALE })
+  const mixedHasWarning = rMixed.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
+  assert(mixedHasWarning, 'T6: mixed Cyrillic/Latin gives LATIN_NAME warning')
+  assert(rMixed.confidence < 0.95, 'T6: mixed name confidence is not high')
+
   // Summary
   console.log('\n=== Results ===')
   const total = passed + failed

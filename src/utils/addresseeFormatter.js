@@ -35,7 +35,27 @@ function parseFullName(fullName) {
     surname: parts[0] || '',
     name: parts[1] || '',
     patronymic: parts[2] || '',
+    extraParts: parts.slice(3),
   };
+}
+
+function getExtraPartsMessage(extraParts) {
+  if (extraParts.length === 0) return '';
+  return ` Дополнительные части: "${extraParts.join(' ')}".`;
+}
+
+function hasInitials(fullName) {
+  return /[A-Za-zА-Яа-яё]\.\s*[A-Za-zА-Яа-яё]\./i.test(fullName);
+}
+
+function hasHyphenatedPart(fullName) {
+  const parts = splitFullName(fullName);
+  return parts.some((part) => part.includes('-'));
+}
+
+function isFullyLatin(fullName) {
+  const cyrillic = /[а-яёА-ЯЁ]/;
+  return fullName && !cyrillic.test(fullName) && /[a-zA-Z]/.test(fullName);
 }
 
 function normalizeNamePart(value) {
@@ -190,7 +210,14 @@ function buildToBlock(organization, position, fullName, gender) {
   }
 
   const parsedName = parseFullName(fullName);
-  if (parsedName.surname && parsedName.name && parsedName.patronymic) {
+  const nameParts = splitFullName(fullName);
+  const hasExtraParts = parsedName.extraParts && parsedName.extraParts.length > 0;
+
+  if (hasExtraParts) {
+    const allParts = [parsedName.surname, parsedName.name, parsedName.patronymic].filter(Boolean);
+    allParts.push(...parsedName.extraParts);
+    lines.push(allParts.join(' '));
+  } else if (parsedName.surname && parsedName.name && parsedName.patronymic) {
     lines.push(`${parsedName.surname} ${parsedName.name} ${parsedName.patronymic}`);
   } else if (parsedName.surname && parsedName.name) {
     lines.push(`${parsedName.surname} ${parsedName.name}`);
@@ -314,9 +341,10 @@ export function formatAddressee(input) {
   }
 
   if (nameParts.length > 3) {
+    const extraMsg = getExtraPartsMessage(parsedName.extraParts);
     warnings.push({
       code: WARNING_CODES.EXTRA_NAME_PARTS,
-      message: 'ФИО содержит больше трёх частей. Проверьте порядок фамилии, имени и отчества вручную.',
+      message: 'ФИО содержит больше трёх частей. Проверьте порядок фамилии, имени и отчества вручную.' + extraMsg,
     });
   }
 
@@ -333,10 +361,31 @@ export function formatAddressee(input) {
     }
   }
 
-  if (/[a-zA-Z]/.test(fullName)) {
+  if (isFullyLatin(fullName)) {
     warnings.push({
       code: WARNING_CODES.LATIN_NAME,
-      message: 'ФИО содержит латинские буквы. Проверьте написание вручную.',
+      message: 'Имя написано латиницей. Автоматическое склонение не применяется. Проверьте результат вручную.',
+    });
+  }
+
+  if (/[a-zA-Z]/.test(fullName) && /[а-яёА-ЯЁ]/.test(fullName)) {
+    warnings.push({
+      code: WARNING_CODES.LATIN_NAME,
+      message: 'ФИО содержит буквы разных алфавитов. Проверьте написание вручную.',
+    });
+  }
+
+  if (hasInitials(fullName)) {
+    warnings.push({
+      code: WARNING_CODES.INITIALS_DETECTED,
+      message: 'В ФИО есть инициалы. Склонение и обращение могут быть неточными.',
+    });
+  }
+
+  if (hasHyphenatedPart(fullName)) {
+    warnings.push({
+      code: WARNING_CODES.HYPHENATED_NAME_REVIEW,
+      message: 'В имени или фамилии есть дефис. Проверьте порядок и форму вручную.',
     });
   }
 
@@ -385,6 +434,8 @@ export function formatAddressee(input) {
       WARNING_CODES.UNDECLINABLE_SURNAME,
       WARNING_CODES.EXTRA_NAME_PARTS,
       WARNING_CODES.LATIN_NAME,
+      WARNING_CODES.INITIALS_DETECTED,
+      WARNING_CODES.HYPHENATED_NAME_REVIEW,
     ].includes(w.code)
   );
   if (hasIncompleteName) {
