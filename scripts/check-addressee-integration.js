@@ -451,8 +451,10 @@ const pubSitemapPath = path.join(rootDir, 'public/sitemap.xml')
 const sitemapPath = fs.existsSync(distSitemapPath) ? distSitemapPath : (fs.existsSync(pubSitemapPath) ? pubSitemapPath : null)
 if (sitemapPath) {
   const sitemap = fs.readFileSync(sitemapPath, 'utf-8')
-  check(sitemap.includes('https://qsen.ru/ru/generator-adresata'), 'sitemap has RU URL (without trailing slash)')
-  check(sitemap.includes('https://qsen.ru/en/generator-adresata'), 'sitemap has EN URL (without trailing slash)')
+  check(sitemap.includes('<loc>https://qsen.ru/ru/generator-adresata/</loc>'), 'sitemap has RU URL with trailing slash')
+  check(sitemap.includes('<loc>https://qsen.ru/en/generator-adresata/</loc>'), 'sitemap has EN URL with trailing slash')
+  check(!sitemap.includes('<loc>https://qsen.ru/ru/generator-adresata</loc>'), 'sitemap does not have RU URL without trailing slash')
+  check(!sitemap.includes('<loc>https://qsen.ru/en/generator-adresata</loc>'), 'sitemap does not have EN URL without trailing slash')
 } else {
   console.log('  ⚠ sitemap.xml not found — skipping')
 }

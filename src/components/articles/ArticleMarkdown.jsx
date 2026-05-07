@@ -1,4 +1,5 @@
 import { OutboundLink } from '../OutboundLink'
+import { addTrailingSlashToPath, addTrailingSlashToUrl } from '../../config/routeSeo'
 
 function parseMarkdown(content = '') {
   const lines = content.replace(/\r\n/g, '\n').split('\n')
@@ -155,17 +156,42 @@ function isExternalHref(href) {
   return typeof href === 'string' && (href.startsWith('http://') || href.startsWith('https://'))
 }
 
+function normalizeInternalArticleHref(href) {
+  if (typeof href !== 'string') return href
+
+  if (/^https?:\/\//i.test(href)) {
+    try {
+      const parsedUrl = new URL(href)
+      if (parsedUrl.hostname === 'qsen.ru' && /^\/(ru|en)(?=\/|$)/.test(parsedUrl.pathname)) {
+        return addTrailingSlashToUrl(href)
+      }
+    } catch {
+      return href
+    }
+
+    return href
+  }
+
+  if (/^\/(ru|en)(?=\/|$)/.test(href)) {
+    return addTrailingSlashToPath(href)
+  }
+
+  return href
+}
+
 function MarkdownLink({ href, children, className }) {
-  if (isExternalHref(href)) {
+  const normalizedHref = normalizeInternalArticleHref(href)
+
+  if (isExternalHref(normalizedHref)) {
     return (
-      <OutboundLink href={href} className={className} target="_blank" rel="noreferrer">
+      <OutboundLink href={normalizedHref} className={className} target="_blank" rel="noreferrer">
         {children}
       </OutboundLink>
     )
   }
 
   return (
-    <a href={href} className={className}>
+    <a href={normalizedHref} className={className}>
       {children}
     </a>
   )

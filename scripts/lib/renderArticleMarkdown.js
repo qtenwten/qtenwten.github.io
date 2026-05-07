@@ -1,3 +1,5 @@
+import { addTrailingSlashToPath, addTrailingSlashToUrl } from '../../src/config/routeSeo.js'
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -12,6 +14,29 @@ function isSafeHref(href) {
   return href.startsWith('http://')
     || href.startsWith('https://')
     || (/^\/(?!\/)[^\s]*$/.test(href) && !href.includes('\\'))
+}
+
+function normalizeInternalArticleHref(href) {
+  if (typeof href !== 'string') return href
+
+  if (/^https?:\/\//i.test(href)) {
+    try {
+      const parsedUrl = new URL(href)
+      if (parsedUrl.hostname === 'qsen.ru' && /^\/(ru|en)(?=\/|$)/.test(parsedUrl.pathname)) {
+        return addTrailingSlashToUrl(href)
+      }
+    } catch {
+      return href
+    }
+
+    return href
+  }
+
+  if (/^\/(ru|en)(?=\/|$)/.test(href)) {
+    return addTrailingSlashToPath(href)
+  }
+
+  return href
 }
 
 function parseMarkdown(content) {
@@ -230,11 +255,12 @@ function renderInlineMarkdown(text) {
       }
 
       if (isSafeHref(href)) {
+        const normalizedHref = normalizeInternalArticleHref(href)
         const escapedLabel = escapeHtml(label)
-        if (href.startsWith('http://') || href.startsWith('https://')) {
-          result += `<a href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${escapedLabel}</a>`
+        if (normalizedHref.startsWith('http://') || normalizedHref.startsWith('https://')) {
+          result += `<a href="${escapeHtml(normalizedHref)}" target="_blank" rel="noreferrer">${escapedLabel}</a>`
         } else {
-          result += `<a href="${escapeHtml(href)}">${escapedLabel}</a>`
+          result += `<a href="${escapeHtml(normalizedHref)}">${escapedLabel}</a>`
         }
       } else {
         result += escapeHtml(full)
@@ -387,7 +413,7 @@ function renderMarkdownToHtml(content, { title = '', lead = '' } = {}) {
 
     const ctaLink = getSingleMarkdownLink(block.text)
     if (ctaLink) {
-      return `<div class="article-cta-row"><a href="${escapeHtml(ctaLink.href)}" class="article-cta-button">${escapeHtml(ctaLink.label)}</a></div>`
+      return `<div class="article-cta-row"><a href="${escapeHtml(normalizeInternalArticleHref(ctaLink.href))}" class="article-cta-button">${escapeHtml(ctaLink.label)}</a></div>`
     }
 
     return `<p>${renderInlineMarkdown(block.text)}</p>`

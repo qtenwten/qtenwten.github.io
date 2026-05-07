@@ -1,7 +1,13 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { getAllLocalizedSeoPages, getLocalizedRoutePath, getLocalizedRouteUrl } from '../src/config/routeSeo.js'
+import {
+  addTrailingSlashToPath,
+  addTrailingSlashToUrl,
+  getAllLocalizedSeoPages,
+  getLocalizedRoutePath,
+  getLocalizedRouteUrl,
+} from '../src/config/routeSeo.js'
 import { articleMatchesLanguage, filterArticlesForLanguage } from '../src/utils/articleLanguage.js'
 import { normalizeArticleIndexItem, normalizeArticleDetailItem } from '../src/utils/articleNormalization.js'
 import { getIconSvg, ICON_SVG_MAP } from '../src/utils/iconMap.js'
@@ -16,6 +22,9 @@ const localesPath = path.resolve(__dirname, '../src/locales')
 const ROOT_REDIRECT_URL = 'https://qsen.ru/ru/'
 const ARTICLES_API_BASE_URL = 'https://fancy-scene-deeb.qten.workers.dev'
 const ARTICLES_REQUEST_TIMEOUT_MS = 20000
+const ARTICLES_DETAIL_CONCURRENCY = 6
+const ARTICLES_DETAIL_RETRY_COUNT = 3
+const ARTICLES_DETAIL_RETRY_DELAY_MS = 600
 const HEADER_LOGO_PATH = '/qsen-logo.png'
 const ARTICLES_PAGE_SIZE = 50
 
@@ -218,6 +227,10 @@ function safeJsonForInlineScript(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c')
 }
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function fetchArticlesIndex() {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), ARTICLES_REQUEST_TIMEOUT_MS)
@@ -271,7 +284,7 @@ async function fetchArticlesIndex() {
   }
 }
 
-async function fetchArticleDetail(slug) {
+async function fetchArticleDetail(slug, attempt = 1) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), ARTICLES_REQUEST_TIMEOUT_MS)
 
@@ -288,23 +301,42 @@ async function fetchArticleDetail(slug) {
 
     const data = await response.json()
     return normalizeArticleDetailItem(data)
+  } catch (error) {
+    if (attempt < ARTICLES_DETAIL_RETRY_COUNT) {
+      const waitMs = ARTICLES_DETAIL_RETRY_DELAY_MS * attempt
+      console.warn(`Warning: retry article detail fetch for slug: ${slug} (attempt ${attempt + 1}/${ARTICLES_DETAIL_RETRY_COUNT})`)
+      await delay(waitMs)
+      return fetchArticleDetail(slug, attempt + 1)
+    }
+
+    throw error
   } finally {
     clearTimeout(timeoutId)
   }
 }
 
 async function fetchArticleDetails(indexItems = []) {
-  const settledResults = await Promise.allSettled(indexItems.map((item) => fetchArticleDetail(item.slug)))
+  const details = new Array(indexItems.length)
+  let nextIndex = 0
 
-  return settledResults.reduce((accumulator, result, index) => {
-    if (result.status === 'fulfilled') {
-      accumulator.push(result.value)
-      return accumulator
+  async function worker() {
+    while (nextIndex < indexItems.length) {
+      const index = nextIndex
+      nextIndex += 1
+      const item = indexItems[index]
+
+      try {
+        details[index] = await fetchArticleDetail(item.slug)
+      } catch {
+        console.warn(`Warning: skipped article detail prerender for slug: ${item?.slug || 'unknown'}`)
+      }
     }
+  }
 
-    console.warn(`⚠️ Skipped article detail prerender for slug: ${indexItems[index]?.slug || 'unknown'}`)
-    return accumulator
-  }, [])
+  const workerCount = Math.min(ARTICLES_DETAIL_CONCURRENCY, indexItems.length)
+  await Promise.all(Array.from({ length: workerCount }, () => worker()))
+
+  return details.filter(Boolean)
 }
 
 function formatPublishedDate(value, language) {
@@ -688,16 +720,17 @@ function buildAlternateLinks(pathName, availableLanguages = ['ru', 'en'], altern
 function buildSeoTags(page) {
   const availableLangs = page.availableLanguages || ['ru', 'en']
   const alternateLinks = buildAlternateLinks(page.path, availableLangs, page.alternateUrls)
+  const canonicalUrl = addTrailingSlashToUrl(page.url)
 
   return `
     <meta name="description" content="${escapeHtml(page.description)}" />
     <meta name="keywords" content="${escapeHtml(page.keywords)}" />
-    <link rel="canonical" href="${page.url}" />
+    <link rel="canonical" href="${canonicalUrl}" />
     ${alternateLinks}
     <meta property="og:site_name" content="QSEN.RU" />
     <meta property="og:title" content="${escapeHtml(page.title)}" />
     <meta property="og:description" content="${escapeHtml(page.description)}" />
-    <meta property="og:url" content="${page.url}" />
+    <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="${page.ogType || 'website'}" />
     <meta property="og:image" content="${page.image}" />
     <meta property="og:image:alt" content="${escapeHtml(page.title)}" />
@@ -856,23 +889,6 @@ function buildRootRedirectPage(template) {
   return html
 }
 
-function addTrailingSlashToPathname(pathname) {
-  if (!pathname || pathname === '/') return '/'
-  return pathname.endsWith('/') ? pathname : `${pathname}/`
-}
-
-function addTrailingSlashToUrl(url) {
-  if (!url) return url
-
-  try {
-    const parsedUrl = new URL(url)
-    parsedUrl.pathname = addTrailingSlashToPathname(parsedUrl.pathname)
-    return parsedUrl.toString()
-  } catch {
-    return addTrailingSlashToPathname(String(url))
-  }
-}
-
 function normalizeLegacyRedirectUrl(targetPath) {
   const target = String(targetPath || ROOT_REDIRECT_URL)
 
@@ -886,7 +902,7 @@ function normalizeLegacyRedirectUrl(targetPath) {
   const queryIndex = pathWithQuery.indexOf('?')
   const pathname = queryIndex === -1 ? pathWithQuery : pathWithQuery.slice(0, queryIndex)
   const query = queryIndex === -1 ? '' : pathWithQuery.slice(queryIndex)
-  const normalizedPathname = addTrailingSlashToPathname(pathname.startsWith('/') ? pathname : `/${pathname}`)
+  const normalizedPathname = addTrailingSlashToPath(pathname.startsWith('/') ? pathname : `/${pathname}`)
 
   return `https://qsen.ru${normalizedPathname}${query}${hash}`
 }
@@ -938,6 +954,7 @@ function buildSitemap(pages) {
 
   const items = filteredPages.map((page) => {
     const cleanPath = page.path
+    const pageUrl = addTrailingSlashToUrl(page.url)
     const ruUrl = getLocalizedRouteUrl('ru', cleanPath)
     const enUrl = getLocalizedRouteUrl('en', cleanPath)
     const isArticle = page.ogType === 'article'
@@ -964,7 +981,7 @@ function buildSitemap(pages) {
       : new Date().toISOString().slice(0, 10)
 
     return `  <url>
-    <loc>${page.url}</loc>
+    <loc>${pageUrl}</loc>
 ${alternateLinks.join('\n')}
     <lastmod>${lastmod}</lastmod>
     <changefreq>${cleanPath === '/' ? 'weekly' : 'monthly'}</changefreq>

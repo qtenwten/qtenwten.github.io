@@ -308,7 +308,7 @@ export const ROUTE_SEO = {
           {
             '@type': 'WebApplication',
             name: 'Генератор адресата и обращения',
-            url: 'https://qsen.ru/ru/generator-adresata',
+            url: 'https://qsen.ru/ru/generator-adresata/',
             description: 'Составьте правильный блок адресата, обращение и строки «кому / от кого» для делового письма, заявления, приказа или доверенности.',
             applicationCategory: 'BusinessApplication',
             operatingSystem: 'Web',
@@ -399,7 +399,7 @@ export const ROUTE_SEO = {
           {
             '@type': 'WebApplication',
             name: 'Addressee & Salutation Generator',
-            url: 'https://qsen.ru/en/generator-adresata',
+            url: 'https://qsen.ru/en/generator-adresata/',
             description: 'Create a clean addressee block, salutation and To / From lines for business letters, applications, orders or powers of attorney.',
             applicationCategory: 'BusinessApplication',
             operatingSystem: 'Web',
@@ -529,8 +529,38 @@ export const ROUTE_SEO = {
   },
 }
 
+export function addTrailingSlashToPath(pathname = '/') {
+  const value = String(pathname || '/')
+  const hashIndex = value.indexOf('#')
+  const pathWithQuery = hashIndex === -1 ? value : value.slice(0, hashIndex)
+  const hash = hashIndex === -1 ? '' : value.slice(hashIndex)
+  const queryIndex = pathWithQuery.indexOf('?')
+  const pathOnly = queryIndex === -1 ? pathWithQuery : pathWithQuery.slice(0, queryIndex)
+  const query = queryIndex === -1 ? '' : pathWithQuery.slice(queryIndex)
+  const normalizedPath = pathOnly || '/'
+
+  if (normalizedPath === '/') {
+    return `/${query}${hash}`
+  }
+
+  return `${normalizedPath.endsWith('/') ? normalizedPath : `${normalizedPath}/`}${query}${hash}`
+}
+
+export function addTrailingSlashToUrl(url) {
+  if (!url) return url
+
+  try {
+    const parsedUrl = new URL(url)
+    parsedUrl.pathname = addTrailingSlashToPath(parsedUrl.pathname)
+    return parsedUrl.toString()
+  } catch {
+    return addTrailingSlashToPath(String(url))
+  }
+}
+
 export function normalizeSeoPath(path = '/') {
-  const cleanPath = path.replace(/^\/(ru|en)\//, '/') || '/'
+  const withoutLanguage = String(path || '/').replace(/^\/(ru|en)(?=\/|$)/, '') || '/'
+  const cleanPath = withoutLanguage.startsWith('/') ? withoutLanguage : `/${withoutLanguage}`
   const noSlash = cleanPath !== '/' && cleanPath.endsWith('/') ? cleanPath.slice(0, -1) : cleanPath
   return noSlash
 }
@@ -538,11 +568,11 @@ export function normalizeSeoPath(path = '/') {
 export function getLocalizedRoutePath(language, path = '/') {
   const cleanPath = normalizeSeoPath(path)
   if (cleanPath === '/') return `/${language}/`
-  return `/${language}${cleanPath}`
+  return addTrailingSlashToPath(`/${language}${cleanPath}`)
 }
 
 export function getLocalizedRouteUrl(language, path = '/') {
-  return `https://qsen.ru${getLocalizedRoutePath(language, path)}`
+  return addTrailingSlashToUrl(`https://qsen.ru${getLocalizedRoutePath(language, path)}`)
 }
 
 export function getRouteSeo(language, path = '/') {
