@@ -1,4 +1,4 @@
-import { Document, TextRun, Paragraph, AlignmentType } from 'docx';
+import { Document, TextRun, Paragraph, AlignmentType, Packer } from 'docx';
 
 function escapeXmlText(value) {
   if (value === null || value === undefined) return '';
@@ -122,7 +122,7 @@ export async function generateAddresseeDocxBlob(result, options = {}) {
     ],
   });
 
-  return await doc.save();
+  return await Packer.toBlob(doc);
 }
 
 export function downloadAddresseeDocx(result, options = {}) {

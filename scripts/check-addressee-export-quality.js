@@ -21,6 +21,15 @@ import {
   DOCUMENT_TEMPLATE_COMMERCIAL_OFFER,
   DOCUMENT_TEMPLATE_ORDER,
 } from '../src/utils/addresseeTypes.js';
+import {
+  escapeHtml,
+  buildPlainTextExport,
+  buildHtmlExport,
+  buildSingleCsvExport,
+  buildBulkCsvExport,
+  downloadTextAsFile,
+  getEffectiveResult,
+} from '../src/utils/addresseeExport.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -52,47 +61,8 @@ function toCsvRow(fields) {
     .join(';');
 }
 
-function getDocumentExportText(result, overrides = {}, t = (k) => k) {
-  if (!result) return '';
-  const blocks = result.blocks || {};
-  const to = overrides.to ?? blocks.to ?? '';
-  const from = overrides.from ?? blocks.from ?? '';
-  const greeting = overrides.greeting ?? blocks.greeting ?? '';
-  const docText = overrides.documentText ?? blocks.documentText ?? blocks.letter ?? '';
-  const lines = [];
-  if (to) lines.push(`${t('to')}:\n${to}`);
-  if (from) lines.push(`${t('from')}:\n${from}`);
-  if (greeting) lines.push(`${t('greeting')}:\n${greeting}`);
-  if (docText) lines.push(`${t('documentTemplate')}:\n${docText}`);
-  return lines.join('\n\n');
-}
-
-function escapeHtml(value) {
-  if (value === null || value === undefined) return '';
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 async function main() {
   console.log('\n=== Addressee Export Quality Checks ===\n');
-
-  const tMock = (k) => {
-    const map = {
-      'addresseeGenerator.export.to': 'Адресат',
-      'addresseeGenerator.export.from': 'Отправитель',
-      'addresseeGenerator.export.greeting': 'Обращение',
-      'addresseeGenerator.export.documentTemplate': 'Готовый шаблон',
-      'to': 'Адресат',
-      'from': 'Отправитель',
-      'greeting': 'Обращение',
-      'documentTemplate': 'Готовый шаблон',
-    };
-    return map[k] || k;
-  };
 
   const testResult = formatAddressee({
     fullName: 'Иванов Иван Петрович',
@@ -170,14 +140,22 @@ async function main() {
   assert(docxSource.includes('toSection') || docxSource.includes('blocks.to'), 'DOCX: uses to block for addressee');
   assert(!docxSource.includes('innerHTML'), 'DOCX: no innerHTML usage');
   assert(docxSource.includes('warning') || docxSource.includes('Warning'), 'DOCX: handles warnings');
+  assert(docxSource.includes('Packer.toBlob') || docxSource.includes('Packer'), 'DOCX: uses Packer.toBlob');
+  assert(!docxSource.includes('doc.save()'), 'DOCX: does not use deprecated doc.save()');
 
   // ============================================================
   // 2. TXT EXPORT CHECKS
   // ============================================================
   console.log('\n2. TXT Export Checks');
 
-  const txtText = getDocumentExportText(testResult, {}, tMock);
-  assert(typeof txtText === 'string', 'TXT: getDocumentExportText returns string');
+  const labels = {
+    to: 'Адресат',
+    from: 'Отправитель',
+    greeting: 'Обращение',
+    documentTemplate: 'Готовый шаблон',
+  };
+  const txtText = buildPlainTextExport(testResult, {}, labels);
+  assert(typeof txtText === 'string', 'TXT: buildPlainTextExport returns string');
   assert(txtText.length > 0, 'TXT: result is non-empty');
   assert(txtText.includes('Адресат'), 'TXT: has addressee section header');
   assert(txtText.includes('Отправитель'), 'TXT: has sender section header');
@@ -189,19 +167,18 @@ async function main() {
   assert(!txtText.includes('undefined'), 'TXT: no undefined values');
   assert(!txtText.includes('null'), 'TXT: no null values');
 
-  const txtWithOverrides = getDocumentExportText(testResult, { to: 'Custom To Block' }, tMock);
+  const txtWithOverrides = buildPlainTextExport(testResult, { to: 'Custom To Block' }, labels);
   assert(txtWithOverrides.includes('Custom To Block'), 'TXT: uses override values when provided');
 
-  const txtNoSender = getDocumentExportText(testResultNoSender, {}, tMock);
+  const txtNoSender = buildPlainTextExport(testResultNoSender, {}, labels);
   assert(!txtNoSender.includes('undefined'), 'TXT: handles missing sender gracefully');
   assert(txtNoSender.length > 0, 'TXT: still produces output without sender');
 
-  // Check JSX has correct export handler
   const jsxSource = fs.readFileSync(path.join(rootDir, 'src/pages/AddresseeGenerator.jsx'), 'utf-8');
   assert(jsxSource.includes('handleExportTxt'), 'TXT: JSX has handleExportTxt');
   assert(jsxSource.includes('getDocumentExportText'), 'TXT: JSX uses getDocumentExportText');
-  assert(jsxSource.includes("download = 'addressee-generator-document.txt'"), 'TXT: JSX sets correct filename');
-  assert(jsxSource.includes("type: 'text/plain;charset=utf-8;'"), 'TXT: JSX uses UTF-8 plain text');
+  assert(jsxSource.includes('addressee-generator-document.txt'), 'TXT: JSX sets correct filename');
+  assert(jsxSource.includes("'text/plain") || jsxSource.includes('text/plain'), 'TXT: JSX uses UTF-8 plain text');
 
   // ============================================================
   // 3. HTML EXPORT CHECKS
@@ -214,18 +191,29 @@ async function main() {
   assert(escapedScript.includes('&lt;script&gt;'), 'HTML escape: script tag fully escaped');
   assert(!escapedScript.includes('&alert'), 'HTML escape: & in alert is not double-escaped');
 
-  const htmlResult = getDocumentExportText(multilineDocTextResult, {}, tMock);
-  const escapedMultiline = escapeHtml(htmlResult);
-  assert(!escapedMultiline.includes('\n<script>'), 'HTML: newlines preserved, no raw script injection');
-  assert(escapedMultiline.includes('Смирнова') || escapedMultiline.includes('Козлов'), 'HTML: contains sender data');
+  const htmlLabels = {
+    to: 'Адресат',
+    from: 'Отправитель',
+    greeting: 'Обращение',
+    documentTemplate: 'Готовый шаблон',
+    disclaimer: 'Тестовый дисклеймер',
+  };
+  const htmlFromHelper = buildHtmlExport(multilineDocTextResult, {}, {
+    labels: htmlLabels,
+    lang: 'ru',
+    templateTitle: 'Тестовый документ',
+  });
+  assert(typeof htmlFromHelper === 'string', 'HTML: buildHtmlExport returns string');
+  assert(!htmlFromHelper.includes('<script>'), 'HTML: no raw script tag in buildHtmlExport output');
+  assert(htmlFromHelper.includes('Тестовый документ'), 'HTML: buildHtmlExport includes title');
 
   const docText = multilineDocTextResult.blocks.documentText || multilineDocTextResult.blocks.letter || '';
   assert(docText.length > 0, 'HTML: documentText is non-empty for businessLetter');
 
   assert(jsxSource.includes('handleExportHtml'), 'HTML: JSX has handleExportHtml');
-  assert(jsxSource.includes('escapeHtml'), 'HTML: JSX uses escapeHtml function');
-  assert(jsxSource.includes("download = 'addressee-generator-document.html'"), 'HTML: JSX sets correct filename');
-  assert(jsxSource.includes("charset=utf-8"), 'HTML: JSX uses UTF-8 charset');
+  assert(jsxSource.includes('buildHtmlExport'), 'HTML: JSX uses buildHtmlExport from helper');
+  assert(jsxSource.includes('addressee-generator-document.html'), 'HTML: JSX sets correct filename');
+  assert(jsxSource.includes("charset=utf-8") || jsxSource.includes('charset=utf-8'), 'HTML: JSX uses UTF-8 charset');
 
   // ============================================================
   // 4. CSV SINGLE EXPORT CHECKS
@@ -271,8 +259,13 @@ async function main() {
   assert(quotedWithQuote.includes('""'), 'CSV: quotes inside quoted field are doubled');
 
   assert(jsxSource.includes('handleExportCsv'), 'CSV: JSX has handleExportCsv');
-  assert(jsxSource.includes("download = 'addressee-generator-result.csv'"), 'CSV: JSX sets correct filename');
-  assert(jsxSource.includes("charset=utf-8"), 'CSV: JSX uses UTF-8 charset');
+  assert(jsxSource.includes('addressee-generator-result.csv'), 'CSV: JSX sets correct filename');
+  assert(jsxSource.includes("charset=utf-8") || jsxSource.includes('charset=utf-8'), 'CSV: JSX uses UTF-8 charset');
+
+  const singleCsv = buildSingleCsvExport(multilineDocTextResult, { fullName: 'test', position: '', organization: '', gender: '', greetingMode: '', punctuation: '', documentTemplate: '', senderFullName: '', senderPosition: '', senderOrganization: '' }, {});
+  assert(typeof singleCsv === 'string', 'CSV: buildSingleCsvExport returns string');
+  assert(singleCsv.startsWith('\uFEFF'), 'CSV: buildSingleCsvExport has BOM');
+  assert(singleCsv.includes('documentText'), 'CSV: buildSingleCsvExport includes documentText column');
 
   // ============================================================
   // 5. CSV BULK EXPORT CHECKS
@@ -326,6 +319,11 @@ async function main() {
   assert(bulkRows[1][2].includes('Сидоров'), 'CSV bulk: row 2 has sender data (from)');
   assert(bulkRows[0][3].length > 0, 'CSV bulk: row 1 documentText is non-empty');
   assert(bulkRows[1][3].length > 0, 'CSV bulk: row 2 documentText is non-empty');
+
+  const bulkCsvFromHelper = buildBulkCsvExport(bulkResults.map(r => ({ input: r.input || {}, blocks: r.blocks, confidence: r.confidence, warnings: r.warnings })));
+  assert(typeof bulkCsvFromHelper === 'string', 'CSV: buildBulkCsvExport returns string');
+  assert(bulkCsvFromHelper.startsWith('\uFEFF'), 'CSV: buildBulkCsvExport has BOM');
+  assert(bulkCsvFromHelper.includes('Иванов'), 'CSV: buildBulkCsvExport includes data from results');
 
   // ============================================================
   // 6. FIO DECLENSION CHECKS

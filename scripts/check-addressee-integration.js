@@ -248,7 +248,6 @@ check(agContent.includes('handleExportCsv'), 'has handleExportCsv')
 check(agContent.includes('handleExportTxt'), 'has handleExportTxt')
 check(agContent.includes('handleExportHtml'), 'has handleExportHtml')
 check(agContent.includes('getDocumentExportText'), 'has getDocumentExportText')
-check(agContent.includes('escapeHtml'), 'has escapeHtml')
 check(agContent.includes('addressee-generator-document.txt'), 'has TXT filename')
 check(agContent.includes('addressee-generator-document.html'), 'has HTML filename')
 check(agContent.includes('\\uFEFF') || agContent.includes('\\\\uFEFF'), 'CSV has UTF-8 BOM')
@@ -285,6 +284,23 @@ check(agContent.includes('ref={resultRef}') || agContent.includes('ref={ resultR
 check(agContent.includes('blocks.documentText') || agContent.includes("key: 'documentText'"), 'resultBlocks includes documentText')
 check(agContent.includes('handleExportDocx') || agContent.includes('downloadAddresseeDocx'), 'has DOCX export handler')
 check(agContent.includes('docx') || agContent.includes('description'), 'DOCX button uses description icon')
+
+// 10a. Export helper
+console.log('\n10a. Export helper')
+const exportHelperPath = path.join(rootDir, 'src/utils/addresseeExport.js')
+check(fs.existsSync(exportHelperPath), 'addresseeExport.js exists')
+if (fs.existsSync(exportHelperPath)) {
+  const exportHelperContent = readFile('src/utils/addresseeExport.js')
+  check(exportHelperContent.includes('export function escapeHtml'), 'addresseeExport.js exports escapeHtml')
+  check(exportHelperContent.includes('export function buildPlainTextExport'), 'addresseeExport.js exports buildPlainTextExport')
+  check(exportHelperContent.includes('export function buildHtmlExport'), 'addresseeExport.js exports buildHtmlExport')
+  check(exportHelperContent.includes('export function buildSingleCsvExport'), 'addresseeExport.js exports buildSingleCsvExport')
+  check(exportHelperContent.includes('export function buildBulkCsvExport'), 'addresseeExport.js exports buildBulkCsvExport')
+  check(exportHelperContent.includes('export function downloadTextAsFile'), 'addresseeExport.js exports downloadTextAsFile')
+  check(exportHelperContent.includes('export function getEffectiveResult'), 'addresseeExport.js exports getEffectiveResult')
+}
+check(agContent.includes("from '../utils/addresseeExport'") || agContent.includes('from "../utils/addresseeExport"'), 'JSX imports from addresseeExport.js')
+check(agContent.includes('buildPlainTextExport') || agContent.includes('buildHtmlExport'), 'JSX uses export helpers')
 
 // 10b. DOCX helper
 console.log('\n10b. DOCX helper')

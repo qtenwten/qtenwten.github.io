@@ -10,6 +10,15 @@ import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, To
 import { formatAddressee } from '../utils/addresseeFormatter'
 import { downloadAddresseeDocx } from '../utils/addresseeDocxExport'
 import {
+  getEffectiveResult,
+  buildPlainTextExport,
+  buildHtmlExport,
+  buildSingleCsvExport,
+  buildBulkCsvExport,
+  downloadBlob,
+  downloadTextAsFile,
+} from '../utils/addresseeExport'
+import {
   GENDER_MALE,
   GENDER_FEMALE,
   GENDER_UNKNOWN,
@@ -75,58 +84,6 @@ const HERO_BENEFITS = [
 
 const USE_CASE_KEYS = ['businessLetter', 'application', 'powerOfAttorney', 'order', 'memo', 'crm']
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8']
-
-function escapeCsvValue(value) {
-  if (value === null || value === undefined) {
-    return '""'
-  }
-  return `"${String(value).replace(/"/g, '""')}"`
-}
-
-function toCsvRow(values) {
-  return values.map(escapeCsvValue).join(';')
-}
-
-function serializeWarnings(warnings) {
-  if (!Array.isArray(warnings) || warnings.length === 0) {
-    return ''
-  }
-  return warnings
-    .map((warning) => [warning.code, warning.message].filter(Boolean).join(': '))
-    .join(' | ')
-}
-
-function detectDelimiter(line) {
-  if (line.includes('\t')) return '\t'
-  if (line.includes(';')) return ';'
-  if (line.includes(',')) return ','
-  return ';'
-}
-
-function parseCsvLine(line, delimiter) {
-  const result = []
-  let current = ''
-  let inQuotes = false
-
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i]
-    if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"'
-        i++
-      } else {
-        inQuotes = !inQuotes
-      }
-    } else if (char === delimiter && !inQuotes) {
-      result.push(current.trim())
-      current = ''
-    } else {
-      current += char
-    }
-  }
-  result.push(current.trim())
-  return result
-}
 
 function parseBulkInput(text) {
   if (!text || !text.trim()) return { rows: [], error: null }
@@ -456,17 +413,10 @@ function AddresseeGenerator() {
 
   const handleDownloadBulkCsv = useCallback(() => {
     if (bulkResults.length === 0) return
-    const csv = buildBulkCsvContent(bulkResults)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'addressee-generator-bulk-result.csv'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 0)
-  }, [bulkResults])
+    const csv = buildBulkCsvExport(bulkResults)
+    downloadTextAsFile(csv, 'addressee-generator-bulk-result.csv', 'text/csv;charset=utf-8;')
+    setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
+  }, [bulkResults, t])
 
   const handleLoadExample = useCallback((example) => {
     setForm({
@@ -508,42 +458,10 @@ function AddresseeGenerator() {
 
   const handleExportCsv = useCallback(() => {
     if (!result) return
-    const blocks = result.blocks || {}
-    const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
-    const row = [
-      form.fullName,
-      form.position,
-      form.organization,
-      form.gender,
-      form.greetingMode,
-      form.punctuation,
-      form.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
-      form.senderFullName || '',
-      form.senderPosition || '',
-      form.senderOrganization || '',
-      getEffectiveBlockText('to'),
-      getEffectiveBlockText('from'),
-      getEffectiveBlockText('greeting'),
-      blocks.letter || '',
-      getEffectiveBlockText('documentText'),
-      String(result.confidence),
-      Array.isArray(result.warnings) && result.warnings.length > 0
-        ? result.warnings.map((w) => w.code).join('; ')
-        : '',
-    ]
-    const csvContent = [header, row].map(toCsvRow).join('\r\n')
-    const csv = '\uFEFF' + csvContent
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'addressee-generator-result.csv'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+    const csv = buildSingleCsvExport(result, form, resultOverrides)
+    downloadTextAsFile(csv, 'addressee-generator-result.csv', 'text/csv;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
-  }, [result, form, t, getEffectiveBlockText])
+  }, [result, form, resultOverrides, t])
 
   const copyAllText = useMemo(() => {
     if (!result) return ''
@@ -566,117 +484,58 @@ function AddresseeGenerator() {
     }
   }, [copyAllText, t])
 
-  const escapeHtml = useCallback((value) => {
-    if (value === null || value === undefined) return ''
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-  }, [])
-
   const getDocumentExportText = useCallback(() => {
     if (!result) return ''
-    const to = getEffectiveBlockText('to')
-    const from = getEffectiveBlockText('from')
-    const greeting = getEffectiveBlockText('greeting')
-    const docText = getEffectiveBlockText('documentText') || result.blocks.letter || ''
-    const lines = []
-    if (to) {
-      lines.push(`${t('addresseeGenerator.export.to')}:\n${to}`)
+    const labels = {
+      to: t('addresseeGenerator.export.to'),
+      from: t('addresseeGenerator.export.from'),
+      greeting: t('addresseeGenerator.export.greeting'),
+      documentTemplate: t('addresseeGenerator.export.documentTemplate'),
     }
-    if (from) {
-      lines.push(`${t('addresseeGenerator.export.from')}:\n${from}`)
-    }
-    if (greeting) {
-      lines.push(`${t('addresseeGenerator.export.greeting')}:\n${greeting}`)
-    }
-    if (docText) {
-      lines.push(`${t('addresseeGenerator.export.documentTemplate')}:\n${docText}`)
-    }
-    return lines.join('\n\n')
-  }, [result, t, getEffectiveBlockText])
+    return buildPlainTextExport(result, resultOverrides, labels)
+  }, [result, resultOverrides, t])
 
   const handleExportTxt = useCallback(() => {
     if (!result) return
     const text = getDocumentExportText()
     if (!text) return
     const content = '\uFEFF' + text
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'addressee-generator-document.txt'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+    downloadTextAsFile(content, 'addressee-generator-document.txt', 'text/plain;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.txtDownloaded'))
   }, [result, getDocumentExportText, t])
 
   const handleExportHtml = useCallback(() => {
     if (!result) return
-    const text = getDocumentExportText()
-    if (!text) return
-    const lang = language || 'ru'
-    const templateTitle = form.documentTemplate
-      ? t(`addresseeGenerator.documentTemplate.${form.documentTemplate}`)
-      : t('addresseeGenerator.documentTemplate.businessLetter')
-    const escapedText = escapeHtml(text)
-    const escapedTitle = escapeHtml(templateTitle)
-    const disclaimer = t('addresseeGenerator.export.disclaimer')
-    const escapedDisclaimer = escapeHtml(disclaimer)
-    const htmlContent = `<!doctype html>
-<html lang="${lang}">
-<head>
-  <meta charset="utf-8">
-  <title>${escapedTitle}</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; color: #333; line-height: 1.6; }
-    h1 { font-size: 1.2em; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 20px; }
-    pre { white-space: pre-wrap; word-wrap: break-word; background: #f9f9f9; padding: 16px; border-radius: 6px; border: 1px solid #e0e0e0; }
-    .disclaimer { margin-top: 30px; font-size: 0.85em; color: #888; }
-  </style>
-</head>
-<body>
-  <h1>${escapedTitle}</h1>
-  <pre>${escapedText}</pre>
-  <p class="disclaimer">${escapedDisclaimer}</p>
-</body>
-</html>`
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'addressee-generator-document.html'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+    const labels = {
+      to: t('addresseeGenerator.export.to'),
+      from: t('addresseeGenerator.export.from'),
+      greeting: t('addresseeGenerator.export.greeting'),
+      documentTemplate: t('addresseeGenerator.export.documentTemplate'),
+      disclaimer: t('addresseeGenerator.export.disclaimer'),
+      docxDocumentLabel: form.documentTemplate
+        ? t(`addresseeGenerator.documentTemplate.${form.documentTemplate}`)
+        : t('addresseeGenerator.documentTemplate.businessLetter'),
+    }
+    const html = buildHtmlExport(result, resultOverrides, {
+      labels,
+      lang: language || 'ru',
+      templateTitle: labels.docxDocumentLabel,
+    })
+    downloadTextAsFile(html, 'addressee-generator-document.html', 'text/html;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.htmlDownloaded'))
-  }, [result, form, getDocumentExportText, escapeHtml, t, language])
+  }, [result, resultOverrides, form, language, t])
 
   const handleExportDocx = useCallback(async () => {
     if (!result) return
     try {
-      const resultForExport = {
-        ...result,
-        blocks: {
-          ...result.blocks,
-          to: getEffectiveBlockText('to'),
-          from: getEffectiveBlockText('from'),
-          greeting: getEffectiveBlockText('greeting'),
-          documentText: getEffectiveBlockText('documentText'),
-        },
-      }
+      const resultForExport = getEffectiveResult(result, resultOverrides)
       await downloadAddresseeDocx(resultForExport, { t })
       setStatusMessage(t('addresseeGenerator.statusMessages.docxDownloaded'))
     } catch (err) {
       console.warn('DOCX export failed:', err)
       setStatusMessage(t('addresseeGenerator.statusMessages.docxError'))
     }
-  }, [result, t, getEffectiveBlockText])
+  }, [result, resultOverrides, t])
 
   const confidenceLabel = useMemo(() => {
     if (!result) return ''
