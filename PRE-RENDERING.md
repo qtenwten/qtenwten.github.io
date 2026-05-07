@@ -97,6 +97,32 @@ npm run deploy
 2. Добавьте метаданные в `scripts/generate-pages.js` (объект `pages`)
 3. Запустите `npm run build` для генерации
 
+## Статьи (Article pre-rendering)
+
+Исходники статей хранятся в Cloudflare D1 (база данных). При build скрипт `generate-pages.js` загружает опубликованные статьи и генерирует статический HTML.
+
+### Pipeline
+
+1. **D1** → источник данных (published статьи)
+2. **generate-pages.js** → генерирует `/ru/articles/[slug]/index.html` и `/en/articles/[slug]/index.html`
+3. **build output** → 70 HTML файлов статей (35 RU + 35 EN)
+4. **GitHub Pages** → хостинг сгенерированного контента
+
+### Проверки
+
+```bash
+npm run verify:ru-language   # проверяет язык контента
+npm run build                # генерирует HTML
+npm run verify:articles-html # валидирует сгенерированный HTML
+npm run verify:production-articles # проверяет production (опционально)
+```
+
+### Важно
+
+- После изменения контента в D1 нужен rebuild и redeploy
+- Статьи берутся из D1, а не из файлов в BD/content-staging/
+- BD/content-staging/ — локальная копия для редактирования, не часть CI/CD
+
 ## Технические детали
 
 - **Зависимости**: jsdom для манипуляции HTML
