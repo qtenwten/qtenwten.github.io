@@ -454,6 +454,14 @@
   line-height: 1.55;
 }
 
+.addr-gen-bulk-pro-hint {
+  margin: 0.25rem 0 0;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+
 .addr-gen-bulk-input {
   min-height: 120px;
   resize: vertical;

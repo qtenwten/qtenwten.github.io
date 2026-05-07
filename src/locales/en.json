@@ -1618,6 +1618,7 @@
 "bulk": {
       "title": "Bulk CSV Processing",
       "description": "Paste up to 50 rows with full name, position and organization. The tool will process the data in your browser and show a preview.",
+      "proHint": "You can process up to 50 rows at a time. Larger batch processing may become a Pro feature later.",
       "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName\nJohn Smith;CEO;Acme Ltd;male;namePatronymic;!;businessLetter;Jane Cooper;Manager;Acme Ltd;;\nJane Cooper;Sales Manager;Beta LLC;female;namePatronymic;!;application;;;;\nMichael Brown;Account Manager;Vector Ltd;male;fullName;,;businessLetter;;;;",
       "hint": "Maximum 50 rows. Separator: semicolon.",
       "process": "Process CSV",
@@ -1625,6 +1626,7 @@
       "download": "Download Result CSV",
       "uploadCsv": "Upload CSV",
       "uploadHint": "Upload a CSV file with data. Maximum 50 rows.",
+      "downloadTemplate": "Download CSV Template",
       "uploadedCount": "Uploaded {count} rows",
       "uploadError": "File upload error. Check the CSV format.",
       "unknownColumns": "Some columns were not recognized and will be skipped.",

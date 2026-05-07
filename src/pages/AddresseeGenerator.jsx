@@ -14,10 +14,13 @@ import {
   buildPlainTextExport,
   buildHtmlExport,
   buildSingleCsvExport,
-  buildBulkCsvExport,
-  downloadBlob,
   downloadTextAsFile,
 } from '../utils/addresseeExport'
+import {
+  parseCsvText,
+  getCsvTemplate,
+  buildBulkCsvExport,
+} from '../utils/addresseeCsv'
 import {
   GENDER_MALE,
   GENDER_FEMALE,
@@ -90,136 +93,6 @@ const HERO_BENEFITS = [
 
 const USE_CASE_KEYS = ['businessLetter', 'application', 'powerOfAttorney', 'order', 'memo', 'crm']
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8']
-
-function parseBulkInput(text) {
-  if (!text || !text.trim()) return { rows: [], error: null }
-
-  const lines = text.trim().split('\n').filter((l) => l.trim())
-  if (lines.length === 0) return { rows: [], error: null }
-
-  const delimiter = detectDelimiter(lines[0])
-  const firstRow = parseCsvLine(lines[0], delimiter)
-
-  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization', 'recipientdativename', 'sendergenitivename']
-  const hasHeader = firstRow.some((cell) =>
-    headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
-  )
-
-  if (hasHeader) {
-    const normalizedHeader = firstRow.map((cell) => cell.toLowerCase().replace(/[\s_-]/g, ''))
-    const hasFullName = normalizedHeader.includes('fullname')
-    if (!hasFullName) {
-      return { rows: [], error: 'missingFullName' }
-    }
-  }
-
-  const dataLines = hasHeader ? lines.slice(1) : lines
-  if (dataLines.length > 50) {
-    return { rows: [], error: 'tooManyRows' }
-  }
-
-  const defaultFields = {
-    fullName: '',
-    position: '',
-    organization: '',
-    gender: GENDER_UNKNOWN,
-    greetingMode: GREETING_NAME_PATRONYMIC,
-    punctuation: PUNCTUATION_EXCLAMATION,
-    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
-    senderFullName: '',
-    senderPosition: '',
-    senderOrganization: '',
-    recipientDativeName: '',
-    senderGenitiveName: '',
-  }
-
-  const fieldMap = {
-    0: 'fullName',
-    1: 'position',
-    2: 'organization',
-    3: 'gender',
-    4: 'greetingMode',
-    5: 'punctuation',
-    6: 'documentTemplate',
-    7: 'senderFullName',
-    8: 'senderPosition',
-    9: 'senderOrganization',
-    10: 'recipientDativeName',
-    11: 'senderGenitiveName',
-  }
-
-  const rows = []
-  for (let i = 0; i < dataLines.length; i++) {
-    const cells = parseCsvLine(dataLines[i], delimiter)
-    if (cells.length === 0 || (cells.length === 1 && !cells[0])) continue
-
-    const row = { ...defaultFields }
-    let hasData = false
-
-    for (let j = 0; j < cells.length && j < 12; j++) {
-      const fieldName = fieldMap[j]
-      if (fieldName && cells[j]) {
-        row[fieldName] = cells[j]
-        if (fieldName === 'fullName' && cells[j].trim()) hasData = true
-      }
-    }
-
-    if (hasData || row.fullName) {
-      rows.push(row)
-    }
-  }
-
-  if (rows.length === 0) {
-    return { rows: [], error: 'unrecognized', warnings: [] }
-  }
-
-  const warnings = []
-  const knownColumnCount = 12
-  for (let i = 0; i < dataLines.length; i++) {
-    const cells = parseCsvLine(dataLines[i], delimiter)
-    if (cells.length > knownColumnCount) {
-      warnings.push({ code: 'UNKNOWN_COLUMNS', message: 'Some columns were not recognized and will be skipped.' })
-      break
-    }
-  }
-
-  return { rows, error: null, warnings }
-}
-
-function buildBulkCsvContent(results) {
-  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'recipientDativeName', 'senderGenitiveName', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
-  const rows = [header]
-
-  for (const r of results) {
-    const blocks = r.blocks || {}
-    const rowData = [
-      r.input.fullName || '',
-      r.input.position || '',
-      r.input.organization || '',
-      r.input.gender || '',
-      r.input.greetingMode || '',
-      r.input.punctuation || '',
-      r.input.documentTemplate || '',
-      r.input.senderFullName || '',
-      r.input.senderPosition || '',
-      r.input.senderOrganization || '',
-      r.input.recipientDativeName || '',
-      r.input.senderGenitiveName || '',
-      blocks.to || '',
-      blocks.from || '',
-      blocks.greeting || '',
-      blocks.letter || '',
-      blocks.documentText || '',
-      String(r.confidence),
-      Array.isArray(r.warnings) && r.warnings.length > 0
-        ? r.warnings.map((w) => w.code).join('; ')
-        : '',
-    ]
-    rows.push(rowData)
-  }
-
-  return '\uFEFF' + rows.map(toCsvRow).join('\r\n')
-}
 
 function AddresseeGenerator() {
   const { t, language } = useLanguage()
@@ -348,36 +221,42 @@ function AddresseeGenerator() {
 
   const handleProcessBulk = useCallback(() => {
     setBulkError(null)
-    const { rows, error, warnings } = parseBulkInput(bulkInput)
-    if (error) {
-      setBulkError(error)
+    const parseResult = parseCsvText(bulkInput, { maxRows: 50 })
+
+    if (parseResult.errors && parseResult.errors.length > 0) {
+      const firstError = parseResult.errors[0]
+      const errorCode = firstError.code === 'TOO_MANY_ROWS' ? 'tooManyRows'
+        : firstError.code === 'MISSING_FULLNAME' ? 'missingFullName'
+        : firstError.code === 'NO_DATA' ? 'empty'
+        : 'unrecognized'
+      setBulkError(errorCode)
       setBulkResults([])
       setBulkSummary(null)
-      if (error === 'tooManyRows') {
-        setStatusMessage(t('addresseeGenerator.bulk.tooManyRows'))
-      } else if (error === 'missingFullName') {
-        setStatusMessage(t('addresseeGenerator.bulk.missingFullName'))
-      } else {
-        setStatusMessage(t('addresseeGenerator.bulk.uploadError'))
-      }
+      setStatusMessage(t(`addresseeGenerator.bulk.${errorCode}`) || t('addresseeGenerator.bulk.uploadError'))
       return
     }
-    if (rows.length === 0) {
+
+    if (parseResult.rows.length === 0) {
       setBulkError('empty')
       setBulkResults([])
       setBulkSummary(null)
       return
     }
-    const processed = rows.map((row) => {
-      const formatted = formatAddressee(row)
-      return { input: row, ...formatted }
+
+    const processed = parseResult.rows.map((rowItem) => {
+      const formatted = formatAddressee(rowItem.data)
+      return { input: rowItem.data, rowNumber: rowItem.rowNumber, fieldErrors: rowItem.fieldErrors, ...formatted }
     })
+
     setBulkResults(processed)
     setBulkSummary({
       total: processed.length,
+      valid: processed.filter((r) => !r.fieldErrors || Object.keys(r.fieldErrors).length === 0).length,
       withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
+      errors: parseResult.errors.length,
     })
-    const unknownColsWarning = warnings && warnings.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
+
+    const unknownColsWarning = parseResult.unknownColumns.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
     setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }) + unknownColsWarning)
   }, [bulkInput, t])
 
@@ -390,30 +269,40 @@ function AddresseeGenerator() {
       if (typeof text === 'string') {
         setBulkInput(text)
         setBulkError(null)
-        const { rows, error, warnings } = parseBulkInput(text)
-        if (error) {
-          setBulkError(error)
+        const parseResult = parseCsvText(text, { maxRows: 50 })
+
+        if (parseResult.errors && parseResult.errors.length > 0) {
+          const firstError = parseResult.errors[0]
+          const errorCode = firstError.code === 'TOO_MANY_ROWS' ? 'tooManyRows'
+            : firstError.code === 'MISSING_FULLNAME' ? 'missingFullName'
+            : firstError.code === 'NO_DATA' ? 'empty'
+            : 'unrecognized'
+          setBulkError(errorCode)
           setBulkResults([])
           setBulkSummary(null)
-          setStatusMessage(error === 'tooManyRows' ? t('addresseeGenerator.bulk.tooManyRows') : error === 'missingFullName' ? t('addresseeGenerator.bulk.missingFullName') : t('addresseeGenerator.bulk.uploadError'))
+          setStatusMessage(t(`addresseeGenerator.bulk.${errorCode}`) || t('addresseeGenerator.bulk.uploadError'))
           return
         }
-        if (rows.length === 0) {
+
+        if (parseResult.rows.length === 0) {
           setBulkError('empty')
           setBulkResults([])
           setBulkSummary(null)
           return
         }
-        const processed = rows.map((row) => {
-          const formatted = formatAddressee(row)
-          return { input: row, ...formatted }
+
+        const processed = parseResult.rows.map((rowItem) => {
+          const formatted = formatAddressee(rowItem.data)
+          return { input: rowItem.data, rowNumber: rowItem.rowNumber, fieldErrors: rowItem.fieldErrors, ...formatted }
         })
         setBulkResults(processed)
         setBulkSummary({
           total: processed.length,
+          valid: processed.filter((r) => !r.fieldErrors || Object.keys(r.fieldErrors).length === 0).length,
           withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
+          errors: parseResult.errors.length,
         })
-        const unknownColsWarning = warnings && warnings.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
+        const unknownColsWarning = parseResult.unknownColumns.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
         setStatusMessage(t('addresseeGenerator.bulk.uploadedCount', { count: processed.length }) + unknownColsWarning)
       }
     }
@@ -433,6 +322,12 @@ function AddresseeGenerator() {
     downloadTextAsFile(csv, 'addressee-generator-bulk-result.csv', 'text/csv;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
   }, [bulkResults, t])
+
+  const handleDownloadCsvTemplate = useCallback(() => {
+    const template = getCsvTemplate()
+    downloadTextAsFile(template, 'addressee-generator-template.csv', 'text/csv;charset=utf-8;')
+    setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
+  }, [t])
 
   const handleLoadExample = useCallback((example) => {
     setForm({
@@ -925,6 +820,7 @@ function AddresseeGenerator() {
               <div className="addr-gen-bulk-header">
                 <h2 id="addrBulkTitle">{t('addresseeGenerator.bulk.title')}</h2>
                 <p className="addr-gen-bulk-desc">{t('addresseeGenerator.bulk.description')}</p>
+                <p className="addr-gen-bulk-pro-hint">{t('addresseeGenerator.bulk.proHint')}</p>
               </div>
               <label htmlFor="bulkInput" className="sr-only">{t('addresseeGenerator.bulk.title')}</label>
               <textarea
@@ -950,6 +846,14 @@ function AddresseeGenerator() {
                   <Icon name="file_text" size={16} />
                   {t('addresseeGenerator.bulk.uploadCsv')}
                 </label>
+                <button
+                  type="button"
+                  className="addr-gen-btn addr-gen-btn--secondary"
+                  onClick={handleDownloadCsvTemplate}
+                >
+                  <Icon name="download" size={16} />
+                  {t('addresseeGenerator.bulk.downloadTemplate')}
+                </button>
                 <span className="addr-gen-hint" id="bulkUploadHint">{t('addresseeGenerator.bulk.uploadHint')}</span>
               </div>
               {bulkError && (

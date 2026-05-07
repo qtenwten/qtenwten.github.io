@@ -11,123 +11,6 @@ function readJson(relativePath) {
   return JSON.parse(readFile(relativePath))
 }
 
-const GENDER_UNKNOWN = 'unknown'
-const GREETING_NAME_PATRONYMIC = 'namePatronymic'
-const PUNCTUATION_EXCLAMATION = '!'
-const DOCUMENT_TEMPLATE_BUSINESS_LETTER = 'businessLetter'
-
-function detectDelimiter(line) {
-  if (line.includes('\t')) return '\t'
-  if (line.includes(';')) return ';'
-  if (line.includes(',')) return ','
-  return ';'
-}
-
-function parseCsvLine(line, delimiter) {
-  const result = []
-  let current = ''
-  let inQuotes = false
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i]
-    if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"'
-        i++
-      } else {
-        inQuotes = !inQuotes
-      }
-    } else if (char === delimiter && !inQuotes) {
-      result.push(current.trim())
-      current = ''
-    } else {
-      current += char
-    }
-  }
-  result.push(current.trim())
-  return result
-}
-
-function parseBulkInput(text) {
-  if (!text || !text.trim()) return { rows: [], error: null, warnings: [] }
-  const lines = text.trim().split('\n').filter((l) => l.trim())
-  if (lines.length === 0) return { rows: [], error: null, warnings: [] }
-  const delimiter = detectDelimiter(lines[0])
-  const firstRow = parseCsvLine(lines[0], delimiter)
-  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization', 'recipientdativename', 'sendergenitivename']
-  const hasHeader = firstRow.some((cell) =>
-    headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
-  )
-  if (hasHeader) {
-    const normalizedHeader = firstRow.map((cell) => cell.toLowerCase().replace(/[\s_-]/g, ''))
-    const hasFullName = normalizedHeader.includes('fullname')
-    if (!hasFullName) {
-      return { rows: [], error: 'missingFullName', warnings: [] }
-    }
-  }
-  const dataLines = hasHeader ? lines.slice(1) : lines
-  if (dataLines.length > 50) {
-    return { rows: [], error: 'tooManyRows', warnings: [] }
-  }
-  const defaultFields = {
-    fullName: '',
-    position: '',
-    organization: '',
-    gender: GENDER_UNKNOWN,
-    greetingMode: GREETING_NAME_PATRONYMIC,
-    punctuation: PUNCTUATION_EXCLAMATION,
-    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
-    senderFullName: '',
-    senderPosition: '',
-    senderOrganization: '',
-    recipientDativeName: '',
-    senderGenitiveName: '',
-  }
-  const fieldMap = {
-    0: 'fullName',
-    1: 'position',
-    2: 'organization',
-    3: 'gender',
-    4: 'greetingMode',
-    5: 'punctuation',
-    6: 'documentTemplate',
-    7: 'senderFullName',
-    8: 'senderPosition',
-    9: 'senderOrganization',
-    10: 'recipientDativeName',
-    11: 'senderGenitiveName',
-  }
-  const rows = []
-  for (let i = 0; i < dataLines.length; i++) {
-    const cells = parseCsvLine(dataLines[i], delimiter)
-    if (cells.length === 0 || (cells.length === 1 && !cells[0])) continue
-    const row = { ...defaultFields }
-    let hasData = false
-    for (let j = 0; j < cells.length && j < 12; j++) {
-      const fieldName = fieldMap[j]
-      if (fieldName && cells[j]) {
-        row[fieldName] = cells[j]
-        if (fieldName === 'fullName' && cells[j].trim()) hasData = true
-      }
-    }
-    if (hasData || row.fullName) {
-      rows.push(row)
-    }
-  }
-  if (rows.length === 0) {
-    return { rows: [], error: 'unrecognized', warnings: [] }
-  }
-  const warnings = []
-  const knownColumnCount = 12
-  for (let i = 0; i < dataLines.length; i++) {
-    const cells = parseCsvLine(dataLines[i], delimiter)
-    if (cells.length > knownColumnCount) {
-      warnings.push({ code: 'UNKNOWN_COLUMNS', message: 'Some columns were not recognized and will be skipped.' })
-      break
-    }
-  }
-  return { rows, error: null, warnings }
-}
-
 let passed = 0, total = 0
 function check(cond, msg) {
   total++
@@ -137,79 +20,189 @@ function check(cond, msg) {
 
 console.log('\n=== Addressee CSV Import Checks ===')
 
-// 1. semicolon CSV parses
-const t1 = 'fullName;position;organization\nИванов Иван Петрович;директор;ООО Ромашка'
-const r1 = parseBulkInput(t1)
-check(r1.rows.length === 1, '1. semicolon CSV parses')
+const {
+  detectDelimiter,
+  parseCsvLine,
+  normalizeColumnKey,
+  buildColumnIndex,
+  mapRowToFormData,
+  validateRowData,
+  detectUnknownColumns,
+  parseCsvText,
+  toCsvRow,
+  getCsvTemplate,
+} = require('../src/utils/addresseeCsv.js')
 
-// 2. comma CSV parses
-const t2 = 'fullName,position,organization\nИванов Иван Петрович,директор,ООО Ромашка'
-const r2 = parseBulkInput(t2)
-check(r2.rows.length === 1, '2. comma CSV parses')
-check(r2.rows[0].organization === 'ООО Ромашка', '2. comma CSV org correct')
+const {
+  buildBulkCsvExport,
+} = require('../src/utils/addresseeCsv.js')
 
-// 3. quoted values parse
-const t3 = 'fullName;position;organization\nИванов Иван Петрович;директор;"ООО ""Ромашка"""'
-const r3 = parseBulkInput(t3)
-check(r3.rows.length === 1, '3. quoted values parse')
-check(r3.rows[0].organization === 'ООО "Ромашка"', '3. quoted values unescaped')
+// 1. semicolon delimiter detection
+const t1 = 'fullName;position;organization'
+check(detectDelimiter(t1) === ';', '1. detectDelimiter finds semicolon')
 
-// 4. missing fullName header returns error
-const t4 = 'position;organization\ngeneral director;ООО Ромашка'
-const r4 = parseBulkInput(t4)
-check(r4.error === 'missingFullName', '4. missing fullName header returns error')
+// 2. comma delimiter detection
+const t2 = 'fullName,position,organization'
+check(detectDelimiter(t2) === ',', '2. detectDelimiter finds comma')
 
-// 5. empty fullName row returns row error (unrecognized)
-const t5 = 'fullName;position;organization\n;директор;ООО Ромашка'
-const r5 = parseBulkInput(t5)
-check(r5.error === 'unrecognized', '5. empty fullName row returns unrecognized error')
+// 3. tab delimiter detection
+const t3 = 'fullName\tposition\torganization'
+check(detectDelimiter(t3) === '\t', '3. detectDelimiter finds tab')
 
-// 6. unknown columns warning
-const t6 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName;extraCol1\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны;extra1'
-const r6 = parseBulkInput(t6)
-check(r6.warnings && r6.warnings.length > 0, '6. unknown columns returns warning')
-check(r6.warnings[0].code === 'UNKNOWN_COLUMNS', '6. unknown columns warning code is UNKNOWN_COLUMNS')
+// 4. semicolon CSV parses
+const t4 = 'fullName;position;organization\nИванов Иван Петрович;директор;ООО Ромашка'
+const r4 = parseCsvText(t4)
+check(r4.rows.length === 1, '4. semicolon CSV parses')
+check(r4.rows[0].data.fullName === 'Иванов Иван Петрович', '4. semicolon row fullName correct')
 
-// 7. >50 rows returns max rows error
+// 5. comma CSV parses
+const t5 = 'fullName,position,organization\nИванов Иван Петрович,директор,ООО Ромашка'
+const r5 = parseCsvText(t5)
+check(r5.rows.length === 1, '5. comma CSV parses')
+check(r5.rows[0].data.organization === 'ООО Ромашка', '5. comma CSV org correct')
+
+// 6. header-based mapping works with reordered columns
+const t6 = 'organization;fullName;position\nООО Ромашка;Иванов Иван Петрович;директор'
+const r6 = parseCsvText(t6)
+check(r6.rows.length === 1, '6. reordered columns parses')
+check(r6.rows[0].data.fullName === 'Иванов Иван Петрович', '6. reordered fullName correct')
+check(r6.rows[0].data.organization === 'ООО Ромашка', '6. reordered org correct')
+check(r6.rows[0].data.position === 'директор', '6. reordered position correct')
+
+// 7. old positional rows still work (no header fallback)
+const t7 = 'Иванов Иван Петрович;директор;ООО Ромашка\nСидорова Мария;бухгалтер;АО Север'
+const r7 = parseCsvText(t7)
+check(r7.rows.length === 2, '7. no-header data parses as bulk text')
+check(r7.rows[0].data.fullName === 'Иванов Иван Петрович', '7. no-header row 1 correct')
+
+// 8. quoted values parse
+const t8 = 'fullName;position;organization\nИванов Иван Петрович;директор;"ООО ""Ромашка"""'
+const r8 = parseCsvText(t8)
+check(r8.rows.length === 1, '8. quoted values parse')
+check(r8.rows[0].data.organization === 'ООО "Ромашка"', '8. quoted values unescaped')
+
+// 9. escaped quotes parse
+const t9 = 'fullName;position\n"Иванов ""Иван"" Петрович";директор'
+const r9 = parseCsvText(t9)
+check(r9.rows.length === 1, '9. escaped quotes parse')
+
+// 10. multiline quoted field — controlled error or parsing
+const t10 = 'fullName;position;organization\nИванов Иван Петрович;директор;"ООО\nРомашка"'
+const r10 = parseCsvText(t10)
+check(r10.rows.length === 1 || r10.errors.length > 0, '10. multiline quoted field handled (parse or error)')
+
+// 11. missing fullName column error
+const t11 = 'position;organization\ngeneral director;ООО Ромашка'
+const r11 = parseCsvText(t11)
+check(r11.errors && r11.errors.length > 0, '11. missing fullName column returns error')
+check(r11.errors[0].code === 'MISSING_FULLNAME', '11. error code is MISSING_FULLNAME')
+
+// 12. empty fullName row error with row number
+const t12 = 'fullName;position;organization\n;директор;ООО Ромашка'
+const r12 = parseCsvText(t12)
+check(r12.errors && r12.errors.length > 0, '12. empty fullName row returns error')
+check(r12.errors.some((e) => e.code === 'EMPTY_FULLNAME'), '12. error contains EMPTY_FULLNAME code')
+
+// 13. unknown columns warning
+const t13 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName;extraCol1\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны;extra1'
+const r13 = parseCsvText(t13)
+check(r13.unknownColumns.length > 0, '13. unknown columns detected')
+check(r13.unknownColumns.includes('extracol1'), '13. unknown column extrCol1 detected')
+
+// 14. invalid gender error
+const t14 = 'fullName;position;organization;gender\nИванов Иван Петрович;директор;ООО Ромашка;invalid_gender'
+const r14 = parseCsvText(t14)
+check(r14.errors && r14.errors.some((e) => e.code === 'INVALID_GENDER'), '14. invalid gender gives error')
+
+// 15. invalid documentTemplate error
+const t15 = 'fullName;position;organization;documentTemplate\nИванов Иван Петрович;директор;ООО Ромашка;invalid_template'
+const r15 = parseCsvText(t15)
+check(r15.errors && r15.errors.some((e) => e.code === 'INVALID_DOCUMENT_TEMPLATE'), '15. invalid documentTemplate gives error')
+
+// 16. recipientDativeName imported
+const t16 = 'fullName;position;organization;recipientDativeName;senderGenitiveName\nИванов Иван Петрович;директор;ООО Ромашка;Иванову Ивану Петровичу;Петровой Анны Сергеевны'
+const r16 = parseCsvText(t16)
+check(r16.rows.length === 1, '16. recipientDativeName row parsed')
+check(r16.rows[0].data.recipientDativeName === 'Иванову Ивану Петровичу', '16. recipientDativeName preserved')
+
+// 17. senderGenitiveName imported
+check(r16.rows[0].data.senderGenitiveName === 'Петровой Анны Сергеевны', '17. senderGenitiveName preserved')
+
+// 18. too many rows error
 const manyRows = 'fullName;position;organization\n' + Array(51).fill('Иванов Иван Петрович;директор;ООО').join('\n')
-const r7 = parseBulkInput(manyRows)
-check(r7.error === 'tooManyRows', '7. 51 rows returns tooManyRows error')
+const r18 = parseCsvText(manyRows)
+check(r18.errors && r18.errors.length > 0, '18. 51 rows returns error')
+check(r18.errors[0].code === 'TOO_MANY_ROWS', '18. error code is TOO_MANY_ROWS')
 
-// 8. sender fields preserved
-const t8 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа'
-const r8 = parseBulkInput(t8)
-check(r8.rows[0].senderFullName === 'Петрова Анна', '8. senderFullName preserved')
-check(r8.rows[0].senderPosition === 'менеджер', '8. senderPosition preserved')
-check(r8.rows[0].senderOrganization === 'ООО Альфа', '8. senderOrganization preserved')
+// 19. CSV template contains required columns
+const template = getCsvTemplate()
+check(template.includes('fullName'), '19. template has fullName column')
+check(template.includes('position'), '19. template has position column')
+check(template.includes('organization'), '19. template has organization column')
+check(template.includes('recipientDativeName'), '19. template has recipientDativeName column')
+check(template.includes('senderGenitiveName'), '19. template has senderGenitiveName column')
+check(template.includes('documentTemplate'), '19. template has documentTemplate column')
 
-// 9. documentTemplate preserved
-const t9 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate\nИванов Иван;директор;ООО;male;colleagues;!;application'
-const r9 = parseBulkInput(t9)
-check(r9.rows[0].documentTemplate === 'application', '9. documentTemplate preserved')
+// 20. CSV template has BOM
+check(template.charCodeAt(0) === 0xFEFF, '20. template has UTF-8 BOM')
 
-// 10. canonical bulk text generated (test that no-header data works as fallback)
-const t10 = 'Иванов Иван Петрович;директор;ООО Ромашка\nСидорова Мария;бухгалтер;АО Север'
-const r10 = parseBulkInput(t10)
-check(r10.rows.length === 2, '10. no-header data parses as bulk text')
-check(r10.rows[0].fullName === 'Иванов Иван Петрович', '10. no-header first row correct')
+// 21. CSV template has data rows
+const templateLines = template.replace(/^\uFEFF/, '').trim().split('\r\n')
+check(templateLines.length >= 3, '21. template has header + 2 example rows')
 
-// 11. manual case fields preserved
-const t11 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна Сергеевна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны Сергеевны'
-const r11 = parseBulkInput(t11)
-check(r11.rows[0].recipientDativeName === 'Иванову Ивану Петровичу', '11. recipientDativeName preserved')
-check(r11.rows[0].senderGenitiveName === 'Петровой Анны Сергеевны', '11. senderGenitiveName preserved')
+// 22. buildBulkCsvExport uses proper formatting (no undefined/null)
+const testResults = [
+  {
+    input: {
+      data: {
+        fullName: 'Иванов Иван Петрович',
+        position: 'директор',
+        organization: 'ООО Ромашка',
+        gender: 'male',
+        greetingMode: 'namePatronymic',
+        punctuation: '!',
+        documentTemplate: 'businessLetter',
+        senderFullName: 'Петрова Анна',
+        senderPosition: 'менеджер',
+        senderOrganization: 'ООО Альфа',
+        recipientDativeName: 'Иванову Ивану Петровичу',
+        senderGenitiveName: 'Петровой Анны',
+      },
+    },
+    blocks: {
+      to: 'ООО Ромашка\nдиректору\nИванову Ивану Петровичу',
+      from: 'от Петровой Анны\nменеджер\nООО Альфа',
+      greeting: 'Уважаемый Иван Петрович!',
+      letter: '...',
+      documentText: 'ДЕЛОВОЕ ПИСЬМО\n\nКому:\nООО Ромашка\nдиректору\nИванову Ивану Петровичу\n\nОт кого:\nот Петровой Анны\nменеджер\nООО Альфа\n\nУважаемый Иван Петрович!\n\nСообщаем информацию по указанному вопросу и просим рассмотреть её в рабочем порядке.\nПри необходимости дополните письмо деталями, сроками и приложениями.\n\nДата: ____________        Подпись: ____________',
+    },
+    warnings: [],
+    confidence: 0.95,
+  },
+]
+const bulkCsv = buildBulkCsvExport(testResults)
+check(bulkCsv.includes('Иванов Иван Петрович'), '22. bulk export has input fullName')
+check(bulkCsv.includes('Иванову Ивану Петровичу'), '22. bulk export has dative name')
+check(bulkCsv.includes('Петровой Анны'), '22. bulk export has genitive sender name')
+check(bulkCsv.includes('От кого:'), '22. bulk export has От кого label')
+check(!bulkCsv.includes('undefined'), '22. bulk export has no undefined')
+check(!bulkCsv.includes('null'), '22. bulk export has no null')
+check(bulkCsv.charCodeAt(0) === 0xFEFF, '22. bulk export has BOM')
 
-// 12. old CSV header without manual case columns still works
-const t12 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа'
-const r12 = parseBulkInput(t12)
-check(r12.rows.length === 1, '12. old CSV header still parses')
-check(r12.rows[0].recipientDativeName === '', '12. missing recipientDativeName defaults to empty')
-check(r12.rows[0].senderGenitiveName === '', '12. missing senderGenitiveName defaults to empty')
+// 23. bulk export multiline documentText is quoted
+check(bulkCsv.includes('"ДЕЛОВОЕ ПИСЬМО'), '23. multiline documentText is quoted in bulk export')
 
-// 13. UTF-8 BOM in uploaded CSV does not break header recognition
-const t13 = '\uFEFFfullName;position;organization\nИванов Иван Петрович;директор;ООО Ромашка'
-const r13 = parseBulkInput(t13)
-check(r13.rows.length === 1, '13. UTF-8 BOM header parses')
+// 24. no-header positional data preserves sender fields
+const t24 = 'Иванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны'
+const r24 = parseCsvText(t24)
+check(r24.rows.length === 1, '24. no-header data with all fields parses')
+check(r24.rows[0].data.senderFullName === 'Петрова Анна', '24. senderFullName preserved in positional')
+check(r24.rows[0].data.recipientDativeName === 'Иванову Ивану Петровичу', '24. recipientDativeName preserved')
+
+// 25. normalizeColumnKey handles aliases
+check(normalizeColumnKey('fio') === 'fullname', '25. fio alias maps to fullname')
+check(normalizeColumnKey('fioadresata') === 'fullname', '25. fioadresata alias maps to fullname')
+check(normalizeColumnKey('DATIVENAME') === 'recipientdativename', '25. dativename normalizes correctly')
 
 console.log('\n=== Results:', passed + '/' + total + ' ===')
 if (passed < total) process.exit(1)
