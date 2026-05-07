@@ -14,6 +14,7 @@
     "test:e2e:ui": "playwright test --ui",
     "check:addressee": "node scripts/check-addressee-formatter.js",
     "check:addressee:integration": "node scripts/check-addressee-integration.js",
+    "check:addressee:docx": "node scripts/check-addressee-docx-export.js",
     "verify:articles-html": "node scripts/verify-articles-html.js",
     "verify:article-json": "node scripts/verify-article-json.js",
     "verify:production-articles": "node scripts/verify-production-articles.cjs",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@sentry/react": "^10.49.0",
     "chart.js": "^4.5.1",
+    "docx": "^9.6.1",
     "expr-eval": "^2.0.2",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.8.0",

@@ -8,6 +8,7 @@ import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSe
 import { ResultSection, ResultNotice } from '../components/ResultSection'
 import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult } from '../components/ToolPageShell'
 import { formatAddressee } from '../utils/addresseeFormatter'
+import { downloadAddresseeDocx } from '../utils/addresseeDocxExport'
 import {
   GENDER_MALE,
   GENDER_FEMALE,
@@ -546,6 +547,16 @@ function AddresseeGenerator() {
     setStatusMessage(t('addresseeGenerator.statusMessages.htmlDownloaded'))
   }, [result, form, getDocumentExportText, escapeHtml, t, language])
 
+  const handleExportDocx = useCallback(async () => {
+    if (!result) return
+    try {
+      await downloadAddresseeDocx(result, { t })
+      setStatusMessage(t('addresseeGenerator.statusMessages.docxDownloaded'))
+    } catch (err) {
+      console.warn('DOCX export failed:', err)
+    }
+  }, [result, t])
+
   const confidenceLabel = useMemo(() => {
     if (!result) return ''
     if (result.confidence >= 0.95) return t('addresseeGenerator.confidence.high')
@@ -1056,11 +1067,11 @@ function AddresseeGenerator() {
                   </button>
                   <button
                     type="button"
-                    className="addr-gen-btn addr-gen-btn--disabled"
-                    disabled
-                    title={t('addresseeGenerator.buttons.docxComingSoon')}
+                    className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--export"
+                    onClick={handleExportDocx}
+                    disabled={!result}
                   >
-                    <Icon name="lock" size={16} />
+                    <Icon name="description" size={16} />
                     {t('addresseeGenerator.buttons.downloadDocx')}
                   </button>
                 </div>

@@ -283,6 +283,37 @@ check(agContent.includes('aria-describedby=') || agContent.includes('aria-descri
 check(agContent.includes('tabIndex={-1}') || agContent.includes('tabIndex={ -1 }'), 'result section has tabIndex={-1}')
 check(agContent.includes('ref={resultRef}') || agContent.includes('ref={ resultRef }'), 'result section has ref for focus')
 check(agContent.includes('blocks.documentText') || agContent.includes("key: 'documentText'"), 'resultBlocks includes documentText')
+check(agContent.includes('handleExportDocx') || agContent.includes('downloadAddresseeDocx'), 'has DOCX export handler')
+check(agContent.includes('docx') || agContent.includes('description'), 'DOCX button uses description icon')
+
+// 10b. DOCX helper
+console.log('\n10b. DOCX helper')
+const docxHelperPath = path.join(rootDir, 'src/utils/addresseeDocxExport.js')
+check(fs.existsSync(docxHelperPath), 'DOCX helper file exists')
+if (fs.existsSync(docxHelperPath)) {
+  const docxContent = readFile('src/utils/addresseeDocxExport.js')
+  check(docxContent.includes('generateAddresseeDocxBlob') || docxContent.includes('downloadAddresseeDocx'), 'DOCX helper exports generation function')
+  check(docxContent.includes('Document') || docxContent.includes('P') || docxContent.includes('Text'), 'DOCX helper uses docx library')
+  check(docxContent.includes('result.blocks.from') || docxContent.includes('fromSection'), 'DOCX helper uses from block for sender')
+}
+
+// 10c. Locales for DOCX
+console.log('\n10c. Locales for DOCX')
+for (const lang of ['ru', 'en']) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const docxKeys = [
+    'addresseeGenerator.statusMessages.docxDownloaded',
+    'addresseeGenerator.export.docxDocumentLabel',
+    'addresseeGenerator.export.addressee',
+    'addresseeGenerator.export.sender',
+    'addresseeGenerator.export.warningsSection',
+    'addresseeGenerator.export.docxSingleOnly',
+  ]
+  for (const key of docxKeys) {
+    const value = key.split('.').reduce((obj, k) => obj?.[k], locale)
+    check(typeof value === 'string' && value.length > 0, `${lang}: ${key}`)
+  }
+}
 
 // 11. Sitemap (optional check after build)
 console.log('\n11. Sitemap')

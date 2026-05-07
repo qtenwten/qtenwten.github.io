@@ -1538,7 +1538,12 @@
       "to": "Addressee",
       "from": "Sender",
       "greeting": "Salutation",
-      "documentTemplate": "Document Template"
+      "documentTemplate": "Document Template",
+      "docxDocumentLabel": "Document",
+      "addressee": "Addressee",
+      "sender": "Sender",
+      "warningsSection": "Warnings",
+      "docxSingleOnly": "DOCX is available for a single result."
     },
     "documentTemplate": {
       "label": "Document Type",
@@ -1594,13 +1599,14 @@
         "warnings": "Warnings"
       }
     },
-    "exportNote": "CSV, TXT and HTML exports are available now. DOCX export is coming soon.",
+    "exportNote": "CSV, TXT, HTML and DOCX exports are now available.",
     "statusMessages": {
       "resultGenerated": "Result generated.",
       "copied": "Result copied.",
       "txtDownloaded": "TXT file downloaded.",
       "htmlDownloaded": "HTML file downloaded.",
       "csvDownloaded": "CSV file downloaded.",
+      "docxDownloaded": "DOCX file downloaded.",
       "validationError": "Enter the recipient full name.",
       "rowsProcessed": "Rows processed: {count}"
     },

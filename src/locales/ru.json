@@ -1550,7 +1550,22 @@
       "to": "Адресат",
       "from": "Отправитель",
       "greeting": "Обращение",
-      "documentTemplate": "Готовый шаблон документа"
+      "documentTemplate": "Готовый шаблон документа",
+      "docxDocumentLabel": "Документ",
+      "addressee": "Адресат",
+      "sender": "Отправитель",
+      "warningsSection": "Предупреждения",
+      "docxSingleOnly": "DOCX доступен для одного результата."
+    },
+    "statusMessages": {
+      "resultGenerated": "Результат сформирован.",
+      "copied": "Результат скопирован.",
+      "txtDownloaded": "TXT файл скачан.",
+      "htmlDownloaded": "HTML файл скачан.",
+      "csvDownloaded": "CSV файл скачан.",
+      "docxDownloaded": "DOCX файл скачан.",
+      "validationError": "Заполните ФИО адресата.",
+      "rowsProcessed": "Обработано строк: {count}"
     },
     "blocks": {
       "to": "Кому",
@@ -1594,13 +1609,14 @@
         "warnings": "Предупреждения"
       }
     },
-    "exportNote": "CSV, TXT и HTML экспорт уже доступны. DOCX экспорт — в разработке.",
+    "exportNote": "CSV, TXT, HTML и DOCX экспорт уже доступны.",
     "statusMessages": {
       "resultGenerated": "Результат сформирован.",
       "copied": "Результат скопирован.",
       "txtDownloaded": "TXT файл скачан.",
       "htmlDownloaded": "HTML файл скачан.",
       "csvDownloaded": "CSV файл скачан.",
+      "docxDownloaded": "DOCX файл скачан.",
       "validationError": "Заполните ФИО адресата.",
       "rowsProcessed": "Обработано строк: {count}"
     },
