@@ -307,9 +307,6 @@ function main() {
   if (errors.length > 0) {
     console.log('\nRESULT: FAIL — errors must be fixed')
     process.exit(1)
-  } else if (warnings.length > 0) {
-    console.log('\nRESULT: PASS with warnings')
-    process.exit(0)
   } else {
     console.log('\nRESULT: PASS')
     process.exit(0)
