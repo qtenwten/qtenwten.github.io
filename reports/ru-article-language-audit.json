@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-05-07T10:47:41.670Z",
+  "generatedAt": "2026-05-07T10:54:03.982Z",
   "source": "worker-api",
-  "strictMode": false,
+  "strictMode": true,
   "totals": {
     "ruArticles": 35,
-    "issues": 62,
-    "high": 18,
-    "medium": 8,
+    "issues": 36,
+    "high": 0,
+    "medium": 0,
     "low": 36,
-    "autoFixes": 12
+    "autoFixes": 0
   },
   "articles": [
     {
@@ -16,198 +16,16 @@
       "slug": "koleso-donatov-dlya-strimera",
       "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
       "title": "Колесо донатов для стримера — розыгрыш игр и развлечений за донаты",
-      "issueCount": 8,
-      "issues": [
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "осто общаетесь с аудиторией, колесо донатов превращает пассивное watching в активное участие. Зрители не просто донатят — они вл",
-          "type": "known-bad-english",
-          "recommendedReplacement": "пассивный просмотр",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 378
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "лучше, чем просто «скиньте на пиво» — здесь есть цель, есть stakes, есть возможность. --- ## Идеи для наполнения колеса",
-          "type": "known-bad-english",
-          "recommendedReplacement": "есть азарт",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 2003
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "ите увидеть, и ваш вариант может выпасть». Это создаёт чувство ownership. ### Это работает для маленьких каналов? Особенно дл",
-          "type": "known-bad-english",
-          "recommendedReplacement": "чувство причастности",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 5320
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "пользуйте нарезки — моменты с колесом отлично работают для shorts и тизеров - Комбинируйте с опросами — сначала голосуем за катего",
-          "type": "known-bad-english",
-          "recommendedReplacement": "для коротких роликов и тизеров",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 6038
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "Если вы стримите игры, фильмы или просто общаетесь с аудиторией, колесо донатов превращает пассивное watching в активное участие.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "просмотр",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "Это работает лучше, чем просто «скиньте на пиво» — здесь есть цель, есть stakes, есть возможность.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "азарт",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "Это создаёт чувство ownership.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "причастность",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        },
-        {
-          "id": 74,
-          "slug": "koleso-donatov-dlya-strimera",
-          "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-          "field": "content",
-          "fragment": "- Используйте нарезки — моменты с колесом отлично работают для shorts и тизеров",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "короткие ролики",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
       "id": 71,
       "slug": "koleso-vybora-chto-vybrat",
       "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
       "title": "Колесо выбора — когда не знаешь, что выбрать",
-      "issueCount": 7,
-      "issues": [
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. К",
-          "type": "chinese-characters",
-          "recommendedReplacement": "Заменить на русский текст по смыслу",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 2995
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "селее - **Для командной работы**: используйте колесо на屏幕上 во время созвона — все видят процесс и результат - **Д",
-          "type": "chinese-characters",
-          "recommendedReplacement": "Заменить на русский текст по смыслу",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 4388
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "между вариантами парализует. Бросаете все на колесо и принимаете result как есть. Это даже веселее, чем если бы кто-то один решил. ###",
-          "type": "known-bad-english",
-          "recommendedReplacement": "принимаете результат как есть",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 1307
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "веселее - **Для командной работы**: используйте колесо на屏幕上 во время созвона — все видят процесс и результат - **Д",
-          "type": "mixed-chinese",
-          "recommendedReplacement": "на экране",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 4386
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "ыть глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. К",
-          "type": "mixed-chinese",
-          "recommendedReplacement": "исправить на нормальный русский текст по смыслу",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 2992
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "ыть глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. Колесо с физически",
-          "type": "mixed-chinese",
-          "recommendedReplacement": "это выбор, невольно смещённый в сторону",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 2992
-        },
-        {
-          "id": 71,
-          "slug": "koleso-vybora-chto-vybrat",
-          "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-          "field": "content",
-          "fragment": "Бросаете все на колесо и принимаете result как есть.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "результат",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
       "id": 70,
@@ -372,32 +190,8 @@
       "slug": "seo-audit-besplatno",
       "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
       "title": "SEO аудит сайта бесплатно — проверить сайт на ошибки и улучшить позиции",
-      "issueCount": 8,
+      "issueCount": 4,
       "issues": [
-        {
-          "id": 39,
-          "slug": "seo-audit-besplatno",
-          "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-          "field": "content",
-          "fragment": "**Экономия на рекламе** — хорошие органические позиции уменьшают need в PPC - **Доверие** — пользователи доверяют сайтам в топе #",
-          "type": "known-bad-english",
-          "recommendedReplacement": "уменьшают потребность в PPC",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 1953
-        },
-        {
-          "id": 39,
-          "slug": "seo-audit-besplatno",
-          "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-          "field": "content",
-          "fragment": "асто делать аудит? Рекомендуется раз в 3-6 месяцев или после major изменений. [Провести SEO аудит сайта →](/ru/seo-audit)",
-          "type": "known-bad-english",
-          "recommendedReplacement": "после крупных изменений",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 2349
-        },
         {
           "id": 39,
           "slug": "seo-audit-besplatno",
@@ -445,30 +239,6 @@
           "confidence": "low",
           "autoFix": false,
           "index": 0
-        },
-        {
-          "id": 39,
-          "slug": "seo-audit-besplatno",
-          "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-          "field": "content",
-          "fragment": "- **Экономия на рекламе** — хорошие органические позиции уменьшают need в PPC",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "потребность",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
-        },
-        {
-          "id": 39,
-          "slug": "seo-audit-besplatno",
-          "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-          "field": "content",
-          "fragment": "Рекомендуется раз в 3-6 месяцев или после major изменений.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "крупный",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
         }
       ]
     },
@@ -510,45 +280,8 @@
       "slug": "sokraschitel-ssylok-onlayn",
       "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
       "title": "Сокращатель ссылок онлайн — короткие URL бесплатно и без регистрации",
-      "issueCount": 3,
-      "issues": [
-        {
-          "id": 35,
-          "slug": "sokraschitel-ssylok-onlayn",
-          "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-          "field": "content",
-          "fragment": "Р»РєР° РіРµРЅРµСЂРёСЂСѓРµС‚ С‡РёСЃС‚С‹Р№ QR-РєРѕРґ - **РџР°СЂС‚РЅС‘СЂСЃРєРёРµ РїСЂРѕРіСЂР°РјРјС‹** вЂ” РѕС‚СЃР»Р",
-          "type": "mojibake-or-replacement-char",
-          "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 1094
-        },
-        {
-          "id": 35,
-          "slug": "sokraschitel-ssylok-onlayn",
-          "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-          "field": "content",
-          "fragment": "єСЂР°С‚РёС‚СЊ СЃСЃС‹Р»РєСѓ в†’](/ru/url-shortener) ## РџСЂРёРјРµСЂС‹ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ | Р”Р»РёРЅРЅР°",
-          "type": "mojibake-or-replacement-char",
-          "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 1666
-        },
-        {
-          "id": 35,
-          "slug": "sokraschitel-ssylok-onlayn",
-          "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-          "field": "content",
-          "fragment": "РЅРѕСЃС‚СЊ РјР°СЃСЃРѕРІРѕРіРѕ СЃРѕРєСЂР°С‰РµРЅРёСЏ ## РџРѕС‡РµРјСѓ СЌС‚Рѕ СѓРґРѕР±РЅРѕ - **Р§РёСЃС‚С‹Р№ РІРёРґ",
-          "type": "mojibake-or-replacement-char",
-          "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 2498
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
       "id": 32,
@@ -792,20 +525,8 @@
       "slug": "seo-audit-pro-instrument",
       "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
       "title": "SEO Audit Pro — профессиональный анализ сайта для поисковой оптимизации",
-      "issueCount": 4,
+      "issueCount": 2,
       "issues": [
-        {
-          "id": 31,
-          "slug": "seo-audit-pro-instrument",
-          "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
-          "field": "content",
-          "fragment": "ак часто делать аудит? Рекомендуется раз в квартал или после major изменений на сайте. --- [Открыть SEO Audit Pro →](/ru/seo-audi",
-          "type": "known-bad-english",
-          "recommendedReplacement": "после крупных изменений",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 2193
-        },
         {
           "id": 31,
           "slug": "seo-audit-pro-instrument",
@@ -829,18 +550,6 @@
           "confidence": "low",
           "autoFix": false,
           "index": 0
-        },
-        {
-          "id": 31,
-          "slug": "seo-audit-pro-instrument",
-          "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
-          "field": "content",
-          "fragment": "Рекомендуется раз в квартал или после major изменений на сайте.",
-          "type": "suspicious-english-word",
-          "recommendedReplacement": "крупный",
-          "confidence": "medium",
-          "autoFix": false,
-          "index": 0
         }
       ]
     },
@@ -849,33 +558,8 @@
       "slug": "kalkulyator-slozhnykh-protsentov",
       "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
       "title": "Калькулятор сложных процентов онлайн — рассчитать доходность инвестиций",
-      "issueCount": 2,
-      "issues": [
-        {
-          "id": 29,
-          "slug": "kalkulyator-slozhnykh-protsentov",
-          "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
-          "field": "content",
-          "fragment": "работает по принципу сложного процента - **Кредиты** —同样的 механизм работает против вас, увеличивая долг - **Пенс",
-          "type": "chinese-characters",
-          "recommendedReplacement": "Заменить на русский текст по смыслу",
-          "confidence": "high",
-          "autoFix": false,
-          "index": 578
-        },
-        {
-          "id": 29,
-          "slug": "kalkulyator-slozhnykh-protsentov",
-          "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
-          "field": "content",
-          "fragment": "работает по принципу сложного процента - **Кредиты** —同样的 механизм работает против вас, увеличивая долг - **Пенсионные на",
-          "type": "mixed-chinese",
-          "recommendedReplacement": "тот же механизм",
-          "confidence": "high",
-          "autoFix": true,
-          "index": 578
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
       "id": 27,
@@ -1050,186 +734,6 @@
   ],
   "issues": [
     {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "осто общаетесь с аудиторией, колесо донатов превращает пассивное watching в активное участие. Зрители не просто донатят — они вл",
-      "type": "known-bad-english",
-      "recommendedReplacement": "пассивный просмотр",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 378
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "лучше, чем просто «скиньте на пиво» — здесь есть цель, есть stakes, есть возможность. --- ## Идеи для наполнения колеса",
-      "type": "known-bad-english",
-      "recommendedReplacement": "есть азарт",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 2003
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "ите увидеть, и ваш вариант может выпасть». Это создаёт чувство ownership. ### Это работает для маленьких каналов? Особенно дл",
-      "type": "known-bad-english",
-      "recommendedReplacement": "чувство причастности",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 5320
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "пользуйте нарезки — моменты с колесом отлично работают для shorts и тизеров - Комбинируйте с опросами — сначала голосуем за катего",
-      "type": "known-bad-english",
-      "recommendedReplacement": "для коротких роликов и тизеров",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 6038
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "Если вы стримите игры, фильмы или просто общаетесь с аудиторией, колесо донатов превращает пассивное watching в активное участие.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "просмотр",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "Это работает лучше, чем просто «скиньте на пиво» — здесь есть цель, есть stakes, есть возможность.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "азарт",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "Это создаёт чувство ownership.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "причастность",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "fragment": "- Используйте нарезки — моменты с колесом отлично работают для shorts и тизеров",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "короткие ролики",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. К",
-      "type": "chinese-characters",
-      "recommendedReplacement": "Заменить на русский текст по смыслу",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 2995
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "селее - **Для командной работы**: используйте колесо на屏幕上 во время созвона — все видят процесс и результат - **Д",
-      "type": "chinese-characters",
-      "recommendedReplacement": "Заменить на русский текст по смыслу",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 4388
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "между вариантами парализует. Бросаете все на колесо и принимаете result как есть. Это даже веселее, чем если бы кто-то один решил. ###",
-      "type": "known-bad-english",
-      "recommendedReplacement": "принимаете результат как есть",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 1307
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "веселее - **Для командной работы**: используйте колесо на屏幕上 во время созвона — все видят процесс и результат - **Д",
-      "type": "mixed-chinese",
-      "recommendedReplacement": "на экране",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 4386
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "ыть глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. К",
-      "type": "mixed-chinese",
-      "recommendedReplacement": "исправить на нормальный русский текст по смыслу",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 2992
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "ыть глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. Колесо с физически",
-      "type": "mixed-chinese",
-      "recommendedReplacement": "это выбор, невольно смещённый в сторону",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 2992
-    },
-    {
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "fragment": "Бросаете все на колесо и принимаете result как есть.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "результат",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
       "id": 59,
       "slug": "qr-kod-dlya-gostevogo-wifi",
       "url": "https://qsen.ru/ru/articles/qr-kod-dlya-gostevogo-wifi/",
@@ -1264,30 +768,6 @@
       "confidence": "low",
       "autoFix": false,
       "index": 0
-    },
-    {
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "fragment": "**Экономия на рекламе** — хорошие органические позиции уменьшают need в PPC - **Доверие** — пользователи доверяют сайтам в топе #",
-      "type": "known-bad-english",
-      "recommendedReplacement": "уменьшают потребность в PPC",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 1953
-    },
-    {
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "fragment": "асто делать аудит? Рекомендуется раз в 3-6 месяцев или после major изменений. [Провести SEO аудит сайта →](/ru/seo-audit)",
-      "type": "known-bad-english",
-      "recommendedReplacement": "после крупных изменений",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 2349
     },
     {
       "id": 39,
@@ -1338,30 +818,6 @@
       "index": 0
     },
     {
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "fragment": "- **Экономия на рекламе** — хорошие органические позиции уменьшают need в PPC",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "потребность",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "fragment": "Рекомендуется раз в 3-6 месяцев или после major изменений.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "крупный",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
       "id": 36,
       "slug": "generator-paroley-onlayn",
       "url": "https://qsen.ru/ru/articles/generator-paroley-onlayn/",
@@ -1384,42 +840,6 @@
       "confidence": "low",
       "autoFix": false,
       "index": 0
-    },
-    {
-      "id": 35,
-      "slug": "sokraschitel-ssylok-onlayn",
-      "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-      "field": "content",
-      "fragment": "Р»РєР° РіРµРЅРµСЂРёСЂСѓРµС‚ С‡РёСЃС‚С‹Р№ QR-РєРѕРґ - **РџР°СЂС‚РЅС‘СЂСЃРєРёРµ РїСЂРѕРіСЂР°РјРјС‹** вЂ” РѕС‚СЃР»Р",
-      "type": "mojibake-or-replacement-char",
-      "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 1094
-    },
-    {
-      "id": 35,
-      "slug": "sokraschitel-ssylok-onlayn",
-      "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-      "field": "content",
-      "fragment": "єСЂР°С‚РёС‚СЊ СЃСЃС‹Р»РєСѓ в†’](/ru/url-shortener) ## РџСЂРёРјРµСЂС‹ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ | Р”Р»РёРЅРЅР°",
-      "type": "mojibake-or-replacement-char",
-      "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 1666
-    },
-    {
-      "id": 35,
-      "slug": "sokraschitel-ssylok-onlayn",
-      "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-      "field": "content",
-      "fragment": "РЅРѕСЃС‚СЊ РјР°СЃСЃРѕРІРѕРіРѕ СЃРѕРєСЂР°С‰РµРЅРёСЏ ## РџРѕС‡РµРјСѓ СЌС‚Рѕ СѓРґРѕР±РЅРѕ - **Р§РёСЃС‚С‹Р№ РІРёРґ",
-      "type": "mojibake-or-replacement-char",
-      "recommendedReplacement": "Восстановить корректный UTF-8 текст",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 2498
     },
     {
       "id": 32,
@@ -1654,18 +1074,6 @@
       "slug": "seo-audit-pro-instrument",
       "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
       "field": "content",
-      "fragment": "ак часто делать аудит? Рекомендуется раз в квартал или после major изменений на сайте. --- [Открыть SEO Audit Pro →](/ru/seo-audi",
-      "type": "known-bad-english",
-      "recommendedReplacement": "после крупных изменений",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 2193
-    },
-    {
-      "id": 31,
-      "slug": "seo-audit-pro-instrument",
-      "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
-      "field": "content",
       "fragment": "- Отсутствующие title и description",
       "type": "long-latin-word-in-ru-text",
       "recommendedReplacement": "Проверить вручную или заменить русским словом",
@@ -1684,42 +1092,6 @@
       "confidence": "low",
       "autoFix": false,
       "index": 0
-    },
-    {
-      "id": 31,
-      "slug": "seo-audit-pro-instrument",
-      "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
-      "field": "content",
-      "fragment": "Рекомендуется раз в квартал или после major изменений на сайте.",
-      "type": "suspicious-english-word",
-      "recommendedReplacement": "крупный",
-      "confidence": "medium",
-      "autoFix": false,
-      "index": 0
-    },
-    {
-      "id": 29,
-      "slug": "kalkulyator-slozhnykh-protsentov",
-      "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
-      "field": "content",
-      "fragment": "работает по принципу сложного процента - **Кредиты** —同样的 механизм работает против вас, увеличивая долг - **Пенс",
-      "type": "chinese-characters",
-      "recommendedReplacement": "Заменить на русский текст по смыслу",
-      "confidence": "high",
-      "autoFix": false,
-      "index": 578
-    },
-    {
-      "id": 29,
-      "slug": "kalkulyator-slozhnykh-protsentov",
-      "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
-      "field": "content",
-      "fragment": "работает по принципу сложного процента - **Кредиты** —同样的 механизм работает против вас, увеличивая долг - **Пенсионные на",
-      "type": "mixed-chinese",
-      "recommendedReplacement": "тот же механизм",
-      "confidence": "high",
-      "autoFix": true,
-      "index": 578
     },
     {
       "id": 11,
@@ -1794,151 +1166,5 @@
       "index": 0
     }
   ],
-  "repairPlan": [
-    {
-      "mode": "replace",
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "oldFragment": "осто общаетесь с аудиторией, колесо донатов превращает пассивное watching в активное участие. Зрители не просто донатят — они вл",
-      "find": "пассивное watching",
-      "replace": "пассивный просмотр",
-      "currentTitle": "Колесо донатов для стримера — розыгрыш игр и развлечений за донаты",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "oldFragment": "лучше, чем просто «скиньте на пиво» — здесь есть цель, есть stakes, есть возможность. --- ## Идеи для наполнения колеса",
-      "find": "есть stakes",
-      "replace": "есть азарт",
-      "currentTitle": "Колесо донатов для стримера — розыгрыш игр и развлечений за донаты",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "oldFragment": "ите увидеть, и ваш вариант может выпасть». Это создаёт чувство ownership. ### Это работает для маленьких каналов? Особенно дл",
-      "find": "чувство ownership",
-      "replace": "чувство причастности",
-      "currentTitle": "Колесо донатов для стримера — розыгрыш игр и развлечений за донаты",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 74,
-      "slug": "koleso-donatov-dlya-strimera",
-      "url": "https://qsen.ru/ru/articles/koleso-donatov-dlya-strimera/",
-      "field": "content",
-      "oldFragment": "пользуйте нарезки — моменты с колесом отлично работают для shorts и тизеров - Комбинируйте с опросами — сначала голосуем за катего",
-      "find": "для shorts и тизеров",
-      "replace": "для коротких роликов и тизеров",
-      "currentTitle": "Колесо донатов для стримера — розыгрыш игр и развлечений за донаты",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "oldFragment": "между вариантами парализует. Бросаете все на колесо и принимаете result как есть. Это даже веселее, чем если бы кто-то один решил. ###",
-      "find": "принимаете result как есть",
-      "replace": "принимаете результат как есть",
-      "currentTitle": "Колесо выбора — когда не знаешь, что выбрать",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "oldFragment": "веселее - **Для командной работы**: используйте колесо на屏幕上 во время созвона — все видят процесс и результат - **Д",
-      "find": "на屏幕上",
-      "replace": "на экране",
-      "currentTitle": "Колесо выбора — когда не знаешь, что выбрать",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 71,
-      "slug": "koleso-vybora-chto-vybrat",
-      "url": "https://qsen.ru/ru/articles/koleso-vybora-chto-vybrat/",
-      "field": "content",
-      "oldFragment": "ыть глаза и тыкнуть в список — это не случайный выбор, это指尖无意中 смещён в сторону. Наш мозг не умеет быть случайным. Колесо с физически",
-      "find": "это指尖无意中 смещён в сторону",
-      "replace": "это выбор, невольно смещённый в сторону",
-      "currentTitle": "Колесо выбора — когда не знаешь, что выбрать",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "oldFragment": "**Экономия на рекламе** — хорошие органические позиции уменьшают need в PPC - **Доверие** — пользователи доверяют сайтам в топе #",
-      "find": "уменьшают need в PPC",
-      "replace": "уменьшают потребность в PPC",
-      "currentTitle": "SEO аудит сайта бесплатно — проверить сайт на ошибки и улучшить позиции",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 39,
-      "slug": "seo-audit-besplatno",
-      "url": "https://qsen.ru/ru/articles/seo-audit-besplatno/",
-      "field": "content",
-      "oldFragment": "асто делать аудит? Рекомендуется раз в 3-6 месяцев или после major изменений. [Провести SEO аудит сайта →](/ru/seo-audit)",
-      "find": "после major изменений",
-      "replace": "после крупных изменений",
-      "currentTitle": "SEO аудит сайта бесплатно — проверить сайт на ошибки и улучшить позиции",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 31,
-      "slug": "seo-audit-pro-instrument",
-      "url": "https://qsen.ru/ru/articles/seo-audit-pro-instrument/",
-      "field": "content",
-      "oldFragment": "ак часто делать аудит? Рекомендуется раз в квартал или после major изменений на сайте. --- [Открыть SEO Audit Pro →](/ru/seo-audi",
-      "find": "после major изменений",
-      "replace": "после крупных изменений",
-      "currentTitle": "SEO Audit Pro — профессиональный анализ сайта для поисковой оптимизации",
-      "confidence": "high"
-    },
-    {
-      "mode": "replace",
-      "id": 29,
-      "slug": "kalkulyator-slozhnykh-protsentov",
-      "url": "https://qsen.ru/ru/articles/kalkulyator-slozhnykh-protsentov/",
-      "field": "content",
-      "oldFragment": "работает по принципу сложного процента - **Кредиты** —同样的 механизм работает против вас, увеличивая долг - **Пенсионные на",
-      "find": "同样的 механизм",
-      "replace": "тот же механизм",
-      "currentTitle": "Калькулятор сложных процентов онлайн — рассчитать доходность инвестиций",
-      "confidence": "high"
-    },
-    {
-      "mode": "set-field",
-      "id": 35,
-      "slug": "sokraschitel-ssylok-onlayn",
-      "url": "https://qsen.ru/ru/articles/sokraschitel-ssylok-onlayn/",
-      "field": "content",
-      "oldFragment": "Р»РєР° РіРµРЅРµСЂРёСЂСѓРµС‚ С‡РёСЃС‚С‹Р№ QR-РєРѕРґ - **РџР°СЂС‚РЅС‘СЂСЃРєРёРµ РїСЂРѕРіСЂР°РјРјС‹** вЂ” РѕС‚СЃР»Р",
-      "newFragment": "# Сокращатель ссылок онлайн — короткие URL бесплатно и без регистрации [Открыть сокращатель →](/ru/url-shortener) Длинные ссылки выглядят плохо в соцсетях, их",
-      "sourceFile": "BD\\content-staging\\url-shortener.json",
-      "currentTitle": "Сокращатель ссылок онлайн — короткие URL бесплатно и без регистрации",
-      "confidence": "high",
-      "valueLength": 2259
-    }
-  ]
+  "repairPlan": []
 }
