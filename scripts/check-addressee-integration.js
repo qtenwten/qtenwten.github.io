@@ -315,6 +315,33 @@ for (const lang of ['ru', 'en']) {
   }
 }
 
+// 10d. No stale DOCX FAQ phrases in addressee section
+console.log('\n10d. No stale DOCX FAQ phrases in addressee section')
+
+const staleDocxPhrases = [
+  { lang: 'ru', phrases: ['docx не включён', 'docx экспорт не включён', 'docx экспорт сейчас не включён', 'docx экспорт — в разработке', 'docx coming soon', 'docx экспорт в разработке'] },
+  { lang: 'en', phrases: ['docx export is not enabled', 'docx export is not included', 'docx not enabled', 'docx coming soon', 'docx will be available'] },
+]
+
+for (const { lang, phrases } of staleDocxPhrases) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const addresseeSection = locale.addresseeGenerator || {}
+  const allValues = JSON.stringify(addresseeSection).toLowerCase()
+  for (const phrase of phrases) {
+    check(!allValues.includes(phrase.toLowerCase()), `${lang}: addresseeGenerator section does not contain stale DOCX phrase "${phrase}"`)
+  }
+}
+
+const addrSectionRouteSeo = routeSeoContent.match(/\/generator-adresata[\s\S]*?(?=\n  ['"]\/|,\s*['"]\/|$)/)
+if (addrSectionRouteSeo) {
+  const addrSeoText = addrSectionRouteSeo[0].toLowerCase()
+  for (const { phrases, lang } of staleDocxPhrases) {
+    for (const phrase of phrases) {
+      check(!addrSeoText.includes(phrase.toLowerCase()), `routeSeo: addressee section (${lang}) does not contain stale DOCX phrase "${phrase}"`)
+    }
+  }
+}
+
 // 11. Sitemap (optional check after build)
 console.log('\n11. Sitemap')
 const distSitemapPath = path.join(rootDir, 'dist/sitemap.xml')
