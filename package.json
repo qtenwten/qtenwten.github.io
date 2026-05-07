@@ -17,6 +17,7 @@
     "verify:articles-html": "node scripts/verify-articles-html.js",
     "verify:article-json": "node scripts/verify-article-json.js",
     "verify:production-articles": "node scripts/verify-production-articles.cjs",
+    "verify:ru-language": "node scripts/audit-ru-article-language.js --strict",
     "generate:pages": "node scripts/generate-pages.js"
   },
   "dependencies": {
