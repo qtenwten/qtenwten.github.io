@@ -33,6 +33,9 @@ const EXAMPLES = [
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderPosition: 'менеджер по продажам',
+    senderOrganization: 'ООО «Альфа»',
   },
   {
     key: 'application',
@@ -43,6 +46,9 @@ const EXAMPLES = [
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
+    senderFullName: 'Сидоров Пётр Алексеевич',
+    senderPosition: 'специалист',
+    senderOrganization: 'ООО «Вектор»',
   },
   {
     key: 'neutral',
@@ -53,6 +59,9 @@ const EXAMPLES = [
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_COMMA,
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    senderFullName: '',
+    senderPosition: '',
+    senderOrganization: '',
   },
 ]
 
@@ -186,7 +195,7 @@ function parseBulkInput(text) {
 }
 
 function buildBulkCsvContent(results) {
-  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
+  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
   const rows = [header]
 
   for (const r of results) {
@@ -199,6 +208,9 @@ function buildBulkCsvContent(results) {
       r.input.greetingMode || '',
       r.input.punctuation || '',
       r.input.documentTemplate || '',
+      r.input.senderFullName || '',
+      r.input.senderPosition || '',
+      r.input.senderOrganization || '',
       blocks.to || '',
       blocks.from || '',
       blocks.greeting || '',
@@ -225,6 +237,9 @@ function AddresseeGenerator() {
     greetingMode: GREETING_NAME_PATRONYMIC,
     punctuation: PUNCTUATION_EXCLAMATION,
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    senderFullName: '',
+    senderPosition: '',
+    senderOrganization: '',
   })
   const [result, setResult] = useState(null)
   const [activeExampleKey, setActiveExampleKey] = useState('')
@@ -285,6 +300,9 @@ function AddresseeGenerator() {
       greetingMode: GREETING_NAME_PATRONYMIC,
       punctuation: PUNCTUATION_EXCLAMATION,
       documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+      senderFullName: '',
+      senderPosition: '',
+      senderOrganization: '',
     })
     setResult(null)
     setActiveExampleKey('')
@@ -342,17 +360,28 @@ function AddresseeGenerator() {
 
   const handleLoadExample = useCallback((example) => {
     setForm({
-      fullName: example.fullName,
-      position: example.position,
-      organization: example.organization,
-      gender: example.gender,
-      greetingMode: example.greetingMode,
-      punctuation: example.punctuation,
+      fullName: example.fullName || '',
+      position: example.position || '',
+      organization: example.organization || '',
+      gender: example.gender || GENDER_UNKNOWN,
+      greetingMode: example.greetingMode || GREETING_NAME_PATRONYMIC,
+      punctuation: example.punctuation || PUNCTUATION_EXCLAMATION,
       documentTemplate: example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+      senderFullName: example.senderFullName || '',
+      senderPosition: example.senderPosition || '',
+      senderOrganization: example.senderOrganization || '',
     })
     const formatted = formatAddressee({
-      ...example,
+      fullName: example.fullName || '',
+      position: example.position || '',
+      organization: example.organization || '',
+      gender: example.gender || GENDER_UNKNOWN,
+      greetingMode: example.greetingMode || GREETING_NAME_PATRONYMIC,
+      punctuation: example.punctuation || PUNCTUATION_EXCLAMATION,
       documentTemplate: example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+      senderFullName: example.senderFullName || '',
+      senderPosition: example.senderPosition || '',
+      senderOrganization: example.senderOrganization || '',
     })
     setResult(formatted)
     setActiveExampleKey(example.key)
@@ -368,7 +397,7 @@ function AddresseeGenerator() {
   const handleExportCsv = useCallback(() => {
     if (!result) return
     const blocks = result.blocks || {}
-    const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
+    const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
     const row = [
       form.fullName,
       form.position,
@@ -377,6 +406,9 @@ function AddresseeGenerator() {
       form.greetingMode,
       form.punctuation,
       form.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+      form.senderFullName || '',
+      form.senderPosition || '',
+      form.senderOrganization || '',
       blocks.to || '',
       blocks.from || '',
       blocks.greeting || '',
@@ -677,6 +709,61 @@ function AddresseeGenerator() {
                   aria-describedby="addrOrganizationHint"
                 />
                 <p className="addr-gen-hint" id="addrOrganizationHint">{t('addresseeGenerator.hints.organization')}</p>
+              </div>
+            </section>
+
+            <section className="addr-gen-form-section" aria-labelledby="addrSenderTitle">
+              <div className="addr-gen-section-heading">
+                <Icon name="person_outline" size={18} />
+                <h3 id="addrSenderTitle">{t('addresseeGenerator.sections.sender')}</h3>
+              </div>
+
+              <div className="addr-gen-field">
+                <label className="addr-gen-label" htmlFor="addrSenderFullName">
+                  {t('addresseeGenerator.fields.senderFullName')}
+                </label>
+                <input
+                  id="addrSenderFullName"
+                  className="addr-gen-input"
+                  type="text"
+                  value={form.senderFullName}
+                  onChange={(e) => handleFieldChange('senderFullName', e.target.value)}
+                  placeholder={t('addresseeGenerator.placeholders.senderFullName')}
+                  aria-describedby="addrSenderFullNameHint"
+                />
+                <p className="addr-gen-hint" id="addrSenderFullNameHint">{t('addresseeGenerator.hints.sender')}</p>
+              </div>
+
+              <div className="addr-gen-field">
+                <label className="addr-gen-label" htmlFor="addrSenderPosition">
+                  {t('addresseeGenerator.fields.senderPosition')}
+                </label>
+                <input
+                  id="addrSenderPosition"
+                  className="addr-gen-input"
+                  type="text"
+                  value={form.senderPosition}
+                  onChange={(e) => handleFieldChange('senderPosition', e.target.value)}
+                  placeholder={t('addresseeGenerator.placeholders.senderPosition')}
+                  aria-describedby="addrSenderPositionHint"
+                />
+                <p className="addr-gen-hint" id="addrSenderPositionHint">{t('addresseeGenerator.hints.sender')}</p>
+              </div>
+
+              <div className="addr-gen-field">
+                <label className="addr-gen-label" htmlFor="addrSenderOrganization">
+                  {t('addresseeGenerator.fields.senderOrganization')}
+                </label>
+                <input
+                  id="addrSenderOrganization"
+                  className="addr-gen-input"
+                  type="text"
+                  value={form.senderOrganization}
+                  onChange={(e) => handleFieldChange('senderOrganization', e.target.value)}
+                  placeholder={t('addresseeGenerator.placeholders.senderOrganization')}
+                  aria-describedby="addrSenderOrganizationHint"
+                />
+                <p className="addr-gen-hint" id="addrSenderOrganizationHint">{t('addresseeGenerator.hints.sender')}</p>
               </div>
             </section>
 

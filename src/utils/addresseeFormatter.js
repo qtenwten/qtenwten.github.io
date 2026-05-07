@@ -253,20 +253,20 @@ function buildToBlock(organization, position, fullName, gender) {
   };
 }
 
-function buildFromBlock(fullName, position, organization) {
+function buildFromBlock(senderFullName, senderPosition, senderOrganization) {
   const lines = [];
   const warnings = [];
 
-  if (fullName) {
-    lines.push(`от ${fullName}`);
+  if (senderFullName) {
+    lines.push(`от ${senderFullName}`);
   }
 
-  if (position) {
-    lines.push(position);
+  if (senderPosition) {
+    lines.push(senderPosition);
   }
 
-  if (organization) {
-    lines.push(organization);
+  if (senderOrganization) {
+    lines.push(senderOrganization);
   }
 
   return {
@@ -397,6 +397,9 @@ export function formatAddressee(input) {
     greetingMode = GREETING_NAME_PATRONYMIC,
     punctuation = PUNCTUATION_EXCLAMATION,
     documentTemplate = DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    senderFullName = '',
+    senderPosition = '',
+    senderOrganization = '',
   } = input || {};
 
   const warnings = [];
@@ -477,7 +480,7 @@ export function formatAddressee(input) {
   const toResult = buildToBlock(organization, position, fullName, gender);
   warnings.push(...toResult.warnings);
 
-  const fromResult = buildFromBlock(fullName, position, organization);
+  const fromResult = buildFromBlock(senderFullName, senderPosition, senderOrganization);
   warnings.push(...fromResult.warnings);
 
   let greeting = '';
@@ -500,6 +503,9 @@ export function formatAddressee(input) {
     fullName,
     position,
     organization,
+    senderFullName,
+    senderPosition,
+    senderOrganization,
   });
 
   const SENSITIVE_TEMPLATES = [

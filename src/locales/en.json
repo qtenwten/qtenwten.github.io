@@ -1460,6 +1460,7 @@
     "formTitle": "Recipient Data",
     "formDescription": "Fill in the recipient details and choose the salutation format. The result appears on the right.",
     "recipientTitle": "Recipient details",
+    "senderTitle": "Sender details",
     "settingsTitle": "Salutation settings",
     "resultKicker": "Ready to copy",
     "resultTitle": "Document block",
@@ -1485,17 +1486,24 @@
       "organization": "Organization",
       "gender": "Gender",
       "greetingMode": "Greeting Format",
-      "punctuation": "Punctuation after Greeting"
+      "punctuation": "Punctuation after Greeting",
+      "senderFullName": "Sender Full Name",
+      "senderPosition": "Sender Position",
+      "senderOrganization": "Sender Organization"
     },
     "placeholders": {
       "fullName": "John Smith",
       "position": "General Director",
-      "organization": "Company LLC"
+      "organization": "Company LLC",
+      "senderFullName": "Jane Doe",
+      "senderPosition": "Sales Manager",
+      "senderOrganization": "Alpha LLC"
     },
     "hints": {
       "fullName": "Use the full surname, first name and patronymic when available.",
       "position": "For example: chief accountant, sales director, specialist.",
-      "organization": "Enter the legal entity or department exactly as it should appear in the document."
+      "organization": "Enter the legal entity or department exactly as it should appear in the document.",
+      "sender": "Optional. These fields will appear in the \"From\" block."
     },
     "gender": {
       "male": "Male",

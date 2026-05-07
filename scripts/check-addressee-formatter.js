@@ -50,7 +50,7 @@ function run() {
   casesA.forEach((input, i) => {
     const r = formatAddressee(input)
     assert(r.blocks.to, `A${i + 1}: blocks.to exists`)
-    assert(r.blocks.from, `A${i + 1}: blocks.from exists`)
+    assert(typeof r.blocks.from === 'string', `A${i + 1}: blocks.from is a string`)
     assert(r.blocks.greeting, `A${i + 1}: blocks.greeting exists`)
     assert(r.blocks.letter, `A${i + 1}: blocks.letter exists`)
     assert(typeof r.confidence === 'number' && r.confidence >= 0 && r.confidence <= 1, `A${i + 1}: confidence in range 0-1`)
@@ -484,6 +484,47 @@ function run() {
   const mixedHasWarning = rMixed.warnings.some((w) => w.code === WARNING_CODES.LATIN_NAME)
   assert(mixedHasWarning, 'T6: mixed Cyrillic/Latin gives LATIN_NAME warning')
   assert(rMixed.confidence < 0.95, 'T6: mixed name confidence is not high')
+
+  // U. Sender fields regression
+  console.log('\nU. Sender fields regression')
+
+  const rWithSender = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    position: 'генеральный директор',
+    organization: 'ООО «Ромашка»',
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderPosition: 'менеджер по продажам',
+    senderOrganization: 'ООО «Альфа»',
+    gender: GENDER_MALE,
+    documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+  })
+  assert(rWithSender.blocks.from.includes('Петрова'), 'U1: from block contains sender full name')
+  assert(rWithSender.blocks.from.includes('менеджер'), 'U2: from block contains sender position')
+  assert(rWithSender.blocks.from.includes('Альфа'), 'U3: from block contains sender organization')
+
+  const rWithSenderApp = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    position: 'генеральный директор',
+    organization: 'ООО «Ромашка»',
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderPosition: 'менеджер по продажам',
+    senderOrganization: 'ООО «Альфа»',
+    gender: GENDER_MALE,
+    documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
+  })
+  assert(rWithSenderApp.blocks.documentText.includes('Петрова'), 'U4: application documentText contains sender data')
+
+  const rEmptySender = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    position: 'генеральный директор',
+    organization: 'ООО «Ромашка»',
+    senderFullName: '',
+    senderPosition: '',
+    senderOrganization: '',
+    gender: GENDER_MALE,
+  })
+  assert(rEmptySender.blocks.from === '', 'U5: empty sender fields produce empty from block')
+  assert(typeof rEmptySender.blocks.from === 'string', 'U5: from block is string (even if empty)')
 
   // Summary
   console.log('\n=== Results ===')

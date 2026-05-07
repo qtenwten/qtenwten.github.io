@@ -116,6 +116,13 @@ for (const lang of ['ru', 'en']) {
     'addresseeGenerator.fields.gender',
     'addresseeGenerator.fields.greetingMode',
     'addresseeGenerator.fields.punctuation',
+    'addresseeGenerator.fields.senderFullName',
+    'addresseeGenerator.fields.senderPosition',
+    'addresseeGenerator.fields.senderOrganization',
+    'addresseeGenerator.placeholders.senderFullName',
+    'addresseeGenerator.placeholders.senderPosition',
+    'addresseeGenerator.placeholders.senderOrganization',
+    'addresseeGenerator.hints.sender',
     'addresseeGenerator.buttons.generate',
     'addresseeGenerator.buttons.clear',
     'addresseeGenerator.buttons.copyAll',
@@ -245,8 +252,7 @@ check(agContent.includes('escapeHtml'), 'has escapeHtml')
 check(agContent.includes('addressee-generator-document.txt'), 'has TXT filename')
 check(agContent.includes('addressee-generator-document.html'), 'has HTML filename')
 check(agContent.includes('\\uFEFF') || agContent.includes('\\\\uFEFF'), 'CSV has UTF-8 BOM')
-check(
-  agContent.includes("'fullName'") &&
+check(agContent.includes("'fullName'") &&
   agContent.includes("'position'") &&
   agContent.includes("'organization'") &&
   agContent.includes("'to'") &&
@@ -256,6 +262,17 @@ check(
   agContent.includes("'documentText'"),
   'CSV header array contains expected fields including documentText'
 )
+check(
+  agContent.includes("'senderFullName'") &&
+  agContent.includes("'senderPosition'") &&
+  agContent.includes("'senderOrganization'"),
+  'CSV header array contains sender fields'
+)
+check(agContent.includes('addrSenderTitle'), 'has addrSenderTitle element')
+check(agContent.includes('addrSenderFullName'), 'has addrSenderFullName element')
+check(agContent.includes('addrSenderPosition'), 'has addrSenderPosition element')
+check(agContent.includes('addrSenderOrganization'), 'has addrSenderOrganization element')
+check(agContent.includes('addresseeGenerator.sections.sender'), 'has JSX section using sections.sender i18n')
 check(!agContent.includes('console.log'), 'no console.log statements')
 check(agContent.includes('<form'), 'has <form> element')
 check(agContent.includes('onSubmit={handleSubmit}') || agContent.includes('onSubmit={ handleSubmit }'), 'has onSubmit handler')
