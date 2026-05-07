@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 const reportPath = path.join(repoRoot, 'reports', 'ru-article-language-audit.json')
+const repairPlanPath = path.join(repoRoot, 'BD', 'content-staging', 'repairs', 'ru-language-cleanup-2026-05-07.json')
 const envPath = path.join(repoRoot, 'BD', 'article-publisher.env')
 const args = new Set(process.argv.slice(2))
 const dryRun = args.has('--dry-run')
@@ -98,6 +99,16 @@ function assertSafeRuText(article) {
   }
 }
 
+function loadRepairs() {
+  if (fs.existsSync(repairPlanPath)) {
+    const payload = JSON.parse(fs.readFileSync(repairPlanPath, 'utf8'))
+    return Array.isArray(payload.repairs) ? payload.repairs : []
+  }
+
+  const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+  return Array.isArray(report.repairPlan) ? report.repairPlan : []
+}
+
 async function main() {
   if (!fs.existsSync(reportPath)) {
     throw new Error(`Missing report: ${path.relative(repoRoot, reportPath)}. Run scripts/audit-ru-article-language.js first.`)
@@ -111,8 +122,7 @@ async function main() {
     throw new Error('Missing ARTICLE_API_BASE_URL or ARTICLE_ADMIN_TOKEN in env file')
   }
 
-  const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'))
-  const repairs = Array.isArray(report.repairPlan) ? report.repairPlan : []
+  const repairs = loadRepairs()
 
   if (repairs.length === 0) {
     console.log('No high-confidence repairs found in report.')

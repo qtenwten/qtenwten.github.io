@@ -418,6 +418,16 @@ function buildRepairPlan(articles, issues, localArticles = []) {
   return [...replacements, ...restoredFields]
 }
 
+function sanitizeRepairForReport(repair) {
+  if (repair.mode !== 'set-field') return repair
+
+  const { value, ...safeRepair } = repair
+  return {
+    ...safeRepair,
+    valueLength: typeof value === 'string' ? value.length : 0,
+  }
+}
+
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\n', 'utf8')
@@ -483,7 +493,7 @@ async function main() {
     },
     articles: articleReports,
     issues: allIssues,
-    repairPlan,
+    repairPlan: repairPlan.map(sanitizeRepairForReport),
   }
 
   writeJson(reportPath, report)
