@@ -1,0 +1,833 @@
+{
+  "planVersion": "1.0",
+  "created": "2026-05-07",
+  "totalCurrentArticles": 72,
+  "totalPlannedArticles": 40,
+  "strategy": {
+    "goal": "Systematic article clusters that funnel users from informational queries into tool usage and future paid features",
+    "principles": [
+      "Each cluster targets one tool with 2-8 articles at different funnel stages",
+      "BOFU articles: specific real-world document scenarios with CTA to tool",
+      "MOFU articles: how-to guides that naturally lead to the tool",
+      "TOFU articles: awareness/education that builds topical authority",
+      "Every article ends with a clear CTA to the primary tool",
+      "All content is human-first, not keyword-first"
+    ]
+  },
+  "currentArticleInventory": {
+    "generator-adresata": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "vat-calculator": { "ru": 2, "en": 2, "total": 4, "status": "thin" },
+    "number-to-words": { "ru": 5, "en": 5, "total": 10, "status": "good" },
+    "qr-code-generator": { "ru": 4, "en": 4, "total": 8, "status": "medium" },
+    "password-generator": { "ru": 2, "en": 2, "total": 4, "status": "medium" },
+    "random-number": { "ru": 6, "en": 6, "total": 12, "status": "good" },
+    "calculator": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "date-difference": { "ru": 2, "en": 2, "total": 4, "status": "medium" },
+    "compound-interest": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "seo-audit": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "meta-tags-generator": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "seo-audit-pro": { "ru": 1, "en": 1, "total": 2, "status": "thin" },
+    "url-shortener": { "ru": 1, "en": 1, "total": 2, "status": "thin" }
+  },
+  "clusters": [
+    {
+      "toolSlug": "generator-adresata",
+      "priority": "P0",
+      "monetizationPotential": "high",
+      "monetizationNotes": "Business document workflow — future paid DOCX export, bulk processing, API",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair exists, but this tool has the highest business intent. Queries like 'как написать кому в заявлении' have clear BOFU intent — user needs the exact output this tool produces. The existing article covers the general case; the gaps are specific document types.",
+      "competitionLevel": "low-medium",
+      "searchVolumeEstimate": "medium",
+      "ru": {
+        "existingArticles": ["generator-adresata-kak-pravilno-ukazat-adresata"],
+        "recommendedArticles": [
+          {
+            "title": "Как написать «Кому» в заявлении — образец и правила",
+            "slug": "kak-napisat-komu-v-zayavlenii-obrazets",
+            "intent": "BOFU",
+            "targetQuery": "как написать кому в заявлении образец",
+            "targetQueryVolume": "high",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Создать блок «Кому»",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Что писать в поле «Кому» заявления. Должность, название организации, ФИО — как оформить. Типичные ошибки. Образец правильного заполнения. Кнопка CTA → генератор адресата."
+          },
+          {
+            "title": "Как оформить «От кого» в заявлении — пошаговая инструкция",
+            "slug": "kak-oformit-ot-kogo-v-zayavlenii",
+            "intent": "BOFU",
+            "targetQuery": "от кого в заявлении как написать",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Оформить «От кого»",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Структура строки «От кого». Должность, ФИО, адрес — в каком порядке. Образец заполнения для разных ситуаций. Кнопка CTA → генератор."
+          },
+          {
+            "title": "Как правильно обратиться к директору в деловом письме",
+            "slug": "kak-obratitsya-k-direktoru-v-delevom-pisme",
+            "intent": "BOFU",
+            "targetQuery": "как обратиться к директору в письме уважаемый",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Создать обращение",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Универсальные формулы обращения: «Уважаемый Иван Иванович» vs «Уважаемый Генеральный директор». Когда писать ФИО, когда должность. Кнопка CTA → генератор."
+          },
+          {
+            "title": "Шапка заявления — как оформить правильно",
+            "slug": "shapka-zayavleniya-kak-oformat-pravilno",
+            "intent": "BOFU",
+            "targetQuery": "шапка заявления образец как оформить",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Создать шапку заявления",
+            "status": "planned",
+            "priority": 4,
+            "contentOutline": "Анатомия шапки заявления: кому, от кого, дата. Как расположить, какие данные обязательны. Готовый шаблон. Кнопка CTA → генератор адресата."
+          },
+          {
+            "title": "Как написать жалобу с правильным адресатом",
+            "slug": "kak-napisat-zhalobu-s-pravilnym-adresatom",
+            "intent": "BOFU",
+            "targetQuery": "как написать жалобу кому адресат",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Оформить адресат жалобы",
+            "status": "planned",
+            "priority": 5,
+            "contentOutline": "Кому направлять жалобу — руководителю, в прокуратуру, в суд. Как правильно заполнить блок «Кому». Кнопка CTA → генератор."
+          },
+          {
+            "title": "Как подготовить список адресатов из CSV для массовой рассылки",
+            "slug": "spisok-adresatov-iz-csv-dlya-rassylki",
+            "intent": "MOFU",
+            "targetQuery": "список адресатов для рассылки оформить",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Массовая обработка адресатов",
+            "status": "planned",
+            "priority": 6,
+            "contentOutline": "Как подготовить CSV с ФИО и должностями для массовой обработки. Какие поля нужны. Как загрузить в генератор. Кнопка CTA → массовая обработка."
+          },
+          {
+            "title": "Служебная записка — как оформить блок «Кому» и «От кого»",
+            "slug": "sluzhebnaya-zapiska-kak-oformat-komu-ot-kogo",
+            "intent": "BOFU",
+            "targetQuery": "служебная записка кому от кого образец",
+            "cta": "/ru/generator-adresata/",
+            "ctaText": "Создать блок служебной записки",
+            "status": "planned",
+            "priority": 7,
+            "contentOutline": "Отличия служебной записки от заявления. Как заполнить «Кому» и «От кого» в служебной записке. Кнопка CTA → генератор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["how-to-write-addressee-in-business-letter"],
+        "recommendedArticles": [
+          {
+            "title": "How to Address a Letter to a Director — Formal Business Letter Guide",
+            "slug": "how-to-address-a-letter-to-a-director",
+            "intent": "BOFU",
+            "targetQuery": "how to address a letter to a director",
+            "cta": "/en/generator-adresata/",
+            "ctaText": "Generate formal addressee block",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Formal salutation options for different director titles. When to use 'Dear Director Smith' vs 'Dear Mr. Smith'. CTA → generator."
+          },
+          {
+            "title": "How to Fill Out the 'From' Line in a Business Letter",
+            "slug": "how-to-fill-out-from-line-in-business-letter",
+            "intent": "BOFU",
+            "targetQuery": "how to fill out from line in business letter",
+            "cta": "/en/generator-adresata/",
+            "ctaText": "Generate From block",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Your position, company, address — proper order and formatting. CTA → generator."
+          },
+          {
+            "title": "Business Letter Format — Complete Header Block Guide",
+            "slug": "business-letter-header-block-format",
+            "intent": "BOFU",
+            "targetQuery": "business letter header block format",
+            "cta": "/en/generator-adresata/",
+            "ctaText": "Create letter header block",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Anatomy of a business letter header: To, From, Date. Layout and order. CTA → generator."
+          },
+          {
+            "title": "How to Write a Complaint Letter with Correct Addressee",
+            "slug": "how-to-write-complaint-letter-addressee",
+            "intent": "BOFU",
+            "targetQuery": "how to write a complaint letter addressee",
+            "cta": "/en/generator-adresata/",
+            "ctaText": "Format complaint letter addressee",
+            "status": "planned",
+            "priority": 4,
+            "contentOutline": "Who to address a complaint to. Correct formal titles. CTA → generator."
+          },
+          {
+            "title": "Internal Memo Format — To and From Lines",
+            "slug": "internal-memo-to-from-format",
+            "intent": "BOFU",
+            "targetQuery": "internal memo to from format",
+            "cta": "/en/generator-adresata/",
+            "ctaText": "Generate memo header",
+            "status": "planned",
+            "priority": 5,
+            "contentOutline": "Memo header structure vs business letter. When to use each. CTA → generator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "vat-calculator",
+      "priority": "P0",
+      "monetizationPotential": "high",
+      "monetizationNotes": "Bookkeeping, accounting, freelancer workflows — potential paid invoice generation",
+      "currentArticles": 2,
+      "rationale": "Only 2 article pairs. VAT queries like 'выделить НДС из суммы' have extreme BOFU intent — users need precise calculations for real documents. The existing articles cover the calculator and one comparison article; the gaps are specific invoice scenarios and error prevention.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "high",
+      "ru": {
+        "existingArticles": ["kak-vydelit-nds-iz-summy-i-nachislit-sverhu", "sravnit-tseny-postavschikov-s-nds-i-bez", "proverit-nds-v-schete-akte-nakladnoy", "tsena-s-nds-i-bez-nds-v-prays-liste"],
+        "recommendedArticles": [
+          {
+            "title": "Калькулятор НДС онлайн — выделить и начислить НДС 20% и 10%",
+            "slug": "kalkulyator-nds-onlayn-vydelit-i-nachislit",
+            "intent": "BOFU",
+            "targetQuery": "калькулятор ндс онлайн выделить начислить",
+            "cta": "/ru/vat-calculator/",
+            "ctaText": "Рассчитать НДС",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Перенаправление на инструмент. Краткое описание возможностей: выделить из суммы с НДС, начислить сверху, любые ставки. CTA в начало и конец."
+          },
+          {
+            "title": "НДС 20% и 10% — в чём разница и как рассчитать",
+            "slug": "nds-20-i-10-raznitsa-i-raschet",
+            "intent": "MOFU",
+            "targetQuery": "ндс 20% и 10% разница как рассчитать",
+            "cta": "/ru/vat-calculator/",
+            "ctaText": "Рассчитать НДС",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Какие товары/услуги облагаются по 10%. Таблица примеров. Калькулятор для обоих случаев. CTA → инструмент."
+          },
+          {
+            "title": "Ошибки при расчёте НДС — как проверить и не ошибиться",
+            "slug": "oshibki-pri-raschete-nds-kak-proverit",
+            "intent": "BOFU",
+            "targetQuery": "ошибки при расчете ндс как проверить",
+            "cta": "/ru/vat-calculator/",
+            "ctaText": "Проверить расчёт НДС",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Топ-5 ошибок: путаница выделить/начислить, неправильная ставка, округление, ошибки входного НДС. Как проверить калькулятором. CTA → инструмент."
+          },
+          {
+            "title": "Как проверить НДС в счёте-фактуре",
+            "slug": "kak-proverit-nds-v-schete-fakture",
+            "intent": "BOFU",
+            "targetQuery": "как проверить ндс в счете фактуре",
+            "cta": "/ru/vat-calculator/",
+            "ctaText": "Проверить НДС в счёте",
+            "status": "planned",
+            "priority": 4,
+            "contentOutline": "Пошаговая проверка: выделить НДС из суммы и сравнить с суммой в документе. Формула сверки. Кнопка CTA → калькулятор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["vat-calculator-online", "net-and-gross-prices-in-vat-price-list", "check-vat-in-invoice-receipt-document", "compare-supplier-prices-with-and-without-vat", "extract-vat-and-add-vat-without-mistakes"],
+        "recommendedArticles": [
+          {
+            "title": "VAT 20% vs 10% — What's the Difference and How to Calculate",
+            "slug": "vat-20-vs-10-percent-difference-calculate",
+            "intent": "MOFU",
+            "targetQuery": "vat 20 vs 10 percent difference",
+            "cta": "/en/vat-calculator/",
+            "ctaText": "Calculate VAT",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Which products use 10% vs 20%. Example table. Calculator for both. CTA → tool."
+          },
+          {
+            "title": "Common VAT Calculation Mistakes and How to Avoid Them",
+            "slug": "common-vat-calculation-mistakes",
+            "intent": "BOFU",
+            "targetQuery": "common vat calculation mistakes",
+            "cta": "/en/vat-calculator/",
+            "ctaText": "Verify VAT calculation",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Top 5 mistakes: extract vs add confusion, wrong rate, rounding errors. How to verify. CTA → calculator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "number-to-words",
+      "priority": "P1",
+      "monetizationPotential": "medium-high",
+      "monetizationNotes": "Accounting/document workflows — potential integration with invoicing tools",
+      "currentArticles": 5,
+      "rationale": "Already has 5 article pairs covering payment orders, invoices, contracts, decimals. The gaps are:kopeyki in different formats, and a dedicated article for the number-to-words tool (as a standalone page rather than sub-topic). Adding 2 more RU articles would complete the cluster.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "high",
+      "ru": {
+        "existingArticles": ["chislo-propisyu-onlayn-besplatno", "summa-propisyu-dlya-platezhnogo-porucheniya", "summa-propisyu-s-kopeykami-i-zapyatoy", "summa-propisyu-s-nds-v-dogovore-i-schete", "summa-propisyu-dlya-scheta-dogovora-i-akta"],
+        "recommendedArticles": [
+          {
+            "title": "Сумма прописью с копейками — как правильно написать",
+            "slug": "summa-propisyu-s-kopeykami-pravilno",
+            "intent": "BOFU",
+            "targetQuery": "сумма прописью с копейками как писать",
+            "cta": "/ru/number-to-words/",
+            "ctaText": "Перевести сумму с копейками",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Правила написания копеек прописью: цифрами или словами. Пример: «123 рубля 45 копеек». Когда нужна запятая. Кнопка CTA → калькулятор."
+          },
+          {
+            "title": "Как написать рубли и копейки прописью в бухгалтерских документах",
+            "slug": "rubli-i-kopeyki-propisyu-v-bukhgalterskikh-dokumentakh",
+            "intent": "BOFU",
+            "targetQuery": "рубли и копейки прописью в документах",
+            "cta": "/ru/number-to-words/",
+            "ctaText": "Сумма прописью для документов",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Требования к записи сумм в чеках, накладных, актах. Копейки — цифрами или прописью. Образцы записей. CTA → калькулятор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["number-to-words-online-converter", "amount-in-words-for-payment-order", "amount-in-words-with-cents-and-decimals", "amount-in-words-with-vat-clause", "amount-in-words-for-invoices-contracts-and-payment-documents"],
+        "recommendedArticles": [
+          {
+            "title": "Amount in Words with Cents — Correct Format for Checks and Invoices",
+            "slug": "amount-in-words-with-cents-format",
+            "intent": "BOFU",
+            "targetQuery": "amount in words with cents format",
+            "cta": "/en/number-to-words/",
+            "ctaText": "Convert amount with cents",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Correct format: '123 dollars and 45/100'. When to use 'cents' vs fraction. CTA → tool."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "qr-code-generator",
+      "priority": "P1",
+      "monetizationPotential": "medium-high",
+      "monetizationNotes": "Small business — future paid dynamic QR, analytics, branded QR",
+      "currentArticles": 4,
+      "rationale": "Already covers business card, menu, WiFi, tips/gifts. Gaps: payment QR, event QR, print verification, and the generic tool page. The generic tool article is critical for branded queries.",
+      "competitionLevel": "high",
+      "searchVolumeEstimate": "very high",
+      "ru": {
+        "existingArticles": ["qr-kod-na-vizitke-dlya-kontaktov", "qr-kod-dlya-menyu-listovki-pechati", "qr-kod-dlya-gostevogo-wifi", "kak-sdelat-qr-kod-dlya-chaevyh-podarka-i-lichnoy-ssylki", "qr-code-generator"],
+        "recommendedArticles": [
+          {
+            "title": "QR-код для оплаты — как создать и использовать",
+            "slug": "qr-kod-dlya-oplaty-kak-sozdat-ispolzovat",
+            "intent": "BOFU",
+            "targetQuery": "qr код для оплаты создать",
+            "cta": "/ru/qr-code-generator/",
+            "ctaText": "Создать QR-код",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "QR для СБП, ЮMoney, PayPal. Чем отличается от кода для ссылок. Как сгенерировать. Кнопка CTA → генератор."
+          },
+          {
+            "title": "QR-код для мероприятия — программа, спикеры, место",
+            "slug": "qr-kod-dlya-meropriyatiya-programma-spikery",
+            "intent": "MOFU",
+            "targetQuery": "qr код для мероприятия как сделать",
+            "cta": "/ru/qr-code-generator/",
+            "ctaText": "Создать QR для мероприятия",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Какие данные поместить в QR: программа, карта, регистрация. Печатный QR — на что обратить внимание. CTA → генератор."
+          },
+          {
+            "title": "Как проверить QR-код перед печатью — 5 критериев",
+            "slug": "kak-proverit-qr-kod-pered-pechatyu",
+            "intent": "MOFU",
+            "targetQuery": "как проверить qr код перед печатью",
+            "cta": "/ru/qr-code-generator/",
+            "ctaText": "Проверить QR",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Размер, контраст, запас ошибок, тест сканером, тест с телефона. Кнопка CTA → генератор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["qr-code-on-business-card-contact", "qr-code-for-menu-flyer-print", "qr-code-for-guest-wifi", "how-to-create-a-qr-code-for-tips-gifts-and-surprise-notes", "qr-code-generator-online"],
+        "recommendedArticles": [
+          {
+            "title": "QR Code for Payments — How to Create and Use",
+            "slug": "qr-code-for-payment-how-to-create",
+            "intent": "BOFU",
+            "targetQuery": "qr code for payment how to create",
+            "cta": "/en/qr-code-generator/",
+            "ctaText": "Create payment QR code",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "QR for payment systems. What data to encode. CTA → generator."
+          },
+          {
+            "title": "QR Code for Events — Program, Speakers, Venue",
+            "slug": "qr-code-for-event-program-speakers",
+            "intent": "MOFU",
+            "targetQuery": "qr code for event how to make",
+            "cta": "/en/qr-code-generator/",
+            "ctaText": "Create event QR code",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "What to put in event QR codes. Print considerations. CTA → generator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "meta-tags-generator",
+      "priority": "P1",
+      "monetizationPotential": "medium",
+      "monetizationNotes": "Site owners, bloggers — SEO tool ecosystem, potential premium audit",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair. The meta tags generator is a pure SEO tool — all queries around title, description, Open Graph are BOFU. Gaps: title check, description guide, Open Graph setup.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "medium-high",
+      "ru": {
+        "existingArticles": ["generator-meta-tegov"],
+        "recommendedArticles": [
+          {
+            "title": "Как проверить title и description страницы — инструменты и методы",
+            "slug": "kak-proverit-title-i-description-stranitsy",
+            "intent": "BOFU",
+            "targetQuery": "как проверить title и description страницы",
+            "cta": "/ru/meta-tags-generator/",
+            "ctaText": "Создать meta tags",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Как посмотреть title и description любой страницы. Ограничения браузера и правильный способ. Кнопка CTA → генератор."
+          },
+          {
+            "title": "Open Graph теги — как настроить для соцсетей",
+            "slug": "open-graph-tegi-kak-nastroit-dlya-sotssetey",
+            "intent": "MOFU",
+            "targetQuery": "open graph теги как настроить",
+            "cta": "/ru/meta-tags-generator/",
+            "ctaText": "Сгенерировать Open Graph теги",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Что такое OG tags, зачем нужны. Как настроить og:title, og:description, og:image. Кнопка CTA → генератор."
+          },
+          {
+            "title": "Twitter Card — чем отличается от Open Graph и как настроить",
+            "slug": "twitter-card-chem-otlichaetsya-ot-open-graph",
+            "intent": "MOFU",
+            "targetQuery": "twitter card настроить отличие от open graph",
+            "cta": "/ru/meta-tags-generator/",
+            "ctaText": "Создать Twitter Card",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Twitter Card vs OG. Типы карточек. Что указать. CTA → генератор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["meta-tags-generator-tool"],
+        "recommendedArticles": [
+          {
+            "title": "How to Check Page Title and Meta Description",
+            "slug": "how-to-check-page-title-and-meta-description",
+            "intent": "BOFU",
+            "targetQuery": "how to check page title and meta description",
+            "cta": "/en/meta-tags-generator/",
+            "ctaText": "Generate meta tags",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "How to view any page's title and meta. Correct way vs browser view. CTA → generator."
+          },
+          {
+            "title": "Open Graph Tags — Setup for Social Media Sharing",
+            "slug": "open-graph-tags-setup-social-media",
+            "intent": "MOFU",
+            "targetQuery": "open graph tags how to set up",
+            "cta": "/en/meta-tags-generator/",
+            "ctaText": "Generate Open Graph tags",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "What OG tags are. How to set og:title, og:description, og:image. CTA → generator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "seo-audit",
+      "priority": "P1",
+      "monetizationPotential": "medium",
+      "monetizationNotes": "Site owners, bloggers — SEO ecosystem, potential premium audit",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair. SEO audit queries are always BOFU — someone who wants to check indexation status or fix crawl issues is ready to use the tool. Gaps: sitemap check, canonical check, indexation troubleshooting.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "medium-high",
+      "ru": {
+        "existingArticles": ["seo-audit-besplatno"],
+        "recommendedArticles": [
+          {
+            "title": "Как проверить sitemap.xml — есть ли ошибки",
+            "slug": "kak-proverit-sitemap-xml-est-li-oshibki",
+            "intent": "BOFU",
+            "targetQuery": "как проверить sitemap xml на ошибки",
+            "cta": "/ru/seo-audit/",
+            "ctaText": "Проверить SEO страницы",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Зачем нужен sitemap. Как найти и проверить. Частые ошибки: дубли, 404, отсутствие hreflang. CTA → аудит."
+          },
+          {
+            "title": "Что делать, если страница не индексируется — чек-лист",
+            "slug": "stranitsa-ne-indeksiruetsya-chek-list",
+            "intent": "BOFU",
+            "targetQuery": "страница не индексируется что делать",
+            "cta": "/ru/seo-audit/",
+            "ctaText": "Проверить страницу",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Чек-лист: robots.txt, canonical, noindex, hreflang, скорость загрузки. Пошаговая диагностика. CTA → аудит."
+          },
+          {
+            "title": "Как подготовить страницу к индексации — чек-лист для вебмастера",
+            "slug": "podgotovit-stranitsu-k-indeksatsii-chek-list",
+            "intent": "BOFU",
+            "targetQuery": "как подготовить страницу к индексации",
+            "cta": "/ru/seo-audit/",
+            "ctaText": "Проверить готовность к индексации",
+            "status": "planned",
+            "priority": 3,
+            "contentOutline": "Чек-лист перед отправкой в поисковики: title, description, canonical, structured data, скорость. CTA → аудит."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["free-seo-audit"],
+        "recommendedArticles": [
+          {
+            "title": "How to Check if a Page is Indexed by Google",
+            "slug": "how-to-check-if-page-is-indexed",
+            "intent": "BOFU",
+            "targetQuery": "how to check if page is indexed by google",
+            "cta": "/en/seo-audit/",
+            "ctaText": "Run SEO audit",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "site: search, Google Search Console, direct URL inspection. CTA → audit tool."
+          },
+          {
+            "title": "How to Prepare a Page for Indexing — Webmaster Checklist",
+            "slug": "how-to-prepare-page-for-indexing",
+            "intent": "BOFU",
+            "targetQuery": "how to prepare page for indexing",
+            "cta": "/en/seo-audit/",
+            "ctaText": "Check page for indexing",
+            "status": "planned",
+            "priority": 2,
+            "contentOutline": "Pre-submission checklist: title, description, canonical, structured data. CTA → audit tool."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "calculator",
+      "priority": "P2",
+      "monetizationPotential": "low-medium",
+      "monetizationNotes": "Education, students — potential formula library / premium features",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair. The generic calculator article exists. Gap: graphing/scientific calculator article for high-intent users who specifically want a graphing tool.",
+      "competitionLevel": "high",
+      "searchVolumeEstimate": "very high",
+      "ru": {
+        "existingArticles": ["onlayn-kalkulyator-besplatno"],
+        "recommendedArticles": [
+          {
+            "title": "Графический калькулятор онлайн — построить график функции",
+            "slug": "graficheskiy-kalkulyator-onlayn-postroit-grafik",
+            "intent": "MOFU",
+            "targetQuery": "графический калькулятор онлайн построить график",
+            "cta": "/ru/calculator/",
+            "ctaText": "Открыть графический калькулятор",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Что такое графический калькулятор. Как построить y=x², sin(x). Примеры использования: учёба, работа. Кнопка CTA → калькулятор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["online-calculator-free"],
+        "recommendedArticles": [
+          {
+            "title": "Graphing Calculator Online — Plot Functions Fast",
+            "slug": "graphing-calculator-online-plot-functions",
+            "intent": "MOFU",
+            "targetQuery": "graphing calculator online plot functions",
+            "cta": "/en/calculator/",
+            "ctaText": "Open graphing calculator",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "What a graphing calculator does. How to plot y=x², sin(x). Use cases. CTA → calculator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "url-shortener",
+      "priority": "P2",
+      "monetizationPotential": "medium",
+      "monetizationNotes": "Marketing, social media managers — potential branded domains, analytics",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair covering the basic use case. The URL shortener is good for SEO traffic around branded links and link management topics.",
+      "competitionLevel": "high",
+      "searchVolumeEstimate": "very high",
+      "ru": {
+        "existingArticles": ["sokraschitel-ssylok-onlayn"],
+        "recommendedArticles": [
+          {
+            "title": "Как сделать ссылку короче — сокращаем URL правильно",
+            "slug": "kak-sdelat-ssylku-korotse-sokrashchaem-url",
+            "intent": "TOFU",
+            "targetQuery": "как сделать ссылку короче",
+            "cta": "/ru/url-shortener/",
+            "ctaText": "Сократить ссылку",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Зачем нужны короткие ссылки. Как работает сокращение. Когда это полезно. Кнопка CTA → сокращатель."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["url-shortener-online"],
+        "recommendedArticles": [
+          {
+            "title": "How to Shorten a URL — Best Practices",
+            "slug": "how-to-shorten-url-best-practices",
+            "intent": "TOFU",
+            "targetQuery": "how to shorten a url",
+            "cta": "/en/url-shortener/",
+            "ctaText": "Shorten URL",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Why shorten URLs. How URL shortening works. When it's useful. CTA → shortener."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "date-difference",
+      "priority": "P2",
+      "monetizationPotential": "low",
+      "monetizationNotes": "HR, project management — potential date interval tools",
+      "currentArticles": 2,
+      "rationale": "Has date-difference-calculator article. The days-lived and days-to-New-Year articles exist but aren't mapped to this tool. No major gaps, minor expansion possible.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "medium",
+      "ru": {
+        "existingArticles": ["kalkulyator-raznitsy-dat", "skolko-dney-ya-zhivu", "skolko-dney-ostalos-do-novogo-goda"],
+        "recommendedArticles": []
+      },
+      "en": {
+        "existingArticles": ["date-difference-calculator", "how-many-days-have-i-lived", "how-many-days-left-until-new-year"],
+        "recommendedArticles": []
+      }
+    },
+    {
+      "toolSlug": "compound-interest",
+      "priority": "P2",
+      "monetizationPotential": "medium",
+      "monetizationNotes": "Finance, banking — potential premium calculators",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair. The gap is investment growth / deposit vs investment comparison article.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "medium",
+      "ru": {
+        "existingArticles": ["kalkulyator-slozhnykh-protsentov"],
+        "recommendedArticles": [
+          {
+            "title": "Вклад или инвестиции — как посчитать доходность",
+            "slug": "vklad-ili-investitsii-kak-poschitat-dokhodnost",
+            "intent": "MOFU",
+            "targetQuery": "вклад или инвестиции как посчитать доходность",
+            "cta": "/ru/compound-interest/",
+            "ctaText": "Рассчитать доходность",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Сравнение вклада и инвестиций. Как считать сложный процент для каждого. Кнопка CTA → калькулятор."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["compound-interest-calculator"],
+        "recommendedArticles": [
+          {
+            "title": "Deposit vs Investment — How to Calculate Returns",
+            "slug": "deposit-vs-investment-how-to-calculate-returns",
+            "intent": "MOFU",
+            "targetQuery": "deposit vs investment how to calculate returns",
+            "cta": "/en/compound-interest/",
+            "ctaText": "Calculate investment returns",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Comparing deposit and investment returns. Compound interest for each. CTA → calculator."
+          }
+        ]
+      }
+    },
+    {
+      "toolSlug": "password-generator",
+      "priority": "P2",
+      "monetizationPotential": "low-medium",
+      "monetizationNotes": "General users — limited monetization, awareness channel",
+      "currentArticles": 2,
+      "rationale": "Has 2 article pairs covering strong passwords and WiFi router. Gap: very specific passwords for different contexts.",
+      "competitionLevel": "very high",
+      "searchVolumeEstimate": "very high",
+      "ru": {
+        "existingArticles": ["generator-paroley-onlayn", "kak-sozdat-nadezhnyy-parol-i-ne-zabyt-ego", "parol-dlya-ruchnogo-vvoda-na-drugom-ustroystve", "parol-dlya-wifi-routera-kakoy-dliny"],
+        "recommendedArticles": []
+      },
+      "en": {
+        "existingArticles": ["password-generator-online", "how-to-create-a-strong-password-and-remember-it", "password-for-manual-entry-on-another-device", "wifi-router-password-length-and-settings"],
+        "recommendedArticles": []
+      }
+    },
+    {
+      "toolSlug": "random-number",
+      "priority": "P2",
+      "monetizationPotential": "low",
+      "monetizationNotes": "Streamers, teachers — awareness, potential premium raffle tools",
+      "currentArticles": 6,
+      "rationale": "Already well-covered with 6 article pairs. No major gaps.",
+      "competitionLevel": "high",
+      "searchVolumeEstimate": "very high",
+      "ru": {
+        "existingArticles": ["generator-sluchaynyh-chisel", "koleso-donatov-dlya-strimera", "koleso-vybora-chto-vybrat", "sluchaynaya-vyborka-zakazov-dlya-proverki", "sluchaynyy-poryadok-vystupleniy-i-zadach", "randomayzer-dlya-rozygrysha-pobediteley"],
+        "recommendedArticles": []
+      },
+      "en": {
+        "existingArticles": ["random-number-generator-online", "donation-wheel-for-streamers", "choice-wheel-when-you-dont-know-what-to-pick", "random-sample-orders-for-checking", "random-order-for-presentations-and-tasks", "random-number-raffle-winners-no-duplicates"],
+        "recommendedArticles": []
+      }
+    },
+    {
+      "toolSlug": "seo-audit-pro",
+      "priority": "P2",
+      "monetizationPotential": "medium",
+      "monetizationNotes": "SEO professionals — potential paid detailed audit reports",
+      "currentArticles": 1,
+      "rationale": "Only 1 article pair. The gap is a full SEO audit guide that positions this as the pro version of the basic audit tool.",
+      "competitionLevel": "medium",
+      "searchVolumeEstimate": "medium",
+      "ru": {
+        "existingArticles": ["seo-audit-pro-instrument"],
+        "recommendedArticles": [
+          {
+            "title": "SEO-аудит сайта самостоятельно — полное руководство",
+            "slug": "seo-audit-sayta-samostoyatelno-polnoe-rukovodstvo",
+            "intent": "MOFU",
+            "targetQuery": "seo аудит сайта самостоятельно",
+            "cta": "/ru/seo-audit-pro/",
+            "ctaText": "Провести SEO-аудит PRO",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "Что входит в полный SEO-аудит. Технический аудит, контент, ссылки. Как использовать SEO Audit PRO. CTA → инструмент."
+          }
+        ]
+      },
+      "en": {
+        "existingArticles": ["seo-audit-pro-tool"],
+        "recommendedArticles": [
+          {
+            "title": "Complete SEO Audit Guide — What to Check on Your Website",
+            "slug": "complete-seo-audit-guide-what-to-check",
+            "intent": "MOFU",
+            "targetQuery": "complete seo audit guide website",
+            "cta": "/en/seo-audit-pro/",
+            "ctaText": "Run full SEO audit",
+            "status": "planned",
+            "priority": 1,
+            "contentOutline": "What a full SEO audit includes. Technical audit, content, links. CTA → SEO Audit PRO."
+          }
+        ]
+      }
+    }
+  ],
+  "implementationOrder": [
+    {
+      "phase": 1,
+      "name": "Addressee Generator cluster",
+      "articles": 12,
+      "tools": ["generator-adresata"],
+      "priority": "P0",
+      "rationale": "Highest BOFU intent with clear monetization path. Start with RU articles (7), then EN (5)."
+    },
+    {
+      "phase": 2,
+      "name": "VAT cluster expansion",
+      "articles": 6,
+      "tools": ["vat-calculator"],
+      "priority": "P0",
+      "rationale": "High-volume BOFS queries. Add 4 RU + 2 EN articles to complement existing."
+    },
+    {
+      "phase": 3,
+      "name": "QR Code and Meta Tags clusters",
+      "articles": 10,
+      "tools": ["qr-code-generator", "meta-tags-generator"],
+      "priority": "P1",
+      "rationale": "Both have high search volume and clear BOFU intent. QR: 5 articles, Meta Tags: 5 articles."
+    },
+    {
+      "phase": 4,
+      "name": "SEO Audit expansion",
+      "articles": 6,
+      "tools": ["seo-audit"],
+      "priority": "P1",
+      "rationale": "3 RU + 3 EN articles for sitemap, indexation, and preparation topics."
+    },
+    {
+      "phase": 5,
+      "name": "Number to Words expansion + misc",
+      "articles": 6,
+      "tools": ["number-to-words", "calculator", "compound-interest", "url-shortener", "seo-audit-pro"],
+      "priority": "P2",
+      "rationale": "Fill remaining cluster gaps. 2+2+2+2+2+2 = 6 articles across 6 tools."
+    }
+  ],
+  "publishingWorkflow": {
+    "step1": "Draft each article in BD/content-staging/ using BD/article.template.json",
+    "step2": "Verify slug uniqueness and translation_key pairing for RU/EN",
+    "step3": "Run BD/check-article.ps1 to verify article structure before publishing",
+    "step4": "Publish with BD/publish-article.ps1",
+    "step5": "After all phase articles published, run npm run build",
+    "step6": "Run npm run check:production-seo-health -- --local",
+    "step7": "Run npm run indexnow:submit -- --priority after verifying sitemap updated"
+  },
+  "importantRules": [
+    "NEVER publish to D1 without user confirmation",
+    "NEVER make D1 PATCH — only INSERT new articles",
+    "NEVER break sitemap, canonical, prerender, or hreflang",
+    "NEVER write low-quality SEO content — every article must be human-first",
+    "ALWAYS use /ru/... tool links in RU articles and /en/... in EN articles",
+    "ALWAYS set language, translation_key, tool_slug for every article",
+    "ALWAYS include CTA block pointing to the primary tool"
+  ]
+}
