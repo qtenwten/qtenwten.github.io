@@ -9,6 +9,7 @@ import {
   getLocalizedRouteUrl,
 } from '../src/config/routeSeo.js'
 import { articleMatchesLanguage, filterArticlesForLanguage } from '../src/utils/articleLanguage.js'
+import { getArticleRelatedCopy, getArticleToolCta, getRelatedArticlesForTool } from '../src/utils/articleFunnel.js'
 import { normalizeArticleIndexItem, normalizeArticleDetailItem } from '../src/utils/articleNormalization.js'
 import { getIconSvg, ICON_SVG_MAP } from '../src/utils/iconMap.js'
 import { LEGACY_ROUTE_REDIRECTS, ROUTE_REGISTRY } from '../src/config/routeRegistry.js'
@@ -768,6 +769,30 @@ function buildArticlesIndexPrerenderContent(page, articles = []) {
   return `<div class="tool-container tool-page-shell articles-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section>${list}${initialDataScript}</div>`
 }
 
+function buildArticleToolCtaPrerenderContent(cta) {
+  if (!cta) {
+    return ''
+  }
+
+  return `<section class="article-tool-cta"><div><h2 class="article-tool-cta__title">${escapeHtml(cta.title)}</h2><p class="article-tool-cta__text">${escapeHtml(cta.text)}</p></div><a href="${escapeHtml(cta.href)}" class="article-tool-cta__button">${escapeHtml(cta.buttonLabel)}</a></section>`
+}
+
+function buildArticleRelatedPrerenderContent(language, relatedArticles = []) {
+  if (!relatedArticles.length) {
+    return ''
+  }
+
+  const copy = getArticleRelatedCopy(language)
+  const cards = relatedArticles.map((article) => {
+    const href = getLocalizedRoutePath(language, `/articles/${encodeURIComponent(article.slug)}`)
+    const excerpt = article.excerpt ? `<p class="article-related-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
+
+    return `<article class="article-related-card"><h3 class="article-related-card__title"><a href="${href}">${escapeHtml(article.title)}</a></h3>${excerpt}</article>`
+  }).join('')
+
+  return `<aside class="article-related"><h2>${escapeHtml(copy.title)}</h2><div class="article-related__grid">${cards}</div></aside>`
+}
+
 function buildArticleDetailPrerenderContent(page, article, articlesIndex = []) {
   const detailEyebrow = escapeHtml(getLocaleValue(page.language, 'articles.detailEyebrow', page.language === 'en' ? 'Article' : 'Статья'))
   const backLabel = escapeHtml(getLocaleValue(page.language, 'articles.backToList', page.language === 'en' ? 'Back to articles' : 'Вернуться к списку статей'))
@@ -776,12 +801,17 @@ function buildArticleDetailPrerenderContent(page, article, articlesIndex = []) {
     : ''
   const excerpt = article.excerpt ? `<p class="article-header-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
   const articleBodyHtml = renderMarkdownToHtml(article.content || '', { title: article.title, lead: article.excerpt || '' })
+  const articleToolCta = getArticleToolCta(article, page.language, (key) => getLocaleValue(page.language, key, key))
+  const articleToolCtaHtml = buildArticleToolCtaPrerenderContent(articleToolCta)
+  const relatedArticles = getRelatedArticlesForTool(article, articlesIndex, page.language, { limit: 4 })
+  const relatedArticlesHtml = buildArticleRelatedPrerenderContent(page.language, relatedArticles)
+  const layoutClass = `article-layout ${relatedArticlesHtml ? 'article-layout--with-related' : ''}`.trim()
   const initialDataScript = `<script id="__ARTICLE_DETAIL_DATA__" type="application/json">${safeJsonForInlineScript(article)}</script>`
   const indexDataScript = articlesIndex.length
     ? `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: articlesIndex, generatedAt: new Date().toISOString() })}</script>`
     : ''
 
-  return `<div class="tool-container tool-page-shell articles-page article-page"><article class="article-layout"><header class="article-header-card"><div class="article-header-card__eyebrow">${detailEyebrow}</div>${media}<h1>${escapeHtml(article.title)}</h1>${excerpt}<a href="${getLocalizedRoutePath(page.language, '/articles')}" class="article-back-link">${backLabel}</a></header></article><section class="article-content-card">${articleBodyHtml}</section>${initialDataScript}${indexDataScript}</div>`
+  return `<div class="tool-container tool-page-shell articles-page article-page"><div class="${layoutClass}"><div class="article-main-column"><article><header class="article-header-card"><div class="article-header-card__eyebrow">${detailEyebrow}</div>${media}<h1>${escapeHtml(article.title)}</h1>${excerpt}<a href="${getLocalizedRoutePath(page.language, '/articles')}" class="article-back-link">${backLabel}</a></header></article>${articleToolCtaHtml}<section class="article-content-card">${articleBodyHtml}</section>${articleToolCtaHtml}</div>${relatedArticlesHtml}</div>${initialDataScript}${indexDataScript}</div>`
 }
 
 function buildLegacyToolPrerenderContent(page) {

@@ -580,6 +580,107 @@
   margin: 0;
 }
 
+.article-tool-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: 24px;
+  border: 1px solid rgba(var(--primary-rgb), 0.22);
+  background:
+    linear-gradient(135deg, rgba(var(--primary-rgb), 0.12) 0%, rgba(var(--primary-rgb), 0.04) 100%),
+    var(--bg-elevated);
+  box-shadow: 0 22px 44px -42px rgba(15, 23, 42, 0.38);
+}
+
+.article-tool-cta__title {
+  margin: 0;
+  font-size: 1.14rem;
+  line-height: 1.25;
+}
+
+.article-tool-cta__text {
+  max-width: 62ch;
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary);
+}
+
+.article-tool-cta__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.78rem 1.05rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 18px 34px -22px rgba(79, 70, 229, 0.45);
+  transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
+}
+
+.article-tool-cta__button:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #4338ca 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+}
+
+.article-related {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.article-related h2 {
+  margin: 0;
+  font-size: 1.18rem;
+}
+
+.article-related__grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.article-related-card {
+  display: grid;
+  gap: 0.4rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-related-card:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.article-related-card__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.article-related-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.article-related-card__title a:hover {
+  color: var(--primary);
+}
+
+.article-related-card__excerpt {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+}
+
 .article-content-card {
   padding: 1.35rem 1.45rem;
 }
@@ -732,9 +833,22 @@
   .article-card,
   .article-header-card,
   .article-content-card,
+  .article-tool-cta,
+  .article-related,
   .articles-hero.tool-page-hero {
     padding: 1.15rem;
     border-radius: 22px;
+  }
+
+  .article-tool-cta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .article-tool-cta__button {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
   }
 
   .article-content-card {

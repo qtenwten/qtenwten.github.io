@@ -9,6 +9,7 @@ import ArticleMarkdown from '../components/articles/ArticleMarkdown'
 import { LoadingState } from '../components/LoadingState'
 import { useArticleDetail, useArticlesIndex } from '../contexts/ArticleStoreContext'
 import { articleMatchesLanguage, filterArticlesForLanguage } from '../utils/articleLanguage'
+import { getArticleRelatedCopy, getArticleToolCta, getRelatedArticlesForTool } from '../utils/articleFunnel'
 import { getLocalizedRouteUrl } from '../config/routeSeo'
 import { analytics, ANALYTICS_EVENTS } from '../utils/analytics'
 import { validateOgImageDimensions, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '../components/SEO'
@@ -19,6 +20,48 @@ function pickCoverAlt(article, language, t) {
     return article.title
   }
   return language === 'en' ? 'Article cover' : t('articles.coverAlt')
+}
+
+function ArticleToolCta({ cta }) {
+  if (!cta) {
+    return null
+  }
+
+  return (
+    <section className="article-tool-cta">
+      <div>
+        <h2 className="article-tool-cta__title">{cta.title}</h2>
+        <p className="article-tool-cta__text">{cta.text}</p>
+      </div>
+      <Link to={cta.href} className="article-tool-cta__button">
+        {cta.buttonLabel}
+      </Link>
+    </section>
+  )
+}
+
+function ArticleRelatedArticles({ articles, language }) {
+  if (!articles.length) {
+    return null
+  }
+
+  const copy = getArticleRelatedCopy(language)
+
+  return (
+    <aside className="article-related">
+      <h2>{copy.title}</h2>
+      <div className="article-related__grid">
+        {articles.map((relatedArticle) => (
+          <article key={relatedArticle.id || relatedArticle.slug} className="article-related-card">
+            <h3 className="article-related-card__title">
+              <Link to={`/${language}/articles/${relatedArticle.slug}/`}>{relatedArticle.title}</Link>
+            </h3>
+            {relatedArticle.excerpt ? <p className="article-related-card__excerpt">{relatedArticle.excerpt}</p> : null}
+          </article>
+        ))}
+      </div>
+    </aside>
+  )
 }
 
 function ArticlePage() {
@@ -98,11 +141,15 @@ function ArticlePage() {
   const articleSeoTitle = visibleArticle?.seoTitle || (status === 'success' ? `${articleTitle} | QSEN.RU` : t('articles.detailLoadingTitle'))
   const ogImage = visibleArticle?.coverImage || 'https://qsen.ru/og-image.png'
 
+  const articleToolCta = useMemo(() => {
+    return visibleArticle ? getArticleToolCta(visibleArticle, language, t) : null
+  }, [visibleArticle, language, t])
+
   const visibleRelatedArticles = useMemo(() => {
-    return localizedRelatedArticles
-      .filter((item) => item.slug && item.slug !== slug)
-      .slice(0, 3)
-  }, [localizedRelatedArticles, slug])
+    return visibleArticle
+      ? getRelatedArticlesForTool(visibleArticle, localizedRelatedArticles, language, { limit: 4 })
+      : []
+  }, [visibleArticle, localizedRelatedArticles, language])
 
   const structuredData = useMemo(() => {
     const baseUrl = `https://qsen.ru`
@@ -211,6 +258,8 @@ function ArticlePage() {
                   </header>
                 </article>
 
+                <ArticleToolCta cta={articleToolCta} />
+
                 <section className="article-content-card">
                   <ArticleMarkdown
                     content={visibleArticle.content}
@@ -218,24 +267,11 @@ function ArticlePage() {
                     lead={visibleArticle.excerpt || ''}
                   />
                 </section>
+
+                <ArticleToolCta cta={articleToolCta} />
               </div>
 
-              {visibleRelatedArticles.length > 0 && (
-                <aside className="articles-related-card">
-                  <div className="articles-section-card__eyebrow">{t('articles.relatedEyebrow')}</div>
-                  <h2>{t('articles.relatedTitle')}</h2>
-                  <div className="articles-related-list">
-                    {visibleRelatedArticles.map((relatedArticle) => (
-                      <article key={relatedArticle.id || relatedArticle.slug} className="articles-list-compact">
-                        <h3 className="articles-list-compact__title">
-                          <Link to={`/${language}/articles/${relatedArticle.slug}/`}>{relatedArticle.title}</Link>
-                        </h3>
-                        {relatedArticle.excerpt ? <p className="articles-list-compact__excerpt">{relatedArticle.excerpt}</p> : null}
-                      </article>
-                    ))}
-                  </div>
-                </aside>
-              )}
+              <ArticleRelatedArticles articles={visibleRelatedArticles} language={language} />
             </div>
           )}
         </LoadingState>
