@@ -35,11 +35,15 @@ function run() {
   // 3. Uses docx library correctly
   console.log('\n3. DOCX library usage')
   assert(helperContent.includes('Document') || helperContent.includes('P') || helperContent.includes('Text'), 'uses docx primitives')
+  assert(helperContent.includes('Packer.toBlob'), 'uses Packer.toBlob')
 
   // 4. Uses sender fields (from block)
   console.log('\n4. Sender data usage')
   assert(helperContent.includes('blocks.from') || helperContent.includes('fromSection') || helperContent.includes('from'), 'uses from block for sender data')
   assert(helperContent.includes('blocks.to') || helperContent.includes('toSection') || helperContent.includes('to'), 'uses to block for addressee data')
+  assert(helperContent.includes('blocks.greeting') || helperContent.includes('greetingSection'), 'uses blocks.greeting for greeting data')
+  assert(helperContent.includes('blocks.documentText') || helperContent.includes('docTextSection'), 'uses blocks.documentText for template data')
+  assert(!helperContent.includes('result.greeting'), 'does not use stale result.greeting')
 
   // 5. Handles warnings
   console.log('\n5. Warnings handling')

@@ -123,6 +123,22 @@ async function main() {
     senderOrganization: 'ООО «Право»',
   });
 
+  const manualCaseForm = {
+    fullName: 'Иванов Иван Петрович',
+    position: 'генеральный директор',
+    organization: 'ООО «Ромашка»',
+    gender: GENDER_MALE,
+    greetingMode: GREETING_NAME_PATRONYMIC,
+    punctuation: PUNCTUATION_EXCLAMATION,
+    documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderPosition: 'менеджер',
+    senderOrganization: 'ООО «Альфа»',
+    recipientDativeName: 'Генеральному директору Иванову Ивану Петровичу',
+    senderGenitiveName: 'Петровой Анны Сергеевны',
+  };
+  const manualCaseResult = formatAddressee(manualCaseForm);
+
   // ============================================================
   // 1. DOCX EXPORT CHECKS (source code based)
   // ============================================================
@@ -162,6 +178,8 @@ async function main() {
   assert(txtText.includes('Обращение'), 'TXT: has greeting section header');
   assert(txtText.includes('Готовый шаблон'), 'TXT: has document template section header');
   assert(txtText.includes('Петровой'), 'TXT: contains sender full name in genitive');
+  assert(txtText.includes('Иванову Ивану Петровичу'), 'TXT: contains declined recipient full name');
+  assert(txtText.includes('Петровой Анны Сергеевны'), 'TXT: contains declined sender full name');
   assert(txtText.includes('менеджер'), 'TXT: contains sender position');
   assert(txtText.includes('Альфа'), 'TXT: contains sender organization');
   assert(!txtText.includes('undefined'), 'TXT: no undefined values');
@@ -170,6 +188,10 @@ async function main() {
   const txtWithOverrides = buildPlainTextExport(testResult, { to: 'Custom To Block' }, labels);
   assert(txtWithOverrides.includes('Custom To Block'), 'TXT: uses override values when provided');
 
+  const txtWithManualCase = buildPlainTextExport(manualCaseResult, {}, labels);
+  assert(txtWithManualCase.includes('Генеральному директору Иванову Ивану Петровичу'), 'TXT: contains manual recipient case form');
+  assert(txtWithManualCase.includes('Петровой Анны Сергеевны'), 'TXT: contains manual sender case form');
+
   const txtNoSender = buildPlainTextExport(testResultNoSender, {}, labels);
   assert(!txtNoSender.includes('undefined'), 'TXT: handles missing sender gracefully');
   assert(txtNoSender.length > 0, 'TXT: still produces output without sender');
@@ -177,6 +199,7 @@ async function main() {
   const jsxSource = fs.readFileSync(path.join(rootDir, 'src/pages/AddresseeGenerator.jsx'), 'utf-8');
   assert(jsxSource.includes('handleExportTxt'), 'TXT: JSX has handleExportTxt');
   assert(jsxSource.includes('getDocumentExportText'), 'TXT: JSX uses getDocumentExportText');
+  assert(jsxSource.includes("getEffectiveBlockText('documentText')"), 'TXT: Copy All uses effective documentText');
   assert(jsxSource.includes('addressee-generator-document.txt'), 'TXT: JSX sets correct filename');
   assert(jsxSource.includes("'text/plain") || jsxSource.includes('text/plain'), 'TXT: JSX uses UTF-8 plain text');
 
@@ -207,6 +230,15 @@ async function main() {
   assert(!htmlFromHelper.includes('<script>'), 'HTML: no raw script tag in buildHtmlExport output');
   assert(htmlFromHelper.includes('Тестовый документ'), 'HTML: buildHtmlExport includes title');
 
+  const htmlManual = buildHtmlExport(manualCaseResult, {}, {
+    labels: htmlLabels,
+    lang: 'ru',
+    templateTitle: 'Manual <case> document',
+  });
+  assert(htmlManual.includes('Генеральному директору Иванову Ивану Петровичу'), 'HTML: contains manual recipient form');
+  assert(htmlManual.includes('Петровой Анны Сергеевны'), 'HTML: contains manual sender form');
+  assert(htmlManual.includes('Manual &lt;case&gt; document'), 'HTML: escapes manual export title');
+
   const docText = multilineDocTextResult.blocks.documentText || multilineDocTextResult.blocks.letter || '';
   assert(docText.length > 0, 'HTML: documentText is non-empty for businessLetter');
 
@@ -220,7 +252,7 @@ async function main() {
   // ============================================================
   console.log('\n4. CSV Single Export Checks');
 
-  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings'];
+  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'recipientDativeName', 'senderGenitiveName', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings'];
   const row = [
     multilineDocTextResult.form?.fullName || 'test',
     multilineDocTextResult.form?.position || '',
@@ -232,6 +264,8 @@ async function main() {
     multilineDocTextResult.form?.senderFullName || '',
     multilineDocTextResult.form?.senderPosition || '',
     multilineDocTextResult.form?.senderOrganization || '',
+    multilineDocTextResult.form?.recipientDativeName || '',
+    multilineDocTextResult.form?.senderGenitiveName || '',
     'Кому test',
     'От кого test',
     'Обращение test',
@@ -248,6 +282,8 @@ async function main() {
   assert(csv.includes('senderFullName'), 'CSV: has senderFullName column');
   assert(csv.includes('senderPosition'), 'CSV: has senderPosition column');
   assert(csv.includes('senderOrganization'), 'CSV: has senderOrganization column');
+  assert(csv.includes('recipientDativeName'), 'CSV: has recipientDativeName column');
+  assert(csv.includes('senderGenitiveName'), 'CSV: has senderGenitiveName column');
   assert(csv.includes('documentText'), 'CSV: has documentText column');
 
   const multilineDoc = 'Line 1\nLine 2\nLine 3';
@@ -262,10 +298,16 @@ async function main() {
   assert(jsxSource.includes('addressee-generator-result.csv'), 'CSV: JSX sets correct filename');
   assert(jsxSource.includes("charset=utf-8") || jsxSource.includes('charset=utf-8'), 'CSV: JSX uses UTF-8 charset');
 
-  const singleCsv = buildSingleCsvExport(multilineDocTextResult, { fullName: 'test', position: '', organization: '', gender: '', greetingMode: '', punctuation: '', documentTemplate: '', senderFullName: '', senderPosition: '', senderOrganization: '' }, {});
+  const singleCsv = buildSingleCsvExport(manualCaseResult, manualCaseForm, {});
   assert(typeof singleCsv === 'string', 'CSV: buildSingleCsvExport returns string');
   assert(singleCsv.startsWith('\uFEFF'), 'CSV: buildSingleCsvExport has BOM');
   assert(singleCsv.includes('documentText'), 'CSV: buildSingleCsvExport includes documentText column');
+  assert(singleCsv.includes('recipientDativeName'), 'CSV: buildSingleCsvExport includes recipientDativeName column');
+  assert(singleCsv.includes('senderGenitiveName'), 'CSV: buildSingleCsvExport includes senderGenitiveName column');
+  assert(singleCsv.includes('Генеральному директору Иванову Ивану Петровичу'), 'CSV: buildSingleCsvExport contains manual recipient form');
+  assert(singleCsv.includes('Петровой Анны Сергеевны'), 'CSV: buildSingleCsvExport contains manual sender form');
+  assert(!singleCsv.includes('undefined'), 'CSV: buildSingleCsvExport has no undefined values');
+  assert(!singleCsv.includes('null'), 'CSV: buildSingleCsvExport has no null values');
 
   // ============================================================
   // 5. CSV BULK EXPORT CHECKS
@@ -273,7 +315,8 @@ async function main() {
   console.log('\n5. CSV Bulk Export Checks');
 
   const bulkResults = [
-    formatAddressee({
+    {
+      input: {
       fullName: 'Иванов Иван Петрович',
       position: 'директор',
       organization: 'ООО «А»',
@@ -284,8 +327,12 @@ async function main() {
       senderFullName: 'Петров',
       senderPosition: 'менеджер',
       senderOrganization: 'ООО «Б»',
-    }),
-    formatAddressee({
+      recipientDativeName: '',
+      senderGenitiveName: '',
+      },
+    },
+    {
+      input: {
       fullName: 'Петрова Анна Сергеевна',
       position: 'бухгалтер',
       organization: 'АО «В»',
@@ -296,8 +343,14 @@ async function main() {
       senderFullName: 'Сидоров',
       senderPosition: 'юрист',
       senderOrganization: 'ИП «С»',
-    }),
+      recipientDativeName: 'Петровой Анне Сергеевне',
+      senderGenitiveName: 'Сидорова Петра Алексеевича',
+      },
+    },
   ];
+  for (const item of bulkResults) {
+    Object.assign(item, formatAddressee(item.input));
+  }
 
   const bulkHeader = ['fullName', 'to', 'from', 'documentText', 'warnings'];
   const bulkRows = bulkResults.map((r) => [
@@ -324,6 +377,14 @@ async function main() {
   assert(typeof bulkCsvFromHelper === 'string', 'CSV: buildBulkCsvExport returns string');
   assert(bulkCsvFromHelper.startsWith('\uFEFF'), 'CSV: buildBulkCsvExport has BOM');
   assert(bulkCsvFromHelper.includes('Иванов'), 'CSV: buildBulkCsvExport includes data from results');
+  assert(bulkCsvFromHelper.includes('recipientDativeName'), 'CSV: buildBulkCsvExport includes recipientDativeName column');
+  assert(bulkCsvFromHelper.includes('senderGenitiveName'), 'CSV: buildBulkCsvExport includes senderGenitiveName column');
+  assert(bulkCsvFromHelper.includes('Петровой Анне Сергеевне'), 'CSV: buildBulkCsvExport preserves manual recipient form');
+  assert(bulkCsvFromHelper.includes('Сидорова Петра Алексеевича'), 'CSV: buildBulkCsvExport preserves manual sender form');
+  assert(bulkResults[1].blocks.documentText.includes('Петровой Анне Сергеевне'), 'CSV bulk: documentText uses manual recipient form');
+  assert(bulkResults[1].blocks.documentText.includes('Сидорова Петра Алексеевича'), 'CSV bulk: documentText uses manual sender form');
+  assert(!bulkCsvFromHelper.includes('undefined'), 'CSV: buildBulkCsvExport has no undefined values');
+  assert(!bulkCsvFromHelper.includes('null'), 'CSV: buildBulkCsvExport has no null values');
 
   // ============================================================
   // 6. FIO DECLENSION CHECKS

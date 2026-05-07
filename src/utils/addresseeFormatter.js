@@ -214,6 +214,7 @@ function buildGreeting(parsedName, gender, greetingMode, punctuation, autoDetect
 function buildToBlock(organization, position, fullName, gender, recipientDativeName) {
   const lines = [];
   const warnings = [];
+  const manualRecipientName = typeof recipientDativeName === 'string' ? recipientDativeName.trim() : '';
 
   if (organization) {
     const orgAbbreviated = isAbbreviatedOrganization(organization);
@@ -246,8 +247,8 @@ function buildToBlock(organization, position, fullName, gender, recipientDativeN
   const isLatinFlag = isFullyLatin(fullName);
   const isRisky = isRiskyNameForDeclension(parsedName, gender, hasInitialsFlag, hasHyphenatedFlag, isLatinFlag);
 
-  if (recipientDativeName && recipientDativeName.trim()) {
-    lines.push(recipientDativeName);
+  if (manualRecipientName) {
+    lines.push(manualRecipientName);
     warnings.push({
       code: WARNING_CODES.NAME_CASE_MANUAL,
       message: 'ФИО адресата в дательном падеже указано вручную.',
@@ -297,9 +298,12 @@ function buildToBlock(organization, position, fullName, gender, recipientDativeN
 function buildFromBlock(senderFullName, senderPosition, senderOrganization, senderGenitiveName) {
   const lines = [];
   const warnings = [];
+  const manualSenderName = typeof senderGenitiveName === 'string'
+    ? senderGenitiveName.trim().replace(/^от\s+/i, '').trim()
+    : '';
 
-  if (senderGenitiveName && senderGenitiveName.trim()) {
-    lines.push(`от ${senderGenitiveName}`);
+  if (manualSenderName) {
+    lines.push(`от ${manualSenderName}`);
     warnings.push({
       code: WARNING_CODES.NAME_CASE_MANUAL,
       message: 'ФИО отправителя в родительном падеже указано вручную.',

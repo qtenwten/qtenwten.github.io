@@ -1,7 +1,15 @@
-import { GENDER_MALE, GENDER_FEMALE } from './addresseeTypes.js';
+import {
+  GENDER_MALE,
+  GENDER_FEMALE,
+  KNOWN_UNDECLINABLE_SURNAMES,
+  UNDECLINABLE_SUFFIXES,
+  WARNING_CODES,
+} from './addresseeTypes.js';
 
 export const CASE_DATIVE = 'dative';
 export const CASE_GENITIVE = 'genitive';
+
+const SUPPORTED_CASES = new Set([CASE_DATIVE, CASE_GENITIVE]);
 
 const MALE_FIRST_NAMES_DATIVE = {
   'иван': 'ивану',
@@ -15,6 +23,7 @@ const MALE_FIRST_NAMES_DATIVE = {
   'олег': 'олегу',
   'павел': 'павлу',
   'пётр': 'петру',
+  'петр': 'петру',
   'владимир': 'владимиру',
   'максим': 'максиму',
   'артём': 'артёму',
@@ -55,6 +64,7 @@ const MALE_FIRST_NAMES_GENITIVE = {
   'олег': 'олега',
   'павел': 'павла',
   'пётр': 'петра',
+  'петр': 'петра',
   'владимир': 'владимира',
   'максим': 'максима',
   'артём': 'артёма',
@@ -190,7 +200,7 @@ function declineSurnameByGender(surname, gender, targetCase) {
 
   if (targetCase === CASE_DATIVE) {
     if (gender === GENDER_MALE) {
-      if (lastTwo === 'ов' || lastTwo === 'ёв' || lastTwo === 'ин' || lastTwo === 'ын') {
+      if (lastTwo === 'ов' || lastTwo === 'ев' || lastTwo === 'ёв' || lastTwo === 'ин' || lastTwo === 'ын') {
         return { declined: surname + 'у', warned: false };
       }
       if (lastThree === 'ский' || lastThree === 'ской') {
@@ -201,7 +211,7 @@ function declineSurnameByGender(surname, gender, targetCase) {
       }
       return { declined: surname, warned: true };
     } else if (gender === GENDER_FEMALE) {
-      if (lastTwo === 'ва' || lastTwo === 'ва') {
+      if (lastTwo === 'ва' || lastThree === 'ина' || lastThree === 'ына') {
         return { declined: surname.slice(0, -1) + 'ой', warned: false };
       }
       if (lastTwo === 'ая') {
@@ -217,11 +227,11 @@ function declineSurnameByGender(surname, gender, targetCase) {
     }
   } else if (targetCase === CASE_GENITIVE) {
     if (gender === GENDER_MALE) {
-      if (lastTwo === 'ов' || lastTwo === 'ёв') {
-        return { declined: surname.slice(0, -2) + 'ова', warned: false };
+      if (lastTwo === 'ов' || lastTwo === 'ев' || lastTwo === 'ёв') {
+        return { declined: surname + 'а', warned: false };
       }
       if (lastTwo === 'ин' || lastTwo === 'ын') {
-        return { declined: surname.slice(0, -2) + 'ина', warned: false };
+        return { declined: surname + 'а', warned: false };
       }
       if (lastThree === 'ский' || lastThree === 'ской') {
         return { declined: surname.slice(0, -2) + 'ого', warned: false };
@@ -231,8 +241,11 @@ function declineSurnameByGender(surname, gender, targetCase) {
       }
       return { declined: surname, warned: true };
     } else if (gender === GENDER_FEMALE) {
-      if (lastTwo === 'ва' || lastTwo === 'ая') {
+      if (lastTwo === 'ва' || lastThree === 'ина' || lastThree === 'ына') {
         return { declined: surname.slice(0, -1) + 'ой', warned: false };
+      }
+      if (lastTwo === 'ая') {
+        return { declined: surname.slice(0, -2) + 'ой', warned: false };
       }
       if (lastThree === 'ская' || lastThree === 'ской') {
         return { declined: surname.slice(0, -2) + 'ой', warned: false };
@@ -334,24 +347,86 @@ export function parseRussianFullName(fullName) {
   };
 }
 
+function splitNameParts(fullName) {
+  if (!fullName || typeof fullName !== 'string') return [];
+  return fullName.trim().split(/\s+/).filter(Boolean);
+}
+
+function buildDeclensionResult(declined, warned, reason, code = WARNING_CODES.NAME_CASE_UNCERTAIN) {
+  return {
+    declined,
+    declinedName: declined,
+    warned,
+    reason,
+    warnings: warned ? [{ code, reason }] : [],
+    confidence: warned ? 0.75 : 0.95,
+  };
+}
+
+function hasInitials(fullName) {
+  return splitNameParts(fullName).some((part) =>
+    /^[A-Za-zА-Яа-яЁё]\.$/.test(part) || /^[A-Za-zА-Яа-яЁё]\.[A-Za-zА-Яа-яЁё]\.?$/.test(part)
+  );
+}
+
+function hasHyphenatedPart(fullName) {
+  return splitNameParts(fullName).some((part) => part.includes('-'));
+}
+
+function hasLatinLetters(fullName) {
+  return typeof fullName === 'string' && /[A-Za-z]/.test(fullName);
+}
+
+function isPotentiallyUndeclinableSurname(surname) {
+  if (!surname) return false;
+  const lower = surname.toLowerCase();
+  return (
+    KNOWN_UNDECLINABLE_SURNAMES.includes(lower) ||
+    UNDECLINABLE_SUFFIXES.some((suffix) => lower.endsWith(suffix)) ||
+    /^[а-яё]{1,2}$/.test(lower)
+  );
+}
+
 export function declineRussianFullName(fullName, gender, targetCase) {
+  const safeFullName = typeof fullName === 'string' ? fullName.trim() : '';
+
+  if (!SUPPORTED_CASES.has(targetCase)) {
+    return buildDeclensionResult(safeFullName, true, 'unsupported_case');
+  }
+
   const parsed = parseRussianFullName(fullName);
   const { surname, name, patronymic, extraParts } = parsed;
 
+  if (!safeFullName) {
+    return buildDeclensionResult(safeFullName, true, 'empty');
+  }
+
+  if (hasInitials(safeFullName)) {
+    return buildDeclensionResult(safeFullName, true, 'initials', WARNING_CODES.INITIALS_DETECTED);
+  }
+
+  if (hasHyphenatedPart(safeFullName)) {
+    return buildDeclensionResult(safeFullName, true, 'hyphenated', WARNING_CODES.HYPHENATED_NAME_REVIEW);
+  }
+
+  if (hasLatinLetters(safeFullName)) {
+    return buildDeclensionResult(safeFullName, true, 'latin_name', WARNING_CODES.LATIN_NAME);
+  }
+
   if (extraParts.length > 0) {
-    return {
-      declined: fullName,
-      warned: true,
-      reason: 'extra_parts',
-    };
+    return buildDeclensionResult(safeFullName, true, 'extra_parts', WARNING_CODES.EXTRA_NAME_PARTS);
   }
 
   if (!surname || !name || !patronymic) {
-    return {
-      declined: fullName,
-      warned: true,
-      reason: 'incomplete',
-    };
+    return buildDeclensionResult(safeFullName, true, 'incomplete', WARNING_CODES.INCOMPLETE_NAME);
+  }
+
+  if (gender !== GENDER_MALE && gender !== GENDER_FEMALE) {
+    return buildDeclensionResult(safeFullName, true, 'unknown_gender', WARNING_CODES.UNKNOWN_GENDER);
+  }
+
+  if (isPotentiallyUndeclinableSurname(surname)) {
+    return buildDeclensionResult(safeFullName, true, 'undeclinable_surname', WARNING_CODES.UNDECLINABLE_SURNAME);
   }
 
   const surnameResult = declineSurnameByGender(surname, gender, targetCase);
@@ -366,11 +441,7 @@ export function declineRussianFullName(fullName, gender, targetCase) {
     patronymicResult.declined,
   ].join(' ');
 
-  return {
-    declined,
-    warned,
-    reason: warned ? 'uncertain' : null,
-  };
+  return buildDeclensionResult(declined, warned, warned ? 'uncertain' : null);
 }
 
 export function declineSurnameSafe(surname, gender, targetCase) {
@@ -386,6 +457,7 @@ export function declinePatronymicSafe(patronymic, gender, targetCase) {
 }
 
 export function isRiskyNameForDeclension(parsedName, gender, hasInitials, hasHyphenated, isLatin) {
+  if (gender !== GENDER_MALE && gender !== GENDER_FEMALE) return true;
   if (hasInitials) return true;
   if (hasHyphenated) return true;
   if (isLatin) return true;

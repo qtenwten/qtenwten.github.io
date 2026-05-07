@@ -432,7 +432,7 @@ check(jsxContent.includes('getEffectiveBlockText'), 'JSX has getEffectiveBlockTe
 check(jsxContent.includes('startEdit'), 'JSX has startEdit handler')
 check(jsxContent.includes('saveEdit'), 'JSX has saveEdit handler')
 check(jsxContent.includes('cancelEdit'), 'JSX has cancelEdit handler')
-check(jsxContent.includes('resultOverrides[block.key] !== null'), 'JSX uses resultOverrides in block rendering')
+check(jsxContent.includes('resultOverrides[block.key] !== null') && jsxContent.includes('resultOverrides[block.key] !== undefined'), 'JSX uses defined resultOverrides in block rendering')
 check(jsxContent.includes('editingBlock === block.key'), 'JSX checks editingBlock for edit mode')
 check(jsxContent.includes('addr-gen-block-textarea'), 'JSX has addr-gen-block-textarea textarea')
 check(jsxContent.includes('addr-gen-block-actions'), 'JSX has addr-gen-block-actions container')
@@ -440,7 +440,7 @@ check(jsxContent.includes('handleExportDocx') && jsxContent.includes('resultForE
 check(jsxContent.includes('handleExportCsv') && jsxContent.includes('getEffectiveBlockText'), 'handleExportCsv uses getEffectiveBlockText')
 check(jsxContent.includes('getDocumentExportText') && jsxContent.includes('getEffectiveBlockText'), 'getDocumentExportText uses getEffectiveBlockText')
 check(jsxContent.includes('copyAllText') && jsxContent.includes('getEffectiveBlockText'), 'copyAllText uses getEffectiveBlockText')
-check(jsxContent.includes('resultOverrides[block.key] !== null') && jsxContent.includes('addr-gen-block-card--edited'), 'JSX marks overridden blocks as edited')
+check(jsxContent.includes('resultOverrides[block.key] !== null') && jsxContent.includes('resultOverrides[block.key] !== undefined') && jsxContent.includes('addr-gen-block-card--edited'), 'JSX marks only defined overridden blocks as edited')
 check(jsxContent.includes('setResultOverrides({ to: null') && jsxContent.includes('setEditingBlock(null)'), 'Result overrides reset on Generate/Clear')
 
 for (const lang of ['ru', 'en']) {

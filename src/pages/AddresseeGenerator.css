@@ -137,6 +137,7 @@
 }
 
 .addr-gen-section-heading h3,
+.addr-gen-case-forms-heading h4,
 .addr-gen-examples-header h3,
 .addr-gen-locked h2,
 .addr-gen-placeholder h2 {
@@ -144,6 +145,26 @@
   color: var(--text);
   font-size: 1rem;
   line-height: 1.3;
+}
+
+.addr-gen-case-forms {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.1rem;
+  padding-top: 0.95rem;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.addr-gen-case-forms-heading {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.addr-gen-case-forms-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
 .addr-gen-field {

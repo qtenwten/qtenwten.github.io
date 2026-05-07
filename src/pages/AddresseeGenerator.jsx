@@ -326,7 +326,7 @@ function AddresseeGenerator() {
   const getEffectiveBlockText = useCallback((key) => {
     if (!result) return ''
     const override = resultOverrides[key]
-    if (override !== null) return override
+    if (override !== null && override !== undefined) return override
     return result.blocks[key] || ''
   }, [result, resultOverrides])
 
@@ -446,6 +446,8 @@ function AddresseeGenerator() {
       senderFullName: example.senderFullName || '',
       senderPosition: example.senderPosition || '',
       senderOrganization: example.senderOrganization || '',
+      recipientDativeName: example.recipientDativeName || '',
+      senderGenitiveName: example.senderGenitiveName || '',
     })
     const formatted = formatAddressee({
       fullName: example.fullName || '',
@@ -458,6 +460,8 @@ function AddresseeGenerator() {
       senderFullName: example.senderFullName || '',
       senderPosition: example.senderPosition || '',
       senderOrganization: example.senderOrganization || '',
+      recipientDativeName: example.recipientDativeName || '',
+      senderGenitiveName: example.senderGenitiveName || '',
     })
     setResult(formatted)
     setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
@@ -499,6 +503,13 @@ function AddresseeGenerator() {
       setTimeout(() => setCopyAllState('idle'), 2000)
     }
   }, [copyAllText, t])
+
+  const getWarningMessage = useCallback((warning) => {
+    if (!warning || !warning.code) return warning?.message || ''
+    const key = `addresseeGenerator.warningCodes.${warning.code}`
+    const localized = t(key)
+    return localized && localized !== key ? localized : (warning.message || warning.code)
+  }, [t])
 
   const getDocumentExportText = useCallback(() => {
     if (!result) return ''
@@ -773,36 +784,43 @@ function AddresseeGenerator() {
                 <p className="addr-gen-hint" id="addrSenderOrganizationHint">{t('addresseeGenerator.hints.sender')}</p>
               </div>
 
-              <div className="addr-gen-field">
-                <label className="addr-gen-label" htmlFor="addrRecipientDativeName">
-                  {t('addresseeGenerator.fields.recipientDativeName')}
-                </label>
-                <input
-                  id="addrRecipientDativeName"
-                  className="addr-gen-input"
-                  type="text"
-                  value={form.recipientDativeName}
-                  onChange={(e) => handleFieldChange('recipientDativeName', e.target.value)}
-                  placeholder={t('addresseeGenerator.placeholders.recipientDativeName')}
-                  aria-describedby="addrRecipientDativeNameHint"
-                />
-                <p className="addr-gen-hint" id="addrRecipientDativeNameHint">{t('addresseeGenerator.hints.recipientDativeName')}</p>
-              </div>
+              <div className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle">
+                <div className="addr-gen-case-forms-heading">
+                  <h4 id="addrCaseFormsTitle">{t('addresseeGenerator.caseFormsTitle')}</h4>
+                  <p>{t('addresseeGenerator.caseFormsDescription')}</p>
+                </div>
 
-              <div className="addr-gen-field">
-                <label className="addr-gen-label" htmlFor="addrSenderGenitiveName">
-                  {t('addresseeGenerator.fields.senderGenitiveName')}
-                </label>
-                <input
-                  id="addrSenderGenitiveName"
-                  className="addr-gen-input"
-                  type="text"
-                  value={form.senderGenitiveName}
-                  onChange={(e) => handleFieldChange('senderGenitiveName', e.target.value)}
-                  placeholder={t('addresseeGenerator.placeholders.senderGenitiveName')}
-                  aria-describedby="addrSenderGenitiveNameHint"
-                />
-                <p className="addr-gen-hint" id="addrSenderGenitiveNameHint">{t('addresseeGenerator.hints.senderGenitiveName')}</p>
+                <div className="addr-gen-field">
+                  <label className="addr-gen-label" htmlFor="addrRecipientDativeName">
+                    {t('addresseeGenerator.fields.recipientDativeName')}
+                  </label>
+                  <input
+                    id="addrRecipientDativeName"
+                    className="addr-gen-input"
+                    type="text"
+                    value={form.recipientDativeName}
+                    onChange={(e) => handleFieldChange('recipientDativeName', e.target.value)}
+                    placeholder={t('addresseeGenerator.placeholders.recipientDativeName')}
+                    aria-describedby="addrRecipientDativeNameHint"
+                  />
+                  <p className="addr-gen-hint" id="addrRecipientDativeNameHint">{t('addresseeGenerator.hints.recipientDativeName')}</p>
+                </div>
+
+                <div className="addr-gen-field">
+                  <label className="addr-gen-label" htmlFor="addrSenderGenitiveName">
+                    {t('addresseeGenerator.fields.senderGenitiveName')}
+                  </label>
+                  <input
+                    id="addrSenderGenitiveName"
+                    className="addr-gen-input"
+                    type="text"
+                    value={form.senderGenitiveName}
+                    onChange={(e) => handleFieldChange('senderGenitiveName', e.target.value)}
+                    placeholder={t('addresseeGenerator.placeholders.senderGenitiveName')}
+                    aria-describedby="addrSenderGenitiveNameHint"
+                  />
+                  <p className="addr-gen-hint" id="addrSenderGenitiveNameHint">{t('addresseeGenerator.hints.senderGenitiveName')}</p>
+                </div>
               </div>
             </section>
 
@@ -1050,7 +1068,7 @@ function AddresseeGenerator() {
                     <p className="addr-gen-warning-copy">{t('addresseeGenerator.warningsDescription')}</p>
                     <ul className="addr-gen-warnings-list">
                       {result.warnings.map((warning, idx) => (
-                        <li key={`${warning.code}-${idx}`}>{warning.message}</li>
+                        <li key={`${warning.code}-${idx}`}>{getWarningMessage(warning)}</li>
                       ))}
                     </ul>
                   </ResultNotice>
@@ -1066,7 +1084,7 @@ function AddresseeGenerator() {
                   {resultBlocks.map((block) => {
                     const isEditable = ['to', 'from', 'greeting', 'documentText'].includes(block.key)
                     const effectiveText = getEffectiveBlockText(block.key)
-                    const hasOverride = resultOverrides[block.key] !== null
+                    const hasOverride = resultOverrides[block.key] !== null && resultOverrides[block.key] !== undefined
                     const isEditing = editingBlock === block.key
                     return (
                       <ResultSection tone="default" className={`addr-gen-block-card addr-gen-block-card--${block.key}${hasOverride ? ' addr-gen-block-card--edited' : ''}`} key={block.key}>

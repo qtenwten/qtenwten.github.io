@@ -53,7 +53,7 @@ function parseBulkInput(text) {
   if (lines.length === 0) return { rows: [], error: null, warnings: [] }
   const delimiter = detectDelimiter(lines[0])
   const firstRow = parseCsvLine(lines[0], delimiter)
-  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization']
+  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization', 'recipientdativename', 'sendergenitivename']
   const hasHeader = firstRow.some((cell) =>
     headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
   )
@@ -79,6 +79,8 @@ function parseBulkInput(text) {
     senderFullName: '',
     senderPosition: '',
     senderOrganization: '',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   }
   const fieldMap = {
     0: 'fullName',
@@ -91,6 +93,8 @@ function parseBulkInput(text) {
     7: 'senderFullName',
     8: 'senderPosition',
     9: 'senderOrganization',
+    10: 'recipientDativeName',
+    11: 'senderGenitiveName',
   }
   const rows = []
   for (let i = 0; i < dataLines.length; i++) {
@@ -98,7 +102,7 @@ function parseBulkInput(text) {
     if (cells.length === 0 || (cells.length === 1 && !cells[0])) continue
     const row = { ...defaultFields }
     let hasData = false
-    for (let j = 0; j < cells.length && j < 10; j++) {
+    for (let j = 0; j < cells.length && j < 12; j++) {
       const fieldName = fieldMap[j]
       if (fieldName && cells[j]) {
         row[fieldName] = cells[j]
@@ -113,7 +117,7 @@ function parseBulkInput(text) {
     return { rows: [], error: 'unrecognized', warnings: [] }
   }
   const warnings = []
-  const knownColumnCount = 10
+  const knownColumnCount = 12
   for (let i = 0; i < dataLines.length; i++) {
     const cells = parseCsvLine(dataLines[i], delimiter)
     if (cells.length > knownColumnCount) {
@@ -161,7 +165,7 @@ const r5 = parseBulkInput(t5)
 check(r5.error === 'unrecognized', '5. empty fullName row returns unrecognized error')
 
 // 6. unknown columns warning
-const t6 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;extraCol1;extraCol2\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа;extra1;extra2'
+const t6 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName;extraCol1\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны;extra1'
 const r6 = parseBulkInput(t6)
 check(r6.warnings && r6.warnings.length > 0, '6. unknown columns returns warning')
 check(r6.warnings[0].code === 'UNKNOWN_COLUMNS', '6. unknown columns warning code is UNKNOWN_COLUMNS')
@@ -188,6 +192,24 @@ const t10 = 'Иванов Иван Петрович;директор;ООО Ро
 const r10 = parseBulkInput(t10)
 check(r10.rows.length === 2, '10. no-header data parses as bulk text')
 check(r10.rows[0].fullName === 'Иванов Иван Петрович', '10. no-header first row correct')
+
+// 11. manual case fields preserved
+const t11 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна Сергеевна;менеджер;ООО Альфа;Иванову Ивану Петровичу;Петровой Анны Сергеевны'
+const r11 = parseBulkInput(t11)
+check(r11.rows[0].recipientDativeName === 'Иванову Ивану Петровичу', '11. recipientDativeName preserved')
+check(r11.rows[0].senderGenitiveName === 'Петровой Анны Сергеевны', '11. senderGenitiveName preserved')
+
+// 12. old CSV header without manual case columns still works
+const t12 = 'fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization\nИванов Иван Петрович;директор;ООО Ромашка;male;namePatronymic;!;businessLetter;Петрова Анна;менеджер;ООО Альфа'
+const r12 = parseBulkInput(t12)
+check(r12.rows.length === 1, '12. old CSV header still parses')
+check(r12.rows[0].recipientDativeName === '', '12. missing recipientDativeName defaults to empty')
+check(r12.rows[0].senderGenitiveName === '', '12. missing senderGenitiveName defaults to empty')
+
+// 13. UTF-8 BOM in uploaded CSV does not break header recognition
+const t13 = '\uFEFFfullName;position;organization\nИванов Иван Петрович;директор;ООО Ромашка'
+const r13 = parseBulkInput(t13)
+check(r13.rows.length === 1, '13. UTF-8 BOM header parses')
 
 console.log('\n=== Results:', passed + '/' + total + ' ===')
 if (passed < total) process.exit(1)

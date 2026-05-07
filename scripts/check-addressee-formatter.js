@@ -1,5 +1,10 @@
 import { formatAddressee } from '../src/utils/addresseeFormatter.js'
 import {
+  CASE_DATIVE,
+  CASE_GENITIVE,
+  declineRussianFullName,
+} from '../src/utils/addresseeNameCases.js'
+import {
   GENDER_MALE,
   GENDER_FEMALE,
   GENDER_UNKNOWN,
@@ -525,6 +530,167 @@ function run() {
   })
   assert(rEmptySender.blocks.from === '', 'U5: empty sender fields produce empty from block')
   assert(typeof rEmptySender.blocks.from === 'string', 'U5: from block is string (even if empty)')
+
+  // V. Safe name declension and manual case overrides
+  console.log('\nV. Safe name declension and manual case overrides')
+
+  const rSafeMaleRecipient = formatAddressee({ fullName: 'Иванов Иван Петрович', gender: GENDER_MALE })
+  assert(rSafeMaleRecipient.blocks.to.includes('Иванову Ивану Петровичу'), 'V1: safe male recipient is declined to dative')
+  assert(!rSafeMaleRecipient.warnings.some((w) => w.code === WARNING_CODES.NAME_CASE_UNCERTAIN), 'V1: safe male recipient has no name-case warning')
+
+  const rSafeMaleSender = formatAddressee({
+    fullName: 'Петрова Анна Сергеевна',
+    gender: GENDER_FEMALE,
+    senderFullName: 'Иванов Иван Петрович',
+  })
+  assert(rSafeMaleSender.blocks.from.includes('от Иванова Ивана Петровича'), 'V2: safe male sender is declined to genitive')
+  assert(!rSafeMaleSender.blocks.from.includes('от от'), 'V2: safe male sender has no duplicated "от"')
+
+  const rSafeFemaleRecipient = formatAddressee({ fullName: 'Петрова Анна Сергеевна', gender: GENDER_FEMALE })
+  assert(rSafeFemaleRecipient.blocks.to.includes('Петровой Анне Сергеевне'), 'V3: safe female recipient is declined to dative')
+  assert(!rSafeFemaleRecipient.warnings.some((w) => w.code === WARNING_CODES.NAME_CASE_UNCERTAIN), 'V3: safe female recipient has no name-case warning')
+
+  const rSafeFemaleSender = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    gender: GENDER_MALE,
+    senderFullName: 'Петрова Анна Сергеевна',
+  })
+  assert(rSafeFemaleSender.blocks.from.includes('от Петровой Анны Сергеевны'), 'V4: safe female sender is declined to genitive')
+
+  const rManualCase = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    gender: GENDER_MALE,
+    recipientDativeName: 'Иванову Ивану Петровичу',
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderGenitiveName: 'от Петровой Анны Сергеевны',
+  })
+  assert(rManualCase.blocks.to.includes('Иванову Ивану Петровичу'), 'V5: manual recipient dative form is used')
+  assert(rManualCase.blocks.from.includes('от Петровой Анны Сергеевны'), 'V5: manual sender genitive form is used')
+  assert(!rManualCase.blocks.from.includes('от от'), 'V5: manual sender genitive form does not duplicate "от"')
+  assert(rManualCase.warnings.filter((w) => w.code === WARNING_CODES.NAME_CASE_MANUAL).length >= 2, 'V5: manual case warnings are present')
+  assert(rManualCase.confidence === 0.95, 'V5: manual case form is not treated as an error')
+  const rManualDocument = formatAddressee({
+    fullName: 'Иванов Иван Петрович',
+    gender: GENDER_MALE,
+    documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
+    recipientDativeName: 'Иванову Ивану Петровичу',
+    senderFullName: 'Петрова Анна Сергеевна',
+    senderGenitiveName: 'Петровой Анны Сергеевны',
+  })
+  assert(rManualDocument.blocks.documentText.includes('Иванову Ивану Петровичу'), 'V5: documentText uses manual recipient form')
+  assert(rManualDocument.blocks.documentText.includes('Петровой Анны Сергеевны'), 'V5: documentText uses manual sender form')
+
+  const riskyNameChecks = [
+    ['Иванов И. И.', GENDER_MALE, WARNING_CODES.INITIALS_DETECTED],
+    ['John Smith', GENDER_MALE, WARNING_CODES.LATIN_NAME],
+    ['Цой Виктор Робертович', GENDER_MALE, WARNING_CODES.UNDECLINABLE_SURNAME],
+    ['Ли Анна Сергеевна', GENDER_FEMALE, WARNING_CODES.UNDECLINABLE_SURNAME],
+    ['Салтыков-Щедрин Михаил Евграфович', GENDER_MALE, WARNING_CODES.HYPHENATED_NAME_REVIEW],
+  ]
+  for (const [fullName, gender, warningCode] of riskyNameChecks) {
+    const r = formatAddressee({ fullName, gender })
+    assert(r.warnings.some((w) => w.code === warningCode), `V6: risky "${fullName}" gives ${warningCode}`)
+    assert(r.confidence < 0.95, `V6: risky "${fullName}" does not keep high confidence`)
+    assert(r.blocks.to.includes(fullName), `V6: risky "${fullName}" is preserved in to block`)
+  }
+
+  const directRisky = [
+    ['Иванов И. И.', GENDER_MALE, WARNING_CODES.INITIALS_DETECTED],
+    ['John Smith', GENDER_MALE, WARNING_CODES.LATIN_NAME],
+    ['Цой Виктор Робертович', GENDER_MALE, WARNING_CODES.UNDECLINABLE_SURNAME],
+    ['Ли Анна Сергеевна', GENDER_FEMALE, WARNING_CODES.UNDECLINABLE_SURNAME],
+    ['Салтыков-Щедрин Михаил Евграфович', GENDER_MALE, WARNING_CODES.HYPHENATED_NAME_REVIEW],
+  ]
+  for (const [fullName, gender, warningCode] of directRisky) {
+    const d = declineRussianFullName(fullName, gender, CASE_DATIVE)
+    assert(d.declined === fullName, `V7: direct declension preserves risky "${fullName}"`)
+    assert(d.warnings.some((w) => w.code === warningCode), `V7: direct declension reports ${warningCode}`)
+  }
+
+  const unsupportedCase = declineRussianFullName('Иванов Иван Петрович', GENDER_MALE, 'instrumental')
+  assert(unsupportedCase.declined === 'Иванов Иван Петрович', 'V8: unsupported case returns original full name')
+  assert(unsupportedCase.warned && unsupportedCase.reason === 'unsupported_case', 'V8: unsupported case is explicitly warned')
+
+  const extraParts = declineRussianFullName('Иванов Иван Петрович младший', GENDER_MALE, CASE_DATIVE)
+  assert(extraParts.declined === 'Иванов Иван Петрович младший', 'V9: extra name parts are preserved')
+  assert(extraParts.warnings.some((w) => w.code === WARNING_CODES.EXTRA_NAME_PARTS), 'V9: extra name parts are warned')
+
+  const assertDeclines = (fullName, gender, targetCase, expected, label) => {
+    const r = declineRussianFullName(fullName, gender, targetCase)
+    assert(r.declined === expected, label)
+    assert(!r.warned, `${label} has no warning`)
+    assert(r.confidence === 0.95, `${label} has high confidence`)
+  }
+
+  const maleSurnameCases = [
+    ['Иванов', 'Иванову', 'Иванова'],
+    ['Петров', 'Петрову', 'Петрова'],
+    ['Сергеев', 'Сергееву', 'Сергеева'],
+    ['Ильин', 'Ильину', 'Ильина'],
+  ]
+  for (const [surname, dative, genitive] of maleSurnameCases) {
+    assertDeclines(`${surname} Иван Петрович`, GENDER_MALE, CASE_DATIVE, `${dative} Ивану Петровичу`, `V10: male surname ${surname} dative`)
+    assertDeclines(`${surname} Иван Петрович`, GENDER_MALE, CASE_GENITIVE, `${genitive} Ивана Петровича`, `V10: male surname ${surname} genitive`)
+  }
+
+  const femaleSurnameCases = [
+    ['Петрова', 'Петровой', 'Петровой'],
+    ['Иванова', 'Ивановой', 'Ивановой'],
+    ['Сергеева', 'Сергеевой', 'Сергеевой'],
+    ['Ильина', 'Ильиной', 'Ильиной'],
+  ]
+  for (const [surname, dative, genitive] of femaleSurnameCases) {
+    assertDeclines(`${surname} Анна Сергеевна`, GENDER_FEMALE, CASE_DATIVE, `${dative} Анне Сергеевне`, `V11: female surname ${surname} dative`)
+    assertDeclines(`${surname} Анна Сергеевна`, GENDER_FEMALE, CASE_GENITIVE, `${genitive} Анны Сергеевны`, `V11: female surname ${surname} genitive`)
+  }
+
+  const maleFirstNameCases = [
+    ['Иван', 'Ивану', 'Ивана'],
+    ['Сергей', 'Сергею', 'Сергея'],
+    ['Александр', 'Александру', 'Александра'],
+    ['Алексей', 'Алексею', 'Алексея'],
+    ['Дмитрий', 'Дмитрию', 'Дмитрия'],
+    ['Пётр', 'Петру', 'Петра'],
+    ['Петр', 'Петру', 'Петра'],
+  ]
+  for (const [name, dative, genitive] of maleFirstNameCases) {
+    assertDeclines(`Иванов ${name} Петрович`, GENDER_MALE, CASE_DATIVE, `Иванову ${dative} Петровичу`, `V12: male first name ${name} dative`)
+    assertDeclines(`Иванов ${name} Петрович`, GENDER_MALE, CASE_GENITIVE, `Иванова ${genitive} Петровича`, `V12: male first name ${name} genitive`)
+  }
+
+  const femaleFirstNameCases = [
+    ['Анна', 'Анне', 'Анны'],
+    ['Мария', 'Марии', 'Марии'],
+    ['Ольга', 'Ольге', 'Ольги'],
+    ['Елена', 'Елене', 'Елены'],
+    ['Наталья', 'Наталье', 'Натальи'],
+    ['Юлия', 'Юлии', 'Юлии'],
+    ['Анастасия', 'Анастасии', 'Анастасии'],
+  ]
+  for (const [name, dative, genitive] of femaleFirstNameCases) {
+    assertDeclines(`Петрова ${name} Сергеевна`, GENDER_FEMALE, CASE_DATIVE, `Петровой ${dative} Сергеевне`, `V13: female first name ${name} dative`)
+    assertDeclines(`Петрова ${name} Сергеевна`, GENDER_FEMALE, CASE_GENITIVE, `Петровой ${genitive} Сергеевны`, `V13: female first name ${name} genitive`)
+  }
+
+  const malePatronymicCases = [
+    ['Петрович', 'Петровичу', 'Петровича'],
+    ['Иванович', 'Ивановичу', 'Ивановича'],
+    ['Сергеевич', 'Сергеевичу', 'Сергеевича'],
+  ]
+  for (const [patronymic, dative, genitive] of malePatronymicCases) {
+    assertDeclines(`Иванов Иван ${patronymic}`, GENDER_MALE, CASE_DATIVE, `Иванову Ивану ${dative}`, `V14: male patronymic ${patronymic} dative`)
+    assertDeclines(`Иванов Иван ${patronymic}`, GENDER_MALE, CASE_GENITIVE, `Иванова Ивана ${genitive}`, `V14: male patronymic ${patronymic} genitive`)
+  }
+
+  const femalePatronymicCases = [
+    ['Сергеевна', 'Сергеевне', 'Сергеевны'],
+    ['Ивановна', 'Ивановне', 'Ивановны'],
+    ['Петровна', 'Петровне', 'Петровны'],
+  ]
+  for (const [patronymic, dative, genitive] of femalePatronymicCases) {
+    assertDeclines(`Петрова Анна ${patronymic}`, GENDER_FEMALE, CASE_DATIVE, `Петровой Анне ${dative}`, `V15: female patronymic ${patronymic} dative`)
+    assertDeclines(`Петрова Анна ${patronymic}`, GENDER_FEMALE, CASE_GENITIVE, `Петровой Анны ${genitive}`, `V15: female patronymic ${patronymic} genitive`)
+  }
 
   // Summary
   console.log('\n=== Results ===')

@@ -1485,6 +1485,8 @@
     "formDescription": "Fill in the recipient details and choose the salutation format. The result appears on the right.",
     "recipientTitle": "Recipient details",
     "senderTitle": "Sender details",
+    "caseFormsTitle": "Additional name forms",
+    "caseFormsDescription": "Fill these only when you need to replace automatic declension.",
     "settingsTitle": "Salutation settings",
     "resultKicker": "Ready to copy",
     "resultTitle": "Document block",
@@ -1514,8 +1516,8 @@
       "senderFullName": "Sender Full Name",
       "senderPosition": "Sender Position",
       "senderOrganization": "Sender Organization",
-      "recipientDativeName": "Recipient Name in Dative Case",
-      "senderGenitiveName": "Sender Name in Genitive Case"
+      "recipientDativeName": "Addressee name in dative form",
+      "senderGenitiveName": "Sender name in genitive form"
     },
     "placeholders": {
       "fullName": "John Smith",
@@ -1602,6 +1604,10 @@
     },
     "warningsTitle": "Review ambiguous details",
     "warningsDescription": "The tool helps prepare a document block, but ambiguous cases should still be checked manually.",
+    "warningCodes": {
+      "NAME_CASE_MANUAL": "The name case form was entered manually.",
+      "NAME_CASE_UNCERTAIN": "Automatic name declension needs manual review."
+    },
     "manualReview": "Manual review is recommended before sending or printing.",
     "confidence": {
       "label": "Result reliability",
