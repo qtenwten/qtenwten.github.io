@@ -498,7 +498,7 @@ function run() {
     gender: GENDER_MALE,
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   })
-  assert(rWithSender.blocks.from.includes('Петрова'), 'U1: from block contains sender full name')
+  assert(rWithSender.blocks.from.includes('Петровой'), 'U1: from block contains sender full name in genitive')
   assert(rWithSender.blocks.from.includes('менеджер'), 'U2: from block contains sender position')
   assert(rWithSender.blocks.from.includes('Альфа'), 'U3: from block contains sender organization')
 
@@ -512,7 +512,7 @@ function run() {
     gender: GENDER_MALE,
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
   })
-  assert(rWithSenderApp.blocks.documentText.includes('Петрова'), 'U4: application documentText contains sender data')
+  assert(rWithSenderApp.blocks.documentText.includes('Петровой'), 'U4: application documentText contains sender data in genitive')
 
   const rEmptySender = formatAddressee({
     fullName: 'Иванов Иван Петрович',

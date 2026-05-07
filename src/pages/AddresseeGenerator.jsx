@@ -34,7 +34,7 @@ import {
 import './AddresseeGenerator.css'
 
 const EXAMPLES = [
-  {
+{
     key: 'businessLetter',
     fullName: 'Иванов Иван Петрович',
     position: 'генеральный директор',
@@ -46,6 +46,8 @@ const EXAMPLES = [
     senderFullName: 'Петрова Анна Сергеевна',
     senderPosition: 'менеджер по продажам',
     senderOrganization: 'ООО «Альфа»',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   },
   {
     key: 'application',
@@ -59,6 +61,8 @@ const EXAMPLES = [
     senderFullName: 'Сидоров Пётр Алексеевич',
     senderPosition: 'специалист',
     senderOrganization: 'ООО «Вектор»',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   },
   {
     key: 'neutral',
@@ -72,6 +76,8 @@ const EXAMPLES = [
     senderFullName: '',
     senderPosition: '',
     senderOrganization: '',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   },
 ]
 
@@ -94,7 +100,7 @@ function parseBulkInput(text) {
   const delimiter = detectDelimiter(lines[0])
   const firstRow = parseCsvLine(lines[0], delimiter)
 
-  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization']
+  const headerCells = ['fullname', 'position', 'organization', 'gender', 'greetingmode', 'punctuation', 'documenttemplate', 'senderfullname', 'senderposition', 'senderorganization', 'recipientdativename', 'sendergenitivename']
   const hasHeader = firstRow.some((cell) =>
     headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
   )
@@ -123,6 +129,8 @@ function parseBulkInput(text) {
     senderFullName: '',
     senderPosition: '',
     senderOrganization: '',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   }
 
   const fieldMap = {
@@ -136,6 +144,8 @@ function parseBulkInput(text) {
     7: 'senderFullName',
     8: 'senderPosition',
     9: 'senderOrganization',
+    10: 'recipientDativeName',
+    11: 'senderGenitiveName',
   }
 
   const rows = []
@@ -146,7 +156,7 @@ function parseBulkInput(text) {
     const row = { ...defaultFields }
     let hasData = false
 
-    for (let j = 0; j < cells.length && j < 10; j++) {
+    for (let j = 0; j < cells.length && j < 12; j++) {
       const fieldName = fieldMap[j]
       if (fieldName && cells[j]) {
         row[fieldName] = cells[j]
@@ -164,7 +174,7 @@ function parseBulkInput(text) {
   }
 
   const warnings = []
-  const knownColumnCount = 10
+  const knownColumnCount = 12
   for (let i = 0; i < dataLines.length; i++) {
     const cells = parseCsvLine(dataLines[i], delimiter)
     if (cells.length > knownColumnCount) {
@@ -177,7 +187,7 @@ function parseBulkInput(text) {
 }
 
 function buildBulkCsvContent(results) {
-  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
+  const header = ['fullName', 'position', 'organization', 'gender', 'greetingMode', 'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition', 'senderOrganization', 'recipientDativeName', 'senderGenitiveName', 'to', 'from', 'greeting', 'letter', 'documentText', 'confidence', 'warnings']
   const rows = [header]
 
   for (const r of results) {
@@ -193,6 +203,8 @@ function buildBulkCsvContent(results) {
       r.input.senderFullName || '',
       r.input.senderPosition || '',
       r.input.senderOrganization || '',
+      r.input.recipientDativeName || '',
+      r.input.senderGenitiveName || '',
       blocks.to || '',
       blocks.from || '',
       blocks.greeting || '',
@@ -222,6 +234,8 @@ function AddresseeGenerator() {
     senderFullName: '',
     senderPosition: '',
     senderOrganization: '',
+    recipientDativeName: '',
+    senderGenitiveName: '',
   })
   const [result, setResult] = useState(null)
   const [activeExampleKey, setActiveExampleKey] = useState('')
@@ -292,6 +306,8 @@ function AddresseeGenerator() {
       senderFullName: '',
       senderPosition: '',
       senderOrganization: '',
+      recipientDativeName: '',
+      senderGenitiveName: '',
     })
     setResult(null)
     setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
@@ -755,6 +771,38 @@ function AddresseeGenerator() {
                   aria-describedby="addrSenderOrganizationHint"
                 />
                 <p className="addr-gen-hint" id="addrSenderOrganizationHint">{t('addresseeGenerator.hints.sender')}</p>
+              </div>
+
+              <div className="addr-gen-field">
+                <label className="addr-gen-label" htmlFor="addrRecipientDativeName">
+                  {t('addresseeGenerator.fields.recipientDativeName')}
+                </label>
+                <input
+                  id="addrRecipientDativeName"
+                  className="addr-gen-input"
+                  type="text"
+                  value={form.recipientDativeName}
+                  onChange={(e) => handleFieldChange('recipientDativeName', e.target.value)}
+                  placeholder={t('addresseeGenerator.placeholders.recipientDativeName')}
+                  aria-describedby="addrRecipientDativeNameHint"
+                />
+                <p className="addr-gen-hint" id="addrRecipientDativeNameHint">{t('addresseeGenerator.hints.recipientDativeName')}</p>
+              </div>
+
+              <div className="addr-gen-field">
+                <label className="addr-gen-label" htmlFor="addrSenderGenitiveName">
+                  {t('addresseeGenerator.fields.senderGenitiveName')}
+                </label>
+                <input
+                  id="addrSenderGenitiveName"
+                  className="addr-gen-input"
+                  type="text"
+                  value={form.senderGenitiveName}
+                  onChange={(e) => handleFieldChange('senderGenitiveName', e.target.value)}
+                  placeholder={t('addresseeGenerator.placeholders.senderGenitiveName')}
+                  aria-describedby="addrSenderGenitiveNameHint"
+                />
+                <p className="addr-gen-hint" id="addrSenderGenitiveNameHint">{t('addresseeGenerator.hints.senderGenitiveName')}</p>
               </div>
             </section>
 

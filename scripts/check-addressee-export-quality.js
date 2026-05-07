@@ -161,7 +161,7 @@ async function main() {
   assert(txtText.includes('Отправитель'), 'TXT: has sender section header');
   assert(txtText.includes('Обращение'), 'TXT: has greeting section header');
   assert(txtText.includes('Готовый шаблон'), 'TXT: has document template section header');
-  assert(txtText.includes('Петрова'), 'TXT: contains sender full name');
+  assert(txtText.includes('Петровой'), 'TXT: contains sender full name in genitive');
   assert(txtText.includes('менеджер'), 'TXT: contains sender position');
   assert(txtText.includes('Альфа'), 'TXT: contains sender organization');
   assert(!txtText.includes('undefined'), 'TXT: no undefined values');
@@ -314,7 +314,7 @@ async function main() {
   assert(bulkRows[0].length > 0, 'CSV bulk: row 1 has data');
   assert(bulkRows[1].length > 0, 'CSV bulk: row 2 has data');
   assert(bulkRows[0][1].includes('Иванов'), 'CSV bulk: row 1 has to block with name');
-  assert(bulkRows[1][1].includes('Петрова'), 'CSV bulk: row 2 has to block with name');
+  assert(bulkRows[1][1].includes('Петровой'), 'CSV bulk: row 2 has to block with name in dative');
   assert(bulkRows[0][2].includes('Петров'), 'CSV bulk: row 1 has sender data (from)');
   assert(bulkRows[1][2].includes('Сидоров'), 'CSV bulk: row 2 has sender data (from)');
   assert(bulkRows[0][3].length > 0, 'CSV bulk: row 1 documentText is non-empty');
@@ -340,7 +340,7 @@ async function main() {
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   });
   const maleToBlock = maleResult.blocks.to || '';
-  assert(maleToBlock.includes('Иванов Иван Петрович'), 'FIO: male name preserved in to block (nominative)');
+  assert(maleToBlock.includes('Иванову Ивану Петровичу'), 'FIO: male name declined to dative');
   assert(maleToBlock.includes('директору'), 'FIO: position declined to dative (директору)');
   assert(maleResult.warnings.length === 0 || maleResult.confidence >= 0.75, 'FIO: complete male name has reasonable confidence');
 
@@ -354,7 +354,7 @@ async function main() {
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   });
   const femaleToBlock = femaleResult.blocks.to || '';
-  assert(femaleToBlock.includes('Петрова Анна Сергеевна'), 'FIO: female name preserved in to block (nominative)');
+  assert(femaleToBlock.includes('Петровой Анне Сергеевне'), 'FIO: female name declined to dative');
   assert(femaleToBlock.includes('бухгалтеру'), 'FIO: female position declined (бухгалтеру)');
   assert(femaleResult.warnings.length === 0 || femaleResult.confidence >= 0.75, 'FIO: complete female name has reasonable confidence');
 

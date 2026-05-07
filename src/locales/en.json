@@ -1513,7 +1513,9 @@
       "punctuation": "Punctuation after Greeting",
       "senderFullName": "Sender Full Name",
       "senderPosition": "Sender Position",
-      "senderOrganization": "Sender Organization"
+      "senderOrganization": "Sender Organization",
+      "recipientDativeName": "Recipient Name in Dative Case",
+      "senderGenitiveName": "Sender Name in Genitive Case"
     },
     "placeholders": {
       "fullName": "John Smith",
@@ -1521,13 +1523,17 @@
       "organization": "Company LLC",
       "senderFullName": "Jane Doe",
       "senderPosition": "Sales Manager",
-      "senderOrganization": "Alpha LLC"
+      "senderOrganization": "Alpha LLC",
+      "recipientDativeName": "Ivanov Ivan Petrovich (dative)",
+      "senderGenitiveName": "Petrova Anna Sergeevna (genitive)"
     },
     "hints": {
       "fullName": "Use the full surname, first name and patronymic when available.",
       "position": "For example: chief accountant, sales director, specialist.",
       "organization": "Enter the legal entity or department exactly as it should appear in the document.",
-      "sender": "Optional. These fields will appear in the \"From\" block."
+      "sender": "Optional. These fields will appear in the \"From\" block.",
+      "recipientDativeName": "Optional. Leave empty to auto-decline. Enter manually if auto-declension is incorrect.",
+      "senderGenitiveName": "Optional. Leave empty to auto-decline. Enter manually if auto-declension is incorrect."
     },
     "gender": {
       "male": "Male",
@@ -1606,7 +1612,7 @@
 "bulk": {
       "title": "Bulk CSV Processing",
       "description": "Paste up to 50 rows with full name, position and organization. The tool will process the data in your browser and show a preview.",
-      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization\nJohn Smith;CEO;Acme Ltd;male;namePatronymic;!;businessLetter;Jane Cooper;Manager;Acme Ltd\nJane Cooper;Sales Manager;Beta LLC;female;namePatronymic;!;application;;\nMichael Brown;Account Manager;Vector Ltd;male;fullName;,;businessLetter;;;",
+      "placeholder": "fullName;position;organization;gender;greetingMode;punctuation;documentTemplate;senderFullName;senderPosition;senderOrganization;recipientDativeName;senderGenitiveName\nJohn Smith;CEO;Acme Ltd;male;namePatronymic;!;businessLetter;Jane Cooper;Manager;Acme Ltd;;\nJane Cooper;Sales Manager;Beta LLC;female;namePatronymic;!;application;;;;\nMichael Brown;Account Manager;Vector Ltd;male;fullName;,;businessLetter;;;;",
       "hint": "Maximum 50 rows. Separator: semicolon.",
       "process": "Process CSV",
       "clear": "Clear CSV",

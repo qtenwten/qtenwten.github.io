@@ -87,7 +87,8 @@ export function buildSingleCsvExport(result, form, overrides) {
   const header = [
     'fullName', 'position', 'organization', 'gender', 'greetingMode',
     'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition',
-    'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText',
+    'senderOrganization', 'recipientDativeName', 'senderGenitiveName',
+    'to', 'from', 'greeting', 'letter', 'documentText',
     'confidence', 'warnings',
   ];
   const row = [
@@ -101,6 +102,8 @@ export function buildSingleCsvExport(result, form, overrides) {
     form.senderFullName || '',
     form.senderPosition || '',
     form.senderOrganization || '',
+    form.recipientDativeName || '',
+    form.senderGenitiveName || '',
     blocks.to || '',
     blocks.from || '',
     blocks.greeting || '',
@@ -118,7 +121,8 @@ export function buildBulkCsvExport(results) {
   const header = [
     'fullName', 'position', 'organization', 'gender', 'greetingMode',
     'punctuation', 'documentTemplate', 'senderFullName', 'senderPosition',
-    'senderOrganization', 'to', 'from', 'greeting', 'letter', 'documentText',
+    'senderOrganization', 'recipientDativeName', 'senderGenitiveName',
+    'to', 'from', 'greeting', 'letter', 'documentText',
     'confidence', 'warnings',
   ];
   const rows = [header];
@@ -135,6 +139,8 @@ export function buildBulkCsvExport(results) {
       r.input?.senderFullName || '',
       r.input?.senderPosition || '',
       r.input?.senderOrganization || '',
+      r.input?.recipientDativeName || '',
+      r.input?.senderGenitiveName || '',
       blocks.to || '',
       blocks.from || '',
       blocks.greeting || '',

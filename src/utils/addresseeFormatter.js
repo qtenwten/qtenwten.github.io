@@ -26,6 +26,14 @@ import {
   DOCUMENT_TEMPLATE_ORDER,
 } from './addresseeTypes.js';
 
+import {
+  declineRussianFullName,
+  parseRussianFullName,
+  isRiskyNameForDeclension,
+  CASE_DATIVE,
+  CASE_GENITIVE,
+} from './addresseeNameCases.js';
+
 function splitFullName(fullName) {
   if (!fullName || typeof fullName !== 'string') {
     return [];
@@ -203,7 +211,7 @@ function buildGreeting(parsedName, gender, greetingMode, punctuation, autoDetect
   return `${conjunction}${punct}`;
 }
 
-function buildToBlock(organization, position, fullName, gender) {
+function buildToBlock(organization, position, fullName, gender, recipientDativeName) {
   const lines = [];
   const warnings = [];
 
@@ -233,13 +241,46 @@ function buildToBlock(organization, position, fullName, gender) {
   const parsedName = parseFullName(fullName);
   const nameParts = splitFullName(fullName);
   const hasExtraParts = parsedName.extraParts && parsedName.extraParts.length > 0;
+  const hasInitialsFlag = hasInitials(fullName);
+  const hasHyphenatedFlag = hasHyphenatedPart(fullName);
+  const isLatinFlag = isFullyLatin(fullName);
+  const isRisky = isRiskyNameForDeclension(parsedName, gender, hasInitialsFlag, hasHyphenatedFlag, isLatinFlag);
 
-  if (hasExtraParts) {
+  if (recipientDativeName && recipientDativeName.trim()) {
+    lines.push(recipientDativeName);
+    warnings.push({
+      code: WARNING_CODES.NAME_CASE_MANUAL,
+      message: 'ФИО адресата в дательном падеже указано вручную.',
+    });
+  } else if (hasExtraParts) {
     const allParts = [parsedName.surname, parsedName.name, parsedName.patronymic].filter(Boolean);
     allParts.push(...parsedName.extraParts);
     lines.push(allParts.join(' '));
+    if (!isRisky) {
+      warnings.push({
+        code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+        message: 'Автоматическое склонение ФИО не применяется (рискованное имя). Проверьте вручную.',
+      });
+    }
   } else if (parsedName.surname && parsedName.name && parsedName.patronymic) {
-    lines.push(`${parsedName.surname} ${parsedName.name} ${parsedName.patronymic}`);
+    if (isRisky) {
+      lines.push(`${parsedName.surname} ${parsedName.name} ${parsedName.patronymic}`);
+      warnings.push({
+        code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+        message: 'Автоматическое склонение ФИО не применяется (рискованное имя). Проверьте вручную.',
+      });
+    } else {
+      const { declined, warned: declWarned, reason } = declineRussianFullName(fullName, gender, CASE_DATIVE);
+      if (declWarned) {
+        lines.push(`${parsedName.surname} ${parsedName.name} ${parsedName.patronymic}`);
+        warnings.push({
+          code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+          message: `Автоматическое склонение не удалось: ${reason}. Проверьте вручную.`,
+        });
+      } else {
+        lines.push(declined);
+      }
+    }
   } else if (parsedName.surname && parsedName.name) {
     lines.push(`${parsedName.surname} ${parsedName.name}`);
   } else if (fullName) {
@@ -253,12 +294,52 @@ function buildToBlock(organization, position, fullName, gender) {
   };
 }
 
-function buildFromBlock(senderFullName, senderPosition, senderOrganization) {
+function buildFromBlock(senderFullName, senderPosition, senderOrganization, senderGenitiveName) {
   const lines = [];
   const warnings = [];
 
-  if (senderFullName) {
-    lines.push(`от ${senderFullName}`);
+  if (senderGenitiveName && senderGenitiveName.trim()) {
+    lines.push(`от ${senderGenitiveName}`);
+    warnings.push({
+      code: WARNING_CODES.NAME_CASE_MANUAL,
+      message: 'ФИО отправителя в родительном падеже указано вручную.',
+    });
+  } else if (senderFullName) {
+    const parsedSenderName = parseFullName(senderFullName);
+    const senderNameParts = splitFullName(senderFullName);
+    const senderHasExtraParts = parsedSenderName.extraParts && parsedSenderName.extraParts.length > 0;
+    const senderHasInitials = hasInitials(senderFullName);
+    const senderHasHyphenated = hasHyphenatedPart(senderFullName);
+    const senderIsLatin = isFullyLatin(senderFullName);
+    const senderGender = detectGenderByName(parsedSenderName.name || parsedSenderName.surname);
+    const senderIsRisky = isRiskyNameForDeclension(parsedSenderName, senderGender, senderHasInitials, senderHasHyphenated, senderIsLatin);
+
+    if (senderIsRisky) {
+      lines.push(`от ${senderFullName}`);
+      warnings.push({
+        code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+        message: 'Автоматическое склонение ФИО отправителя не применяется (рискованное имя). Проверьте вручную.',
+      });
+    } else if (senderHasExtraParts) {
+      lines.push(`от ${senderFullName}`);
+      warnings.push({
+        code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+        message: 'Автоматическое склонение ФИО отправителя не применяется (рискованное имя). Проверьте вручную.',
+      });
+    } else if (parsedSenderName.surname && parsedSenderName.name && parsedSenderName.patronymic) {
+      const { declined, warned: declWarned, reason } = declineRussianFullName(senderFullName, senderGender, CASE_GENITIVE);
+      if (declWarned) {
+        lines.push(`от ${senderFullName}`);
+        warnings.push({
+          code: WARNING_CODES.NAME_CASE_UNCERTAIN,
+          message: `Автоматическое склонение ФИО отправителя не удалось: ${reason}. Проверьте вручную.`,
+        });
+      } else {
+        lines.push(`от ${declined}`);
+      }
+    } else {
+      lines.push(`от ${senderFullName}`);
+    }
   }
 
   if (senderPosition) {
@@ -400,6 +481,8 @@ export function formatAddressee(input) {
     senderFullName = '',
     senderPosition = '',
     senderOrganization = '',
+    recipientDativeName = '',
+    senderGenitiveName = '',
   } = input || {};
 
   const warnings = [];
@@ -477,10 +560,10 @@ export function formatAddressee(input) {
     });
   }
 
-  const toResult = buildToBlock(organization, position, fullName, gender);
+  const toResult = buildToBlock(organization, position, fullName, gender, recipientDativeName);
   warnings.push(...toResult.warnings);
 
-  const fromResult = buildFromBlock(senderFullName, senderPosition, senderOrganization);
+  const fromResult = buildFromBlock(senderFullName, senderPosition, senderOrganization, senderGenitiveName);
   warnings.push(...fromResult.warnings);
 
   let greeting = '';
@@ -534,6 +617,7 @@ export function formatAddressee(input) {
       WARNING_CODES.LATIN_NAME,
       WARNING_CODES.INITIALS_DETECTED,
       WARNING_CODES.HYPHENATED_NAME_REVIEW,
+      WARNING_CODES.NAME_CASE_UNCERTAIN,
     ].includes(w.code)
   );
   if (hasIncompleteName) {
