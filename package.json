@@ -15,6 +15,7 @@
     "check:addressee": "node scripts/check-addressee-formatter.js",
     "check:addressee:integration": "node scripts/check-addressee-integration.js",
     "verify:articles-html": "node scripts/verify-articles-html.js",
+    "verify:article-json": "node scripts/verify-article-json.js",
     "verify:production-articles": "node scripts/verify-production-articles.cjs",
     "generate:pages": "node scripts/generate-pages.js"
   },

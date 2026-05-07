@@ -24,6 +24,9 @@ function parseMarkdown(content) {
   let codeLanguage = ''
   let inCodeBlock = false
   let blockquoteLines = []
+  let tableRows = []
+  let inTable = false
+  let tableAligns = []
 
   const flushParagraph = () => {
     if (!paragraphLines.length) return
@@ -54,6 +57,14 @@ function parseMarkdown(content) {
     if (!blockquoteLines.length) return
     blocks.push({ type: 'blockquote', text: blockquoteLines.join(' ').trim() })
     blockquoteLines = []
+  }
+
+  const flushTable = () => {
+    if (!tableRows.length) return
+    blocks.push({ type: 'table', rows: tableRows, aligns: tableAligns })
+    tableRows = []
+    tableAligns = []
+    inTable = false
   }
 
   lines.forEach((line) => {
@@ -119,7 +130,51 @@ function parseMarkdown(content) {
       flushParagraph()
       flushList()
       flushOrderedList()
+      flushTable()
       blockquoteLines.push(trimmedLine.slice(1).trim())
+      return
+    }
+
+    const isTableSeparator = trimmedLine.match(/^\|[\s:-]+\|[\s:-]+\|[\s:-]*\|?\s*$/)
+    const isTableRow = trimmedLine.startsWith('|') && trimmedLine.endsWith('|')
+
+    if (isTableRow) {
+      flushParagraph()
+      flushList()
+      flushOrderedList()
+      flushBlockquote()
+      if (isTableSeparator) {
+        const cells = trimmedLine.split('|').slice(1, -1)
+        tableAligns = cells.map((cell) => {
+          const trimmed = cell.trim()
+          if (trimmed.startsWith(':') && trimmed.endsWith(':')) return 'center'
+          if (trimmed.endsWith(':')) return 'right'
+          return 'left'
+        })
+        inTable = true
+      } else {
+        const cells = trimmedLine.split('|').slice(1, -1).map((c) => c.trim())
+        if (cells.some((c) => c.includes('---'))) {
+          flushTable()
+        } else {
+          if (inTable || tableRows.length > 0) {
+            tableRows.push(cells)
+          } else {
+            blocks.push({ type: 'paragraph', text: paragraphLines.join(' ').trim() })
+            paragraphLines = []
+          }
+        }
+      }
+      return
+    }
+
+    if (trimmedLine === '---' || trimmedLine === '***' || trimmedLine === '___') {
+      flushParagraph()
+      flushList()
+      flushOrderedList()
+      flushBlockquote()
+      flushTable()
+      blocks.push({ type: 'hr' })
       return
     }
 
@@ -145,6 +200,7 @@ function parseMarkdown(content) {
   flushList()
   flushOrderedList()
   flushBlockquote()
+  flushTable()
   if (inCodeBlock) flushCodeBlock()
 
   return blocks
@@ -302,6 +358,31 @@ function renderMarkdownToHtml(content, { title = '', lead = '' } = {}) {
 
     if (block.type === 'blockquote') {
       return `<blockquote><p>${renderInlineMarkdown(block.text)}</p></blockquote>`
+    }
+
+    if (block.type === 'table') {
+      const headerRow = block.rows[0] || []
+      const dataRows = block.rows.slice(1)
+      const aligns = block.aligns || []
+
+      const theadCells = headerRow.map((cell, i) => {
+        const align = aligns[i] || 'left'
+        return `<th style="text-align:${align}">${renderInlineMarkdown(cell)}</th>`
+      }).join('')
+
+      const tbodyRows = dataRows.map((row) => {
+        const cells = row.map((cell, i) => {
+          const align = aligns[i] || 'left'
+          return `<td style="text-align:${align}">${renderInlineMarkdown(cell)}</td>`
+        }).join('')
+        return `<tr>${cells}</tr>`
+      }).join('')
+
+      return `<div class="article-table-wrap"><table class="article-table"><thead><tr>${theadCells}</tr></thead><tbody>${tbodyRows}</tbody></table></div>`
+    }
+
+    if (block.type === 'hr') {
+      return `<hr class="article-divider" />`
     }
 
     const ctaLink = getSingleMarkdownLink(block.text)
