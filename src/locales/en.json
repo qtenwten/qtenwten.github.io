@@ -1532,9 +1532,13 @@
       "label": "Document Type",
       "businessLetter": "Business Letter",
       "application": "Application",
+      "complaint": "Complaint",
+      "request": "Request",
+      "memo": "Memo",
+      "explanatoryNote": "Explanatory Note",
       "powerOfAttorney": "Power of Attorney",
-      "order": "Order",
-      "memo": "Memo"
+      "commercialOffer": "Commercial Offer",
+      "order": "Order"
     },
     "blocks": {
       "to": "To",
@@ -1579,6 +1583,15 @@
       }
     },
     "exportNote": "CSV, TXT and HTML exports are available now. DOCX export is coming soon.",
+    "statusMessages": {
+      "resultGenerated": "Result generated.",
+      "copied": "Result copied.",
+      "txtDownloaded": "TXT file downloaded.",
+      "htmlDownloaded": "HTML file downloaded.",
+      "csvDownloaded": "CSV file downloaded.",
+      "validationError": "Enter the recipient full name.",
+      "rowsProcessed": "Rows processed: {count}"
+    },
     "info": {
       "title": "How to use the Addressee Generator",
       "description": "The generator creates ready-to-use To, From and Salutation blocks for business letters, applications, orders and powers of attorney. It also highlights ambiguous cases that should be reviewed manually.",

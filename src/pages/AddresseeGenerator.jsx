@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
@@ -230,6 +230,9 @@ function AddresseeGenerator() {
   const [activeExampleKey, setActiveExampleKey] = useState('')
   const [copyAllState, setCopyAllState] = useState('idle')
   const [bulkInput, setBulkInput] = useState('')
+  const [fullNameError, setFullNameError] = useState(false)
+  const [statusMessage, setStatusMessage] = useState('')
+  const resultRef = useRef(null)
   const [bulkResults, setBulkResults] = useState([])
   const [bulkError, setBulkError] = useState(null)
   const [bulkSummary, setBulkSummary] = useState(null)
@@ -237,13 +240,41 @@ function AddresseeGenerator() {
   const handleFieldChange = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setActiveExampleKey('')
+    if (field === 'fullName' && value.trim()) {
+      setFullNameError(false)
+    }
   }, [])
+
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault()
+    if (!form.fullName || !form.fullName.trim()) {
+      setFullNameError(true)
+      setStatusMessage(t('addresseeGenerator.statusMessages.validationError'))
+      return
+    }
+    setFullNameError(false)
+    const formatted = formatAddressee(form)
+    setResult(formatted)
+    setCopyAllState('idle')
+    setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
+    if (resultRef.current) {
+      requestAnimationFrame(() => {
+        resultRef.current?.focus()
+      })
+    }
+  }, [form, t])
 
   const handleGenerate = useCallback(() => {
     const formatted = formatAddressee(form)
     setResult(formatted)
     setCopyAllState('idle')
-  }, [form])
+    setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
+    if (resultRef.current) {
+      requestAnimationFrame(() => {
+        resultRef.current?.focus()
+      })
+    }
+  }, [form, t])
 
   const handleClear = useCallback(() => {
     setForm({
@@ -274,6 +305,7 @@ function AddresseeGenerator() {
       setBulkError(error)
       setBulkResults([])
       setBulkSummary(null)
+      setStatusMessage(t('addresseeGenerator.bulk.tooManyRows'))
       return
     }
     if (rows.length === 0) {
@@ -291,7 +323,8 @@ function AddresseeGenerator() {
       total: processed.length,
       withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
     })
-  }, [bulkInput])
+    setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }))
+  }, [bulkInput, t])
 
   const handleDownloadBulkCsv = useCallback(() => {
     if (bulkResults.length === 0) return
@@ -324,7 +357,13 @@ function AddresseeGenerator() {
     setResult(formatted)
     setActiveExampleKey(example.key)
     setCopyAllState('idle')
-  }, [])
+    setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
+    if (resultRef.current) {
+      requestAnimationFrame(() => {
+        resultRef.current?.focus()
+      })
+    }
+  }, [t])
 
   const handleExportCsv = useCallback(() => {
     if (!result) return
@@ -359,7 +398,8 @@ function AddresseeGenerator() {
     link.click()
     link.remove()
     window.setTimeout(() => URL.revokeObjectURL(url), 0)
-  }, [result, form])
+    setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
+  }, [result, form, t])
 
   const copyAllText = useMemo(() => {
     if (!result) return ''
@@ -374,12 +414,13 @@ function AddresseeGenerator() {
     try {
       await navigator.clipboard.writeText(copyAllText)
       setCopyAllState('copied')
+      setStatusMessage(t('addresseeGenerator.statusMessages.copied'))
       setTimeout(() => setCopyAllState('idle'), 2000)
     } catch {
       setCopyAllState('error')
       setTimeout(() => setCopyAllState('idle'), 2000)
     }
-  }, [copyAllText])
+  }, [copyAllText, t])
 
   const escapeHtml = useCallback((value) => {
     if (value === null || value === undefined) return ''
@@ -414,7 +455,8 @@ function AddresseeGenerator() {
     link.click()
     link.remove()
     window.setTimeout(() => URL.revokeObjectURL(url), 0)
-  }, [result, getDocumentExportText])
+    setStatusMessage(t('addresseeGenerator.statusMessages.txtDownloaded'))
+  }, [result, getDocumentExportText, t])
 
   const handleExportHtml = useCallback(() => {
     if (!result) return
@@ -455,6 +497,7 @@ function AddresseeGenerator() {
     link.click()
     link.remove()
     window.setTimeout(() => URL.revokeObjectURL(url), 0)
+    setStatusMessage(t('addresseeGenerator.statusMessages.htmlDownloaded'))
   }, [result, form, getDocumentExportText, escapeHtml, t, language])
 
   const confidenceLabel = useMemo(() => {
@@ -552,6 +595,12 @@ function AddresseeGenerator() {
           ))}
         </div>
 
+        {statusMessage && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {statusMessage}
+          </div>
+        )}
+
         <ToolPageLayout className="addr-gen-layout">
           <ToolControls className="addr-gen-controls">
             <div className="addr-gen-panel-heading">
@@ -560,6 +609,7 @@ function AddresseeGenerator() {
               <p className="addr-gen-panel-desc">{t('addresseeGenerator.formDescription')}</p>
             </div>
 
+            <form onSubmit={handleSubmit} className="addr-gen-form">
             <section className="addr-gen-form-section" aria-labelledby="addrRecipientTitle">
               <div className="addr-gen-section-heading">
                 <Icon name="person" size={18} />
@@ -577,6 +627,7 @@ function AddresseeGenerator() {
                   value={form.fullName}
                   onChange={(e) => handleFieldChange('fullName', e.target.value)}
                   placeholder={t('addresseeGenerator.placeholders.fullName')}
+                  aria-invalid={fullNameError ? 'true' : undefined}
                   aria-describedby="addrFullNameHint"
                 />
                 <p className="addr-gen-hint" id="addrFullNameHint">{t('addresseeGenerator.hints.fullName')}</p>
@@ -702,7 +753,7 @@ function AddresseeGenerator() {
             </section>
 
             <div className="addr-gen-actions">
-              <button type="button" className="addr-gen-btn addr-gen-btn--primary" onClick={handleGenerate}>
+              <button type="submit" className="addr-gen-btn addr-gen-btn--primary">
                 <Icon name="refresh" size={18} />
                 {t('addresseeGenerator.buttons.generate')}
               </button>
@@ -710,6 +761,7 @@ function AddresseeGenerator() {
                 {t('addresseeGenerator.buttons.clear')}
               </button>
             </div>
+            </form>
 
             <section className="addr-gen-bulk" aria-labelledby="addrBulkTitle">
               <div className="addr-gen-bulk-header">
@@ -811,7 +863,7 @@ function AddresseeGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="addr-gen-results">
+              <div className="addr-gen-results" ref={resultRef} tabIndex={-1}>
                 <div className="addr-gen-result-top">
                   <div>
                     <span className="addr-gen-panel-kicker">{t('addresseeGenerator.resultKicker')}</span>
@@ -861,11 +913,12 @@ function AddresseeGenerator() {
                           <span className="addr-gen-block-label">{t('addresseeGenerator.resultBlockLabel')}</span>
                           <h3 className="addr-gen-block-title">{block.title}</h3>
                         </div>
-                        <CopyButton
-                          className="addr-gen-copy-btn"
-                          text={block.text}
-                          analytics={{ toolSlug: 'addressee-generator', linkType: 'result' }}
-                        />
+<CopyButton
+                           className="addr-gen-copy-btn"
+                           text={block.text}
+                           analytics={{ toolSlug: 'addressee-generator', linkType: 'result' }}
+                           onCopied={() => setStatusMessage(t('addresseeGenerator.statusMessages.copied'))}
+                         />
                       </div>
                       <pre className="addr-gen-block-content">{block.text}</pre>
                     </ResultSection>

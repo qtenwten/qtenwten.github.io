@@ -17,9 +17,13 @@ import {
   POSITION_DICTIONARY,
   DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   DOCUMENT_TEMPLATE_APPLICATION,
-  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
-  DOCUMENT_TEMPLATE_ORDER,
+  DOCUMENT_TEMPLATE_COMPLAINT,
+  DOCUMENT_TEMPLATE_REQUEST,
   DOCUMENT_TEMPLATE_MEMO,
+  DOCUMENT_TEMPLATE_EXPLANATORY_NOTE,
+  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+  DOCUMENT_TEMPLATE_COMMERCIAL_OFFER,
+  DOCUMENT_TEMPLATE_ORDER,
 } from './addresseeTypes.js';
 
 function splitFullName(fullName) {
@@ -104,6 +108,15 @@ function isPotentiallyUndeclinableSurname(surname) {
 function isAbbreviatedOrganization(organization) {
   if (!organization || typeof organization !== 'string') return false;
   return ABBREVIATION_PATTERNS.some((pattern) => pattern.test(organization.trim()));
+}
+
+function expandIPOrganization(organization) {
+  if (!organization || typeof organization !== 'string') return organization;
+  const trimmed = organization.trim();
+  if (/^ИП$/i.test(trimmed)) {
+    return 'Индивидуальному предпринимателю';
+  }
+  return organization;
 }
 
 function declinePosition(position) {
@@ -195,7 +208,15 @@ function buildToBlock(organization, position, fullName, gender) {
   const warnings = [];
 
   if (organization) {
-    lines.push(organization);
+    const orgAbbreviated = isAbbreviatedOrganization(organization);
+    const expandedOrg = expandIPOrganization(organization);
+    lines.push(expandedOrg);
+    if (orgAbbreviated) {
+      warnings.push({
+        code: WARNING_CODES.ORGANIZATION_ABBREVIATION,
+        message: `Организация "${organization}" содержит аббревиатуру. Проверьте, что форма обращения подходит для документа.`,
+      });
+    }
   }
 
   const { declined: declinedPosition, warned: positionWarned } = declinePosition(position);
@@ -304,6 +325,63 @@ function buildDocumentText({ template, to, from, greeting, fullName, position, o
       greeting,
       '',
       'Прошу принять к сведению указанную информацию.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_COMPLAINT) {
+    return [
+      'Жалоба',
+      '',
+      to,
+      '',
+      from,
+      '',
+      greeting,
+      '',
+      'Настоящим выражаю недовольство качеством услуги/работы.',
+      'Прошу рассмотреть обращение и принять меры.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_REQUEST) {
+    return [
+      'Запрос',
+      '',
+      to,
+      '',
+      from,
+      '',
+      greeting,
+      '',
+      'Прошу предоставить информацию по указанному вопросу.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_EXPLANATORY_NOTE) {
+    return [
+      'Объяснительная записка',
+      '',
+      to,
+      '',
+      from,
+      '',
+      greeting,
+      '',
+      'По существу изложенного сообщаю следующее.',
+    ].filter(Boolean).join('\n');
+  }
+
+  if (safeTemplate === DOCUMENT_TEMPLATE_COMMERCIAL_OFFER) {
+    return [
+      'Коммерческое предложение',
+      '',
+      to,
+      '',
+      from,
+      '',
+      greeting,
+      '',
+      'Предлагаю вашему вниманию условия сотрудничества.',
     ].filter(Boolean).join('\n');
   }
 

@@ -360,10 +360,10 @@ export const ROUTE_SEO = {
               },
               {
                 '@type': 'Question',
-                name: 'Будет ли массовая обработка CSV?',
+                name: 'Как работает массовая обработка?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'CSV экспорт текущего результата уже доступен. Массовая обработка списка адресатов запланирована отдельно и пока помечена как функция «скоро».',
+                  text: 'Вставьте до 50 строк с ФИО, должностью и организацией в текстовое поле. Результат можно скачать как CSV.',
                 },
               },
               {
@@ -451,10 +451,10 @@ export const ROUTE_SEO = {
               },
               {
                 '@type': 'Question',
-                name: 'Will bulk CSV processing be available?',
+                name: 'How does bulk processing work?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'CSV export for the current result is already available. Bulk processing is planned separately and marked as coming soon.',
+                  text: 'Paste up to 50 rows with name, position and organization into the text area. The result can be downloaded as CSV.',
                 },
               },
               {

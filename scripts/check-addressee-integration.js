@@ -128,6 +128,13 @@ for (const lang of ['ru', 'en']) {
     'addresseeGenerator.bulk.hint',
     'addresseeGenerator.bulk.placeholder',
     'addresseeGenerator.exportNote',
+    'addresseeGenerator.statusMessages.resultGenerated',
+    'addresseeGenerator.statusMessages.copied',
+    'addresseeGenerator.statusMessages.txtDownloaded',
+    'addresseeGenerator.statusMessages.htmlDownloaded',
+    'addresseeGenerator.statusMessages.csvDownloaded',
+    'addresseeGenerator.statusMessages.validationError',
+    'addresseeGenerator.statusMessages.rowsProcessed',
     'addresseeGenerator.info.faqList.q1',
     'addresseeGenerator.info.faqList.a1',
     'addresseeGenerator.info.faqList.q2',
@@ -217,6 +224,7 @@ const copyBtnContent = readFile('src/components/CopyButton.jsx')
 check(copyBtnContent.includes('type="button"'), 'button has type="button"')
 check(!copyBtnContent.includes('name="close"'), 'no name="close"')
 check(copyBtnContent.includes('name="x"') || copyBtnContent.includes("name='x'"), 'has Icon name="x"')
+check(copyBtnContent.includes('onCopied') || copyBtnContent.includes('onCopied='), 'supports optional onCopied prop')
 
 // 10. AddresseeGenerator.jsx
 console.log('\n10. AddresseeGenerator.jsx')
@@ -243,6 +251,14 @@ check(
   'CSV header array contains expected fields'
 )
 check(!agContent.includes('console.log'), 'no console.log statements')
+check(agContent.includes('<form'), 'has <form> element')
+check(agContent.includes('onSubmit={handleSubmit}') || agContent.includes('onSubmit={ handleSubmit }'), 'has onSubmit handler')
+check(agContent.includes('type="submit"'), 'generate button is type="submit"')
+check(agContent.includes('aria-live=') || agContent.includes('aria-live ='), 'has aria-live region')
+check(agContent.includes('aria-invalid=') || agContent.includes('aria-invalid ='), 'has aria-invalid on fields')
+check(agContent.includes('aria-describedby=') || agContent.includes('aria-describedby ='), 'has aria-describedby on fields')
+check(agContent.includes('tabIndex={-1}') || agContent.includes('tabIndex={ -1 }'), 'result section has tabIndex={-1}')
+check(agContent.includes('ref={resultRef}') || agContent.includes('ref={ resultRef }'), 'result section has ref for focus')
 
 // 11. Sitemap (optional check after build)
 console.log('\n11. Sitemap')
