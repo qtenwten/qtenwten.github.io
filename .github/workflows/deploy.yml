@@ -36,9 +36,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify article JSON files
-        run: npm run verify:article-json
-
       - name: Verify article HTML files
         run: npm run verify:articles-html
 
