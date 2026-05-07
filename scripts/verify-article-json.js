@@ -204,11 +204,17 @@ function validateArticle(article, filename) {
 }
 
 function main() {
+  if (!fs.existsSync(contentStagingPath)) {
+    console.log('BD/content-staging/ not found; skipping article JSON verification.')
+    console.log('This is expected in CI because BD/content-staging/ is gitignored.')
+    process.exit(0)
+  }
+
   const files = getJsonFiles(contentStagingPath)
 
   if (files.length === 0) {
     console.log('No article JSON files found in BD/content-staging/')
-    return
+    process.exit(0)
   }
 
   console.log(`Scanning ${files.length} article files in BD/content-staging/...\n`)

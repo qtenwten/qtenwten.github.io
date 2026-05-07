@@ -716,12 +716,13 @@ function buildSeoTags(page) {
 
 function buildArticleDetailPage(language, article, availableLanguages, alternateUrls) {
   const articlePath = `/articles/${article.slug}`
+  const articleUrl = addTrailingSlashToUrl(getLocalizedRouteUrl(language, articlePath))
 
   return {
     language,
     path: articlePath,
     route: getLocalizedRoutePath(language, articlePath),
-    url: getLocalizedRouteUrl(language, articlePath),
+    url: articleUrl,
     locale: language === 'en' ? 'en_US' : 'ru_RU',
     title: article.seoTitle || article.title,
     description: article.seoDescription || article.excerpt || getLocaleValue(language, 'articles.subtitle', ''),
@@ -740,8 +741,8 @@ function buildArticleDetailPage(language, article, availableLanguages, alternate
       author: article.author ? { '@type': 'Person', name: article.author } : undefined,
       datePublished: article.publishedAt || undefined,
       image: article.coverImage ? [article.coverImage] : undefined,
-      mainEntityOfPage: getLocalizedRouteUrl(language, articlePath),
-      url: getLocalizedRouteUrl(language, articlePath),
+      mainEntityOfPage: articleUrl,
+      url: articleUrl,
       publisher: {
         '@type': 'Organization',
         name: 'QSEN.RU',
@@ -858,6 +859,18 @@ function buildRootRedirectPage(template) {
 function addTrailingSlashToPathname(pathname) {
   if (!pathname || pathname === '/') return '/'
   return pathname.endsWith('/') ? pathname : `${pathname}/`
+}
+
+function addTrailingSlashToUrl(url) {
+  if (!url) return url
+
+  try {
+    const parsedUrl = new URL(url)
+    parsedUrl.pathname = addTrailingSlashToPathname(parsedUrl.pathname)
+    return parsedUrl.toString()
+  } catch {
+    return addTrailingSlashToPathname(String(url))
+  }
 }
 
 function normalizeLegacyRedirectUrl(targetPath) {
@@ -1011,7 +1024,7 @@ function main() {
         const translationGroup = articleTranslations[translationKey] || {}
         const availableLanguages = (['ru', 'en']).filter((lang) => Boolean(translationGroup[lang]))
         const alternateUrls = availableLanguages.reduce((accumulator, lang) => {
-          accumulator[lang] = getLocalizedRouteUrl(lang, `/articles/${translationGroup[lang].slug}`)
+          accumulator[lang] = addTrailingSlashToUrl(getLocalizedRouteUrl(lang, `/articles/${translationGroup[lang].slug}`))
           return accumulator
         }, {})
         ;['ru', 'en'].forEach((language) => {
