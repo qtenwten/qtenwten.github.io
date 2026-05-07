@@ -99,6 +99,7 @@ function serializeWarnings(warnings) {
 function detectDelimiter(line) {
   if (line.includes('\t')) return '\t'
   if (line.includes(';')) return ';'
+  if (line.includes(',')) return ','
   return ';'
 }
 
@@ -140,6 +141,14 @@ function parseBulkInput(text) {
   const hasHeader = firstRow.some((cell) =>
     headerCells.includes(cell.toLowerCase().replace(/[\s_-]/g, ''))
   )
+
+  if (hasHeader) {
+    const normalizedHeader = firstRow.map((cell) => cell.toLowerCase().replace(/[\s_-]/g, ''))
+    const hasFullName = normalizedHeader.includes('fullname')
+    if (!hasFullName) {
+      return { rows: [], error: 'missingFullName' }
+    }
+  }
 
   const dataLines = hasHeader ? lines.slice(1) : lines
   if (dataLines.length > 50) {
@@ -194,10 +203,20 @@ function parseBulkInput(text) {
   }
 
   if (rows.length === 0) {
-    return { rows: [], error: 'unrecognized' }
+    return { rows: [], error: 'unrecognized', warnings: [] }
   }
 
-  return { rows, error: null }
+  const warnings = []
+  const knownColumnCount = 10
+  for (let i = 0; i < dataLines.length; i++) {
+    const cells = parseCsvLine(dataLines[i], delimiter)
+    if (cells.length > knownColumnCount) {
+      warnings.push({ code: 'UNKNOWN_COLUMNS', message: 'Some columns were not recognized and will be skipped.' })
+      break
+    }
+  }
+
+  return { rows, error: null, warnings }
 }
 
 function buildBulkCsvContent(results) {
@@ -324,12 +343,18 @@ function AddresseeGenerator() {
 
   const handleProcessBulk = useCallback(() => {
     setBulkError(null)
-    const { rows, error } = parseBulkInput(bulkInput)
+    const { rows, error, warnings } = parseBulkInput(bulkInput)
     if (error) {
       setBulkError(error)
       setBulkResults([])
       setBulkSummary(null)
-      setStatusMessage(t('addresseeGenerator.bulk.tooManyRows'))
+      if (error === 'tooManyRows') {
+        setStatusMessage(t('addresseeGenerator.bulk.tooManyRows'))
+      } else if (error === 'missingFullName') {
+        setStatusMessage(t('addresseeGenerator.bulk.missingFullName'))
+      } else {
+        setStatusMessage(t('addresseeGenerator.bulk.uploadError'))
+      }
       return
     }
     if (rows.length === 0) {
@@ -347,7 +372,8 @@ function AddresseeGenerator() {
       total: processed.length,
       withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
     })
-    setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }))
+    const unknownColsWarning = warnings && warnings.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
+    setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }) + unknownColsWarning)
   }, [bulkInput, t])
 
   const handleCsvFileChange = useCallback((e) => {
@@ -359,12 +385,12 @@ function AddresseeGenerator() {
       if (typeof text === 'string') {
         setBulkInput(text)
         setBulkError(null)
-        const { rows, error } = parseBulkInput(text)
+        const { rows, error, warnings } = parseBulkInput(text)
         if (error) {
           setBulkError(error)
           setBulkResults([])
           setBulkSummary(null)
-          setStatusMessage(error === 'tooManyRows' ? t('addresseeGenerator.bulk.tooManyRows') : t('addresseeGenerator.bulk.uploadError'))
+          setStatusMessage(error === 'tooManyRows' ? t('addresseeGenerator.bulk.tooManyRows') : error === 'missingFullName' ? t('addresseeGenerator.bulk.missingFullName') : t('addresseeGenerator.bulk.uploadError'))
           return
         }
         if (rows.length === 0) {
@@ -382,7 +408,8 @@ function AddresseeGenerator() {
           total: processed.length,
           withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
         })
-        setStatusMessage(t('addresseeGenerator.bulk.uploadedCount', { count: processed.length }))
+        const unknownColsWarning = warnings && warnings.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
+        setStatusMessage(t('addresseeGenerator.bulk.uploadedCount', { count: processed.length }) + unknownColsWarning)
       }
     }
     reader.onerror = () => {
@@ -961,6 +988,8 @@ function AddresseeGenerator() {
                   {bulkError === 'tooManyRows' && t('addresseeGenerator.bulk.tooManyRows')}
                   {bulkError === 'unrecognized' && t('addresseeGenerator.bulk.unrecognized')}
                   {bulkError === 'empty' && t('addresseeGenerator.bulk.empty')}
+                  {bulkError === 'missingFullName' && t('addresseeGenerator.bulk.missingFullName')}
+                  {bulkError === 'uploadError' && t('addresseeGenerator.bulk.uploadError')}
                 </p>
               )}
               <div className="addr-gen-bulk-actions">
