@@ -462,7 +462,7 @@ export const ROUTE_SEO = {
                 name: 'Will DOCX export be available?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'DOCX export is not enabled yet. The button is intentionally disabled so it is clear that the feature is planned, not broken.',
+                  text: 'Yes, DOCX export is available. Click the "Download DOCX" button — the document with addressee, sender, greeting and template will be saved to a file.',
                 },
               },
               {
