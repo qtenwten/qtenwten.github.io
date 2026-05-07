@@ -748,25 +748,178 @@ function buildArticlesIndexPrerenderContent(page, articles = []) {
   const heroClasses = ['tool-page-hero', 'is-centered', 'has-eyebrow', 'has-subtitle', 'has-note']
   const ariaLabel = escapeHtml(getLocaleValue(page.language, 'articles.listAriaLabel', page.language === 'en' ? 'Articles list' : 'Список статей'))
   const localizedArticles = filterArticlesForLanguage(articles, page.language)
-  const cards = localizedArticles.map((article) => {
+
+  const TOOL_CATEGORY_MAP = {
+    'generator-adresata': 'documents',
+    'vat-calculator': 'finance',
+    'amount-in-words': 'documents',
+    'number-to-words': 'documents',
+    'qr-code-generator': 'qr-links',
+    'url-shortener': 'qr-links',
+    'password-generator': 'security',
+    'seo-audit': 'seo',
+    'seo-audit-pro': 'seo',
+    'meta-tags-generator': 'seo',
+    'random-number': 'random',
+    'compound-interest': 'finance',
+    'date-difference': 'dates',
+    'calculator': 'calculators',
+  }
+
+  const CATEGORY_KEYS = {
+    documents: 'categoryDocuments',
+    finance: 'categoryFinance',
+    'qr-links': 'categoryQrLinks',
+    security: 'categorySecurity',
+    seo: 'categorySeo',
+    dates: 'categoryDates',
+    random: 'categoryRandom',
+  }
+
+  const categoriesOrder = ['documents', 'finance', 'qr-links', 'security', 'seo', 'dates', 'random']
+
+  const toolCounts = {}
+  const categoryMap = {}
+
+  localizedArticles.forEach((a) => {
+    if (!a.toolSlug) return
+    const slug = a.toolSlug.startsWith('/') ? a.toolSlug : `/${a.toolSlug}`
+    toolCounts[slug] = (toolCounts[slug] || 0) + 1
+    const cat = TOOL_CATEGORY_MAP[a.toolSlug] || TOOL_CATEGORY_MAP[a.toolSlug.replace(/^\//, '')] || 'tools'
+    if (!categoryMap[cat]) categoryMap[cat] = []
+    if (!categoryMap[cat].some((t) => t.path === slug)) {
+      categoryMap[cat].push(slug)
+    }
+  })
+
+  const activeCategories = categoriesOrder.filter((c) => categoryMap[c] && categoryMap[c].length > 0)
+
+  const toolsWithCounts = Object.entries(toolCounts)
+    .map(([toolSlug, count]) => {
+      const normalizedSlug = toolSlug.startsWith('/') ? toolSlug : `/${toolSlug}`
+      const entry = ROUTE_REGISTRY.find((r) => r.path === normalizedSlug)
+      if (!entry) return null
+      return { slug: toolSlug, title: getLocaleValue(page.language, entry.titleKey, entry.titleKey), icon: entry.icon, count }
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.count - a.count)
+
+  const hubTools = toolsWithCounts.slice(0, 8)
+
+  const introHeading = escapeHtml(getLocaleValue(page.language, 'articles.hubIntroHeading', ''))
+  const introText1 = escapeHtml(getLocaleValue(page.language, 'articles.hubIntroText1', ''))
+  const introText2 = escapeHtml(getLocaleValue(page.language, 'articles.hubIntroText2', ''))
+  const categoriesTitle = escapeHtml(getLocaleValue(page.language, 'articles.categoriesTitle', ''))
+  const toolsTitle = escapeHtml(getLocaleValue(page.language, 'articles.toolsWithGuidesTitle', ''))
+  const toolsCountLabel = escapeHtml(getLocaleValue(page.language, 'articles.toolsWithGuidesCount', ''))
+  const ctaTitle = escapeHtml(getLocaleValue(page.language, 'articles.hubCtaTitle', ''))
+  const ctaText = escapeHtml(getLocaleValue(page.language, 'articles.hubCtaText', ''))
+  const ctaButton = escapeHtml(getLocaleValue(page.language, 'articles.hubCtaButton', ''))
+  const homePath = getLocalizedRoutePath(page.language, '/')
+
+  const hubIntroSection = introHeading
+    ? `<section class="hub-intro-section" aria-labelledby="hub-intro-heading"><div class="hub-intro-section__content"><h2 id="hub-intro-heading" class="hub-intro-section__title">${introHeading}</h2><p class="hub-intro-section__text">${introText1}</p><p class="hub-intro-section__text">${introText2}</p></div></section>`
+    : ''
+
+  const hubCategoriesSection = activeCategories.length > 0 && categoriesTitle
+    ? `<section class="hub-categories-section" aria-labelledby="hub-categories-heading"><h2 id="hub-categories-heading" class="hub-section-title">${categoriesTitle}</h2><div class="hub-categories-grid">${activeCategories.map((catKey) => {
+      const catLabel = escapeHtml(getLocaleValue(page.language, `articles.${CATEGORY_KEYS[catKey]}`, catKey))
+      return `<div class="hub-category-card"><span class="hub-category-card__label">${catLabel}</span></div>`
+    }).join('')}</div></section>`
+    : ''
+
+  const hubToolsSection = hubTools.length > 0 && toolsTitle
+    ? `<section class="hub-tools-section" aria-labelledby="hub-tools-heading"><h2 id="hub-tools-heading" class="hub-section-title">${toolsTitle}</h2><div class="hub-tools-grid">${hubTools.map((tool) => {
+      const toolPath = tool.slug.startsWith('/') ? tool.slug : `/${tool.slug}`
+      const iconSvg = addSvgClass(getIconSvg(tool.icon), 'tool-icon')
+      return `<a href="${getLocalizedRoutePath(page.language, toolPath)}" class="hub-tool-card">${iconSvg}<span class="hub-tool-card__title">${escapeHtml(tool.title)}</span><span class="hub-tool-card__count">${tool.count} ${toolsCountLabel}</span></a>`
+    }).join('')}</div></section>`
+    : ''
+
+  const hubCtaSection = ctaTitle
+    ? `<section class="hub-cta-section" aria-labelledby="hub-cta-heading"><div class="hub-cta-section__content"><h2 id="hub-cta-heading" class="hub-cta-section__title">${ctaTitle}</h2><p class="hub-cta-section__text">${ctaText}</p></div><a href="${homePath}" class="hub-cta-section__button">${ctaButton}</a></section>`
+    : ''
+
+  const featuredArticle = localizedArticles[0] || null
+  const sidebarArticles = localizedArticles.slice(1, 4)
+  const editorialArticles = localizedArticles.slice(1)
+
+  const featuredSection = featuredArticle
+    ? (() => {
+      const featHref = getLocalizedRoutePath(page.language, `/articles/${encodeURIComponent(featuredArticle.slug)}`)
+      const featMedia = featuredArticle.coverImage
+        ? `<a href="${featHref}" class="article-card__media" aria-label="${escapeHtml(featuredArticle.title)}"><img src="${escapeHtml(featuredArticle.coverImage)}" alt="${escapeHtml(featuredArticle.title)}" loading="lazy" decoding="async" /></a>`
+        : ''
+      const featExcerpt = featuredArticle.excerpt ? `<p class="article-featured-card__excerpt">${escapeHtml(featuredArticle.excerpt)}</p>` : ''
+      const featuredLabel = escapeHtml(getLocaleValue(page.language, 'articles.featuredLabel', ''))
+      const readFeatured = escapeHtml(getLocaleValue(page.language, 'articles.readFeatured', ''))
+      const readMore = escapeHtml(getLocaleValue(page.language, 'articles.readMore', ''))
+      const latestTitle = escapeHtml(getLocaleValue(page.language, 'articles.latestTitle', ''))
+      const featToolHref = featuredArticle.toolSlug
+        ? (featuredArticle.toolSlug.startsWith('/') ? featuredArticle.toolSlug : `/${featuredArticle.toolSlug}`)
+        : ''
+      const featToolLink = featToolHref
+        ? `<a href="${getLocalizedRoutePath(page.language, featToolHref)}" class="articles-secondary-link">${readMore}</a>`
+        : ''
+
+      const sidebarItems = sidebarArticles.map((article) => {
+        const aHref = getLocalizedRoutePath(page.language, `/articles/${encodeURIComponent(article.slug)}`)
+        const aExcerpt = article.excerpt ? `<p class="articles-list-compact__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
+        return `<article class="articles-list-compact"><h3 class="articles-list-compact__title"><a href="${aHref}">${escapeHtml(article.title)}</a></h3>${aExcerpt}</article>`
+      }).join('')
+
+      return `<section class="articles-featured-layout" aria-label="${ariaLabel}"><article class="articles-featured-card"><div class="articles-featured-card__label">${featuredLabel}</div><h2 class="articles-featured-card__title"><a href="${featHref}">${escapeHtml(featuredArticle.title)}</a></h2>${featExcerpt}<div class="articles-featured-card__actions"><a href="${featHref}" class="articles-primary-link">${readFeatured}</a>${featToolLink}</div></article><aside class="articles-sidebar-card"><h2>${latestTitle}</h2><div class="articles-sidebar-list">${sidebarItems}</div></aside></section>`
+    })()
+    : ''
+
+  const editorialSection = editorialArticles.length > 0
+    ? (() => {
+      const editorialEyebrow = escapeHtml(getLocaleValue(page.language, 'articles.editorialEyebrow', ''))
+      const editorialTitle = escapeHtml(getLocaleValue(page.language, 'articles.editorialTitle', ''))
+      const editorialDescription = escapeHtml(getLocaleValue(page.language, 'articles.editorialDescription', ''))
+      const readFeatured = escapeHtml(getLocaleValue(page.language, 'articles.readFeatured', ''))
+      const readMore = escapeHtml(getLocaleValue(page.language, 'articles.readMore', ''))
+
+      const cards = editorialArticles.map((article) => {
+        const href = getLocalizedRoutePath(page.language, `/articles/${encodeURIComponent(article.slug)}`)
+        const media = article.coverImage
+          ? `<a href="${href}" class="article-card__media" aria-label="${escapeHtml(article.title)}"><img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}" loading="lazy" decoding="async" /></a>`
+          : ''
+        const excerpt = article.excerpt ? `<p class="articles-section-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
+        const toolSlug = article.toolSlug
+        const toolBadge = (() => {
+          if (!toolSlug) return ''
+          const normalizedSlug = toolSlug.startsWith('/') ? toolSlug : `/${toolSlug}`
+          const entry = ROUTE_REGISTRY.find((r) => r.path === normalizedSlug)
+          if (!entry) return ''
+          const iconSvg = addSvgClass(getIconSvg(entry.icon), 'tool-icon')
+          return `<div class="article-card__tool-badge">${iconSvg}<span>${escapeHtml(getLocaleValue(page.language, entry.titleKey, entry.titleKey))}</span></div>`
+        })()
+        const toolLink = toolSlug
+          ? `<a href="${getLocalizedRoutePath(page.language, toolSlug.startsWith('/') ? toolSlug : `/${toolSlug}`)}" class="article-card__tool-cta"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 19H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7"></path><path d="M10 13v-1h7v1"></path><path d="M15 9l3 3-3 3"></path><path d="M14 2h6v6"></path></svg>${readMore}</a>`
+          : ''
+        return `<article class="article-card">${media}${toolBadge}<h3 class="articles-section-card__title"><a class="article-card__link" href="${href}">${escapeHtml(article.title)}</a></h3>${excerpt}<div class="article-card__actions"><a href="${href}" class="article-card__read-more">${readFeatured}</a>${toolLink}</div></article>`
+      }).join('')
+
+      return `<section class="articles-section-card"><div class="articles-section-card__eyebrow">${editorialEyebrow}</div><h2>${editorialTitle}</h2><p>${editorialDescription}</p><div class="articles-section-grid">${cards}</div></section>`
+    })()
+    : ''
+
+  const list = `<section class="articles-grid" aria-label="${ariaLabel}">${localizedArticles.map((article) => {
     const href = getLocalizedRoutePath(page.language, `/articles/${encodeURIComponent(article.slug)}`)
     const media = article.coverImage
       ? `<a href="${href}" class="article-card__media" aria-label="${escapeHtml(article.title)}"><img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}" loading="lazy" decoding="async" /></a>`
       : ''
     const excerpt = article.excerpt ? `<p class="article-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
     const readMore = escapeHtml(getLocaleValue(page.language, 'articles.readMore', page.language === 'en' ? 'Open article' : 'Открыть статью'))
-
     return `<article class="article-card">${media}<h2 class="article-card__title"><a class="article-card__link" href="${href}">${escapeHtml(article.title)}</a></h2>${excerpt}<div class="article-card__actions"><a class="article-card__read-more" href="${href}">${readMore}</a></div></article>`
-  }).join('')
-
-  const skeletonCard = `<article class="article-card article-card--skeleton"><div class="article-skeleton__media"></div><div class="article-skeleton__meta"></div><div class="article-skeleton__title"></div><div class="article-skeleton__excerpt"></div></article>`
-  const fallbackSkeleton = Array.from({ length: 6 }).map(() => skeletonCard).join('')
-
-  const list = `<section class="articles-grid" aria-label="${ariaLabel}">${cards || fallbackSkeleton}</section>`
+  }).join('')}</section>`
 
   const initialDataScript = `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: localizedArticles, generatedAt: new Date().toISOString() })}</script>`
 
-  return `<div class="tool-container tool-page-shell articles-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section>${list}${initialDataScript}</div>`
+  const hubContent = [hubIntroSection, hubCategoriesSection, hubToolsSection, hubCtaSection, featuredSection, editorialSection].filter(Boolean).join('')
+
+  return `<div class="tool-container tool-page-shell articles-page"><section class="${heroClasses.join(' ')}">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1>${hero.subtitle ? `<p class="tool-page-hero__subtitle">${escapeHtml(hero.subtitle)}</p>` : ''}${hero.note ? `<p class="tool-page-hero__note">${escapeHtml(hero.note)}</p>` : ''}</section><div class="articles-hub">${hubContent || list}</div>${initialDataScript}</div>`
 }
 
 function buildArticleToolCtaPrerenderContent(cta) {

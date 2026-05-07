@@ -37,22 +37,100 @@ export const ROUTE_SEO = {
   },
   '/articles': {
     ru: {
-      title: 'Статьи и руководства | QSEN.RU',
-      description: 'Подборка статей и практических руководств по инструментам, Cloudflare, автоматизации и полезным веб-сценариям.',
-      keywords: 'статьи qsen, руководства, cloudflare d1, статьи по инструментам, блог qsen',
-      h1: 'Статьи и руководства',
+      title: 'Статьи и инструкции по онлайн-инструментам | QSEN.RU',
+      description: 'Подборка статей и практических руководств по использованию калькуляторов, генераторов, QR-кодов, паролей, НДС и SEO-инструментов QSEN.',
+      keywords: 'статьи qsen, инструкции по инструментам, руководства, калькулятор ндс, генератор qr кода, пароли, seo аудит',
+      h1: 'Статьи и инструкции по онлайн-инструментам QSEN',
       image: 'https://qsen.ru/og-image.png',
-      robots: 'noindex,follow',
-      includeInSitemap: false,
+      robots: 'index,follow',
+      includeInSitemap: true,
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: 'ru',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Что есть в статьях QSEN?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Инструкции, примеры и сценарии использования калькуляторов, генераторов адресата, QR-кодов, паролей, НДС и SEO-инструментов.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Как связаны статьи и инструменты?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Каждая статья привязана к конкретному инструменту. После статьи выводится блок со ссылкой на инструмент и подборка похожих статей из той же категории.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Можно ли сразу перейти к инструменту?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Да, на любой странице статьи есть кнопка перехода к инструменту. Также вверху и внизу страницы отображается CTA-блок для быстрого доступа.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Есть ли инструкции для документов, НДС, QR и SEO?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Да, статьи охватывают основные сценарии: деловые документы, расчёт НДС, QR-коды для ссылок и Wi-Fi, пароли для роутеров и учётных записей, SEO-аудит страниц.',
+            },
+          },
+        ],
+      },
     },
     en: {
-      title: 'Articles and Guides | QSEN.RU',
-      description: 'Browse practical articles and guides about tools, Cloudflare, automation, and useful web workflows.',
-      keywords: 'qsen articles, guides, cloudflare d1 guide, tool articles, qsen blog',
-      h1: 'Articles and Guides',
+      title: 'Articles and guides for QSEN online tools | QSEN.RU',
+      description: 'Practical guides and step-by-step instructions for using QSEN calculators, generators, QR codes, passwords, VAT tools, and SEO utilities.',
+      keywords: 'qsen articles, tool guides, how-to, vat calculator, qr code generator, password generator, seo audit',
+      h1: 'Articles and guides for QSEN online tools',
       image: 'https://qsen.ru/og-image.png',
-      robots: 'noindex,follow',
-      includeInSitemap: false,
+      robots: 'index,follow',
+      includeInSitemap: true,
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: 'en',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What articles are available on QSEN?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Guides, examples, and use cases for calculators, addressee generators, QR codes, passwords, VAT tools, and SEO utilities.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'How are articles linked to tools?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Each article is tied to a specific tool. After the article content, a CTA block leads to the tool, and related articles from the same category are shown.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I go directly to a tool?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes, every article page has a button to open the tool. CTA blocks appear at the top and bottom of each article for quick access.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Are there guides for documents, VAT, QR and SEO?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes, articles cover main scenarios: business documents, VAT calculations, QR codes for links and Wi-Fi, router and account passwords, and page SEO audits.',
+            },
+          },
+        ],
+      },
     },
   },
   '/number-to-words': {
