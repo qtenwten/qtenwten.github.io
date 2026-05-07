@@ -6,6 +6,7 @@ import { articleMatchesLanguage, filterArticlesForLanguage } from '../src/utils/
 import { normalizeArticleIndexItem, normalizeArticleDetailItem } from '../src/utils/articleNormalization.js'
 import { getIconSvg, ICON_SVG_MAP } from '../src/utils/iconMap.js'
 import { LEGACY_ROUTE_REDIRECTS, ROUTE_REGISTRY } from '../src/config/routeRegistry.js'
+import { renderMarkdownToHtml } from './lib/renderArticleMarkdown.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const distPath = path.resolve(__dirname, '../dist')
@@ -637,12 +638,13 @@ function buildArticleDetailPrerenderContent(page, article, articlesIndex = []) {
     ? `<div class="article-cover"><img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}" loading="eager" decoding="async" /></div>`
     : ''
   const excerpt = article.excerpt ? `<p class="article-header-card__excerpt">${escapeHtml(article.excerpt)}</p>` : ''
+  const articleBodyHtml = renderMarkdownToHtml(article.content || '', { title: article.title, lead: article.excerpt || '' })
   const initialDataScript = `<script id="__ARTICLE_DETAIL_DATA__" type="application/json">${safeJsonForInlineScript(article)}</script>`
   const indexDataScript = articlesIndex.length
     ? `<script id="__ARTICLES_INDEX_DATA__" type="application/json">${safeJsonForInlineScript({ items: articlesIndex, generatedAt: new Date().toISOString() })}</script>`
     : ''
 
-  return `<div class="tool-container tool-page-shell articles-page article-page"><article class="article-layout"><header class="article-header-card"><div class="article-header-card__eyebrow">${detailEyebrow}</div>${media}<h1>${escapeHtml(article.title)}</h1>${excerpt}<a href="${getLocalizedRoutePath(page.language, '/articles')}" class="article-back-link">${backLabel}</a></header></article>${initialDataScript}${indexDataScript}</div>`
+  return `<div class="tool-container tool-page-shell articles-page article-page"><article class="article-layout"><header class="article-header-card"><div class="article-header-card__eyebrow">${detailEyebrow}</div>${media}<h1>${escapeHtml(article.title)}</h1>${excerpt}<a href="${getLocalizedRoutePath(page.language, '/articles')}" class="article-back-link">${backLabel}</a></header></article><section class="article-content-card">${articleBodyHtml}</section>${initialDataScript}${indexDataScript}</div>`
 }
 
 function buildLegacyToolPrerenderContent(page) {
@@ -1028,6 +1030,34 @@ function main() {
           writePage(page.route, html)
         })
       })
+
+      const generatedRuCount = fs.readdirSync(path.join(distPath, 'ru', 'articles')).filter((d) =>
+        fs.statSync(path.join(distPath, 'ru', 'articles', d)).isDirectory()
+      ).length
+      const generatedEnCount = fs.readdirSync(path.join(distPath, 'en', 'articles')).filter((d) =>
+        fs.statSync(path.join(distPath, 'en', 'articles', d)).isDirectory()
+      ).length
+
+      const ruArticlesCount = articlesIndex.filter((a) => articleMatchesLanguage(a, 'ru')).length
+      const enArticlesCount = articlesIndex.filter((a) => articleMatchesLanguage(a, 'en')).length
+
+      console.log(`\n📊 Article generation summary:`)
+      console.log(`   RU: ${generatedRuCount} HTML files (D1: ${ruArticlesCount})`)
+      console.log(`   EN: ${generatedEnCount} HTML files (D1: ${enArticlesCount})`)
+
+      if (generatedRuCount !== ruArticlesCount) {
+        console.error(`\n❌ RU article count mismatch: generated=${generatedRuCount}, D1=${ruArticlesCount}`)
+        process.exit(1)
+      }
+      if (generatedEnCount !== enArticlesCount) {
+        console.error(`\n❌ EN article count mismatch: generated=${generatedEnCount}, D1=${enArticlesCount}`)
+        process.exit(1)
+      }
+      if (articlePages.length === 0) {
+        console.error(`\n❌ No article pages generated — sitemap will be empty`)
+        process.exit(1)
+      }
+      console.log(`   ✅ All published articles have static HTML files`)
 
       writeLegacyRedirectPages()
       writeFileSafely(path.join(distPath, 'index.html'), buildRootRedirectPage(template))
