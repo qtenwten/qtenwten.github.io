@@ -38,6 +38,14 @@ function lowerFirst(value, language) {
   if (!value) return ''
 
   const locale = language === 'en' ? 'en-US' : 'ru-RU'
+  const firstWord = value.trim().split(/\s+/)[0] || ''
+  const firstWordUpper = firstWord.toLocaleUpperCase(locale)
+  const firstWordLower = firstWord.toLocaleLowerCase(locale)
+
+  if (firstWord.length > 1 && firstWord === firstWordUpper && firstWord !== firstWordLower) {
+    return value
+  }
+
   return `${value.charAt(0).toLocaleLowerCase(locale)}${value.slice(1)}`
 }
 
