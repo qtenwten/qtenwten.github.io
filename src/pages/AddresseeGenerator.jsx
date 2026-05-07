@@ -726,7 +726,7 @@ function AddresseeGenerator() {
             <section className="addr-gen-form-section" aria-labelledby="addrSenderTitle">
               <div className="addr-gen-section-heading">
                 <Icon name="person_outline" size={18} />
-                <h3 id="addrSenderTitle">{t('addresseeGenerator.sections.sender')}</h3>
+                <h3 id="addrSenderTitle">{t('addresseeGenerator.senderTitle')}</h3>
               </div>
 
               <div className="addr-gen-field">

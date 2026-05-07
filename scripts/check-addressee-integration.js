@@ -272,7 +272,7 @@ check(agContent.includes('addrSenderTitle'), 'has addrSenderTitle element')
 check(agContent.includes('addrSenderFullName'), 'has addrSenderFullName element')
 check(agContent.includes('addrSenderPosition'), 'has addrSenderPosition element')
 check(agContent.includes('addrSenderOrganization'), 'has addrSenderOrganization element')
-check(agContent.includes('addresseeGenerator.sections.sender'), 'has JSX section using sections.sender i18n')
+check(agContent.includes('addresseeGenerator.senderTitle'), 'has JSX section using senderTitle i18n')
 check(!agContent.includes('console.log'), 'no console.log statements')
 check(agContent.includes('<form'), 'has <form> element')
 check(agContent.includes('onSubmit={handleSubmit}') || agContent.includes('onSubmit={ handleSubmit }'), 'has onSubmit handler')
@@ -342,7 +342,27 @@ if (addrSectionRouteSeo) {
   }
 }
 
-// 11. Sitemap (optional check after build)
+// 10e. UI regression checks (sender title i18n, spacing elements)
+console.log('\n10e. UI regression checks')
+check(!agContent.includes('addresseeGenerator.sections.sender'), 'JSX does not use raw i18n key "addresseeGenerator.sections.sender"')
+check(agContent.includes('addresseeGenerator.senderTitle'), 'JSX uses addresseeGenerator.senderTitle for sender section')
+check(agContent.includes('addr-gen-examples'), 'JSX has addr-gen-examples class')
+check(agContent.includes('addr-gen-actions'), 'JSX has addr-gen-actions class')
+const agCssContent = readFile('src/pages/AddresseeGenerator.css')
+check(agCssContent.includes('.addr-gen-examples'), 'CSS has .addr-gen-examples styles')
+check(agCssContent.includes('.addr-gen-actions'), 'CSS has .addr-gen-actions styles')
+check(agCssContent.includes('margin-top') && agCssContent.includes('.addr-gen-examples'), 'CSS .addr-gen-examples has margin-top')
+check(agCssContent.includes('margin-top') && agCssContent.includes('.addr-gen-actions'), 'CSS .addr-gen-actions has margin-top')
+for (const lang of ['ru', 'en']) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const senderTitle = locale.addresseeGenerator?.senderTitle
+  check(typeof senderTitle === 'string' && senderTitle.length > 0, `${lang}: addresseeGenerator.senderTitle exists and is non-empty`)
+  const staleKey = 'addresseeGenerator.sections.sender'
+  const staleValue = staleKey.split('.').reduce((obj, k) => obj?.[k], locale)
+  check(!staleValue || typeof staleValue !== 'string', `${lang}: does NOT have stale key "addresseeGenerator.sections.sender"`)
+}
+
+
 console.log('\n11. Sitemap')
 const distSitemapPath = path.join(rootDir, 'dist/sitemap.xml')
 const pubSitemapPath = path.join(rootDir, 'public/sitemap.xml')
