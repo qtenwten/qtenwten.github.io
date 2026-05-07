@@ -276,6 +276,9 @@ function AddresseeGenerator() {
   const [bulkResults, setBulkResults] = useState([])
   const [bulkError, setBulkError] = useState(null)
   const [bulkSummary, setBulkSummary] = useState(null)
+  const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, greeting: null, documentText: null })
+  const [editingBlock, setEditingBlock] = useState(null)
+  const [editDraft, setEditDraft] = useState('')
 
   const handleFieldChange = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -295,6 +298,8 @@ function AddresseeGenerator() {
     setFullNameError(false)
     const formatted = formatAddressee(form)
     setResult(formatted)
+    setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
+    setEditingBlock(null)
     setCopyAllState('idle')
     setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
     if (resultRef.current) {
@@ -307,6 +312,8 @@ function AddresseeGenerator() {
   const handleGenerate = useCallback(() => {
     const formatted = formatAddressee(form)
     setResult(formatted)
+    setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
+    setEditingBlock(null)
     setCopyAllState('idle')
     setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
     if (resultRef.current) {
@@ -330,6 +337,8 @@ function AddresseeGenerator() {
       senderOrganization: '',
     })
     setResult(null)
+    setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
+    setEditingBlock(null)
     setActiveExampleKey('')
     setCopyAllState('idle')
   }, [])
@@ -339,6 +348,29 @@ function AddresseeGenerator() {
     setBulkResults([])
     setBulkError(null)
     setBulkSummary(null)
+  }, [])
+
+  const getEffectiveBlockText = useCallback((key) => {
+    if (!result) return ''
+    const override = resultOverrides[key]
+    if (override !== null) return override
+    return result.blocks[key] || ''
+  }, [result, resultOverrides])
+
+  const startEdit = useCallback((key) => {
+    setEditingBlock(key)
+    setEditDraft(getEffectiveBlockText(key))
+  }, [getEffectiveBlockText])
+
+  const saveEdit = useCallback((key) => {
+    setResultOverrides((prev) => ({ ...prev, [key]: editDraft }))
+    setEditingBlock(null)
+    setEditDraft('')
+  }, [editDraft])
+
+  const cancelEdit = useCallback(() => {
+    setEditingBlock(null)
+    setEditDraft('')
   }, [])
 
   const handleProcessBulk = useCallback(() => {
@@ -462,6 +494,8 @@ function AddresseeGenerator() {
       senderOrganization: example.senderOrganization || '',
     })
     setResult(formatted)
+    setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
+    setEditingBlock(null)
     setActiveExampleKey(example.key)
     setCopyAllState('idle')
     setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
@@ -487,11 +521,11 @@ function AddresseeGenerator() {
       form.senderFullName || '',
       form.senderPosition || '',
       form.senderOrganization || '',
-      blocks.to || '',
-      blocks.from || '',
-      blocks.greeting || '',
+      getEffectiveBlockText('to'),
+      getEffectiveBlockText('from'),
+      getEffectiveBlockText('greeting'),
       blocks.letter || '',
-      blocks.documentText || '',
+      getEffectiveBlockText('documentText'),
       String(result.confidence),
       Array.isArray(result.warnings) && result.warnings.length > 0
         ? result.warnings.map((w) => w.code).join('; ')
@@ -509,14 +543,14 @@ function AddresseeGenerator() {
     link.remove()
     window.setTimeout(() => URL.revokeObjectURL(url), 0)
     setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
-  }, [result, form, t])
+  }, [result, form, t, getEffectiveBlockText])
 
   const copyAllText = useMemo(() => {
     if (!result) return ''
-    const textToCopy = result.blocks.documentText || result.blocks.letter
+    const textToCopy = getEffectiveBlockText('documentText') || result.blocks.letter
     if (textToCopy) return textToCopy
-    return [result.blocks.to, result.blocks.from, result.blocks.greeting].filter(Boolean).join('\n\n')
-  }, [result])
+    return [getEffectiveBlockText('to'), getEffectiveBlockText('from'), getEffectiveBlockText('greeting')].filter(Boolean).join('\n\n')
+  }, [result, getEffectiveBlockText])
 
   const handleCopyAll = useCallback(async () => {
     if (!copyAllText) return
@@ -544,11 +578,10 @@ function AddresseeGenerator() {
 
   const getDocumentExportText = useCallback(() => {
     if (!result) return ''
-    const blocks = result.blocks || {}
-    const to = blocks.to || ''
-    const from = blocks.from || ''
-    const greeting = blocks.greeting || ''
-    const docText = blocks.documentText || blocks.letter || ''
+    const to = getEffectiveBlockText('to')
+    const from = getEffectiveBlockText('from')
+    const greeting = getEffectiveBlockText('greeting')
+    const docText = getEffectiveBlockText('documentText') || result.blocks.letter || ''
     const lines = []
     if (to) {
       lines.push(`${t('addresseeGenerator.export.to')}:\n${to}`)
@@ -563,7 +596,7 @@ function AddresseeGenerator() {
       lines.push(`${t('addresseeGenerator.export.documentTemplate')}:\n${docText}`)
     }
     return lines.join('\n\n')
-  }, [result, t])
+  }, [result, t, getEffectiveBlockText])
 
   const handleExportTxt = useCallback(() => {
     if (!result) return
@@ -627,12 +660,23 @@ function AddresseeGenerator() {
   const handleExportDocx = useCallback(async () => {
     if (!result) return
     try {
-      await downloadAddresseeDocx(result, { t })
+      const resultForExport = {
+        ...result,
+        blocks: {
+          ...result.blocks,
+          to: getEffectiveBlockText('to'),
+          from: getEffectiveBlockText('from'),
+          greeting: getEffectiveBlockText('greeting'),
+          documentText: getEffectiveBlockText('documentText'),
+        },
+      }
+      await downloadAddresseeDocx(resultForExport, { t })
       setStatusMessage(t('addresseeGenerator.statusMessages.docxDownloaded'))
     } catch (err) {
       console.warn('DOCX export failed:', err)
+      setStatusMessage(t('addresseeGenerator.statusMessages.docxError'))
     }
-  }, [result, t])
+  }, [result, t, getEffectiveBlockText])
 
   const confidenceLabel = useMemo(() => {
     if (!result) return ''
@@ -1112,23 +1156,74 @@ function AddresseeGenerator() {
                 )}
 
                 <div className="addr-gen-result-cards">
-                  {resultBlocks.map((block) => (
-                    <ResultSection tone="default" className={`addr-gen-block-card addr-gen-block-card--${block.key}`} key={block.key}>
-                      <div className="addr-gen-block-header">
-                        <div>
-                          <span className="addr-gen-block-label">{t('addresseeGenerator.resultBlockLabel')}</span>
-                          <h3 className="addr-gen-block-title">{block.title}</h3>
+                  {resultBlocks.map((block) => {
+                    const isEditable = ['to', 'from', 'greeting', 'documentText'].includes(block.key)
+                    const effectiveText = getEffectiveBlockText(block.key)
+                    const hasOverride = resultOverrides[block.key] !== null
+                    const isEditing = editingBlock === block.key
+                    return (
+                      <ResultSection tone="default" className={`addr-gen-block-card addr-gen-block-card--${block.key}${hasOverride ? ' addr-gen-block-card--edited' : ''}`} key={block.key}>
+                        <div className="addr-gen-block-header">
+                          <div>
+                            <span className="addr-gen-block-label">
+                              {t('addresseeGenerator.resultBlockLabel')}
+                              {hasOverride && <span className="addr-gen-block-override-badge">{t('addresseeGenerator.override.edited')}</span>}
+                            </span>
+                            <h3 className="addr-gen-block-title">{block.title}</h3>
+                          </div>
+                          <div className="addr-gen-block-actions">
+                            {isEditing ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="addr-gen-btn addr-gen-btn--save"
+                                  onClick={() => saveEdit(block.key)}
+                                >
+                                  {t('addresseeGenerator.override.save')}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="addr-gen-btn addr-gen-btn--cancel"
+                                  onClick={cancelEdit}
+                                >
+                                  {t('addresseeGenerator.override.cancel')}
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                {isEditable && (
+                                  <button
+                                    type="button"
+                                    className="addr-gen-btn addr-gen-btn--edit"
+                                    onClick={() => startEdit(block.key)}
+                                  >
+                                    {t('addresseeGenerator.override.edit')}
+                                  </button>
+                                )}
+                                <CopyButton
+                                  className="addr-gen-copy-btn"
+                                  text={effectiveText}
+                                  analytics={{ toolSlug: 'addressee-generator', linkType: 'result' }}
+                                  onCopied={() => setStatusMessage(t('addresseeGenerator.statusMessages.copied'))}
+                                />
+                              </>
+                            )}
+                          </div>
                         </div>
-<CopyButton
-                           className="addr-gen-copy-btn"
-                           text={block.text}
-                           analytics={{ toolSlug: 'addressee-generator', linkType: 'result' }}
-                           onCopied={() => setStatusMessage(t('addresseeGenerator.statusMessages.copied'))}
-                         />
-                      </div>
-                      <pre className="addr-gen-block-content">{block.text}</pre>
-                    </ResultSection>
-                  ))}
+                        {isEditing ? (
+                          <textarea
+                            className="addr-gen-block-textarea"
+                            value={editDraft}
+                            onChange={(e) => setEditDraft(e.target.value)}
+                            rows={Math.max(4, editDraft.split('\n').length)}
+                            autoFocus
+                          />
+                        ) : (
+                          <pre className="addr-gen-block-content">{effectiveText}</pre>
+                        )}
+                      </ResultSection>
+                    )
+                  })}
                 </div>
 
                 <div className="addr-gen-export-actions">

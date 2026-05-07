@@ -775,6 +775,103 @@
   word-break: break-word;
 }
 
+.addr-gen-block-textarea {
+  width: 100%;
+  min-height: 84px;
+  margin: 0;
+  padding: 1rem;
+  border: 1.5px solid var(--primary);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  resize: vertical;
+  box-shadow: var(--addr-gen-focus);
+  outline: 0;
+}
+
+.addr-gen-block-card--edited {
+  border-color: rgba(var(--primary-rgb), 0.3);
+  background: var(--primary-soft);
+}
+
+.addr-gen-block-override-badge {
+  display: inline-flex;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(var(--primary-rgb), 0.15);
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.addr-gen-block-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.addr-gen-btn--edit,
+.addr-gen-btn--save,
+.addr-gen-btn--cancel {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast) ease,
+    background var(--transition-fast) ease,
+    color var(--transition-fast) ease,
+    transform var(--transition-fast) ease;
+}
+
+.addr-gen-btn--edit:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.addr-gen-btn--save {
+  border-color: rgba(22, 163, 74, 0.4);
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--success);
+}
+
+.addr-gen-btn--save:hover {
+  border-color: var(--success);
+  background: rgba(22, 163, 74, 0.18);
+  transform: translateY(-1px);
+}
+
+.addr-gen-btn--cancel {
+  border-color: var(--border-strong);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.addr-gen-btn--cancel:hover {
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--error);
+  transform: translateY(-1px);
+}
+
 .addr-gen-block-card--letter .addr-gen-block-content {
   min-height: 150px;
   font-family: inherit;
@@ -902,8 +999,20 @@
     padding: 1rem;
   }
 
-  .addr-gen-block-content {
+  .addr-gen-block-content,
+  .addr-gen-block-textarea {
     padding: 0.85rem;
     font-size: 0.86rem;
+  }
+
+  .addr-gen-block-actions {
+    flex-wrap: wrap;
+  }
+
+  .addr-gen-btn--edit,
+  .addr-gen-btn--save,
+  .addr-gen-btn--cancel {
+    width: 100%;
+    min-height: 40px;
   }
 }

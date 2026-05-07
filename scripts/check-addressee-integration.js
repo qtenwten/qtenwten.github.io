@@ -303,6 +303,7 @@ for (const lang of ['ru', 'en']) {
   const locale = readJson(`src/locales/${lang}.json`)
   const docxKeys = [
     'addresseeGenerator.statusMessages.docxDownloaded',
+    'addresseeGenerator.statusMessages.docxError',
     'addresseeGenerator.export.docxDocumentLabel',
     'addresseeGenerator.export.addressee',
     'addresseeGenerator.export.sender',
@@ -402,6 +403,46 @@ for (const lang of ['ru', 'en']) {
   check(!allValues.includes('null'), `${lang}: locale has no 'null' string`)
   check(!allValues.includes('addresseeGenerator.'), `${lang}: locale has no raw i18n key strings`)
 }
+
+// 10i. Stage 10 — Manual override feature
+console.log('\n10i. Stage 10 — Manual override feature')
+const jsxContent = readFile('src/pages/AddresseeGenerator.jsx')
+const cssContent = readFile('src/pages/AddresseeGenerator.css')
+
+check(jsxContent.includes('resultOverrides'), 'JSX has resultOverrides state')
+check(jsxContent.includes('editingBlock'), 'JSX has editingBlock state')
+check(jsxContent.includes('editDraft'), 'JSX has editDraft state')
+check(jsxContent.includes('getEffectiveBlockText'), 'JSX has getEffectiveBlockText helper')
+check(jsxContent.includes('startEdit'), 'JSX has startEdit handler')
+check(jsxContent.includes('saveEdit'), 'JSX has saveEdit handler')
+check(jsxContent.includes('cancelEdit'), 'JSX has cancelEdit handler')
+check(jsxContent.includes('resultOverrides[block.key] !== null'), 'JSX uses resultOverrides in block rendering')
+check(jsxContent.includes('editingBlock === block.key'), 'JSX checks editingBlock for edit mode')
+check(jsxContent.includes('addr-gen-block-textarea'), 'JSX has addr-gen-block-textarea textarea')
+check(jsxContent.includes('addr-gen-block-actions'), 'JSX has addr-gen-block-actions container')
+check(jsxContent.includes('handleExportDocx') && jsxContent.includes('resultForExport'), 'handleExportDocx uses resultOverrides')
+check(jsxContent.includes('handleExportCsv') && jsxContent.includes('getEffectiveBlockText'), 'handleExportCsv uses getEffectiveBlockText')
+check(jsxContent.includes('getDocumentExportText') && jsxContent.includes('getEffectiveBlockText'), 'getDocumentExportText uses getEffectiveBlockText')
+check(jsxContent.includes('copyAllText') && jsxContent.includes('getEffectiveBlockText'), 'copyAllText uses getEffectiveBlockText')
+check(jsxContent.includes('resultOverrides[block.key] !== null') && jsxContent.includes('addr-gen-block-card--edited'), 'JSX marks overridden blocks as edited')
+check(jsxContent.includes('setResultOverrides({ to: null') && jsxContent.includes('setEditingBlock(null)'), 'Result overrides reset on Generate/Clear')
+
+for (const lang of ['ru', 'en']) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const override = locale.addresseeGenerator?.override
+  check(override?.edit, `${lang}: addresseeGenerator.override.edit exists`)
+  check(override?.save, `${lang}: addresseeGenerator.override.save exists`)
+  check(override?.cancel, `${lang}: addresseeGenerator.override.cancel exists`)
+  check(override?.edited, `${lang}: addresseeGenerator.override.edited exists`)
+}
+
+check(cssContent.includes('.addr-gen-block-textarea'), 'CSS has .addr-gen-block-textarea styles')
+check(cssContent.includes('.addr-gen-block-card--edited'), 'CSS has .addr-gen-block-card--edited styles')
+check(cssContent.includes('.addr-gen-block-override-badge'), 'CSS has .addr-gen-block-override-badge styles')
+check(cssContent.includes('.addr-gen-block-actions'), 'CSS has .addr-gen-block-actions styles')
+check(cssContent.includes('.addr-gen-btn--edit'), 'CSS has .addr-gen-btn--edit styles')
+check(cssContent.includes('.addr-gen-btn--save'), 'CSS has .addr-gen-btn--save styles')
+check(cssContent.includes('.addr-gen-btn--cancel'), 'CSS has .addr-gen-btn--cancel styles')
 
 
 console.log('\n11. Sitemap')

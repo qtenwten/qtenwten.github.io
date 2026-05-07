@@ -1564,6 +1564,12 @@
       "letter": "Letter Block",
       "documentText": "Template Text"
     },
+    "override": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edited": "edited"
+    },
     "warningsTitle": "Review ambiguous details",
     "warningsDescription": "The tool helps prepare a document block, but ambiguous cases should still be checked manually.",
     "manualReview": "Manual review is recommended before sending or printing.",
@@ -1613,6 +1619,7 @@
       "htmlDownloaded": "HTML file downloaded.",
       "csvDownloaded": "CSV file downloaded.",
       "docxDownloaded": "DOCX file downloaded.",
+      "docxError": "Failed to download DOCX. Please try again.",
       "validationError": "Enter the recipient full name.",
       "rowsProcessed": "Rows processed: {count}"
     },

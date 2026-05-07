@@ -16,7 +16,7 @@ function buildSectionParagraph(label, content, t) {
     paragraphs.push(
       new Paragraph({
         children: [
-          new Text({
+          new TextRun({
             text: label,
             bold: true,
           }),
@@ -32,7 +32,7 @@ function buildSectionParagraph(label, content, t) {
       paragraphs.push(
         new Paragraph({
           children: [
-            new Text({
+            new TextRun({
               text: line,
             }),
           ],
@@ -65,7 +65,7 @@ export async function generateAddresseeDocxBlob(result, options = {}) {
   children.push(
     new Paragraph({
       children: [
-        new Text({
+        new TextRun({
           text: docLabel,
           bold: true,
           size: 32,
@@ -78,7 +78,7 @@ export async function generateAddresseeDocxBlob(result, options = {}) {
 
   const toSection = blocks.to || '';
   const fromSection = blocks.from || '';
-  const greetingSection = result.greeting || '';
+  const greetingSection = blocks.greeting || '';
   const docTextSection = blocks.documentText || '';
 
   if (toSection) {
@@ -135,7 +135,10 @@ export function downloadAddresseeDocx(result, options = {}) {
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     return true;
+  }).catch((err) => {
+    console.warn('DOCX download failed:', err);
+    throw err;
   });
 }

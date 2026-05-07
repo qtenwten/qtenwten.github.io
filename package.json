@@ -16,6 +16,7 @@
     "check:addressee:integration": "node scripts/check-addressee-integration.js",
     "check:addressee:docx": "node scripts/check-addressee-docx-export.js",
     "check:addressee:csv": "node scripts/check-addressee-csv-import.cjs",
+    "check:addressee:export-quality": "node scripts/check-addressee-export-quality.js",
     "verify:articles-html": "node scripts/verify-articles-html.js",
     "verify:article-json": "node scripts/verify-article-json.js",
     "verify:production-articles": "node scripts/verify-production-articles.cjs",
