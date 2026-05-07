@@ -542,6 +542,111 @@ function buildGenericToolPrerenderBody(page) {
   return `<div class="tool-page-layout tool-page-layout--split" aria-hidden="true"><section class="tool-page-panel tool-page-controls" style="min-height: 760px;"><div class="tool-section-heading"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></div><div class="field"><label>${escapeHtml(inputLabel)}</label><input type="text" value="" tabindex="-1" /></div><div class="field"><label>${escapeHtml(language === 'en' ? 'Settings' : 'Настройки')}</label>${buildCustomSelectPrerender('prerender-tool-setting', language === 'en' ? 'Default' : 'По умолчанию', { disabled: true })}</div><div class="btn-group"><button type="button" tabindex="-1">${escapeHtml(actionLabel)}</button><button type="button" class="secondary" tabindex="-1">${escapeHtml(language === 'en' ? 'Clear' : 'Очистить')}</button></div></section><section class="tool-page-panel tool-page-result" style="min-height: 760px;"><div class="result-section result-section--accent"><div class="result-summary is-centered"><div class="result-summary__main"><div class="result-summary__kicker">${escapeHtml(resultLabel)}</div><h2 class="result-summary__title">${escapeHtml(title)}</h2><p class="result-summary__description">${escapeHtml(description)}</p></div></div></div></section></div>`
 }
 
+const ADDRESSEE_PRERENDER_FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8']
+
+const ADDRESSEE_PRERENDER_COPY = {
+  ru: {
+    eyebrow: 'Полезное руководство',
+    heroLead: 'Соберите блок «Кому», данные отправителя, обращение и заготовку документа для письма, заявления, жалобы или запроса.',
+    summaryTitle: 'Что делает генератор адресата',
+    summaryText: 'Генератор адресата помогает быстро подготовить аккуратный документный блок: реквизиты получателя, данные отправителя, обращение и черновик текста для деловой переписки.',
+    summaryItems: [
+      'формирует блок «Кому»;',
+      'помогает оформить «От кого»;',
+      'подбирает обращение;',
+      'готовит шаблон заявления, письма, жалобы или запроса;',
+      'позволяет скачать TXT, HTML, CSV и DOCX.',
+    ],
+    useCasesTitle: 'Когда пригодится инструмент',
+    useCasesItems: [
+      'заявление на отпуск, увольнение или перевод;',
+      'жалоба или официальный запрос;',
+      'служебная записка;',
+      'коммерческое предложение;',
+      'массовая подготовка документов через CSV.',
+    ],
+    exampleTitle: 'Пример результата',
+    exampleText: 'Кому: Генеральному директору ООО «Ромашка»\nИванову Ивану Петровичу\n\nОт кого: менеджера по продажам ООО «Альфа»\nПетровой Анны Сергеевны\n\nУважаемый Иван Петрович!\n\nПрошу рассмотреть заявление и сообщить о принятом решении.',
+    manualTitle: 'Что важно проверить вручную',
+    manualText: 'Проверьте редкие фамилии, иностранные имена, несклоняемые фамилии, нестандартные должности и финальную формулировку документа перед отправкой или печатью.',
+    exportTitle: 'Экспорт документов',
+    exportText: 'Результат можно скопировать, скачать как TXT или HTML, выгрузить в CSV для массовой обработки и сохранить отдельный документ DOCX.',
+    articleTitle: 'Полезная статья',
+    articleText: 'Подробный разбор правил адресата, обращения и строк «кому / от кого» доступен в статье:',
+    articleHref: '/articles/generator-adresata-kak-pravilno-ukazat-adresata',
+    articleLabel: 'Как правильно указать адресата в деловом письме',
+  },
+  en: {
+    eyebrow: 'Practical guide',
+    heroLead: 'Build the To block, sender details, salutation and a ready draft for a business letter, application, complaint or request.',
+    summaryTitle: 'What the addressee generator does',
+    summaryText: 'The addressee generator prepares a clean document block with recipient details, sender details, a business salutation and draft wording for formal correspondence.',
+    summaryItems: [
+      'creates a ready To block;',
+      'helps format the From block;',
+      'chooses a suitable salutation;',
+      'prepares a draft for a letter, application, complaint or request;',
+      'supports TXT, HTML, CSV and DOCX export.',
+    ],
+    useCasesTitle: 'When to use this tool',
+    useCasesItems: [
+      'applications for leave, resignation or transfer;',
+      'complaints and official requests;',
+      'internal memos;',
+      'commercial offers;',
+      'bulk document preparation through CSV.',
+    ],
+    exampleTitle: 'Example result',
+    exampleText: 'To: CEO of Acme Ltd\nJohn Smith\n\nFrom: Sales Manager at Alpha LLC\nJane Cooper\n\nDear John,\n\nPlease review this request and let me know the decision.',
+    manualTitle: 'What to review manually',
+    manualText: 'Review rare surnames, foreign names, undeclinable names, unusual positions and the final wording before sending or printing the document.',
+    exportTitle: 'Document export',
+    exportText: 'You can copy the result, download TXT or HTML, export CSV for bulk processing and save a separate DOCX document.',
+    articleTitle: 'Useful article',
+    articleText: 'A detailed guide to addressee blocks, salutations and To / From wording is available here:',
+    articleHref: '/articles/how-to-write-addressee-in-business-letter',
+    articleLabel: 'How to write an addressee in a business letter',
+  },
+}
+
+function buildPrerenderList(items = []) {
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+}
+
+function buildAddresseeFaqPrerender(language) {
+  const faqList = localeMessages[language]?.addresseeGenerator?.info?.faqList || {}
+  const items = ADDRESSEE_PRERENDER_FAQ_KEYS
+    .map((key) => ({
+      question: faqList[key],
+      answer: faqList[key.replace('q', 'a')],
+    }))
+    .filter((item) => item.question && item.answer)
+
+  if (!items.length) {
+    return ''
+  }
+
+  return `<div class="tool-description-faq">${items.map((item) => `<div class="tool-description-faq-item"><p class="tool-description-faq-question">${escapeHtml(item.question)}</p><p class="tool-description-faq-answer">${escapeHtml(item.answer)}</p></div>`).join('')}</div>`
+}
+
+function buildAddresseeGeneratorPrerenderContent(page) {
+  const language = page.language
+  const hero = getToolHeroContent(page)
+  const copy = ADDRESSEE_PRERENDER_COPY[language] || ADDRESSEE_PRERENDER_COPY.en
+  const info = localeMessages[language]?.addresseeGenerator?.info || {}
+  const benefitKeys = ['readyBlock', 'salutation', 'csv', 'warnings']
+  const benefitItems = benefitKeys
+    .map((key) => getLocaleValue(language, `addresseeGenerator.benefits.${key}`, ''))
+    .filter(Boolean)
+    .map((label) => `<div class="addr-gen-benefit"><span>${escapeHtml(label)}</span></div>`)
+    .join('')
+  const useCases = Object.values(info.useCases || {}).filter(Boolean)
+  const articleHref = getLocalizedRoutePath(language, copy.articleHref)
+  const faq = buildAddresseeFaqPrerender(language)
+
+  return `<div class="tool-container tool-page-shell addr-gen-page addressee-prerender-page"><section class="tool-page-hero tool-hero is-centered addr-gen-hero addressee-prerender-hero">${hero.eyebrow ? `<div class="tool-page-hero__eyebrow">${escapeHtml(hero.eyebrow)}</div>` : ''}<h1 class="tool-page-hero__title">${escapeHtml(hero.title)}</h1><p class="tool-page-hero__subtitle">${escapeHtml(copy.heroLead || hero.subtitle)}</p></section>${benefitItems ? `<div class="addr-gen-benefits" aria-label="${escapeHtml(getLocaleValue(language, 'addresseeGenerator.benefitsLabel', 'Benefits'))}">${benefitItems}</div>` : ''}<section class="tool-description-section addr-gen-info-section addressee-static-summary"><div class="tool-description-section__eyebrow">${escapeHtml(copy.eyebrow)}</div><div class="tool-description-section__content"><h2>${escapeHtml(copy.summaryTitle)}</h2><div class="tool-description-lead"><p>${escapeHtml(copy.summaryText)}</p></div>${buildPrerenderList(copy.summaryItems)}</div></section><section class="tool-description-section addr-gen-info-section addressee-static-use-cases"><div class="tool-description-section__eyebrow">${escapeHtml(info.useCasesTitle || copy.useCasesTitle)}</div><div class="tool-description-section__content"><h2>${escapeHtml(copy.useCasesTitle)}</h2>${buildPrerenderList(copy.useCasesItems)}${useCases.length ? `<div class="addr-gen-use-cases" aria-label="${escapeHtml(info.useCasesTitle || copy.useCasesTitle)}">${useCases.map((item) => `<span class="addr-gen-use-case">${escapeHtml(item)}</span>`).join('')}</div>` : ''}</div></section><section class="tool-description-section addr-gen-info-section addressee-static-example"><div class="tool-description-section__eyebrow">${escapeHtml(getLocaleValue(language, 'addresseeGenerator.resultKicker', 'Result'))}</div><div class="tool-description-section__content"><h2>${escapeHtml(copy.exampleTitle)}</h2><pre class="addr-gen-block-content addressee-prerender-example">${escapeHtml(copy.exampleText)}</pre></div></section><section class="tool-description-section addr-gen-info-section addressee-static-review"><div class="tool-description-section__eyebrow">${escapeHtml(getLocaleValue(language, 'addresseeGenerator.warningsTitle', 'Review'))}</div><div class="tool-description-section__content"><h2>${escapeHtml(copy.manualTitle)}</h2><p>${escapeHtml(copy.manualText)}</p><h2>${escapeHtml(copy.exportTitle)}</h2><p>${escapeHtml(copy.exportText)}</p></div></section><section class="tool-description-section addr-gen-info-section addressee-static-article"><div class="tool-description-section__eyebrow">${escapeHtml(getLocaleValue(language, 'common.helpfulGuide', 'Helpful Guide'))}</div><div class="tool-description-section__content"><h2>${escapeHtml(copy.articleTitle)}</h2><p>${escapeHtml(copy.articleText)}</p><p><a href="${articleHref}">${escapeHtml(copy.articleLabel)}</a></p></div></section>${faq ? `<section class="tool-description-section addr-gen-info-section addressee-static-faq"><div class="tool-description-section__eyebrow">${escapeHtml(info.faqTitle || 'FAQ')}</div><div class="tool-description-section__content"><h2>${escapeHtml(info.faqTitle || 'FAQ')}</h2>${faq}</div></section>` : ''}${buildRelatedToolsPrerenderContent(page)}</div>`
+}
+
 function buildRandomNumberPrerenderContent(page) {
   const title = getLocaleValue(page.language, 'randomNumber.title', page.h1)
   const subtitle = getLocaleValue(page.language, 'randomNumber.subtitle', page.description)
@@ -830,6 +935,7 @@ function injectSeo(template, page, { articlesIndex = [], customPrerenderContent 
     || page.path === '/random-number/picker'
     || page.path === '/random-number/sequence'
   const isQRCodeGeneratorPage = page.path === '/qr-code-generator'
+  const isAddresseeGeneratorPage = page.path === '/generator-adresata'
   const usesToolPageShell = TOOL_PAGE_SHELL_PATHS.has(page.path)
   const shouldSkipHydration = CLIENT_RENDER_TOOL_PATHS.has(page.path)
 
@@ -837,9 +943,11 @@ function injectSeo(template, page, { articlesIndex = [], customPrerenderContent 
     ? buildArticlesIndexPrerenderContent(page, articlesIndex)
     : isQRCodeGeneratorPage
       ? buildQRCodeGeneratorPrerenderContent(page)
-      : usesToolPageShell
-        ? buildToolPageShellPrerenderContent(page)
-        : buildLegacyToolPrerenderContent(page))
+      : isAddresseeGeneratorPage
+        ? buildAddresseeGeneratorPrerenderContent(page)
+        : usesToolPageShell
+          ? buildToolPageShellPrerenderContent(page)
+          : buildLegacyToolPrerenderContent(page))
   const skipHydration = customSkipHydration ?? shouldSkipHydration
 
   const prerenderRoot = isHomePage
