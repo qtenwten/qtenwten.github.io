@@ -1,4 +1,4 @@
-import { Document, P, TextRun, Paragraph, AlignmentType } from 'docx';
+import { Document, TextRun, Paragraph, AlignmentType } from 'docx';
 
 function escapeXmlText(value) {
   if (value === null || value === undefined) return '';
