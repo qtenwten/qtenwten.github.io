@@ -369,7 +369,7 @@ check(agContent.includes('type="file"') && agContent.includes('accept=".csv,text
 check(agContent.includes('addr-gen-upload-row'), 'JSX has addr-gen-upload-row element')
 check(agContent.includes('addr-gen-upload-input'), 'JSX has addr-gen-upload-input class')
 check(agContent.includes('bulkFileInput'), 'JSX has bulkFileInput id for file input')
-check(agContent.includes('htmlFor="bulkFileInput"') || agContent.includes('htmlFor={\"bulkFileInput\"}'), 'JSX file input has label with htmlFor')
+check(agContent.includes('htmlFor="bulkFileInput"') || agContent.includes('htmlFor={"bulkFileInput"}'), 'JSX file input has label with htmlFor')
 check(agContent.includes('FileReader'), 'JSX uses FileReader for CSV parsing')
 for (const lang of ['ru', 'en']) {
   const locale = readJson(`src/locales/${lang}.json`)
@@ -381,6 +381,27 @@ for (const lang of ['ru', 'en']) {
 }
 check(agCssContent.includes('.addr-gen-upload-row'), 'CSS has .addr-gen-upload-row styles')
 check(agCssContent.includes('.addr-gen-upload-input'), 'CSS has .addr-gen-upload-input styles')
+
+// 10g. Mobile responsive checks
+console.log('\n10g. Mobile responsive checks')
+check(agCssContent.includes('@media (max-width: 768px)') || agCssContent.includes('@media (max-width: 767px)'), 'CSS has mobile media query (768px)')
+check(agCssContent.includes('@media (max-width: 420px)') || agCssContent.includes('@media (max-width: 480px)'), 'CSS has narrow mobile media query')
+check(agCssContent.includes('.addr-gen-bulk-table-wrap') && agCssContent.includes('overflow-x'), 'CSS has horizontal scroll for bulk table')
+check(
+  agCssContent.includes('.addr-gen-btn--primary') && agCssContent.includes('flex'),
+  'CSS has flex-based primary button layout'
+)
+
+// 10h. No raw placeholder keys in locales
+console.log('\n10h. No raw placeholder keys in addresseeGenerator')
+for (const lang of ['ru', 'en']) {
+  const locale = readJson(`src/locales/${lang}.json`)
+  const addrGenSection = locale.addresseeGenerator || {}
+  const allValues = JSON.stringify(addrGenSection)
+  check(!allValues.includes('undefined'), `${lang}: locale has no 'undefined' string`)
+  check(!allValues.includes('null'), `${lang}: locale has no 'null' string`)
+  check(!allValues.includes('addresseeGenerator.'), `${lang}: locale has no raw i18n key strings`)
+}
 
 
 console.log('\n11. Sitemap')
