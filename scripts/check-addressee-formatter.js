@@ -11,9 +11,13 @@ import {
   WARNING_CODES,
   DOCUMENT_TEMPLATE_BUSINESS_LETTER,
   DOCUMENT_TEMPLATE_APPLICATION,
-  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
-  DOCUMENT_TEMPLATE_ORDER,
+  DOCUMENT_TEMPLATE_COMPLAINT,
+  DOCUMENT_TEMPLATE_REQUEST,
   DOCUMENT_TEMPLATE_MEMO,
+  DOCUMENT_TEMPLATE_EXPLANATORY_NOTE,
+  DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+  DOCUMENT_TEMPLATE_COMMERCIAL_OFFER,
+  DOCUMENT_TEMPLATE_ORDER,
 } from '../src/utils/addresseeTypes.js'
 
 let passed = 0
@@ -386,6 +390,39 @@ function run() {
   assert(typeof rTemplateWithWarnings.blocks.documentText === 'string', 'R8: template with warnings returns documentText')
   assert(Array.isArray(rTemplateWithWarnings.warnings), 'R8: warnings work with documentTemplate')
   assert(rTemplateWithWarnings.confidence < 0.95, 'R8: confidence works with documentTemplate')
+
+  const rComplaint = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_COMPLAINT })
+  assert(typeof rComplaint.blocks.documentText === 'string', 'R9: complaint returns documentText string')
+  assert(rComplaint.blocks.documentText.includes('Жалоба'), 'R9: complaint contains "Жалоба"')
+  assert(rComplaint.blocks.documentText.length > 20, 'R9: complaint documentText is not empty')
+
+  const rRequest = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_REQUEST })
+  assert(typeof rRequest.blocks.documentText === 'string', 'R10: request returns documentText string')
+  assert(rRequest.blocks.documentText.includes('Запрос'), 'R10: request contains "Запрос"')
+  assert(rRequest.blocks.documentText.length > 10, 'R10: request documentText is not empty')
+
+  const rExplanatoryNote = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE })
+  assert(typeof rExplanatoryNote.blocks.documentText === 'string', 'R11: explanatoryNote returns documentText string')
+  assert(rExplanatoryNote.blocks.documentText.includes('Объяснительная'), 'R11: explanatoryNote contains "Объяснительная"')
+  assert(rExplanatoryNote.blocks.documentText.length > 20, 'R11: explanatoryNote documentText is not empty')
+
+  const rCommercialOffer = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: DOCUMENT_TEMPLATE_COMMERCIAL_OFFER })
+  assert(typeof rCommercialOffer.blocks.documentText === 'string', 'R12: commercialOffer returns documentText string')
+  assert(rCommercialOffer.blocks.documentText.includes('Коммерческое предложение'), 'R12: commercialOffer contains "Коммерческое предложение"')
+  assert(rCommercialOffer.blocks.documentText.length > 20, 'R12: commercialOffer documentText is not empty')
+
+  const sensitiveTemplates = [
+    { template: DOCUMENT_TEMPLATE_APPLICATION, name: 'application' },
+    { template: DOCUMENT_TEMPLATE_COMPLAINT, name: 'complaint' },
+    { template: DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY, name: 'powerOfAttorney' },
+    { template: DOCUMENT_TEMPLATE_EXPLANATORY_NOTE, name: 'explanatoryNote' },
+  ]
+  for (const { template, name } of sensitiveTemplates) {
+    const result = formatAddressee({ fullName: 'Иванов Иван Петрович', position: 'директор', organization: 'ООО «Ромашка»', gender: GENDER_MALE, documentTemplate: template })
+    const hasTemplateReview = result.warnings.some((w) => w.code === WARNING_CODES.TEMPLATE_REVIEW)
+    assert(hasTemplateReview, `R13: ${name} returns TEMPLATE_REVIEW warning`)
+    assert(typeof result.blocks.documentText === 'string' && result.blocks.documentText.length > 0, `R13: ${name} has non-empty documentText`)
+  }
 
   // S. Extra name parts and Latin name warnings
   console.log('\nS. Extra name parts and Latin name warnings')

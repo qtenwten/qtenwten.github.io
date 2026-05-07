@@ -125,6 +125,10 @@ for (const lang of ['ru', 'en']) {
     'addresseeGenerator.buttons.downloadDocx',
     'addresseeGenerator.buttons.docxComingSoon',
     'addresseeGenerator.export.disclaimer',
+    'addresseeGenerator.export.to',
+    'addresseeGenerator.export.from',
+    'addresseeGenerator.export.greeting',
+    'addresseeGenerator.export.documentTemplate',
     'addresseeGenerator.bulk.hint',
     'addresseeGenerator.bulk.placeholder',
     'addresseeGenerator.exportNote',
@@ -236,6 +240,7 @@ check(agContent.includes('structuredData'), 'passes structuredData to SEO')
 check(agContent.includes('handleExportCsv'), 'has handleExportCsv')
 check(agContent.includes('handleExportTxt'), 'has handleExportTxt')
 check(agContent.includes('handleExportHtml'), 'has handleExportHtml')
+check(agContent.includes('getDocumentExportText'), 'has getDocumentExportText')
 check(agContent.includes('escapeHtml'), 'has escapeHtml')
 check(agContent.includes('addressee-generator-document.txt'), 'has TXT filename')
 check(agContent.includes('addressee-generator-document.html'), 'has HTML filename')
@@ -247,8 +252,9 @@ check(
   agContent.includes("'to'") &&
   agContent.includes("'from'") &&
   agContent.includes("'greeting'") &&
-  agContent.includes("'letter'"),
-  'CSV header array contains expected fields'
+  agContent.includes("'letter'") &&
+  agContent.includes("'documentText'"),
+  'CSV header array contains expected fields including documentText'
 )
 check(!agContent.includes('console.log'), 'no console.log statements')
 check(agContent.includes('<form'), 'has <form> element')
@@ -259,6 +265,7 @@ check(agContent.includes('aria-invalid=') || agContent.includes('aria-invalid ='
 check(agContent.includes('aria-describedby=') || agContent.includes('aria-describedby ='), 'has aria-describedby on fields')
 check(agContent.includes('tabIndex={-1}') || agContent.includes('tabIndex={ -1 }'), 'result section has tabIndex={-1}')
 check(agContent.includes('ref={resultRef}') || agContent.includes('ref={ resultRef }'), 'result section has ref for focus')
+check(agContent.includes('blocks.documentText') || agContent.includes("key: 'documentText'"), 'resultBlocks includes documentText')
 
 // 11. Sitemap (optional check after build)
 console.log('\n11. Sitemap')

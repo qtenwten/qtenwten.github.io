@@ -1526,7 +1526,11 @@
       "docxComingSoon": "Feature in development"
     },
     "export": {
-      "disclaimer": "Draft text. Verify data before use."
+      "disclaimer": "Draft text. Verify data before use.",
+      "to": "Addressee",
+      "from": "Sender",
+      "greeting": "Salutation",
+      "documentTemplate": "Document Template"
     },
     "documentTemplate": {
       "label": "Document Type",

@@ -434,12 +434,26 @@ function AddresseeGenerator() {
 
   const getDocumentExportText = useCallback(() => {
     if (!result) return ''
-    const docText = result.blocks && result.blocks.documentText
-    if (docText) return docText
-    const letter = result.blocks && result.blocks.letter
-    if (letter) return letter
-    return ''
-  }, [result])
+    const blocks = result.blocks || {}
+    const to = blocks.to || ''
+    const from = blocks.from || ''
+    const greeting = blocks.greeting || ''
+    const docText = blocks.documentText || blocks.letter || ''
+    const lines = []
+    if (to) {
+      lines.push(`${t('addresseeGenerator.export.to')}:\n${to}`)
+    }
+    if (from) {
+      lines.push(`${t('addresseeGenerator.export.from')}:\n${from}`)
+    }
+    if (greeting) {
+      lines.push(`${t('addresseeGenerator.export.greeting')}:\n${greeting}`)
+    }
+    if (docText) {
+      lines.push(`${t('addresseeGenerator.export.documentTemplate')}:\n${docText}`)
+    }
+    return lines.join('\n\n')
+  }, [result, t])
 
   const handleExportTxt = useCallback(() => {
     if (!result) return

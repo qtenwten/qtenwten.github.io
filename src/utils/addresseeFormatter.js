@@ -502,6 +502,20 @@ export function formatAddressee(input) {
     organization,
   });
 
+  const SENSITIVE_TEMPLATES = [
+    DOCUMENT_TEMPLATE_APPLICATION,
+    DOCUMENT_TEMPLATE_COMPLAINT,
+    DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+    DOCUMENT_TEMPLATE_EXPLANATORY_NOTE,
+  ];
+  const safeTemplate = documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER;
+  if (SENSITIVE_TEMPLATES.includes(safeTemplate)) {
+    warnings.push({
+      code: WARNING_CODES.TEMPLATE_REVIEW,
+      message: 'Это заготовка текста, а не юридическая консультация. Проверьте формулировки перед отправкой.',
+    });
+  }
+
   let confidence = 0.95;
   const hasIncompleteName = warnings.some((w) => w.code === WARNING_CODES.INCOMPLETE_NAME);
   const hasSoftWarning = warnings.some((w) =>
