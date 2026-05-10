@@ -1,0 +1,205 @@
+import { analytics, ANALYTICS_EVENTS } from './analytics.js'
+
+export const ADDRESSEE_ANALYTICS_EVENTS = {
+  TOOL_OPENED: 'addressee_tool_opened',
+  SCENARIO_SELECTED: 'addressee_scenario_selected',
+  GENERATED: 'addressee_generated',
+  WARNING_SHOWN: 'addressee_warning_shown',
+  EXPLANATION_OPENED: 'addressee_explanation_opened',
+  COPY_CLICKED: 'addressee_copy_clicked',
+  EXPORT_CLICKED: 'addressee_export_clicked',
+  CSV_IMPORT_STARTED: 'addressee_csv_import_started',
+  CSV_IMPORT_COMPLETED: 'addressee_csv_import_completed',
+  PRESET_ACTION: 'addressee_preset_action',
+  PREMIUM_INTENT: 'addressee_premium_intent',
+}
+
+const FORBIDDEN_KEYS = [
+  'fullName',
+  'senderFullName',
+  'position',
+  'senderPosition',
+  'organization',
+  'senderOrganization',
+  'recipientDativeName',
+  'senderGenitiveName',
+  'documentText',
+  'blocks',
+  'result',
+  'csv',
+  'rows',
+  'input',
+  'warnings',
+  'warnings_message',
+  'warning_message',
+  'explanations',
+  'explanations_text',
+  'explanation_text',
+  'explanation_message',
+  'parsedName',
+  'to',
+  'from',
+  'greeting',
+  'letter',
+  'manualReviewRequired',
+  'confidence',
+  'id',
+  'label',
+  'data',
+  'createdAt',
+  'updatedAt',
+]
+
+const PRESET_LABEL_KEYS = ['label', 'presetLabel', 'preset_name', 'name']
+const PRESET_DATA_KEYS = ['data', 'presetData', 'preset_data', 'fullName', 'position', 'organization', 'senderFullName', 'senderPosition', 'senderOrganization', 'recipientDativeName', 'senderGenitiveName']
+
+export function getConfidenceBucket(confidence) {
+  if (confidence === undefined || confidence === null) return 'unknown'
+  if (confidence >= 0.8) return 'high'
+  if (confidence >= 0.6) return 'medium'
+  return 'low'
+}
+
+export function getCsvRowsBucket(rowCount) {
+  if (rowCount === undefined || rowCount === null) return 'unknown'
+  if (rowCount === 0) return 'empty'
+  if (rowCount <= 5) return 'small'
+  if (rowCount <= 20) return 'medium'
+  return 'large'
+}
+
+export function getWarningCodes(result) {
+  if (!result || !result.warnings || !Array.isArray(result.warnings)) return []
+  return result.warnings
+    .map((w) => (typeof w === 'string' ? w : w?.code))
+    .filter(Boolean)
+}
+
+export function buildAddresseeAnalyticsPayload(input = {}, result = null, extra = {}) {
+  const payload = { ...extra }
+
+  if (result && typeof result === 'object') {
+    if (result.profile) payload.profile = result.profile
+    if (result.scenario) payload.scenario = result.scenario
+    if (result.confidence !== undefined) payload.confidence_bucket = getConfidenceBucket(result.confidence)
+    if (result.confidenceLabel) payload.confidence_label = result.confidenceLabel
+    if (result.warnings && Array.isArray(result.warnings)) {
+      payload.warnings_count = result.warnings.length
+      payload.warning_codes = getWarningCodes(result)
+    }
+  }
+
+  if (input && typeof input === 'object') {
+    if (input.language) payload.language = input.language
+    if (input.fullName) payload.has_recipient = Boolean(input.fullName.trim())
+    if (input.senderFullName) payload.has_sender = Boolean(input.senderFullName.trim())
+    if (input.recipientDativeName) payload.has_manual_recipient_case = Boolean(input.recipientDativeName.trim())
+    if (input.senderGenitiveName) payload.has_manual_sender_case = Boolean(input.senderGenitiveName.trim())
+  }
+
+  FORBIDDEN_KEYS.forEach((key) => {
+    if (key in payload) delete payload[key]
+  })
+
+  PRESET_LABEL_KEYS.forEach((key) => {
+    if (key in payload) delete payload[key]
+  })
+
+  PRESET_DATA_KEYS.forEach((key) => {
+    if (key in payload) delete payload[key]
+  })
+
+  if (payload.warning_codes && Array.isArray(payload.warning_codes)) {
+    payload.warning_codes = payload.warning_codes.slice(0, 20)
+  }
+
+  return payload
+}
+
+function safeEmit(event, payload) {
+  try {
+    if (typeof analytics !== 'undefined' && analytics && typeof analytics.emit === 'function') {
+      analytics.emit(event, payload)
+    }
+  } catch {}
+}
+
+export function trackAddresseeToolOpened(payload = {}) {
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.TOOL_OPENED, payload)
+}
+
+export function trackAddresseeScenarioSelected(payload) {
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.SCENARIO_SELECTED, payload)
+}
+
+export function trackAddresseeGenerated(input, result, extra = {}) {
+  const payload = buildAddresseeAnalyticsPayload(input, result, extra)
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.GENERATED, payload)
+}
+
+export function trackAddresseeWarningShown(input, result, extra = {}) {
+  if (!result || !result.warnings || result.warnings.length === 0) return
+  const payload = buildAddresseeAnalyticsPayload(input, result, extra)
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.WARNING_SHOWN, payload)
+}
+
+export function trackAddresseeExplanationOpened(input, result, explanationCode, extra = {}) {
+  const payload = buildAddresseeAnalyticsPayload(input, result, {
+    explanation_code: explanationCode,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.EXPLANATION_OPENED, payload)
+}
+
+export function trackAddresseeCopyClicked(input, result, copyTarget, extra = {}) {
+  const payload = buildAddresseeAnalyticsPayload(input, result, {
+    copy_target: copyTarget,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.COPY_CLICKED, payload)
+}
+
+export function trackAddresseeExportClicked(input, result, exportType, extra = {}) {
+  const payload = buildAddresseeAnalyticsPayload(input, result, {
+    export_type: exportType,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.EXPORT_CLICKED, payload)
+}
+
+export function trackAddresseeCsvImportStarted(extra = {}) {
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.CSV_IMPORT_STARTED, extra)
+}
+
+export function trackAddresseeCsvImportCompleted(rowCount, extra = {}) {
+  const payload = {
+    csv_rows_bucket: getCsvRowsBucket(rowCount),
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.CSV_IMPORT_COMPLETED, payload)
+}
+
+export function trackAddresseePresetAction(presetType, action, extra = {}) {
+  const payload = {
+    preset_type: presetType,
+    preset_action: action,
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PRESET_ACTION, payload)
+}
+
+export function trackAddresseePremiumIntent(action, extra = {}) {
+  const payload = {
+    plan_context: 'addressee_generator',
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_INTENT, payload)
+}
+
+export function trackAddresseeScenarioChange(scenarioId, profile, language) {
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.SCENARIO_SELECTED, {
+    scenario: scenarioId,
+    profile: profile,
+    language: language,
+  })
+}

@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
-import { ResultSection, ResultNotice } from '../components/ResultSection'
+import { ResultSection } from '../components/ResultSection'
 import ToolPageShell, { ToolControls, ToolHelp, ToolPageHero, ToolPageLayout, ToolRelated, ToolResult } from '../components/ToolPageShell'
 import { formatAddressee } from '../utils/addresseeFormatter'
 import { downloadAddresseeDocx } from '../utils/addresseeDocxExport'
@@ -21,6 +21,51 @@ import {
   getCsvTemplate,
   buildBulkCsvExport,
 } from '../utils/addresseeCsv'
+import {
+  buildManualReviewItems,
+  getAddresseeFieldLabel,
+  getConfidenceUi,
+  getProfileDisplayLabel,
+  getScenarioDisplayLabel,
+  getWarningSeverityUi,
+  getWarningSuggestionText,
+  shouldShowTrustLayer,
+} from '../utils/addresseeTrustUi'
+import {
+  applyScenarioToInput,
+  getAddresseeScenarioOptions,
+  getDefaultAddresseeScenario,
+  getScenarioFromQueryParams,
+  getScenarioUiConfig,
+  isBulkScenario,
+} from '../utils/addresseeScenarioUi'
+import { mapDocumentTemplateToScenario } from '../utils/addresseeProfiles'
+import {
+  isPresetStorageAvailable,
+  getRecipientPresets,
+  getSenderPresets,
+  buildRecipientPresetFromInput,
+  buildSenderPresetFromInput,
+  applyRecipientPresetToInput,
+  applySenderPresetToInput,
+  saveAddresseePreset,
+  deleteAddresseePreset,
+  getRecipientPresetLimit,
+  getSenderPresetLimit,
+} from '../utils/addresseePresets'
+import {
+  trackAddresseeToolOpened,
+  trackAddresseeScenarioChange,
+  trackAddresseeGenerated,
+  trackAddresseeWarningShown,
+  trackAddresseeExplanationOpened,
+  trackAddresseeCopyClicked,
+  trackAddresseeExportClicked,
+  trackAddresseeCsvImportStarted,
+  trackAddresseeCsvImportCompleted,
+  trackAddresseePresetAction,
+  trackAddresseePremiumIntent,
+} from '../utils/addresseeAnalytics'
 import {
   GENDER_MALE,
   GENDER_FEMALE,
@@ -93,10 +138,10 @@ const HERO_BENEFITS = [
 
 const USE_CASE_KEYS = ['businessLetter', 'application', 'powerOfAttorney', 'order', 'memo', 'crm']
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8']
+const FOCUS_QUERY_VALUES = new Set(['to', 'from', 'salutation'])
 
-function AddresseeGenerator() {
-  const { t, language } = useLanguage()
-  const [form, setForm] = useState({
+function createEmptyAddresseeForm() {
+  return {
     fullName: '',
     position: '',
     organization: '',
@@ -109,7 +154,30 @@ function AddresseeGenerator() {
     senderOrganization: '',
     recipientDativeName: '',
     senderGenitiveName: '',
-  })
+  }
+}
+
+function getInitialAddresseeQueryState() {
+  if (typeof window === 'undefined' || !window.location) {
+    return { scenario: null, focus: '', exportHint: '' }
+  }
+
+  const searchParams = new URLSearchParams(window.location.search || '')
+  const focus = searchParams.get('focus') || ''
+  const exportParam = searchParams.get('export') || ''
+
+  return {
+    scenario: getScenarioFromQueryParams(searchParams),
+    focus: FOCUS_QUERY_VALUES.has(focus) ? focus : '',
+    exportHint: exportParam === 'docx' ? 'docx' : '',
+  }
+}
+
+function AddresseeGenerator() {
+  const { t, language } = useLanguage()
+  const initialQueryState = useMemo(() => getInitialAddresseeQueryState(), [])
+  const initialScenarioId = initialQueryState.scenario || getDefaultAddresseeScenario(language)
+  const [form, setForm] = useState(() => applyScenarioToInput(createEmptyAddresseeForm(), initialScenarioId))
   const [result, setResult] = useState(null)
   const [activeExampleKey, setActiveExampleKey] = useState('')
   const [copyAllState, setCopyAllState] = useState('idle')
@@ -120,17 +188,112 @@ function AddresseeGenerator() {
   const [bulkResults, setBulkResults] = useState([])
   const [bulkError, setBulkError] = useState(null)
   const [bulkSummary, setBulkSummary] = useState(null)
-  const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, greeting: null, documentText: null })
+const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, greeting: null, documentText: null })
   const [editingBlock, setEditingBlock] = useState(null)
   const [editDraft, setEditDraft] = useState('')
+  const toolOpenedRef = useRef(false)
+
+  useEffect(() => {
+    if (toolOpenedRef.current) return
+    toolOpenedRef.current = true
+    trackAddresseeToolOpened({
+      language,
+      scenario: form.scenario,
+      profile: form.profile,
+      focus: initialQueryState.focus,
+      export_hint: initialQueryState.exportHint,
+    })
+  }, [])
+
+  const storageAvailable = useMemo(() => isPresetStorageAvailable(), [])
+  const recipientPresets = useMemo(() => getRecipientPresets(), [form])
+  const senderPresets = useMemo(() => getSenderPresets(), [form])
+
+  const handleSaveRecipientPreset = useCallback(() => {
+    const preset = buildRecipientPresetFromInput(form)
+    if (!preset) {
+      setStatusMessage(t('addressee.presets.recipientSection.noData'))
+      return
+    }
+    const result = saveAddresseePreset('recipient', preset)
+    if (result.success) {
+      setStatusMessage(t('addressee.presets.recipientSection.saved'))
+      trackAddresseePresetAction('recipient', 'save', { language })
+    } else if (result.error === 'limit_reached') {
+      setStatusMessage(t('addressee.presets.recipientSection.limitReached', { limit: getRecipientPresetLimit() }))
+      trackAddresseePremiumIntent('preset_limit_interest', { language })
+    }
+  }, [form, t, language])
+
+  const handleApplyRecipientPreset = useCallback((presetId) => {
+    const preset = recipientPresets.find((p) => p.id === presetId)
+    if (!preset) return
+    setForm((prev) => applyRecipientPresetToInput(prev, preset))
+    setStatusMessage(t('addressee.presets.recipientSection.applied'))
+    trackAddresseePresetAction('recipient', 'apply', { language })
+  }, [recipientPresets, t, language])
+
+  const handleDeleteRecipientPreset = useCallback((presetId) => {
+    deleteAddresseePreset('recipient', presetId)
+    setStatusMessage(t('addressee.presets.recipientSection.deleted'))
+    trackAddresseePresetAction('recipient', 'delete', { language })
+  }, [t, language])
+
+  const handleSaveSenderPreset = useCallback(() => {
+    const preset = buildSenderPresetFromInput(form)
+    if (!preset) {
+      setStatusMessage(t('addressee.presets.senderSection.noData'))
+      return
+    }
+    const result = saveAddresseePreset('sender', preset)
+    if (result.success) {
+      setStatusMessage(t('addressee.presets.senderSection.saved'))
+      trackAddresseePresetAction('sender', 'save', { language })
+    } else if (result.error === 'limit_reached') {
+      setStatusMessage(t('addressee.presets.senderSection.limitReached', { limit: getSenderPresetLimit() }))
+      trackAddresseePremiumIntent('preset_limit_interest', { language })
+    }
+  }, [form, t, language])
+
+  const handleApplySenderPreset = useCallback((presetId) => {
+    const preset = senderPresets.find((p) => p.id === presetId)
+    if (!preset) return
+    setForm((prev) => applySenderPresetToInput(prev, preset))
+    setStatusMessage(t('addressee.presets.senderSection.applied'))
+    trackAddresseePresetAction('sender', 'apply', { language })
+  }, [senderPresets, t, language])
+
+  const handleDeleteSenderPreset = useCallback((presetId) => {
+    deleteAddresseePreset('sender', presetId)
+    setStatusMessage(t('addressee.presets.senderSection.deleted'))
+    trackAddresseePresetAction('sender', 'delete', { language })
+  }, [t, language])
 
   const handleFieldChange = useCallback((field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }))
+    setForm((prev) => {
+      if (field === 'documentTemplate') {
+        const scenarioId = mapDocumentTemplateToScenario(value)
+        return {
+          ...applyScenarioToInput(prev, scenarioId),
+          documentTemplate: value,
+        }
+      }
+
+      return { ...prev, [field]: value }
+    })
     setActiveExampleKey('')
     if (field === 'fullName' && value.trim()) {
       setFullNameError(false)
     }
   }, [])
+
+const handleScenarioChange = useCallback((scenarioId) => {
+    setForm((prev) => applyScenarioToInput(prev, scenarioId))
+    setActiveExampleKey('')
+    setBulkError(null)
+    const scenarioConfig = getScenarioUiConfig(scenarioId, t, language)
+    trackAddresseeScenarioChange(scenarioId, scenarioConfig.profileId, language)
+  }, [t, language])
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault()
@@ -146,48 +309,39 @@ function AddresseeGenerator() {
     setEditingBlock(null)
     setCopyAllState('idle')
     setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
+    trackAddresseeGenerated(form, formatted, { language })
+    trackAddresseeWarningShown(form, formatted, { language })
     if (resultRef.current) {
       requestAnimationFrame(() => {
         resultRef.current?.focus()
       })
     }
-  }, [form, t])
+  }, [form, t, language])
 
-  const handleGenerate = useCallback(() => {
+const handleGenerate = useCallback(() => {
     const formatted = formatAddressee(form)
     setResult(formatted)
     setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
     setEditingBlock(null)
     setCopyAllState('idle')
     setStatusMessage(t('addresseeGenerator.statusMessages.resultGenerated'))
+    trackAddresseeGenerated(form, formatted, { language })
+    trackAddresseeWarningShown(form, formatted, { language })
     if (resultRef.current) {
       requestAnimationFrame(() => {
         resultRef.current?.focus()
       })
     }
-  }, [form, t])
+  }, [form, t, language])
 
   const handleClear = useCallback(() => {
-    setForm({
-      fullName: '',
-      position: '',
-      organization: '',
-      gender: GENDER_UNKNOWN,
-      greetingMode: GREETING_NAME_PATRONYMIC,
-      punctuation: PUNCTUATION_EXCLAMATION,
-      documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
-      senderFullName: '',
-      senderPosition: '',
-      senderOrganization: '',
-      recipientDativeName: '',
-      senderGenitiveName: '',
-    })
+    setForm(applyScenarioToInput(createEmptyAddresseeForm(), initialScenarioId))
     setResult(null)
     setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
     setEditingBlock(null)
     setActiveExampleKey('')
     setCopyAllState('idle')
-  }, [])
+  }, [initialScenarioId])
 
   const handleClearBulk = useCallback(() => {
     setBulkInput('')
@@ -221,6 +375,7 @@ function AddresseeGenerator() {
 
   const handleProcessBulk = useCallback(() => {
     setBulkError(null)
+    trackAddresseeCsvImportStarted({ language })
     const parseResult = parseCsvText(bulkInput, { maxRows: 50 })
 
     if (parseResult.errors && parseResult.errors.length > 0) {
@@ -255,10 +410,11 @@ function AddresseeGenerator() {
       withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
       errors: parseResult.errors.length,
     })
+    trackAddresseeCsvImportCompleted(processed.length, { language })
 
     const unknownColsWarning = parseResult.unknownColumns.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
     setStatusMessage(t('addresseeGenerator.statusMessages.rowsProcessed', { count: processed.length }) + unknownColsWarning)
-  }, [bulkInput, t])
+  }, [bulkInput, t, language])
 
   const handleCsvFileChange = useCallback((e) => {
     const file = e.target.files?.[0]
@@ -269,6 +425,7 @@ function AddresseeGenerator() {
       if (typeof text === 'string') {
         setBulkInput(text)
         setBulkError(null)
+        trackAddresseeCsvImportStarted({ language })
         const parseResult = parseCsvText(text, { maxRows: 50 })
 
         if (parseResult.errors && parseResult.errors.length > 0) {
@@ -302,6 +459,7 @@ function AddresseeGenerator() {
           withWarnings: processed.filter((r) => r.warnings && r.warnings.length > 0).length,
           errors: parseResult.errors.length,
         })
+        trackAddresseeCsvImportCompleted(processed.length, { language })
         const unknownColsWarning = parseResult.unknownColumns.length > 0 ? ' ' + t('addresseeGenerator.bulk.unknownColumns') : ''
         setStatusMessage(t('addresseeGenerator.bulk.uploadedCount', { count: processed.length }) + unknownColsWarning)
       }
@@ -314,7 +472,7 @@ function AddresseeGenerator() {
     }
     reader.readAsText(file)
     e.target.value = ''
-  }, [t])
+  }, [t, language])
 
   const handleDownloadBulkCsv = useCallback(() => {
     if (bulkResults.length === 0) return
@@ -330,7 +488,7 @@ function AddresseeGenerator() {
   }, [t])
 
   const handleLoadExample = useCallback((example) => {
-    setForm({
+    const nextForm = applyScenarioToInput({
       fullName: example.fullName || '',
       position: example.position || '',
       organization: example.organization || '',
@@ -343,21 +501,9 @@ function AddresseeGenerator() {
       senderOrganization: example.senderOrganization || '',
       recipientDativeName: example.recipientDativeName || '',
       senderGenitiveName: example.senderGenitiveName || '',
-    })
-    const formatted = formatAddressee({
-      fullName: example.fullName || '',
-      position: example.position || '',
-      organization: example.organization || '',
-      gender: example.gender || GENDER_UNKNOWN,
-      greetingMode: example.greetingMode || GREETING_NAME_PATRONYMIC,
-      punctuation: example.punctuation || PUNCTUATION_EXCLAMATION,
-      documentTemplate: example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
-      senderFullName: example.senderFullName || '',
-      senderPosition: example.senderPosition || '',
-      senderOrganization: example.senderOrganization || '',
-      recipientDativeName: example.recipientDativeName || '',
-      senderGenitiveName: example.senderGenitiveName || '',
-    })
+    }, mapDocumentTemplateToScenario(example.documentTemplate || DOCUMENT_TEMPLATE_BUSINESS_LETTER))
+    setForm(nextForm)
+    const formatted = formatAddressee(nextForm)
     setResult(formatted)
     setResultOverrides({ to: null, from: null, greeting: null, documentText: null })
     setEditingBlock(null)
@@ -376,7 +522,8 @@ function AddresseeGenerator() {
     const csv = buildSingleCsvExport(result, form, resultOverrides)
     downloadTextAsFile(csv, 'addressee-generator-result.csv', 'text/csv;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.csvDownloaded'))
-  }, [result, form, resultOverrides, t])
+    trackAddresseeExportClicked(form, result, 'csv', { language })
+  }, [result, form, resultOverrides, t, language])
 
   const copyAllText = useMemo(() => {
     if (!result) return ''
@@ -385,7 +532,7 @@ function AddresseeGenerator() {
     return [getEffectiveBlockText('to'), getEffectiveBlockText('from'), getEffectiveBlockText('greeting')].filter(Boolean).join('\n\n')
   }, [result, getEffectiveBlockText])
 
-  const handleCopyAll = useCallback(async () => {
+const handleCopyAll = useCallback(async () => {
     if (!copyAllText) return
 
     try {
@@ -393,18 +540,24 @@ function AddresseeGenerator() {
       setCopyAllState('copied')
       setStatusMessage(t('addresseeGenerator.statusMessages.copied'))
       setTimeout(() => setCopyAllState('idle'), 2000)
+      trackAddresseeCopyClicked(form, result, 'full', { language })
     } catch {
       setCopyAllState('error')
       setTimeout(() => setCopyAllState('idle'), 2000)
     }
-  }, [copyAllText, t])
+  }, [copyAllText, t, form, result, language])
 
   const getWarningMessage = useCallback((warning) => {
     if (!warning || !warning.code) return warning?.message || ''
-    const key = `addresseeGenerator.warningCodes.${warning.code}`
-    const localized = t(key)
-    return localized && localized !== key ? localized : (warning.message || warning.code)
+    const trustKey = `addressee.warnings.${warning.code}`
+    const legacyKey = `addresseeGenerator.warningCodes.${warning.code}`
+    const trustLocalized = t(trustKey)
+    if (trustLocalized && trustLocalized !== trustKey) return trustLocalized
+    const legacyLocalized = t(legacyKey)
+    return legacyLocalized && legacyLocalized !== legacyKey ? legacyLocalized : (warning.message || warning.code)
   }, [t])
+
+  const getWarningSuggestion = useCallback((warning) => getWarningSuggestionText(warning, t), [t])
 
   const getDocumentExportText = useCallback(() => {
     if (!result) return ''
@@ -424,7 +577,8 @@ function AddresseeGenerator() {
     const content = '\uFEFF' + text
     downloadTextAsFile(content, 'addressee-generator-document.txt', 'text/plain;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.txtDownloaded'))
-  }, [result, getDocumentExportText, t])
+    trackAddresseeExportClicked(form, result, 'txt', { language })
+  }, [result, getDocumentExportText, t, form, language])
 
   const handleExportHtml = useCallback(() => {
     if (!result) return
@@ -445,6 +599,7 @@ function AddresseeGenerator() {
     })
     downloadTextAsFile(html, 'addressee-generator-document.html', 'text/html;charset=utf-8;')
     setStatusMessage(t('addresseeGenerator.statusMessages.htmlDownloaded'))
+    trackAddresseeExportClicked(form, result, 'html', { language })
   }, [result, resultOverrides, form, language, t])
 
   const handleExportDocx = useCallback(async () => {
@@ -453,25 +608,36 @@ function AddresseeGenerator() {
       const resultForExport = getEffectiveResult(result, resultOverrides)
       await downloadAddresseeDocx(resultForExport, { t })
       setStatusMessage(t('addresseeGenerator.statusMessages.docxDownloaded'))
+      trackAddresseeExportClicked(form, result, 'docx', { language })
     } catch (err) {
       console.warn('DOCX export failed:', err)
       setStatusMessage(t('addresseeGenerator.statusMessages.docxError'))
     }
-  }, [result, resultOverrides, t])
+  }, [result, resultOverrides, t, form, language])
 
-  const confidenceLabel = useMemo(() => {
-    if (!result) return ''
-    if (result.confidence >= 0.95) return t('addresseeGenerator.confidence.high')
-    if (result.confidence >= 0.75) return t('addresseeGenerator.confidence.medium')
-    return t('addresseeGenerator.confidence.low')
+  const trustLayerVisible = useMemo(() => shouldShowTrustLayer(result), [result])
+
+  const confidenceUi = useMemo(() => {
+    if (!result) return getConfidenceUi('low', t)
+    const label = result.confidenceLabel || (result.confidence >= 0.8 ? 'high' : result.confidence >= 0.6 ? 'medium' : 'low')
+    return getConfidenceUi(label, t)
   }, [result, t])
 
-  const confidenceClass = useMemo(() => {
-    if (!result) return ''
-    if (result.confidence >= 0.95) return 'addr-gen-confidence--high'
-    if (result.confidence >= 0.75) return 'addr-gen-confidence--medium'
-    return 'addr-gen-confidence--low'
-  }, [result])
+  const manualReviewItems = useMemo(() => buildManualReviewItems(result, t), [result, t])
+
+  const profileLabel = useMemo(() => getProfileDisplayLabel(result?.profile, t), [result, t])
+
+  const scenarioLabel = useMemo(() => getScenarioDisplayLabel(result?.scenario, t), [result, t])
+
+  const scenarioOptions = useMemo(() => getAddresseeScenarioOptions(t, language), [t, language])
+
+  const activeScenario = useMemo(() => getScenarioUiConfig(form.scenario, t, language), [form.scenario, t, language])
+
+  const activeFocusHint = initialQueryState.focus
+
+  const queryExportHint = initialQueryState.exportHint
+
+  const bulkScenarioSelected = isBulkScenario(form.scenario)
 
   const resultBlocks = useMemo(() => {
     if (!result) return []
@@ -568,8 +734,55 @@ function AddresseeGenerator() {
               <p className="addr-gen-panel-desc">{t('addresseeGenerator.formDescription')}</p>
             </div>
 
+            <section className="addr-gen-scenario" aria-labelledby="addrScenarioTitle">
+              <div className="addr-gen-scenario-head">
+                <div>
+                  <span className="addr-gen-panel-kicker">{t('addressee.scenarioUx.kicker')}</span>
+                  <h3 id="addrScenarioTitle">{t('addressee.scenarioUx.title')}</h3>
+                </div>
+                <span className="addr-gen-scenario-current">
+                  {t('addressee.scenarioUx.currentLabel')}: {activeScenario.label}
+                </span>
+              </div>
+
+              <div className="addr-gen-scenario-grid" role="list" aria-label={t('addressee.scenarioUx.title')}>
+                {scenarioOptions.map((option) => {
+                  const isSelected = form.scenario === option.id
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={`addr-gen-scenario-card ${isSelected ? 'addr-gen-scenario-card--selected' : ''}`.trim()}
+                      onClick={() => handleScenarioChange(option.id)}
+                      aria-pressed={isSelected}
+                    >
+                      <span className="addr-gen-scenario-card-title">{option.label}</span>
+                      <span className="addr-gen-scenario-card-desc">{option.description}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="addr-gen-scenario-guidance">
+                <p>{activeScenario.hint}</p>
+                {(activeFocusHint || queryExportHint || bulkScenarioSelected) && (
+                  <div className="addr-gen-query-hints">
+                    {activeFocusHint && (
+                      <span>{t(`addressee.scenarioUx.focusHints.${activeFocusHint}`)}</span>
+                    )}
+                    {queryExportHint === 'docx' && (
+                      <span>{t('addressee.scenarioUx.queryHints.exportDocx')}</span>
+                    )}
+                    {bulkScenarioSelected && (
+                      <span>{t('addressee.scenarioUx.queryHints.csvBulk')}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+
             <form onSubmit={handleSubmit} className="addr-gen-form">
-            <section className="addr-gen-form-section" aria-labelledby="addrRecipientTitle">
+            <section className={`addr-gen-form-section ${activeFocusHint === 'to' ? 'addr-gen-form-section--focused' : ''}`.trim()} aria-labelledby="addrRecipientTitle">
               <div className="addr-gen-section-heading">
                 <Icon name="person" size={18} />
                 <h3 id="addrRecipientTitle">{t('addresseeGenerator.recipientTitle')}</h3>
@@ -623,9 +836,59 @@ function AddresseeGenerator() {
                 />
                 <p className="addr-gen-hint" id="addrOrganizationHint">{t('addresseeGenerator.hints.organization')}</p>
               </div>
+
+              {!storageAvailable && (
+                <p className="addr-gen-preset-warning" role="alert">
+                  {t('addressee.presets.storageUnavailable')}
+                </p>
+              )}
+
+              {storageAvailable && (
+                <div className="addr-gen-presets">
+                  <div className="addr-gen-presets-header">
+                    <span className="addr-gen-presets-title">{t('addressee.presets.recipientSection.title')}</span>
+                    <span className="addr-gen-presets-note">{t('addressee.presets.storageNote')}</span>
+                  </div>
+
+                  {recipientPresets.length === 0 ? (
+                    <p className="addr-gen-presets-empty">{t('addressee.presets.recipientSection.empty')}</p>
+                  ) : (
+                    <div className="addr-gen-presets-list">
+                      {recipientPresets.map((preset) => (
+                        <div key={preset.id} className="addr-gen-preset-row">
+                          <span className="addr-gen-preset-label">{preset.label}</span>
+                          <button
+                            type="button"
+                            className="addr-gen-btn addr-gen-btn--tiny"
+                            onClick={() => handleApplyRecipientPreset(preset.id)}
+                          >
+                            {t('addressee.presets.recipientSection.apply')}
+                          </button>
+                          <button
+                            type="button"
+                            className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
+                            onClick={() => handleDeleteRecipientPreset(preset.id)}
+                          >
+                            {t('addressee.presets.recipientSection.delete')}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--compact"
+                    onClick={handleSaveRecipientPreset}
+                  >
+                    <Icon name="bookmark" size={14} />
+                    {t('addressee.presets.recipientSection.save')}
+                  </button>
+                </div>
+              )}
             </section>
 
-            <section className="addr-gen-form-section" aria-labelledby="addrSenderTitle">
+            <section className={`addr-gen-form-section ${activeFocusHint === 'from' ? 'addr-gen-form-section--focused' : ''}`.trim()} aria-labelledby="addrSenderTitle">
               <div className="addr-gen-section-heading">
                 <Icon name="person_outline" size={18} />
                 <h3 id="addrSenderTitle">{t('addresseeGenerator.senderTitle')}</h3>
@@ -679,47 +942,95 @@ function AddresseeGenerator() {
                 <p className="addr-gen-hint" id="addrSenderOrganizationHint">{t('addresseeGenerator.hints.sender')}</p>
               </div>
 
-              <div className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle">
-                <div className="addr-gen-case-forms-heading">
-                  <h4 id="addrCaseFormsTitle">{t('addresseeGenerator.caseFormsTitle')}</h4>
-                  <p>{t('addresseeGenerator.caseFormsDescription')}</p>
-                </div>
+              {storageAvailable && (
+                <div className="addr-gen-presets">
+                  <div className="addr-gen-presets-header">
+                    <span className="addr-gen-presets-title">{t('addressee.presets.senderSection.title')}</span>
+                    <span className="addr-gen-presets-note">{t('addressee.presets.storageNote')}</span>
+                  </div>
 
-                <div className="addr-gen-field">
-                  <label className="addr-gen-label" htmlFor="addrRecipientDativeName">
-                    {t('addresseeGenerator.fields.recipientDativeName')}
-                  </label>
-                  <input
-                    id="addrRecipientDativeName"
-                    className="addr-gen-input"
-                    type="text"
-                    value={form.recipientDativeName}
-                    onChange={(e) => handleFieldChange('recipientDativeName', e.target.value)}
-                    placeholder={t('addresseeGenerator.placeholders.recipientDativeName')}
-                    aria-describedby="addrRecipientDativeNameHint"
-                  />
-                  <p className="addr-gen-hint" id="addrRecipientDativeNameHint">{t('addresseeGenerator.hints.recipientDativeName')}</p>
-                </div>
+                  {senderPresets.length === 0 ? (
+                    <p className="addr-gen-presets-empty">{t('addressee.presets.senderSection.empty')}</p>
+                  ) : (
+                    <div className="addr-gen-presets-list">
+                      {senderPresets.map((preset) => (
+                        <div key={preset.id} className="addr-gen-preset-row">
+                          <span className="addr-gen-preset-label">{preset.label}</span>
+                          <button
+                            type="button"
+                            className="addr-gen-btn addr-gen-btn--tiny"
+                            onClick={() => handleApplySenderPreset(preset.id)}
+                          >
+                            {t('addressee.presets.senderSection.apply')}
+                          </button>
+                          <button
+                            type="button"
+                            className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
+                            onClick={() => handleDeleteSenderPreset(preset.id)}
+                          >
+                            {t('addressee.presets.senderSection.delete')}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                <div className="addr-gen-field">
-                  <label className="addr-gen-label" htmlFor="addrSenderGenitiveName">
-                    {t('addresseeGenerator.fields.senderGenitiveName')}
-                  </label>
-                  <input
-                    id="addrSenderGenitiveName"
-                    className="addr-gen-input"
-                    type="text"
-                    value={form.senderGenitiveName}
-                    onChange={(e) => handleFieldChange('senderGenitiveName', e.target.value)}
-                    placeholder={t('addresseeGenerator.placeholders.senderGenitiveName')}
-                    aria-describedby="addrSenderGenitiveNameHint"
-                  />
-                  <p className="addr-gen-hint" id="addrSenderGenitiveNameHint">{t('addresseeGenerator.hints.senderGenitiveName')}</p>
+                  <button
+                    type="button"
+                    className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--compact"
+                    onClick={handleSaveSenderPreset}
+                  >
+                    <Icon name="bookmark" size={14} />
+                    {t('addressee.presets.senderSection.save')}
+                  </button>
                 </div>
-              </div>
+              )}
+
+              <details className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle" defaultOpen={Boolean(form.recipientDativeName || form.senderGenitiveName)}>
+                <summary className="addr-gen-case-forms-heading">
+                  <span>
+                    <h4 id="addrCaseFormsTitle">{t('addressee.scenarioUx.advanced.title')}</h4>
+                    <p>{t('addressee.scenarioUx.advanced.description')}</p>
+                  </span>
+                </summary>
+
+                <div className="addr-gen-case-forms-body">
+                  <div className="addr-gen-field">
+                    <label className="addr-gen-label" htmlFor="addrRecipientDativeName">
+                      {t('addresseeGenerator.fields.recipientDativeName')}
+                    </label>
+                    <input
+                      id="addrRecipientDativeName"
+                      className="addr-gen-input"
+                      type="text"
+                      value={form.recipientDativeName}
+                      onChange={(e) => handleFieldChange('recipientDativeName', e.target.value)}
+                      placeholder={t('addresseeGenerator.placeholders.recipientDativeName')}
+                      aria-describedby="addrRecipientDativeNameHint"
+                    />
+                    <p className="addr-gen-hint" id="addrRecipientDativeNameHint">{t('addresseeGenerator.hints.recipientDativeName')}</p>
+                  </div>
+
+                  <div className="addr-gen-field">
+                    <label className="addr-gen-label" htmlFor="addrSenderGenitiveName">
+                      {t('addresseeGenerator.fields.senderGenitiveName')}
+                    </label>
+                    <input
+                      id="addrSenderGenitiveName"
+                      className="addr-gen-input"
+                      type="text"
+                      value={form.senderGenitiveName}
+                      onChange={(e) => handleFieldChange('senderGenitiveName', e.target.value)}
+                      placeholder={t('addresseeGenerator.placeholders.senderGenitiveName')}
+                      aria-describedby="addrSenderGenitiveNameHint"
+                    />
+                    <p className="addr-gen-hint" id="addrSenderGenitiveNameHint">{t('addresseeGenerator.hints.senderGenitiveName')}</p>
+                  </div>
+                </div>
+              </details>
             </section>
 
-            <section className="addr-gen-form-section" aria-labelledby="addrSettingsTitle">
+            <section className={`addr-gen-form-section ${activeFocusHint === 'salutation' ? 'addr-gen-form-section--focused' : ''}`.trim()} aria-labelledby="addrSettingsTitle">
               <div className="addr-gen-section-heading">
                 <Icon name="sparkles" size={18} />
                 <h3 id="addrSettingsTitle">{t('addresseeGenerator.settingsTitle')}</h3>
@@ -816,7 +1127,7 @@ function AddresseeGenerator() {
             </div>
             </form>
 
-            <section className="addr-gen-bulk" aria-labelledby="addrBulkTitle">
+            <section className={`addr-gen-bulk ${bulkScenarioSelected ? 'addr-gen-bulk--active' : ''}`.trim()} aria-labelledby="addrBulkTitle">
               <div className="addr-gen-bulk-header">
                 <h2 id="addrBulkTitle">{t('addresseeGenerator.bulk.title')}</h2>
                 <p className="addr-gen-bulk-desc">{t('addresseeGenerator.bulk.description')}</p>
@@ -960,28 +1271,113 @@ function AddresseeGenerator() {
                   </button>
                 </div>
 
-                <div className="addr-gen-confidence">
-                  <span className={`addr-gen-confidence-badge ${confidenceClass}`.trim()}>
-                    {t('addresseeGenerator.confidence.label')}: {confidenceLabel}
-                  </span>
-                  <span className="addr-gen-confidence-score">{Math.round(result.confidence * 100)}%</span>
-                </div>
+                {trustLayerVisible && (
+                  <section className="addr-gen-trust-layer" aria-label={t('addressee.trust.title')}>
+                    <div className="addr-gen-trust-summary">
+                      <div className="addr-gen-trust-summary-main">
+                        <span className="addr-gen-panel-kicker">{t('addressee.trust.title')}</span>
+                        <h3 className="addr-gen-trust-title">{confidenceUi.title}</h3>
+                        <p className="addr-gen-trust-description">{confidenceUi.description}</p>
+                      </div>
+                      <div className="addr-gen-trust-badges">
+                        <div className="addr-gen-confidence">
+                          <span className={`addr-gen-confidence-badge ${confidenceUi.className}`.trim()}>
+                            {confidenceUi.title}
+                          </span>
+                          <span className="addr-gen-confidence-score">{Math.round(result.confidence * 100)}%</span>
+                        </div>
+                        {(profileLabel || scenarioLabel) && (
+                          <div className="addr-gen-profile-context">
+                            {profileLabel && (
+                              <span className="addr-gen-profile-badge">
+                                {t('addressee.trust.profileLabel')}: {profileLabel}
+                              </span>
+                            )}
+                            {scenarioLabel && (
+                              <span className="addr-gen-profile-badge">
+                                {t('addressee.trust.scenarioLabel')}: {scenarioLabel}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                {result.warnings && result.warnings.length > 0 && (
-                  <ResultNotice tone="warning" className="addr-gen-warnings" title={t('addresseeGenerator.warningsTitle')}>
-                    <p className="addr-gen-warning-copy">{t('addresseeGenerator.warningsDescription')}</p>
-                    <ul className="addr-gen-warnings-list">
-                      {result.warnings.map((warning, idx) => (
-                        <li key={`${warning.code}-${idx}`}>{getWarningMessage(warning)}</li>
-                      ))}
-                    </ul>
-                  </ResultNotice>
-                )}
+                    {result.manualReviewRequired && manualReviewItems.length > 0 && (
+                      <div className="addr-gen-manual-review">
+                        <div>
+                          <strong>{t('addressee.trust.manualReview.title')}</strong>
+                          <p>{t('addressee.trust.manualReview.description')}</p>
+                        </div>
+                        <ul className="addr-gen-manual-review-list">
+                          {manualReviewItems.map((item) => (
+                            <li key={`${item.key}-${item.label}`}>
+                              <span>{item.label}</span>
+                              <span>{item.reason}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
-                {result.manualReviewRequired && (
-                  <ResultNotice tone="accent" className="addr-gen-review-notice">
-                    {t('addresseeGenerator.manualReview')}
-                  </ResultNotice>
+                    {result.warnings && result.warnings.length > 0 && (
+                      <div className="addr-gen-trust-panel addr-gen-warnings">
+                        <h4>{t('addressee.trust.warnings.title')}</h4>
+                        <ul className="addr-gen-warnings-list">
+                          {result.warnings.map((warning, idx) => {
+                            const severityUi = getWarningSeverityUi(warning.severity, t)
+                            const fieldLabel = getAddresseeFieldLabel(warning.field, t)
+                            const suggestion = getWarningSuggestion(warning)
+                            return (
+                              <li className="addr-gen-warning-item" key={`${warning.code}-${idx}`}>
+                                <div className="addr-gen-warning-meta">
+                                  <span className={`addr-gen-warning-severity ${severityUi.className}`.trim()}>{severityUi.label}</span>
+                                  {fieldLabel && <span className="addr-gen-warning-field">{fieldLabel}</span>}
+                                </div>
+                                <p>{getWarningMessage(warning)}</p>
+                                {suggestion && (
+                                  <p className="addr-gen-warning-suggestion">
+                                    <span>{t('addressee.trust.warning.suggestionPrefix')}</span> {suggestion}
+                                  </p>
+                                )}
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    )}
+
+{result.explanations && result.explanations.length > 0 && (
+                      <div className="addr-gen-trust-panel addr-gen-explanations">
+                        <h4>{t('addressee.trust.explanations.title')}</h4>
+                        <div className="addr-gen-explanation-list">
+                          {result.explanations.map((explanation, idx) => {
+                            const relatedLabel = explanation.relatedField
+                              ? getAddresseeFieldLabel(explanation.relatedField, t)
+                              : ''
+                            return (
+                              <details
+                                className="addr-gen-explanation-card"
+                                key={`${explanation.code}-${idx}`}
+                                onToggle={() => {
+                                  const detailsEl = document.getElementById(`addr-exp-${idx}`)
+                                  if (detailsEl?.open) {
+                                    trackAddresseeExplanationOpened(form, result, explanation.code, { language })
+                                  }
+                                }}
+                              >
+                                <summary id={`addr-exp-${idx}`}>
+                                  <span>{explanation.title}</span>
+                                  {relatedLabel && <span>{relatedLabel}</span>}
+                                </summary>
+                                <p>{explanation.text}</p>
+                              </details>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </section>
                 )}
 
                 <div className="addr-gen-result-cards">
