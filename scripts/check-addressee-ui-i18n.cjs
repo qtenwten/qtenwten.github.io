@@ -20,12 +20,24 @@ function check(desc, cond) {
   }
 }
 
+function getLocaleValue(locale, keyPath) {
+  const parts = keyPath.split('.');
+  let val = locale;
+  for (const p of parts) {
+    if (!val || typeof val !== 'object') return null;
+    val = val[p];
+  }
+  return val !== undefined ? val : null;
+}
+
 console.log('\n=== Addressee UI i18n Checks ===\n');
 
 const jsx = fs.readFileSync(JSX_FILE, 'utf8');
 const ru = JSON.parse(fs.readFileSync(RU_LOCALE, 'utf8'));
 const en = JSON.parse(fs.readFileSync(EN_LOCALE, 'utf8'));
 const css = fs.readFileSync(CSS_FILE, 'utf8');
+
+const addresseePath = 'addresseeGenerator.addressee';
 
 console.log('A. Scenario UX locale keys exist\n');
 
@@ -38,15 +50,18 @@ const scenarioKeys = [
 const scenarioOptionIds = ['application', 'applicationDirector', 'memo', 'complaint', 'request', 'businessLetter', 'custom', 'csvBulk'];
 
 scenarioKeys.forEach((key) => {
-  check(`A1: ru addressee.scenarioUx.${key} exists`, Boolean(ru.addressee?.scenarioUx?.[key]));
-  check(`A2: en addressee.scenarioUx.${key} exists`, Boolean(en.addressee?.scenarioUx?.[key]));
+  const fullKey = `${addresseePath}.scenarioUx.${key}`;
+  check(`A1: ru ${fullKey} exists`, getLocaleValue(ru, fullKey) !== null);
+  check(`A2: en ${fullKey} exists`, getLocaleValue(en, fullKey) !== null);
 });
 
 scenarioOptionIds.forEach((id) => {
-  check(`A3: ru addressee.scenarioUx.options.${id}.label exists`, Boolean(ru.addressee?.scenarioUx?.options?.[id]?.label));
-  check(`A4: en addressee.scenarioUx.options.${id}.label exists`, Boolean(en.addressee?.scenarioUx?.options?.[id]?.label));
-  check(`A5: ru addressee.scenarioUx.options.${id}.description exists`, Boolean(ru.addressee?.scenarioUx?.options?.[id]?.description));
-  check(`A6: en addressee.scenarioUx.options.${id}.description exists`, Boolean(en.addressee?.scenarioUx?.options?.[id]?.description));
+  const labelKey = `${addresseePath}.scenarioUx.options.${id}.label`;
+  const descKey = `${addresseePath}.scenarioUx.options.${id}.description`;
+  check(`A3: ru ${labelKey} exists`, getLocaleValue(ru, labelKey) !== null);
+  check(`A4: en ${labelKey} exists`, getLocaleValue(en, labelKey) !== null);
+  check(`A5: ru ${descKey} exists`, getLocaleValue(ru, descKey) !== null);
+  check(`A6: en ${descKey} exists`, getLocaleValue(en, descKey) !== null);
 });
 
 console.log('\nB. Presets locale keys exist\n');
@@ -56,21 +71,23 @@ const sectionKeys = ['title', 'empty', 'apply', 'delete', 'save'];
 const sectionIds = ['recipientSection', 'senderSection'];
 
 presetKeys.forEach((key) => {
-  check(`B1: ru addressee.presets.${key} exists`, Boolean(ru.addressee?.presets?.[key]));
-  check(`B2: en addressee.presets.${key} exists`, Boolean(en.addressee?.presets?.[key]));
+  const fullKey = `${addresseePath}.presets.${key}`;
+  check(`B1: ru ${fullKey} exists`, getLocaleValue(ru, fullKey) !== null);
+  check(`B2: en ${fullKey} exists`, getLocaleValue(en, fullKey) !== null);
 });
 
 sectionIds.forEach((sectionId) => {
   sectionKeys.forEach((key) => {
-    check(`B3: ru addressee.presets.${sectionId}.${key} exists`, Boolean(ru.addressee?.presets?.[sectionId]?.[key]));
-    check(`B4: en addressee.presets.${sectionId}.${key} exists`, Boolean(en.addressee?.presets?.[sectionId]?.[key]));
+    const fullKey = `${addresseePath}.presets.${sectionId}.${key}`;
+    check(`B3: ru ${fullKey} exists`, getLocaleValue(ru, fullKey) !== null);
+    check(`B4: en ${fullKey} exists`, getLocaleValue(en, fullKey) !== null);
   });
 });
 
-console.log('\nC. JSX uses t() for all scenario/preset strings\n');
+console.log('\nC. JSX uses correct t() paths for all scenario/preset strings\n');
 
-const rawScenarioKeys = jsx.match(/t\(['"]addressee\.scenarioUx\.[^'"]+'\)/g) || [];
-const rawPresetKeys = jsx.match(/t\(['"]addressee\.presets\.[^'"]+'\)/g) || [];
+const rawScenarioKeys = jsx.match(/t\(['"]addresseeGenerator\.addressee\.scenarioUx\.[^'"]+'\)/g) || [];
+const rawPresetKeys = jsx.match(/t\(['"]addresseeGenerator\.addressee\.presets\.[^'"]+'\)/g) || [];
 
 const rawKeys = [...rawScenarioKeys, ...rawPresetKeys].map((s) => {
   const m = s.match(/t\(['"]([^'"]+)'\)/);
@@ -79,7 +96,7 @@ const rawKeys = [...rawScenarioKeys, ...rawPresetKeys].map((s) => {
 
 const missingKeys = rawKeys.filter((key) => {
   const parts = key.split('.');
-  let val = ru.addressee;
+  let val = ru.addresseeGenerator;
   for (const p of parts) {
     if (!val || typeof val !== 'object') return true;
     val = val[p];
@@ -134,6 +151,15 @@ check(`F3: onClick passes option.id to handler`, onClickMatch.length > 0);
 
 const uniqueKeyMatch = jsx.match(/key=\{option\.id\}/g) || [];
 check(`F4: scenario cards use option.id as key`, uniqueKeyMatch.length > 0);
+
+console.log('\nG. Trust layer locale keys\n');
+
+const trustKeys = ['title', 'profileLabel', 'scenarioLabel', 'manualReview.title', 'manualReview.description', 'warnings.title', 'warning.suggestionPrefix', 'explanations.title'];
+trustKeys.forEach((key) => {
+  const fullKey = `${addresseePath}.trust.${key}`;
+  check(`G1: ru ${fullKey} exists`, getLocaleValue(ru, fullKey) !== null);
+  check(`G2: en ${fullKey} exists`, getLocaleValue(en, fullKey) !== null);
+});
 
 console.log('\n=== Results ===\n');
 console.log(`Total: ${pass}/${pass + fail}`);

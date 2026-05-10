@@ -1758,6 +1758,11 @@
         "recipientSection": {
           "title": "Saved recipients",
           "empty": "No saved recipients yet.",
+          "noData": "No saved recipients.",
+          "limitReached": "Recipient limit reached.",
+          "saved": "Recipient saved.",
+          "applied": "Recipient applied.",
+          "deleted": "Recipient deleted.",
           "apply": "Apply",
           "delete": "Delete",
           "save": "Save recipient"
@@ -1765,6 +1770,11 @@
         "senderSection": {
           "title": "Saved senders",
           "empty": "No saved senders yet.",
+          "noData": "No saved senders.",
+          "limitReached": "Sender limit reached.",
+          "saved": "Sender saved.",
+          "applied": "Sender applied.",
+          "deleted": "Sender deleted.",
           "apply": "Apply",
           "delete": "Delete",
           "save": "Save sender"

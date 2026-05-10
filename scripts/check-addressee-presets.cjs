@@ -110,37 +110,37 @@ check('J7: JSX has handleDeleteSenderPreset', jsxSource.includes('handleDeleteSe
 
 console.log('\nK. UI strings are not hardcoded\n');
 
-check('K1: recipientSection title uses locale t()', jsxSource.includes("t('addressee.presets.recipientSection.title')"));
-check('K2: recipientSection save button uses locale t()', jsxSource.includes("t('addressee.presets.recipientSection.save')"));
-check('K3: recipientSection apply button uses locale t()', jsxSource.includes("t('addressee.presets.recipientSection.apply')"));
-check('K4: recipientSection delete button uses locale t()', jsxSource.includes("t('addressee.presets.recipientSection.delete')"));
-check('K5: senderSection title uses locale t()', jsxSource.includes("t('addressee.presets.senderSection.title')"));
-check('K6: senderSection save button uses locale t()', jsxSource.includes("t('addressee.presets.senderSection.save')"));
+check('K1: recipientSection title uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.recipientSection.title')"));
+check('K2: recipientSection save button uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.recipientSection.save')"));
+check('K3: recipientSection apply button uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.recipientSection.apply')"));
+check('K4: recipientSection delete button uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.recipientSection.delete')"));
+check('K5: senderSection title uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.senderSection.title')"));
+check('K6: senderSection save button uses locale t()', jsxSource.includes("t('addresseeGenerator.addressee.presets.senderSection.save')"));
 check('K7: JSX does NOT hardcode Russian preset strings', !jsxSource.match(/Сохранённые адресаты/) && !jsxSource.match(/Сохранить адресата/));
 check('K8: JSX does NOT hardcode hardcoded storage note in Russian', !jsxSource.match(/Данные сохраняются только в этом браузере/));
 
 console.log('\nL. Locale keys exist\n');
 
-check('L1: ru.json has presets.recipientSection.title', Boolean(ruLocale.addressee?.presets?.recipientSection?.title));
-check('L2: ru.json has presets.recipientSection.empty', Boolean(ruLocale.addressee?.presets?.recipientSection?.empty));
-check('L3: ru.json has presets.recipientSection.save', Boolean(ruLocale.addressee?.presets?.recipientSection?.save));
-check('L4: ru.json has presets.recipientSection.apply', Boolean(ruLocale.addressee?.presets?.recipientSection?.apply));
-check('L5: ru.json has presets.recipientSection.delete', Boolean(ruLocale.addressee?.presets?.recipientSection?.delete));
-check('L6: ru.json has presets.recipientSection.noData', Boolean(ruLocale.addressee?.presets?.recipientSection?.noData));
-check('L7: ru.json has presets.recipientSection.limitReached', Boolean(ruLocale.addressee?.presets?.recipientSection?.limitReached));
-check('L8: ru.json has presets.senderSection.title', Boolean(ruLocale.addressee?.presets?.senderSection?.title));
-check('L9: ru.json has presets.senderSection.empty', Boolean(ruLocale.addressee?.presets?.senderSection?.empty));
-check('L10: ru.json has presets.senderSection.save', Boolean(ruLocale.addressee?.presets?.senderSection?.save));
-check('L11: ru.json has presets.senderSection.apply', Boolean(ruLocale.addressee?.presets?.senderSection?.apply));
-check('L12: ru.json has presets.senderSection.delete', Boolean(ruLocale.addressee?.presets?.senderSection?.delete));
-check('L13: ru.json has presets.senderSection.noData', Boolean(ruLocale.addressee?.presets?.senderSection?.noData));
-check('L14: ru.json has presets.senderSection.limitReached', Boolean(ruLocale.addressee?.presets?.senderSection?.limitReached));
-check('L15: ru.json has presets.storageNote', Boolean(ruLocale.addressee?.presets?.storageNote));
-check('L16: ru.json has presets.storageUnavailable', Boolean(ruLocale.addressee?.presets?.storageUnavailable));
-check('L17: en.json has presets.recipientSection.title', Boolean(enLocale.addressee?.presets?.recipientSection?.title));
-check('L18: en.json has presets.senderSection.title', Boolean(enLocale.addressee?.presets?.senderSection?.title));
-check('L19: en.json has presets.storageNote', Boolean(enLocale.addressee?.presets?.storageNote));
-check('L20: en.json has presets.storageUnavailable', Boolean(enLocale.addressee?.presets?.storageUnavailable));
+check('L1: ru.json has presets.recipientSection.title', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.title));
+check('L2: ru.json has presets.recipientSection.empty', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.empty));
+check('L3: ru.json has presets.recipientSection.save', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.save));
+check('L4: ru.json has presets.recipientSection.apply', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.apply));
+check('L5: ru.json has presets.recipientSection.delete', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.delete));
+check('L6: ru.json has presets.recipientSection.noData', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.noData));
+check('L7: ru.json has presets.recipientSection.limitReached', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.limitReached));
+check('L8: ru.json has presets.senderSection.title', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.title));
+check('L9: ru.json has presets.senderSection.empty', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.empty));
+check('L10: ru.json has presets.senderSection.save', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.save));
+check('L11: ru.json has presets.senderSection.apply', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.apply));
+check('L12: ru.json has presets.senderSection.delete', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.delete));
+check('L13: ru.json has presets.senderSection.noData', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.noData));
+check('L14: ru.json has presets.senderSection.limitReached', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.senderSection?.limitReached));
+check('L15: ru.json has presets.storageNote', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.storageNote));
+check('L16: ru.json has presets.storageUnavailable', Boolean(ruLocale.addresseeGenerator?.addressee?.presets?.storageUnavailable));
+check('L17: en.json has presets.recipientSection.title', Boolean(enLocale.addresseeGenerator?.addressee?.presets?.recipientSection?.title));
+check('L18: en.json has presets.senderSection.title', Boolean(enLocale.addresseeGenerator?.addressee?.presets?.senderSection?.title));
+check('L19: en.json has presets.storageNote', Boolean(enLocale.addresseeGenerator?.addressee?.presets?.storageNote));
+check('L20: en.json has presets.storageUnavailable', Boolean(enLocale.addresseeGenerator?.addressee?.presets?.storageUnavailable));
 
 console.log('\nM. Analytics / personal data\n');
 

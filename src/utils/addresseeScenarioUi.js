@@ -72,7 +72,7 @@ export function getDefaultAddresseeScenario() {
 export function getScenarioUiConfig(scenarioId, t, language = 'ru') {
   const id = normalizeScenarioId(scenarioId);
   const scenario = getAddresseeScenario(id);
-  const baseKey = `addressee.scenarioUx.options.${id}`;
+  const baseKey = `addresseeGenerator.addressee.scenarioUx.options.${id}`;
   const fallbackLabel = language === 'en' ? 'Custom Russian document' : 'Свой вариант';
   const fallbackDescription = language === 'en'
     ? 'Flexible Russian-document mode when the preset does not fit.'
