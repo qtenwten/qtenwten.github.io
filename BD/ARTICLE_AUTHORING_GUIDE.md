@@ -165,6 +165,42 @@ Examples:
 
 Do not link RU articles to EN tools or EN articles to RU tools.
 
+### Scenario-specific CTA for Addressee Generator
+
+For articles about the Addressee Generator, you can add a `scenarioCta` object to make the CTA link directly to a specific scenario with additional tracking parameters:
+
+```json
+{
+  "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "addressee-to-field-application"
+  }
+}
+```
+
+Supported fields in `scenarioCta` object:
+- `scenario` (required) — one of the supported scenario values
+- `focus` (optional) — `to`, `from`, or `salutation` to pre-focus a specific field
+- `source` (optional) — tracking source, defaults to `article`
+- `translation_key` (optional) — article's translation_key for analytics tracking
+
+Supported scenario values:
+- `application` — заявление
+- `application-director` — заявление директору
+- `memo` — служебная записка
+- `complaint` — жалоба
+- `request` — запрос
+- `business-letter` — деловое письмо
+- `custom` — свой вариант
+- `csv-bulk` — массовая обработка
+
+When `scenarioCta` is set with an object, the CTA link will include `?scenario=<value>&focus=<value>&source=article&article=<translation_key>`.
+
+If `scenarioCta` is not set or is empty, the CTA links to the default generator page without query params.
+
 ---
 
 ## SEO rules

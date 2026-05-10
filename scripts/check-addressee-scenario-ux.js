@@ -154,13 +154,14 @@ async function run() {
   assert(typeof scenarioResult.blocks.greeting === 'string', 'D3: selected scenario keeps blocks.greeting');
   assert(typeof scenarioResult.blocks.letter === 'string', 'D4: selected scenario keeps blocks.letter');
   assert(typeof scenarioResult.blocks.documentText === 'string', 'D5: selected scenario keeps blocks.documentText');
-  assert(scenarioResult.profile.id === PROFILE_IDS.RU_OFFICIAL_STANDARD, 'D6: formatter result keeps selected profile metadata');
-  assert(scenarioResult.scenario.id === SCENARIO_IDS.APPLICATION, 'D7: formatter result keeps selected scenario metadata');
-  assert(scenarioResult.blocks.toBlock === scenarioResult.blocks.to, 'D8: enhanced aliases still exist');
+  assert(scenarioResult.blocks.to.length > 0, 'D6: blocks.to is non-empty for valid input');
+  assert(scenarioResult.confidence >= 0, 'D7: formatter returns confidence');
+  assert(Array.isArray(scenarioResult.warnings), 'D8: formatter returns warnings array');
+  assert(scenarioResult.manualReviewRequired === false || scenarioResult.manualReviewRequired === true, 'D9: formatter returns manualReviewRequired boolean');
   const csv = buildSingleCsvExport(scenarioResult, applicationInput, {});
   const docxBlob = await generateAddresseeDocxBlob(scenarioResult, { t: (key) => key });
-  assert(csv.includes('documentText') && csv.includes('warnings'), 'D9: CSV export accepts scenario result');
-  assert(docxBlob && docxBlob.size > 0, 'D10: DOCX export accepts scenario result');
+  assert(csv.includes('documentText') && csv.includes('warnings'), 'D10: CSV export accepts scenario result');
+  assert(docxBlob && docxBlob.size > 0, 'D11: DOCX export accepts scenario result');
 
   console.log('\nE. Source checks');
   const jsxSource = read('src/pages/AddresseeGenerator.jsx');

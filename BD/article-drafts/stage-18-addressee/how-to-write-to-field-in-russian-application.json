@@ -2,6 +2,12 @@
   "language": "en",
   "translation_key": "addressee-to-field-application",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "addressee-to-field-application"
+  },
   "slug": "how-to-write-to-field-in-russian-application",
   "title": "How to Write the “To” Field in a Russian Application — Rules and Examples",
   "excerpt": "The “Кому” (To) line in a Russian official application: what data to include, how to format the position and name in the dative case, and examples for different situations.",

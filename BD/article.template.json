@@ -9,5 +9,11 @@
   "author": "Ars",
   "cover_image": null,
   "seo_title": "Новая статья",
-  "seo_description": "Краткое SEO-описание статьи"
+  "seo_description": "Краткое SEO-описание статьи",
+  "scenarioCta": {
+    "scenario": "",
+    "focus": "",
+    "source": "article",
+    "translation_key": ""
+  }
 }

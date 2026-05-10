@@ -2,6 +2,12 @@
   "language": "ru",
   "translation_key": "addressee-from-field-application",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "from",
+    "source": "article",
+    "translation_key": "addressee-from-field-application"
+  },
   "slug": "kak-oformit-ot-kogo-v-zayavlenii",
   "title": "Как оформить «От кого» в заявлении — пошаговая инструкция",
   "excerpt": "Строка «От кого» в заявлении: какие данные указывать, как расположить ФИО, должность и организацию, образец для разных ситуаций.",

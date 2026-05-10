@@ -2,6 +2,11 @@
   "language": "en",
   "translation_key": "application-header-example",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application-director",
+    "source": "article",
+    "translation_key": "application-header-example"
+  },
   "slug": "russian-application-header-example",
   "title": "Russian Application Header — Ready-Made Templates for Different Situations",
   "excerpt": "The application header in Russian documents: what goes into it, how to arrange \"Кому\", \"От кого\" and the date, and ready templates for employers, government bodies, and managers.",

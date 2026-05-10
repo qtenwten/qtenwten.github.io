@@ -2,6 +2,12 @@
   "language": "en",
   "translation_key": "addressee-from-field-application",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "from",
+    "source": "article",
+    "translation_key": "addressee-from-field-application"
+  },
   "slug": "how-to-format-from-field-in-russian-documents",
   "title": "How to Format the \"From\" Field in Russian Official Documents",
   "excerpt": "The \"От кого\" (From) line in Russian documents: how to decline names and positions in the genitive case, what data to include, and examples for employees and individuals.",

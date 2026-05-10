@@ -25,6 +25,7 @@
     "check:addressee:presets": "node scripts/check-addressee-presets.cjs",
     "check:addressee:analytics": "node scripts/check-addressee-analytics.cjs",
     "check:addressee:ui-i18n": "node scripts/check-addressee-ui-i18n.cjs",
+    "check:addressee:article-cta": "node scripts/check-addressee-article-cta.cjs",
     "check:seo-urls": "node scripts/check-seo-url-consistency.cjs",
     "check:article-funnel": "node scripts/check-article-funnel.cjs",
     "check:articles-hub": "node scripts/check-articles-hub.mjs",

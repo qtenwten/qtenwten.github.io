@@ -2,6 +2,25 @@ import { ROUTE_REGISTRY } from '../config/routeRegistry.js'
 import { getLocalizedRoutePath } from '../config/routeSeo.js'
 import { articleMatchesLanguage } from './articleLanguage.js'
 
+const SCENARIO_QUERY_VALUES = {
+  'application': 'application',
+  'application-director': 'application-director',
+  'applicationDirector': 'application-director',
+  'memo': 'memo',
+  'complaint': 'complaint',
+  'request': 'request',
+  'business-letter': 'business-letter',
+  'businessLetter': 'business-letter',
+  'custom': 'custom',
+  'csv-bulk': 'csv-bulk',
+  'csvBulk': 'csv-bulk',
+  'bulk': 'csv-bulk',
+}
+
+const VALID_SCENARIO_QUERY_VALUES = new Set(Object.values(SCENARIO_QUERY_VALUES))
+
+const VALID_FOCUS_VALUES = new Set(['to', 'from', 'salutation'])
+
 const ARTICLE_TOOL_CTA_COPY = {
   ru: {
     title: 'Попробуйте инструмент',
@@ -98,11 +117,45 @@ export function getArticleToolCta(article, language = 'ru', translate = null) {
       : `${copy.buttonPrefix} ${lowerFirst(toolTitle, language)}`
     : copy.button
 
+  let href = getLocalizedRoutePath(language, entry.path)
+
+  const rawScenarioCta = article?.scenarioCta || article?.scenario_cta
+  if (rawScenarioCta) {
+    const scenarioString = typeof rawScenarioCta === 'string'
+      ? rawScenarioCta.trim()
+      : rawScenarioCta.scenario || ''
+    const scenarioValue = SCENARIO_QUERY_VALUES[scenarioString] || scenarioString
+
+    if (scenarioValue && VALID_SCENARIO_QUERY_VALUES.has(scenarioValue)) {
+      const url = new URL(href, 'https://qsen.ru')
+      url.searchParams.set('scenario', scenarioValue)
+
+      if (typeof rawScenarioCta === 'object') {
+        const focus = rawScenarioCta.focus
+        if (focus && VALID_FOCUS_VALUES.has(focus)) {
+          url.searchParams.set('focus', focus)
+        }
+
+        const source = rawScenarioCta.source
+        if (source) {
+          url.searchParams.set('source', source)
+        }
+
+        const articleKey = rawScenarioCta.translation_key || rawScenarioCta.article
+        if (articleKey) {
+          url.searchParams.set('article', articleKey)
+        }
+      }
+
+      href = url.pathname + url.search
+    }
+  }
+
   return {
     title: copy.title,
     text: copy.text,
     buttonLabel,
-    href: getLocalizedRoutePath(language, entry.path),
+    href,
     toolPath: entry.path,
     toolSlug: entry.path.replace(/^\//, ''),
     toolTitle,

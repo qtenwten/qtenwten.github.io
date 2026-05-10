@@ -2,6 +2,12 @@
   "language": "ru",
   "translation_key": "addressee-to-field-application",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "addressee-to-field-application"
+  },
   "slug": "kak-napisat-komu-v-zayavlenii",
   "title": "Как написать «Кому» в заявлении — правила и образец",
   "excerpt": "Блок «Кому» в заявлении: какие данные нужны, в каком порядке писать должность и ФИО, типичные ошибки и пример правильного заполнения.",

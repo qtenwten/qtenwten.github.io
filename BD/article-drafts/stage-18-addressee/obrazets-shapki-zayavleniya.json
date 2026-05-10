@@ -2,6 +2,11 @@
   "language": "ru",
   "translation_key": "application-header-example",
   "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application-director",
+    "source": "article",
+    "translation_key": "application-header-example"
+  },
   "slug": "obrazets-shapki-zayavleniya",
   "title": "Шапка заявления — готовые образцы для разных ситуаций",
   "excerpt": "Шапка заявления: из каких строк состоит, как расположить «Кому», «От кого» и дату, готовые образцы для работодателя, госоргана и руководителя.",
