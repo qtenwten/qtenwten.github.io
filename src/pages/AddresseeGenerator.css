@@ -105,9 +105,23 @@
 .addr-gen-warning-copy,
 .addr-gen-export-note,
 .addr-gen-locked p,
-.addr-gen-hint {
+.addr-gen-hint,
+.addr-gen-intro-privacy,
+.addr-gen-free-notice {
   margin: 0;
   color: var(--text-secondary);
+}
+
+.addr-gen-intro-privacy {
+  font-size: 0.83rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.addr-gen-free-notice {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-style: italic;
 }
 
 .addr-gen-panel-desc,
@@ -448,7 +462,7 @@
 }
 
 .addr-gen-bulk {
-  display: grid;
+  display: none;
   gap: 0.8rem;
   padding: 1.1rem;
   border: 1px solid var(--border);
@@ -457,6 +471,8 @@
 }
 
 .addr-gen-bulk--active {
+  display: grid;
+  grid-template-columns: 1fr;
   border-color: var(--primary);
   background: rgba(var(--primary-rgb), 0.04);
 }
@@ -1373,9 +1389,6 @@
 }
 
 .addr-gen-presets {
-  display: grid;
-  gap: 0.75rem;
-  padding: 0.85rem 0;
   border-top: 1px dashed var(--border-strong);
 }
 
@@ -1384,6 +1397,31 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem;
+}
+
+.addr-gen-presets-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.addr-gen-presets-summary::-webkit-details-marker {
+  display: none;
+}
+
+.addr-gen-presets-summary::after {
+  content: "▶";
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.addr-gen-presets[open] .addr-gen-presets-summary::after {
+  transform: rotate(90deg);
 }
 
 .addr-gen-presets-title {
@@ -1401,11 +1439,13 @@
   font-size: 0.84rem;
   color: var(--text-secondary);
   font-style: italic;
+  padding: 0.25rem 0;
 }
 
 .addr-gen-presets-list {
   display: grid;
   gap: 0.45rem;
+  padding: 0.35rem 0;
 }
 
 .addr-gen-preset-row {

@@ -756,6 +756,7 @@ const handleCopyAll = useCallback(async () => {
               <span className="addr-gen-panel-kicker">{t('addresseeGenerator.formKicker')}</span>
               <h2 className="addr-gen-panel-title">{t('addresseeGenerator.formTitle')}</h2>
               <p className="addr-gen-panel-desc">{t('addresseeGenerator.formDescription')}</p>
+              <p className="addr-gen-intro-privacy">{t('addresseeGenerator.introPrivacy')}</p>
             </div>
 
             <section className="addr-gen-scenario" aria-labelledby="addrScenarioTitle">
@@ -868,11 +869,11 @@ const handleCopyAll = useCallback(async () => {
               )}
 
               {storageAvailable && (
-                <div className="addr-gen-presets">
-                  <div className="addr-gen-presets-header">
+                <details className="addr-gen-presets" open={recipientPresets.length > 0}>
+                  <summary className="addr-gen-presets-summary">
                     <span className="addr-gen-presets-title">{t('addresseeGenerator.addressee.presets.recipientSection.title')}</span>
                     <span className="addr-gen-presets-note">{t('addresseeGenerator.addressee.presets.storageNote')}</span>
-                  </div>
+                  </summary>
 
                   {recipientPresets.length === 0 ? (
                     <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.recipientSection.empty')}</p>
@@ -908,17 +909,17 @@ const handleCopyAll = useCallback(async () => {
                     <Icon name="bookmark" size={14} />
                     {t('addresseeGenerator.addressee.presets.recipientSection.save')}
                   </button>
-                </div>
+                </details>
               )}
-            </section>
 
-            <section className={`addr-gen-form-section ${activeFocusHint === 'from' ? 'addr-gen-form-section--focused' : ''}`.trim()} aria-labelledby="addrSenderTitle">
-              <div className="addr-gen-section-heading">
-                <Icon name="person_outline" size={18} />
-                <h3 id="addrSenderTitle">{t('addresseeGenerator.senderTitle')}</h3>
-              </div>
+{storageAvailable && (
+                <>
+                <div className="addr-gen-section-heading">
+                  <Icon name="person_outline" size={18} />
+                  <h3 id="addrSenderTitle">{t('addresseeGenerator.senderTitle')}</h3>
+                </div>
 
-              <div className="addr-gen-field">
+                <div className="addr-gen-field">
                 <label className="addr-gen-label" htmlFor="addrSenderFullName">
                   {t('addresseeGenerator.fields.senderFullName')}
                 </label>
@@ -965,13 +966,15 @@ const handleCopyAll = useCallback(async () => {
                 />
                 <p className="addr-gen-hint" id="addrSenderOrganizationHint">{t('addresseeGenerator.hints.sender')}</p>
               </div>
+                </>
+              )}
 
               {storageAvailable && (
-                <div className="addr-gen-presets">
-                  <div className="addr-gen-presets-header">
+                <details className="addr-gen-presets" open={senderPresets.length > 0}>
+                  <summary className="addr-gen-presets-summary">
                     <span className="addr-gen-presets-title">{t('addresseeGenerator.addressee.presets.senderSection.title')}</span>
                     <span className="addr-gen-presets-note">{t('addresseeGenerator.addressee.presets.storageNote')}</span>
-                  </div>
+                  </summary>
 
                   {senderPresets.length === 0 ? (
                     <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.senderSection.empty')}</p>
@@ -1007,7 +1010,7 @@ const handleCopyAll = useCallback(async () => {
                     <Icon name="bookmark" size={14} />
                     {t('addresseeGenerator.addressee.presets.senderSection.save')}
                   </button>
-                </div>
+                </details>
               )}
 
               <details className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle" open={Boolean(form.recipientDativeName || form.senderGenitiveName)}>
@@ -1294,6 +1297,7 @@ const handleCopyAll = useCallback(async () => {
                     {copyAllLabel}
                   </button>
                 </div>
+                <p className="addr-gen-free-notice">{t('addresseeGenerator.freeForeverNotice')}</p>
 
                 {trustLayerVisible && (
                   <section className="addr-gen-trust-layer" aria-label={t('addresseeGenerator.addressee.trust.title')}>
