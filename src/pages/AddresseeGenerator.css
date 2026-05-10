@@ -940,6 +940,13 @@
   font-size: 0.84rem;
 }
 
+.addr-gen-export-premium-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
 .addr-gen-help {
   margin-top: 0.35rem;
 }
@@ -1046,6 +1053,34 @@
   .addr-gen-placeholder {
     min-height: 320px;
   }
+
+  .addr-gen-trust-summary {
+    flex-direction: column;
+  }
+
+  .addr-gen-trust-badges {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .addr-gen-trust-summary-main {
+    min-width: 0;
+  }
+
+  .addr-gen-confidence {
+    width: 100%;
+  }
+
+  .addr-gen-scenario-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .addr-gen-scenario-card {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-height: 60px;
+  }
 }
 
 .addr-gen-scenario {
@@ -1055,6 +1090,205 @@
   border: 1.5px solid var(--border);
   border-radius: var(--addr-gen-card-radius);
   background: var(--bg-elevated);
+}
+
+.addr-gen-trust-layer {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--addr-gen-inner-radius);
+  background: var(--bg-secondary);
+}
+
+.addr-gen-trust-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.addr-gen-trust-summary-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.addr-gen-trust-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.addr-gen-trust-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.addr-gen-trust-description {
+  margin: 0.25rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.addr-gen-manual-review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(var(--primary-rgb), 0.24);
+  border-radius: 12px;
+  background: var(--primary-soft);
+}
+
+.addr-gen-manual-review-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.addr-gen-manual-review-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.addr-gen-trust-panel {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+}
+
+.addr-gen-trust-panel h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.addr-gen-warning-item {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.addr-gen-warning-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.addr-gen-warning-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.addr-gen-warning-severity {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.addr-gen-warning-severity--warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+.addr-gen-warning-severity--info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+.addr-gen-warning-severity--error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+
+.addr-gen-warning-severity--review {
+  background: rgba(var(--primary-rgb), 0.15);
+  color: var(--primary);
+}
+
+.addr-gen-warning-field {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.addr-gen-warning-suggestion {
+  margin: 0.25rem 0 0;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-style: italic;
+}
+
+.addr-gen-explanation-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.addr-gen-explanation-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.addr-gen-explanation-card summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--text);
+  list-style: none;
+}
+
+.addr-gen-explanation-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.addr-gen-explanation-card[open] {
+  background: var(--bg-elevated);
+  border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+.addr-gen-profile-context {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.addr-gen-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 750;
 }
 
 .addr-gen-scenario-head {

@@ -194,6 +194,16 @@ export function applySenderPresetToInput(input = {}, preset) {
   };
 }
 
+export function getRecipientPresetCount() {
+  const store = getAddresseePresetStore();
+  return store.recipients.length;
+}
+
+export function getSenderPresetCount() {
+  const store = getAddresseePresetStore();
+  return store.senders.length;
+}
+
 export function saveAddresseePreset(type, presetData) {
   if (!presetData || typeof presetData !== 'object') {
     return { success: false, error: 'invalid_preset_data' };
@@ -213,10 +223,16 @@ export function saveAddresseePreset(type, presetData) {
     if (store.recipients.length >= RECIPIENT_LIMIT) {
       return { success: false, error: 'limit_reached', limit: RECIPIENT_LIMIT };
     }
+    if (store.recipients.length >= RECIPIENT_LIMIT - 2) {
+      return { success: false, error: 'limit_close', limit: RECIPIENT_LIMIT, remaining: RECIPIENT_LIMIT - store.recipients.length };
+    }
     store.recipients.push(preset);
   } else if (type === 'sender') {
     if (store.senders.length >= SENDER_LIMIT) {
       return { success: false, error: 'limit_reached', limit: SENDER_LIMIT };
+    }
+    if (store.senders.length >= SENDER_LIMIT - 2) {
+      return { success: false, error: 'limit_close', limit: SENDER_LIMIT, remaining: SENDER_LIMIT - store.senders.length };
     }
     store.senders.push(preset);
   } else {

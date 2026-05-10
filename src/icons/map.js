@@ -9,6 +9,7 @@ import {
   Copy,
   CreditCard,
   Dice5,
+  Download,
   Eye,
   EyeOff,
   ExternalLink,
@@ -75,6 +76,9 @@ export const iconMap = {
   sparkles: Sparkles,
   loader_2: Loader2,
   person: User,
+  person_outline: User,
   file_text: FileText,
   code: Code,
+  bookmark: Tag,
+  download: Download,
 }

@@ -138,10 +138,10 @@ function run() {
   assert(cssSource.includes('.addr-gen-explanation-card'), 'C11: CSS has explanation card styles');
   assert(helperSource.includes('export function getConfidenceUi'), 'C12: helper exports getConfidenceUi');
   assert(helperSource.includes('export function buildManualReviewItems'), 'C13: helper exports buildManualReviewItems');
-  assert(Boolean(ruLocale.addressee?.trust?.confidence?.high?.title), 'C14: RU trust locale exists');
-  assert(Boolean(enLocale.addressee?.trust?.confidence?.high?.title), 'C15: EN trust locale exists');
-  assert(enLocale.addressee.profiles.RU_OFFICIAL_STANDARD.includes('Russian'), 'C16: EN labels are honest about RU profile');
-  assert(!JSON.stringify(enLocale.addressee).includes('EN standards mode'), 'C17: EN locale does not promise finished EN standards mode');
+  assert(Boolean(ruLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C14: RU trust locale exists');
+  assert(Boolean(enLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C15: EN trust locale exists');
+  assert(enLocale.addresseeGenerator?.addressee?.profiles?.RU_OFFICIAL_STANDARD?.includes('Russian'), 'C16: EN labels are honest about RU profile');
+  assert(!JSON.stringify(enLocale.addresseeGenerator?.addressee || {}).includes('EN standards mode'), 'C17: EN locale does not promise finished EN standards mode');
 
   if (failed > 0) {
     console.error(`\nAddressee trust layer checks failed: ${failed}/${passed + failed}`);

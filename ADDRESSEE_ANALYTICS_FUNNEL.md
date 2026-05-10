@@ -136,13 +136,47 @@ Note: Preset label and preset data are NEVER sent.
 
 ### addressee_premium_intent
 
-Fires when user hits a soft limit (e.g., preset limit reached).
+Fires when user hits a soft limit or shows premium-level engagement.
 
 Payload:
 - `plan_context` — always "addressee_generator"
-- `action` — "preset_limit_interest" (for now)
+- `action` — one of:
+  - `preset_limit_interest` — user hit a hard preset limit (legacy, from Phase 7)
+  - `preset_limit_reached` — user tried to save but hit the hard limit
+  - `preset_limit_close` — user approaching preset limit (2 slots left)
+  - `bulk_approaching_limit` — user processing 40+ rows in CSV bulk
+  - `docx_export_interest` — user exports DOCX format
 
 Note: No payment UI is shown. This is only the analytics signal.
+
+### addressee_premium_intent — detailed variants
+
+#### trackAddresseePresetLimitReached
+
+Fires when user hits a hard preset limit.
+
+Payload:
+- `preset_type` — "recipient" | "sender"
+- `preset_limit` — the limit value (10 for recipients, 5 for senders)
+- `language` — UI language
+
+#### trackAddresseeBulkApproachingLimit
+
+Fires when CSV bulk import has >= 40 rows (approaching 50-row limit).
+
+Payload:
+- `bulk_row_count` — actual row count
+- `bulk_row_limit` — limit value (50)
+- `ratio` — percentage of limit used
+- `language` — UI language
+
+#### trackAddresseeExportFormatInterest
+
+Fires when user clicks DOCX export.
+
+Payload:
+- `export_type` — "docx"
+- `language` — UI language
 
 ## What Is NOT Tracked
 
@@ -231,24 +265,17 @@ npm run test
 
 ## Future Phases
 
-### Phase 8: Pricing / Premium Hooks
-
-- Add pricing page route (no backend)
-- Add premium feature flags (local state only)
-- Hook premium intent signals to CTA
-- No actual payment processing
-
-### Phase 9: SEO Article-to-Scenario CTA
-
-- Add CTA blocks in article pages linking to specific scenarios
-- Track which articles drive which scenario selections
-- `source_article_slug` already in addresseeAnalytics helper's extra param
-
 ### Phase 10: Payment / Licensing Backend
 
 - Add Cloudflare Worker for payment webhooks
 - Add D1 record for premium status
 - This is Phase 10 because it requires backend changes
+
+### Phase 11: Pricing Page
+
+- Add `/pricing` route (static, no backend)
+- Show feature matrix for Free vs Pro
+- Link to payment provider (future)
 
 ## Files
 

@@ -34,6 +34,105 @@ import {
   CASE_GENITIVE,
 } from './addresseeNameCases.js';
 
+import {
+  normalizeAddresseeInput,
+  buildEnhancedResult,
+} from './addresseeAdapter.js';
+import { mapScenarioToDocumentTemplate } from './addresseeProfiles.js';
+
+function getWarningSeverityForCode(code) {
+  switch (code) {
+    case WARNING_CODES.INCOMPLETE_NAME:
+    case WARNING_CODES.TEMPLATE_REVIEW:
+    case WARNING_CODES.NAME_CASE_UNCERTAIN:
+      return 'warning';
+    case WARNING_CODES.UNKNOWN_GENDER:
+    case WARNING_CODES.AUTO_DETECTED_GENDER:
+    case WARNING_CODES.UNKNOWN_POSITION:
+    case WARNING_CODES.UNDECLINABLE_SURNAME:
+    case WARNING_CODES.EXTRA_NAME_PARTS:
+    case WARNING_CODES.LATIN_NAME:
+    case WARNING_CODES.INITIALS_DETECTED:
+    case WARNING_CODES.HYPHENATED_NAME_REVIEW:
+    case WARNING_CODES.ORGANIZATION_ABBREVIATION:
+    case WARNING_CODES.NAME_CASE_MANUAL:
+      return 'warning';
+    default:
+      return 'warning';
+  }
+}
+
+function getWarningFieldForCode(code) {
+  switch (code) {
+    case WARNING_CODES.INCOMPLETE_NAME:
+    case WARNING_CODES.EXTRA_NAME_PARTS:
+    case WARNING_CODES.LATIN_NAME:
+    case WARNING_CODES.INITIALS_DETECTED:
+    case WARNING_CODES.HYPHENATED_NAME_REVIEW:
+    case WARNING_CODES.UNDECLINABLE_SURNAME:
+    case WARNING_CODES.NAME_CASE_UNCERTAIN:
+      return 'recipient.fullName';
+    case WARNING_CODES.UNKNOWN_GENDER:
+    case WARNING_CODES.AUTO_DETECTED_GENDER:
+      return 'recipient.gender';
+    case WARNING_CODES.UNKNOWN_POSITION:
+    case WARNING_CODES.ORGANIZATION_ABBREVIATION:
+      return 'recipient.position';
+    case WARNING_CODES.NAME_CASE_MANUAL:
+      return 'manualCases';
+    case WARNING_CODES.TEMPLATE_REVIEW:
+      return 'format.documentTemplate';
+    default:
+      return 'general';
+  }
+}
+
+function getWarningSuggestionForCode(code) {
+  switch (code) {
+    case WARNING_CODES.INCOMPLETE_NAME:
+      return 'Укажите фамилию, имя и отчество либо проверьте форму вручную.';
+    case WARNING_CODES.UNKNOWN_GENDER:
+      return 'Укажите пол адресата, если обращение должно быть персональным.';
+    case WARNING_CODES.AUTO_DETECTED_GENDER:
+      return 'Проверьте автоматически выбранный род обращения.';
+    case WARNING_CODES.UNDECLINABLE_SURNAME:
+      return 'Проверьте склонение фамилии вручную или задайте ручную форму.';
+    case WARNING_CODES.UNKNOWN_POSITION:
+      return 'Проверьте падеж должности вручную, если формулировка важна.';
+    case WARNING_CODES.ORGANIZATION_ABBREVIATION:
+      return 'Проверьте официальное написание организации и кавычки.';
+    case WARNING_CODES.EXTRA_NAME_PARTS:
+      return 'Проверьте порядок частей ФИО и уберите лишние уточнения.';
+    case WARNING_CODES.LATIN_NAME:
+      return 'Проверьте написание и склонение имени вручную.';
+    case WARNING_CODES.INITIALS_DETECTED:
+      return 'Для точного обращения лучше указать полное имя и отчество.';
+    case WARNING_CODES.HYPHENATED_NAME_REVIEW:
+      return 'Проверьте форму имени или фамилии с дефисом вручную.';
+    case WARNING_CODES.TEMPLATE_REVIEW:
+      return 'Проверьте текст документа перед отправкой.';
+    case WARNING_CODES.NAME_CASE_MANUAL:
+      return 'Убедитесь, что ручная форма соответствует нужному падежу.';
+    case WARNING_CODES.NAME_CASE_UNCERTAIN:
+      return 'Задайте ручную форму, если автоматическое склонение спорно.';
+    default:
+      return null;
+  }
+}
+
+function enrichWarning(warning) {
+  return {
+    ...warning,
+    severity: getWarningSeverityForCode(warning.code),
+    field: getWarningFieldForCode(warning.code),
+    suggestion: getWarningSuggestionForCode(warning.code),
+  };
+}
+
+function enrichWarnings(warnings) {
+  return warnings.map((w) => enrichWarning(w));
+}
+
 function splitFullName(fullName) {
   if (!fullName || typeof fullName !== 'string') {
     return [];
@@ -547,6 +646,11 @@ function buildDocumentText({ template, to, from, greeting }) {
 }
 
 export function formatAddressee(input) {
+  const scenarioId = input?.scenario;
+  const documentTemplateFromScenario = scenarioId
+    ? mapScenarioToDocumentTemplate(scenarioId)
+    : null;
+
   const {
     fullName = '',
     position = '',
@@ -554,7 +658,7 @@ export function formatAddressee(input) {
     gender = GENDER_UNKNOWN,
     greetingMode = GREETING_NAME_PATRONYMIC,
     punctuation = PUNCTUATION_EXCLAMATION,
-    documentTemplate = DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    documentTemplate = documentTemplateFromScenario || DOCUMENT_TEMPLATE_BUSINESS_LETTER,
     senderFullName = '',
     senderPosition = '',
     senderOrganization = '',
@@ -705,7 +809,42 @@ export function formatAddressee(input) {
 
   const manualReviewRequired = confidence < 0.8;
 
-  return {
+  let confidenceLabel = 'high';
+  if (confidence >= 0.8) {
+    confidenceLabel = 'high';
+  } else if (confidence >= 0.6) {
+    confidenceLabel = 'medium';
+  } else {
+    confidenceLabel = 'low';
+  }
+
+  const explanations = [];
+  if (parsedName.surname && parsedName.name && parsedName.patronymic) {
+    explanations.push({
+      code: 'RECIPIENT_DATIVE_USED',
+      title: 'Почему используется дательный падеж',
+      text: 'В блоке "Кому" используется дательный падеж, потому что формальный адресат отвечает на вопрос "кому?".',
+      relatedField: 'recipient.fullName',
+    });
+  }
+  if (senderFullName || senderPosition || senderOrganization || senderGenitiveName) {
+    explanations.push({
+      code: 'SENDER_GENITIVE_USED',
+      title: 'Почему используется родительный падеж',
+      text: 'В блоке "От кого" используется родительный падеж, потому что отправитель отвечает на вопрос "от кого?".',
+      relatedField: 'sender.fullName',
+    });
+  }
+  if (hasSoftWarning || hasIncompleteName) {
+    explanations.push({
+      code: 'REVIEW_RECOMMENDED',
+      title: 'Рекомендуется проверка',
+      text: 'В данных есть признаки, требующие ручной проверки результата.',
+      relatedField: 'recipient.fullName',
+    });
+  }
+
+  const legacyResult = {
     blocks: {
       to: toResult.block,
       from: fromResult.block,
@@ -713,9 +852,14 @@ export function formatAddressee(input) {
       letter: letterBlock,
       documentText,
     },
-    warnings,
+    warnings: enrichWarnings(warnings),
     confidence,
+    confidenceLabel,
+    explanations,
     manualReviewRequired,
     parsedName: toResult.parsedName,
   };
+
+  const normalizedInput = normalizeAddresseeInput(input);
+  return buildEnhancedResult(legacyResult, normalizedInput);
 }

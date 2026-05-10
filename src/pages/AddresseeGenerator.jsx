@@ -65,6 +65,9 @@ import {
   trackAddresseeCsvImportCompleted,
   trackAddresseePresetAction,
   trackAddresseePremiumIntent,
+  trackAddresseePresetLimitReached,
+  trackAddresseeBulkApproachingLimit,
+  trackAddresseeExportFormatInterest,
 } from '../utils/addresseeAnalytics'
 import {
   GENDER_MALE,
@@ -221,7 +224,12 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
       trackAddresseePresetAction('recipient', 'save', { language })
     } else if (result.error === 'limit_reached') {
       setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitReached', { limit: getRecipientPresetLimit() }))
-      trackAddresseePremiumIntent('preset_limit_interest', { language })
+      trackAddresseePresetLimitReached('recipient', getRecipientPresetLimit(), { language })
+      trackAddresseePremiumIntent('preset_limit_reached', { language })
+    } else if (result.error === 'limit_close') {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitClose', { limit: getRecipientPresetLimit() }))
+      trackAddresseePresetLimitReached('recipient', getRecipientPresetLimit(), { approaching: true, language })
+      trackAddresseePremiumIntent('preset_limit_close', { language })
     }
   }, [form, t, language])
 
@@ -251,7 +259,12 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
       trackAddresseePresetAction('sender', 'save', { language })
     } else if (result.error === 'limit_reached') {
       setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitReached', { limit: getSenderPresetLimit() }))
-      trackAddresseePremiumIntent('preset_limit_interest', { language })
+      trackAddresseePresetLimitReached('sender', getSenderPresetLimit(), { language })
+      trackAddresseePremiumIntent('preset_limit_reached', { language })
+    } else if (result.error === 'limit_close') {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitClose', { limit: getSenderPresetLimit() }))
+      trackAddresseePresetLimitReached('sender', getSenderPresetLimit(), { approaching: true, language })
+      trackAddresseePremiumIntent('preset_limit_close', { language })
     }
   }, [form, t, language])
 
@@ -398,6 +411,11 @@ const handleGenerate = useCallback(() => {
       return
     }
 
+    if (parseResult.rows.length >= 40) {
+      trackAddresseeBulkApproachingLimit(parseResult.rows.length, 50, { language })
+      trackAddresseePremiumIntent('bulk_approaching_limit', { language })
+    }
+
     const processed = parseResult.rows.map((rowItem) => {
       const formatted = formatAddressee(rowItem.data)
       return { input: rowItem.data, rowNumber: rowItem.rowNumber, fieldErrors: rowItem.fieldErrors, ...formatted }
@@ -446,6 +464,11 @@ const handleGenerate = useCallback(() => {
           setBulkResults([])
           setBulkSummary(null)
           return
+        }
+
+        if (parseResult.rows.length >= 40) {
+          trackAddresseeBulkApproachingLimit(parseResult.rows.length, 50, { language })
+          trackAddresseePremiumIntent('bulk_approaching_limit', { language })
         }
 
         const processed = parseResult.rows.map((rowItem) => {
@@ -609,6 +632,7 @@ const handleCopyAll = useCallback(async () => {
       await downloadAddresseeDocx(resultForExport, { t })
       setStatusMessage(t('addresseeGenerator.statusMessages.docxDownloaded'))
       trackAddresseeExportClicked(form, result, 'docx', { language })
+      trackAddresseeExportFormatInterest('docx', { language })
     } catch (err) {
       console.warn('DOCX export failed:', err)
       setStatusMessage(t('addresseeGenerator.statusMessages.docxError'))
@@ -986,7 +1010,7 @@ const handleCopyAll = useCallback(async () => {
                 </div>
               )}
 
-              <details className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle" defaultOpen={Boolean(form.recipientDativeName || form.senderGenitiveName)}>
+              <details className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle" open={Boolean(form.recipientDativeName || form.senderGenitiveName)}>
                 <summary className="addr-gen-case-forms-heading">
                   <span>
                     <h4 id="addrCaseFormsTitle">{t('addresseeGenerator.addressee.scenarioUx.advanced.title')}</h4>
@@ -1490,6 +1514,7 @@ const handleCopyAll = useCallback(async () => {
                   </button>
                 </div>
                 <p className="addr-gen-export-note">{t('addresseeGenerator.exportNote')}</p>
+                <p className="addr-gen-export-premium-hint">{t('addresseeGenerator.exportPremiumHint')}</p>
               </div>
             )}
           </ToolResult>

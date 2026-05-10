@@ -1650,6 +1650,7 @@
       }
     },
     "exportNote": "CSV, TXT, HTML and DOCX exports are now available.",
+    "exportPremiumHint": "DOCX templates for mass mailings and integrations may become a Pro feature.",
     "statusMessages": {
       "resultGenerated": "Result generated.",
       "copied": "Result copied.",
@@ -1760,6 +1761,7 @@
           "empty": "No saved recipients yet.",
           "noData": "No saved recipients.",
           "limitReached": "Recipient limit reached.",
+          "limitClose": "{remaining} slots left. More recipients — in Pro version.",
           "saved": "Recipient saved.",
           "applied": "Recipient applied.",
           "deleted": "Recipient deleted.",
@@ -1772,6 +1774,7 @@
           "empty": "No saved senders yet.",
           "noData": "No saved senders.",
           "limitReached": "Sender limit reached.",
+          "limitClose": "{remaining} slots left. More senders — in Pro version.",
           "saved": "Sender saved.",
           "applied": "Sender applied.",
           "deleted": "Sender deleted.",
@@ -1784,6 +1787,20 @@
         "title": "Document block review",
         "profileLabel": "Profile",
         "scenarioLabel": "Scenario",
+        "confidence": {
+          "high": {
+            "title": "High confidence",
+            "description": "Data looks complete."
+          },
+          "medium": {
+            "title": "Medium confidence",
+            "description": "Review warnings."
+          },
+          "low": {
+            "title": "Manual review needed",
+            "description": "Use as a draft."
+          }
+        },
         "manualReview": {
           "title": "Manual review recommended",
           "description": "Check the result manually before sending or printing."
@@ -1797,6 +1814,25 @@
         "explanations": {
           "title": "Explanations"
         }
+      },
+      "fields": {
+        "general": "General",
+        "recipient.fullName": "Recipient full name",
+        "recipient.position": "Recipient position",
+        "recipient.organization": "Recipient organization",
+        "recipient.gender": "Recipient gender",
+        "sender.fullName": "Sender full name",
+        "sender.position": "Sender position",
+        "sender.organization": "Sender organization",
+        "manualCases": "Manual case forms",
+        "manualCases.recipientDativeName": "Recipient name in dative case",
+        "manualCases.senderGenitiveName": "Sender name in genitive case",
+        "format.documentTemplate": "Document template"
+      },
+      "profiles": {
+        "RU_OFFICIAL_STANDARD": "Russian official profile",
+        "RU_SIMPLE_BUSINESS": "Russian business profile",
+        "unknown": "profile"
       }
     }
   }

@@ -191,6 +191,34 @@ export function trackAddresseePresetAction(presetType, action, extra = {}) {
 export function trackAddresseePremiumIntent(action, extra = {}) {
   const payload = {
     plan_context: 'addressee_generator',
+    action,
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_INTENT, payload)
+}
+
+export function trackAddresseePresetLimitReached(presetType, limit, extra = {}) {
+  const payload = {
+    preset_type: presetType,
+    preset_limit: limit,
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_INTENT, payload)
+}
+
+export function trackAddresseeBulkApproachingLimit(rowCount, limit, extra = {}) {
+  const payload = {
+    bulk_row_count: rowCount,
+    bulk_row_limit: limit,
+    ratio: Math.round((rowCount / limit) * 100),
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_INTENT, payload)
+}
+
+export function trackAddresseeExportFormatInterest(exportType, extra = {}) {
+  const payload = {
+    export_type: exportType,
     ...extra,
   }
   safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_INTENT, payload)
