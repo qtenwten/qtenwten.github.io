@@ -1698,6 +1698,96 @@
         "q8": "What should I do if a surname is undeclinable?",
         "a8": "Leave the surname unchanged and review the wording manually. The tool highlights several ambiguous or undeclinable surname patterns."
       }
+    },
+    "addressee": {
+      "scenarioUx": {
+        "kicker": "Step 1 of 3",
+        "title": "Select a scenario",
+        "currentLabel": "Current",
+        "advanced": {
+          "title": "Manual case review",
+          "description": "Fill in the fields manually if automatic declension produces errors."
+        },
+        "focusHints": {
+          "to": "Focus on To field",
+          "from": "Focus on From field",
+          "salutation": "Focus on salutation"
+        },
+        "queryHints": {
+          "exportDocx": "DOCX export mode",
+          "csvBulk": "CSV bulk processing mode"
+        },
+        "options": {
+          "application": {
+            "label": "Russian application",
+            "description": "Standard application to management"
+          },
+          "applicationDirector": {
+            "label": "Application to director",
+            "description": "Application to the organization director"
+          },
+          "memo": {
+            "label": "Russian memo",
+            "description": "Internal document between employees"
+          },
+          "complaint": {
+            "label": "Russian complaint",
+            "description": "Official complaint to government bodies"
+          },
+          "request": {
+            "label": "Russian request",
+            "description": "Request for information or documents"
+          },
+          "businessLetter": {
+            "label": "Business-style Russian letter",
+            "description": "Commercial or informational letter"
+          },
+          "custom": {
+            "label": "Custom Russian document",
+            "description": "Flexible mode when the preset does not fit."
+          },
+          "csvBulk": {
+            "label": "CSV / multiple addressees",
+            "description": "Bulk processing via CSV"
+          }
+        }
+      },
+      "presets": {
+        "storageNote": "Saved only in this browser.",
+        "storageUnavailable": "Storage unavailable. Saving disabled.",
+        "recipientSection": {
+          "title": "Saved recipients",
+          "empty": "No saved recipients yet.",
+          "apply": "Apply",
+          "delete": "Delete",
+          "save": "Save recipient"
+        },
+        "senderSection": {
+          "title": "Saved senders",
+          "empty": "No saved senders yet.",
+          "apply": "Apply",
+          "delete": "Delete",
+          "save": "Save sender"
+        }
+      },
+      "trust": {
+        "title": "Document block review",
+        "profileLabel": "Profile",
+        "scenarioLabel": "Scenario",
+        "manualReview": {
+          "title": "Manual review recommended",
+          "description": "Check the result manually before sending or printing."
+        },
+        "warnings": {
+          "title": "Warnings"
+        },
+        "warning": {
+          "suggestionPrefix": "Suggestion:"
+        },
+        "explanations": {
+          "title": "Explanations"
+        }
+      }
     }
   }
 }

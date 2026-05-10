@@ -212,15 +212,15 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
   const handleSaveRecipientPreset = useCallback(() => {
     const preset = buildRecipientPresetFromInput(form)
     if (!preset) {
-      setStatusMessage(t('addressee.presets.recipientSection.noData'))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.noData'))
       return
     }
     const result = saveAddresseePreset('recipient', preset)
     if (result.success) {
-      setStatusMessage(t('addressee.presets.recipientSection.saved'))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.saved'))
       trackAddresseePresetAction('recipient', 'save', { language })
     } else if (result.error === 'limit_reached') {
-      setStatusMessage(t('addressee.presets.recipientSection.limitReached', { limit: getRecipientPresetLimit() }))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitReached', { limit: getRecipientPresetLimit() }))
       trackAddresseePremiumIntent('preset_limit_interest', { language })
     }
   }, [form, t, language])
@@ -229,28 +229,28 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
     const preset = recipientPresets.find((p) => p.id === presetId)
     if (!preset) return
     setForm((prev) => applyRecipientPresetToInput(prev, preset))
-    setStatusMessage(t('addressee.presets.recipientSection.applied'))
+    setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.applied'))
     trackAddresseePresetAction('recipient', 'apply', { language })
   }, [recipientPresets, t, language])
 
   const handleDeleteRecipientPreset = useCallback((presetId) => {
     deleteAddresseePreset('recipient', presetId)
-    setStatusMessage(t('addressee.presets.recipientSection.deleted'))
+    setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.deleted'))
     trackAddresseePresetAction('recipient', 'delete', { language })
   }, [t, language])
 
   const handleSaveSenderPreset = useCallback(() => {
     const preset = buildSenderPresetFromInput(form)
     if (!preset) {
-      setStatusMessage(t('addressee.presets.senderSection.noData'))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.noData'))
       return
     }
     const result = saveAddresseePreset('sender', preset)
     if (result.success) {
-      setStatusMessage(t('addressee.presets.senderSection.saved'))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.saved'))
       trackAddresseePresetAction('sender', 'save', { language })
     } else if (result.error === 'limit_reached') {
-      setStatusMessage(t('addressee.presets.senderSection.limitReached', { limit: getSenderPresetLimit() }))
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitReached', { limit: getSenderPresetLimit() }))
       trackAddresseePremiumIntent('preset_limit_interest', { language })
     }
   }, [form, t, language])
@@ -259,13 +259,13 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
     const preset = senderPresets.find((p) => p.id === presetId)
     if (!preset) return
     setForm((prev) => applySenderPresetToInput(prev, preset))
-    setStatusMessage(t('addressee.presets.senderSection.applied'))
+    setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.applied'))
     trackAddresseePresetAction('sender', 'apply', { language })
   }, [senderPresets, t, language])
 
   const handleDeleteSenderPreset = useCallback((presetId) => {
     deleteAddresseePreset('sender', presetId)
-    setStatusMessage(t('addressee.presets.senderSection.deleted'))
+    setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.deleted'))
     trackAddresseePresetAction('sender', 'delete', { language })
   }, [t, language])
 
@@ -737,15 +737,15 @@ const handleCopyAll = useCallback(async () => {
             <section className="addr-gen-scenario" aria-labelledby="addrScenarioTitle">
               <div className="addr-gen-scenario-head">
                 <div>
-                  <span className="addr-gen-panel-kicker">{t('addressee.scenarioUx.kicker')}</span>
-                  <h3 id="addrScenarioTitle">{t('addressee.scenarioUx.title')}</h3>
+                  <span className="addr-gen-panel-kicker">{t('addresseeGenerator.addressee.scenarioUx.kicker')}</span>
+                  <h3 id="addrScenarioTitle">{t('addresseeGenerator.addressee.scenarioUx.title')}</h3>
                 </div>
                 <span className="addr-gen-scenario-current">
-                  {t('addressee.scenarioUx.currentLabel')}: {activeScenario.label}
+                  {t('addresseeGenerator.addressee.scenarioUx.currentLabel')}: {activeScenario.label}
                 </span>
               </div>
 
-              <div className="addr-gen-scenario-grid" role="list" aria-label={t('addressee.scenarioUx.title')}>
+              <div className="addr-gen-scenario-grid" role="list" aria-label={t('addresseeGenerator.addressee.scenarioUx.title')}>
                 {scenarioOptions.map((option) => {
                   const isSelected = form.scenario === option.id
                   return (
@@ -768,13 +768,13 @@ const handleCopyAll = useCallback(async () => {
                 {(activeFocusHint || queryExportHint || bulkScenarioSelected) && (
                   <div className="addr-gen-query-hints">
                     {activeFocusHint && (
-                      <span>{t(`addressee.scenarioUx.focusHints.${activeFocusHint}`)}</span>
+                      <span>{t(`addresseeGenerator.addressee.scenarioUx.focusHints.${activeFocusHint}`)}</span>
                     )}
                     {queryExportHint === 'docx' && (
-                      <span>{t('addressee.scenarioUx.queryHints.exportDocx')}</span>
+                      <span>{t('addresseeGenerator.addressee.scenarioUx.queryHints.exportDocx')}</span>
                     )}
                     {bulkScenarioSelected && (
-                      <span>{t('addressee.scenarioUx.queryHints.csvBulk')}</span>
+                      <span>{t('addresseeGenerator.addressee.scenarioUx.queryHints.csvBulk')}</span>
                     )}
                   </div>
                 )}
@@ -839,19 +839,19 @@ const handleCopyAll = useCallback(async () => {
 
               {!storageAvailable && (
                 <p className="addr-gen-preset-warning" role="alert">
-                  {t('addressee.presets.storageUnavailable')}
+                  {t('addresseeGenerator.addressee.presets.storageUnavailable')}
                 </p>
               )}
 
               {storageAvailable && (
                 <div className="addr-gen-presets">
                   <div className="addr-gen-presets-header">
-                    <span className="addr-gen-presets-title">{t('addressee.presets.recipientSection.title')}</span>
-                    <span className="addr-gen-presets-note">{t('addressee.presets.storageNote')}</span>
+                    <span className="addr-gen-presets-title">{t('addresseeGenerator.addressee.presets.recipientSection.title')}</span>
+                    <span className="addr-gen-presets-note">{t('addresseeGenerator.addressee.presets.storageNote')}</span>
                   </div>
 
                   {recipientPresets.length === 0 ? (
-                    <p className="addr-gen-presets-empty">{t('addressee.presets.recipientSection.empty')}</p>
+                    <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.recipientSection.empty')}</p>
                   ) : (
                     <div className="addr-gen-presets-list">
                       {recipientPresets.map((preset) => (
@@ -862,14 +862,14 @@ const handleCopyAll = useCallback(async () => {
                             className="addr-gen-btn addr-gen-btn--tiny"
                             onClick={() => handleApplyRecipientPreset(preset.id)}
                           >
-                            {t('addressee.presets.recipientSection.apply')}
+                            {t('addresseeGenerator.addressee.presets.recipientSection.apply')}
                           </button>
                           <button
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
                             onClick={() => handleDeleteRecipientPreset(preset.id)}
                           >
-                            {t('addressee.presets.recipientSection.delete')}
+                            {t('addresseeGenerator.addressee.presets.recipientSection.delete')}
                           </button>
                         </div>
                       ))}
@@ -882,7 +882,7 @@ const handleCopyAll = useCallback(async () => {
                     onClick={handleSaveRecipientPreset}
                   >
                     <Icon name="bookmark" size={14} />
-                    {t('addressee.presets.recipientSection.save')}
+                    {t('addresseeGenerator.addressee.presets.recipientSection.save')}
                   </button>
                 </div>
               )}
@@ -945,12 +945,12 @@ const handleCopyAll = useCallback(async () => {
               {storageAvailable && (
                 <div className="addr-gen-presets">
                   <div className="addr-gen-presets-header">
-                    <span className="addr-gen-presets-title">{t('addressee.presets.senderSection.title')}</span>
-                    <span className="addr-gen-presets-note">{t('addressee.presets.storageNote')}</span>
+                    <span className="addr-gen-presets-title">{t('addresseeGenerator.addressee.presets.senderSection.title')}</span>
+                    <span className="addr-gen-presets-note">{t('addresseeGenerator.addressee.presets.storageNote')}</span>
                   </div>
 
                   {senderPresets.length === 0 ? (
-                    <p className="addr-gen-presets-empty">{t('addressee.presets.senderSection.empty')}</p>
+                    <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.senderSection.empty')}</p>
                   ) : (
                     <div className="addr-gen-presets-list">
                       {senderPresets.map((preset) => (
@@ -961,14 +961,14 @@ const handleCopyAll = useCallback(async () => {
                             className="addr-gen-btn addr-gen-btn--tiny"
                             onClick={() => handleApplySenderPreset(preset.id)}
                           >
-                            {t('addressee.presets.senderSection.apply')}
+                            {t('addresseeGenerator.addressee.presets.senderSection.apply')}
                           </button>
                           <button
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
                             onClick={() => handleDeleteSenderPreset(preset.id)}
                           >
-                            {t('addressee.presets.senderSection.delete')}
+                            {t('addresseeGenerator.addressee.presets.senderSection.delete')}
                           </button>
                         </div>
                       ))}
@@ -981,7 +981,7 @@ const handleCopyAll = useCallback(async () => {
                     onClick={handleSaveSenderPreset}
                   >
                     <Icon name="bookmark" size={14} />
-                    {t('addressee.presets.senderSection.save')}
+                    {t('addresseeGenerator.addressee.presets.senderSection.save')}
                   </button>
                 </div>
               )}
@@ -989,8 +989,8 @@ const handleCopyAll = useCallback(async () => {
               <details className="addr-gen-case-forms" aria-labelledby="addrCaseFormsTitle" defaultOpen={Boolean(form.recipientDativeName || form.senderGenitiveName)}>
                 <summary className="addr-gen-case-forms-heading">
                   <span>
-                    <h4 id="addrCaseFormsTitle">{t('addressee.scenarioUx.advanced.title')}</h4>
-                    <p>{t('addressee.scenarioUx.advanced.description')}</p>
+                    <h4 id="addrCaseFormsTitle">{t('addresseeGenerator.addressee.scenarioUx.advanced.title')}</h4>
+                    <p>{t('addresseeGenerator.addressee.scenarioUx.advanced.description')}</p>
                   </span>
                 </summary>
 
@@ -1272,10 +1272,10 @@ const handleCopyAll = useCallback(async () => {
                 </div>
 
                 {trustLayerVisible && (
-                  <section className="addr-gen-trust-layer" aria-label={t('addressee.trust.title')}>
+                  <section className="addr-gen-trust-layer" aria-label={t('addresseeGenerator.addressee.trust.title')}>
                     <div className="addr-gen-trust-summary">
                       <div className="addr-gen-trust-summary-main">
-                        <span className="addr-gen-panel-kicker">{t('addressee.trust.title')}</span>
+                        <span className="addr-gen-panel-kicker">{t('addresseeGenerator.addressee.trust.title')}</span>
                         <h3 className="addr-gen-trust-title">{confidenceUi.title}</h3>
                         <p className="addr-gen-trust-description">{confidenceUi.description}</p>
                       </div>
@@ -1290,12 +1290,12 @@ const handleCopyAll = useCallback(async () => {
                           <div className="addr-gen-profile-context">
                             {profileLabel && (
                               <span className="addr-gen-profile-badge">
-                                {t('addressee.trust.profileLabel')}: {profileLabel}
+                                {t('addresseeGenerator.addressee.trust.profileLabel')}: {profileLabel}
                               </span>
                             )}
                             {scenarioLabel && (
                               <span className="addr-gen-profile-badge">
-                                {t('addressee.trust.scenarioLabel')}: {scenarioLabel}
+                                {t('addresseeGenerator.addressee.trust.scenarioLabel')}: {scenarioLabel}
                               </span>
                             )}
                           </div>
@@ -1306,8 +1306,8 @@ const handleCopyAll = useCallback(async () => {
                     {result.manualReviewRequired && manualReviewItems.length > 0 && (
                       <div className="addr-gen-manual-review">
                         <div>
-                          <strong>{t('addressee.trust.manualReview.title')}</strong>
-                          <p>{t('addressee.trust.manualReview.description')}</p>
+                          <strong>{t('addresseeGenerator.addressee.trust.manualReview.title')}</strong>
+                          <p>{t('addresseeGenerator.addressee.trust.manualReview.description')}</p>
                         </div>
                         <ul className="addr-gen-manual-review-list">
                           {manualReviewItems.map((item) => (
@@ -1322,7 +1322,7 @@ const handleCopyAll = useCallback(async () => {
 
                     {result.warnings && result.warnings.length > 0 && (
                       <div className="addr-gen-trust-panel addr-gen-warnings">
-                        <h4>{t('addressee.trust.warnings.title')}</h4>
+                        <h4>{t('addresseeGenerator.addressee.trust.warnings.title')}</h4>
                         <ul className="addr-gen-warnings-list">
                           {result.warnings.map((warning, idx) => {
                             const severityUi = getWarningSeverityUi(warning.severity, t)
@@ -1337,7 +1337,7 @@ const handleCopyAll = useCallback(async () => {
                                 <p>{getWarningMessage(warning)}</p>
                                 {suggestion && (
                                   <p className="addr-gen-warning-suggestion">
-                                    <span>{t('addressee.trust.warning.suggestionPrefix')}</span> {suggestion}
+                                    <span>{t('addresseeGenerator.addressee.trust.warning.suggestionPrefix')}</span> {suggestion}
                                   </p>
                                 )}
                               </li>
@@ -1349,7 +1349,7 @@ const handleCopyAll = useCallback(async () => {
 
 {result.explanations && result.explanations.length > 0 && (
                       <div className="addr-gen-trust-panel addr-gen-explanations">
-                        <h4>{t('addressee.trust.explanations.title')}</h4>
+                        <h4>{t('addresseeGenerator.addressee.trust.explanations.title')}</h4>
                         <div className="addr-gen-explanation-list">
                           {result.explanations.map((explanation, idx) => {
                             const relatedLabel = explanation.relatedField
