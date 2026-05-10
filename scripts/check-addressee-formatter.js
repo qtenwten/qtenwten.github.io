@@ -591,6 +591,24 @@ function run() {
   assert(rManualDocument.blocks.documentText.includes('Иванову Ивану Петровичу'), 'V5: documentText uses manual recipient form')
   assert(rManualDocument.blocks.documentText.includes('Петровой Анны Сергеевны'), 'V5: documentText uses manual sender form')
 
+  const rTroitskyUnknown = formatAddressee({
+    fullName: 'Троицкий Григорий Владимирович',
+    position: 'генеральный директор',
+    organization: 'ООО «Ромашка»',
+    gender: GENDER_UNKNOWN,
+    senderFullName: 'Троицкий Арсений Григорьевич',
+    senderPosition: 'Менеджер',
+    senderOrganization: 'ООО «Альфа»',
+    documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
+  })
+  assert(rTroitskyUnknown.blocks.to.includes('Троицкому Григорию Владимировичу'), 'V6: unknown gender recipient with -ич patronymic is declined to dative')
+  assert(rTroitskyUnknown.blocks.from.includes('от Троицкого Арсения Григорьевича'), 'V6: sender is declined to genitive')
+  assert(rTroitskyUnknown.blocks.documentText.includes('Троицкому Григорию Владимировичу'), 'V6: documentText uses declined recipient')
+  assert(rTroitskyUnknown.blocks.documentText.includes('Троицкого Арсения Григорьевича'), 'V6: documentText uses declined sender')
+  assert(rTroitskyUnknown.blocks.toBlock === rTroitskyUnknown.blocks.to, 'V6: toBlock aliases declined to block')
+  assert(rTroitskyUnknown.blocks.fromBlock === rTroitskyUnknown.blocks.from, 'V6: fromBlock aliases declined from block')
+  assert(rTroitskyUnknown.blocks.fullPreview === rTroitskyUnknown.blocks.documentText, 'V6: fullPreview aliases declined documentText')
+
   const riskyNameChecks = [
     ['Иванов И. И.', GENDER_MALE, WARNING_CODES.INITIALS_DETECTED],
     ['John Smith', GENDER_MALE, WARNING_CODES.LATIN_NAME],

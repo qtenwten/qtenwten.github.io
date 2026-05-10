@@ -1785,6 +1785,12 @@
           "save": "Save sender"
         }
       },
+      "draft": {
+        "restored": "Draft restored from this tab.",
+        "saving": "Draft is temporarily saved in this tab.",
+        "cleared": "Draft cleared.",
+        "clear": "Clear draft"
+      },
       "trust": {
         "title": "Document block review",
         "profileLabel": "Profile",
@@ -1792,20 +1798,36 @@
         "confidence": {
           "high": {
             "title": "High confidence",
-            "description": "Data looks complete."
+            "description": "The data looks complete, but formal documents should still be checked."
           },
           "medium": {
             "title": "Medium confidence",
-            "description": "Review warnings."
+            "description": "There are ambiguous details. Review warnings before using the result."
           },
           "low": {
             "title": "Manual review needed",
-            "description": "Use as a draft."
+            "description": "Use the result as a draft and check the forms manually."
           }
         },
         "manualReview": {
           "title": "Manual review recommended",
-          "description": "Check the result manually before sending or printing."
+          "description": "Check the result manually before sending or printing.",
+          "reasons": {
+            "incompleteName": "First name or patronymic is missing.",
+            "unknownGender": "Gender is not detected.",
+            "unknownPosition": "Position is not in the dictionary.",
+            "organization": "Check the organization name.",
+            "nameCase": "Check name declension.",
+            "manualCase": "Manual case form is used.",
+            "template": "Check the template text.",
+            "generic": "This part needs a manual check."
+          }
+        },
+        "severity": {
+          "info": "Info",
+          "warning": "Warning",
+          "error": "Error",
+          "review": "Review"
         },
         "warnings": {
           "title": "Warnings"
@@ -1816,6 +1838,21 @@
         "explanations": {
           "title": "Explanations"
         }
+      },
+      "warningSuggestions": {
+        "INCOMPLETE_NAME": "Enter surname, first name and patronymic, or check the form manually.",
+        "UNKNOWN_GENDER": "Choose gender if the salutation must be personal.",
+        "AUTO_DETECTED_GENDER": "Check the automatically selected salutation gender.",
+        "UNKNOWN_POSITION": "Check the position case manually if the wording matters.",
+        "ORGANIZATION_ABBREVIATION": "Check the official organization spelling and quotation marks.",
+        "EXTRA_NAME_PARTS": "Check the order of name parts and remove extra details.",
+        "LATIN_NAME": "Check the spelling and name declension manually.",
+        "INITIALS_DETECTED": "For a precise salutation, enter the full first name and patronymic.",
+        "HYPHENATED_NAME_REVIEW": "Check the hyphenated first name or surname form manually.",
+        "UNDECLINABLE_SURNAME": "Check surname declension manually or enter a manual form.",
+        "NAME_CASE_MANUAL": "Make sure the manual form matches the required case.",
+        "NAME_CASE_UNCERTAIN": "Enter a manual form if automatic declension is ambiguous.",
+        "TEMPLATE_REVIEW": "Check the document text before sending."
       },
       "fields": {
         "general": "General",
@@ -1829,12 +1866,40 @@
         "manualCases": "Manual case forms",
         "manualCases.recipientDativeName": "Recipient name in dative case",
         "manualCases.senderGenitiveName": "Sender name in genitive case",
-        "format.documentTemplate": "Document template"
+        "format.documentTemplate": "Document template",
+        "recipient": {
+          "fullName": "Recipient full name",
+          "position": "Recipient position",
+          "organization": "Recipient organization",
+          "gender": "Recipient gender"
+        },
+        "sender": {
+          "fullName": "Sender full name",
+          "position": "Sender position",
+          "organization": "Sender organization"
+        },
+        "manualCaseForms": {
+          "recipientDativeName": "Recipient name in dative case",
+          "senderGenitiveName": "Sender name in genitive case"
+        },
+        "format": {
+          "documentTemplate": "Document template"
+        }
       },
       "profiles": {
         "RU_OFFICIAL_STANDARD": "Russian official profile",
         "RU_SIMPLE_BUSINESS": "Russian business profile",
-        "unknown": "profile"
+        "unknown": "unknown profile"
+      },
+      "scenarios": {
+        "application": "application",
+        "applicationDirector": "application to director",
+        "memo": "internal memo",
+        "complaint": "complaint",
+        "request": "request",
+        "businessLetter": "business letter",
+        "custom": "custom document",
+        "csvBulk": "CSV / bulk"
       }
     }
   }

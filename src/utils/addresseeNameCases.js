@@ -11,6 +11,26 @@ export const CASE_GENITIVE = 'genitive';
 
 const SUPPORTED_CASES = new Set([CASE_DATIVE, CASE_GENITIVE]);
 
+function resolveDeclensionGender(gender, parsedName = {}) {
+  if (gender === GENDER_MALE || gender === GENDER_FEMALE) {
+    return gender;
+  }
+
+  const patronymic = typeof parsedName.patronymic === 'string'
+    ? parsedName.patronymic.trim().toLowerCase()
+    : '';
+
+  if (patronymic.endsWith('ич')) {
+    return GENDER_MALE;
+  }
+
+  if (patronymic.endsWith('на')) {
+    return GENDER_FEMALE;
+  }
+
+  return gender;
+}
+
 const MALE_FIRST_NAMES_DATIVE = {
   'иван': 'ивану',
   'сергей': 'сергею',
@@ -276,11 +296,14 @@ function declineFirstName(firstName, gender, targetCase) {
       const capitalized = dative.charAt(0).toUpperCase() + dative.slice(1);
       return { declined: capitalized, warned: false };
     }
-    if (firstName.endsWith('ич') && gender === GENDER_MALE) {
-      return { declined: firstName + 'у', warned: false };
+    if (firstName.endsWith('ий') && gender === GENDER_MALE) {
+      return { declined: firstName.slice(0, -2) + 'ию', warned: false };
     }
-    if (firstName.endsWith('на') && gender === GENDER_FEMALE) {
-      return { declined: firstName.slice(0, -2) + 'не', warned: false };
+    if (firstName.endsWith('ий') && gender === GENDER_FEMALE) {
+      return { declined: firstName.slice(0, -2) + 'ии', warned: false };
+    }
+    if (firstName.endsWith('а') && gender === GENDER_MALE && targetCase === CASE_DATIVE) {
+      return { declined: firstName + 'е', warned: false };
     }
   } else if (targetCase === CASE_GENITIVE) {
     if (gender === GENDER_MALE && MALE_FIRST_NAMES_GENITIVE[lower]) {
@@ -298,6 +321,15 @@ function declineFirstName(firstName, gender, targetCase) {
     }
     if (firstName.endsWith('на') && gender === GENDER_FEMALE) {
       return { declined: firstName.slice(0, -2) + 'ны', warned: false };
+    }
+    if (firstName.endsWith('ий') && gender === GENDER_MALE) {
+      return { declined: firstName.slice(0, -2) + 'ия', warned: false };
+    }
+    if (firstName.endsWith('ий') && gender === GENDER_FEMALE) {
+      return { declined: firstName.slice(0, -2) + 'ии', warned: false };
+    }
+    if (firstName.endsWith('а') && gender === GENDER_MALE) {
+      return { declined: firstName + 'ы', warned: false };
     }
   }
 
@@ -421,7 +453,9 @@ export function declineRussianFullName(fullName, gender, targetCase) {
     return buildDeclensionResult(safeFullName, true, 'incomplete', WARNING_CODES.INCOMPLETE_NAME);
   }
 
-  if (gender !== GENDER_MALE && gender !== GENDER_FEMALE) {
+  const declensionGender = resolveDeclensionGender(gender, parsed);
+
+  if (declensionGender !== GENDER_MALE && declensionGender !== GENDER_FEMALE) {
     return buildDeclensionResult(safeFullName, true, 'unknown_gender', WARNING_CODES.UNKNOWN_GENDER);
   }
 
@@ -429,9 +463,9 @@ export function declineRussianFullName(fullName, gender, targetCase) {
     return buildDeclensionResult(safeFullName, true, 'undeclinable_surname', WARNING_CODES.UNDECLINABLE_SURNAME);
   }
 
-  const surnameResult = declineSurnameByGender(surname, gender, targetCase);
-  const nameResult = declineFirstName(name, gender, targetCase);
-  const patronymicResult = declinePatronymic(patronymic, gender, targetCase);
+  const surnameResult = declineSurnameByGender(surname, declensionGender, targetCase);
+  const nameResult = declineFirstName(name, declensionGender, targetCase);
+  const patronymicResult = declinePatronymic(patronymic, declensionGender, targetCase);
 
   const warned = surnameResult.warned || nameResult.warned || patronymicResult.warned;
 
@@ -457,7 +491,8 @@ export function declinePatronymicSafe(patronymic, gender, targetCase) {
 }
 
 export function isRiskyNameForDeclension(parsedName, gender, hasInitials, hasHyphenated, isLatin) {
-  if (gender !== GENDER_MALE && gender !== GENDER_FEMALE) return true;
+  const declensionGender = resolveDeclensionGender(gender, parsedName);
+  if (declensionGender !== GENDER_MALE && declensionGender !== GENDER_FEMALE) return true;
   if (hasInitials) return true;
   if (hasHyphenated) return true;
   if (isLatin) return true;

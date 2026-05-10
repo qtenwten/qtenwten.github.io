@@ -54,6 +54,13 @@ import {
   getSenderPresetLimit,
 } from '../utils/addresseePresets'
 import {
+  getAddresseeDraft,
+  saveAddresseeDraft,
+  clearAddresseeDraft,
+  isAddresseeDraftStorageAvailable,
+  hasMeaningfulAddresseeDraft,
+} from '../utils/addresseeDraftStorage'
+import {
   trackAddresseeToolOpened,
   trackAddresseeScenarioChange,
   trackAddresseeGenerated,
@@ -188,50 +195,111 @@ function AddresseeGenerator() {
   const [fullNameError, setFullNameError] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
   const resultRef = useRef(null)
+  const presetActionLocksRef = useRef(new Set())
   const [bulkResults, setBulkResults] = useState([])
   const [bulkError, setBulkError] = useState(null)
   const [bulkSummary, setBulkSummary] = useState(null)
-const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, greeting: null, documentText: null })
+  const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, greeting: null, documentText: null })
   const [editingBlock, setEditingBlock] = useState(null)
   const [editDraft, setEditDraft] = useState('')
+  const [recipientPresets, setRecipientPresets] = useState([])
+  const [senderPresets, setSenderPresets] = useState([])
+  const [presetBusy, setPresetBusy] = useState({
+    recipientSave: false,
+    senderSave: false,
+    recipientDelete: '',
+    senderDelete: '',
+  })
   const toolOpenedRef = useRef(false)
-
-  useEffect(() => {
-    if (toolOpenedRef.current) return
-    toolOpenedRef.current = true
-    trackAddresseeToolOpened({
-      language,
-      scenario: form.scenario,
-      profile: form.profile,
-      focus: initialQueryState.focus,
-      export_hint: initialQueryState.exportHint,
-    })
-  }, [])
+  const draftRestoredRef = useRef(false)
+  const saveTimerRef = useRef(null)
 
   const storageAvailable = useMemo(() => isPresetStorageAvailable(), [])
-  const recipientPresets = useMemo(() => getRecipientPresets(), [form])
-  const senderPresets = useMemo(() => getSenderPresets(), [form])
+  const draftStorageAvailable = useMemo(() => isAddresseeDraftStorageAvailable(), [])
+
+  useEffect(() => {
+    if (!storageAvailable) return
+    setRecipientPresets(getRecipientPresets())
+    setSenderPresets(getSenderPresets())
+  }, [storageAvailable])
+
+  const releasePresetLock = useCallback((lockKey, busyPatch) => {
+    const release = () => {
+      presetActionLocksRef.current.delete(lockKey)
+      setPresetBusy((prev) => ({ ...prev, ...busyPatch }))
+    }
+
+    if (typeof window === 'undefined') {
+      release()
+      return
+    }
+
+    window.setTimeout(release, 300)
+  }, [])
+
+  useEffect(() => {
+    if (draftRestoredRef.current || !draftStorageAvailable) return
+    const draft = getAddresseeDraft()
+    if (!draft || !hasMeaningfulAddresseeDraft(draft.form)) return
+    draftRestoredRef.current = true
+    setForm((prev) => ({ ...prev, ...draft.form }))
+    setStatusMessage(t('addresseeGenerator.addressee.draft.restored'))
+  }, [draftStorageAvailable, t])
+
+  useEffect(() => {
+    if (!draftStorageAvailable) return
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (saveTimerRef.current) {
+          clearTimeout(saveTimerRef.current)
+          saveTimerRef.current = null
+        }
+        saveAddresseeDraft(form)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [form, draftStorageAvailable])
+
+  const scheduleDraftSave = useCallback((formData) => {
+    if (!draftStorageAvailable) return
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current)
+    }
+    saveTimerRef.current = setTimeout(() => {
+      saveAddresseeDraft(formData)
+      saveTimerRef.current = null
+    }, 500)
+  }, [draftStorageAvailable])
 
   const handleSaveRecipientPreset = useCallback(() => {
+    const lockKey = 'recipient-save'
+    if (presetActionLocksRef.current.has(lockKey)) return
+    presetActionLocksRef.current.add(lockKey)
+    setPresetBusy((prev) => ({ ...prev, recipientSave: true }))
+
     const preset = buildRecipientPresetFromInput(form)
     if (!preset) {
       setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.noData'))
+      releasePresetLock(lockKey, { recipientSave: false })
       return
     }
-    const result = saveAddresseePreset('recipient', preset)
-    if (result.success) {
+    const saveResult = saveAddresseePreset('recipient', preset)
+    if (saveResult.success) {
+      setRecipientPresets(getRecipientPresets())
       setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.saved'))
       trackAddresseePresetAction('recipient', 'save', { language })
-    } else if (result.error === 'limit_reached') {
+    } else if (saveResult.error === 'limit_reached') {
       setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitReached', { limit: getRecipientPresetLimit() }))
       trackAddresseePresetLimitReached('recipient', getRecipientPresetLimit(), { language })
       trackAddresseePremiumIntent('preset_limit_reached', { language })
-    } else if (result.error === 'limit_close') {
-      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitClose', { limit: getRecipientPresetLimit() }))
+    } else if (saveResult.error === 'limit_close') {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.limitClose', { limit: getRecipientPresetLimit(), remaining: saveResult.remaining }))
       trackAddresseePresetLimitReached('recipient', getRecipientPresetLimit(), { approaching: true, language })
       trackAddresseePremiumIntent('preset_limit_close', { language })
     }
-  }, [form, t, language])
+    releasePresetLock(lockKey, { recipientSave: false })
+  }, [form, t, language, releasePresetLock])
 
   const handleApplyRecipientPreset = useCallback((presetId) => {
     const preset = recipientPresets.find((p) => p.id === presetId)
@@ -242,31 +310,48 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
   }, [recipientPresets, t, language])
 
   const handleDeleteRecipientPreset = useCallback((presetId) => {
-    deleteAddresseePreset('recipient', presetId)
-    setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.deleted'))
-    trackAddresseePresetAction('recipient', 'delete', { language })
-  }, [t, language])
+    const lockKey = `recipient-delete-${presetId}`
+    if (presetActionLocksRef.current.has(lockKey)) return
+    presetActionLocksRef.current.add(lockKey)
+    setPresetBusy((prev) => ({ ...prev, recipientDelete: presetId }))
+
+    const deleteResult = deleteAddresseePreset('recipient', presetId)
+    setRecipientPresets(getRecipientPresets())
+    if (deleteResult.success) {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.recipientSection.deleted'))
+      trackAddresseePresetAction('recipient', 'delete', { language })
+    }
+    releasePresetLock(lockKey, { recipientDelete: '' })
+  }, [t, language, releasePresetLock])
 
   const handleSaveSenderPreset = useCallback(() => {
+    const lockKey = 'sender-save'
+    if (presetActionLocksRef.current.has(lockKey)) return
+    presetActionLocksRef.current.add(lockKey)
+    setPresetBusy((prev) => ({ ...prev, senderSave: true }))
+
     const preset = buildSenderPresetFromInput(form)
     if (!preset) {
       setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.noData'))
+      releasePresetLock(lockKey, { senderSave: false })
       return
     }
-    const result = saveAddresseePreset('sender', preset)
-    if (result.success) {
+    const saveResult = saveAddresseePreset('sender', preset)
+    if (saveResult.success) {
+      setSenderPresets(getSenderPresets())
       setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.saved'))
       trackAddresseePresetAction('sender', 'save', { language })
-    } else if (result.error === 'limit_reached') {
+    } else if (saveResult.error === 'limit_reached') {
       setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitReached', { limit: getSenderPresetLimit() }))
       trackAddresseePresetLimitReached('sender', getSenderPresetLimit(), { language })
       trackAddresseePremiumIntent('preset_limit_reached', { language })
-    } else if (result.error === 'limit_close') {
-      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitClose', { limit: getSenderPresetLimit() }))
+    } else if (saveResult.error === 'limit_close') {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.limitClose', { limit: getSenderPresetLimit(), remaining: saveResult.remaining }))
       trackAddresseePresetLimitReached('sender', getSenderPresetLimit(), { approaching: true, language })
       trackAddresseePremiumIntent('preset_limit_close', { language })
     }
-  }, [form, t, language])
+    releasePresetLock(lockKey, { senderSave: false })
+  }, [form, t, language, releasePresetLock])
 
   const handleApplySenderPreset = useCallback((presetId) => {
     const preset = senderPresets.find((p) => p.id === presetId)
@@ -277,10 +362,19 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
   }, [senderPresets, t, language])
 
   const handleDeleteSenderPreset = useCallback((presetId) => {
-    deleteAddresseePreset('sender', presetId)
-    setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.deleted'))
-    trackAddresseePresetAction('sender', 'delete', { language })
-  }, [t, language])
+    const lockKey = `sender-delete-${presetId}`
+    if (presetActionLocksRef.current.has(lockKey)) return
+    presetActionLocksRef.current.add(lockKey)
+    setPresetBusy((prev) => ({ ...prev, senderDelete: presetId }))
+
+    const deleteResult = deleteAddresseePreset('sender', presetId)
+    setSenderPresets(getSenderPresets())
+    if (deleteResult.success) {
+      setStatusMessage(t('addresseeGenerator.addressee.presets.senderSection.deleted'))
+      trackAddresseePresetAction('sender', 'delete', { language })
+    }
+    releasePresetLock(lockKey, { senderDelete: '' })
+  }, [t, language, releasePresetLock])
 
   const handleFieldChange = useCallback((field, value) => {
     setForm((prev) => {
@@ -298,15 +392,20 @@ const [resultOverrides, setResultOverrides] = useState({ to: null, from: null, g
     if (field === 'fullName' && value.trim()) {
       setFullNameError(false)
     }
-  }, [])
+    scheduleDraftSave({ ...form, [field]: value })
+  }, [form, scheduleDraftSave])
 
-const handleScenarioChange = useCallback((scenarioId) => {
+  const handleScenarioChange = useCallback((scenarioId) => {
     setForm((prev) => applyScenarioToInput(prev, scenarioId))
     setActiveExampleKey('')
     setBulkError(null)
     const scenarioConfig = getScenarioUiConfig(scenarioId, t, language)
     trackAddresseeScenarioChange(scenarioId, scenarioConfig.profileId, language)
   }, [t, language])
+
+  useEffect(() => {
+    scheduleDraftSave(form)
+  }, [form.scenario, form.profile, form.documentTemplate, scheduleDraftSave])
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault()
@@ -354,7 +453,9 @@ const handleGenerate = useCallback(() => {
     setEditingBlock(null)
     setActiveExampleKey('')
     setCopyAllState('idle')
-  }, [initialScenarioId])
+    clearAddresseeDraft()
+    setStatusMessage(t('addresseeGenerator.addressee.draft.cleared'))
+  }, [initialScenarioId, t])
 
   const handleClearBulk = useCallback(() => {
     setBulkInput('')
@@ -879,13 +980,16 @@ const handleCopyAll = useCallback(async () => {
                     <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.recipientSection.empty')}</p>
                   ) : (
                     <div className="addr-gen-presets-list">
-                      {recipientPresets.map((preset) => (
+                      {recipientPresets.map((preset) => {
+                        const isDeleting = presetBusy.recipientDelete === preset.id
+                        return (
                         <div key={preset.id} className="addr-gen-preset-row">
                           <span className="addr-gen-preset-label">{preset.label}</span>
                           <button
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny"
                             onClick={() => handleApplyRecipientPreset(preset.id)}
+                            disabled={isDeleting}
                           >
                             {t('addresseeGenerator.addressee.presets.recipientSection.apply')}
                           </button>
@@ -893,11 +997,13 @@ const handleCopyAll = useCallback(async () => {
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
                             onClick={() => handleDeleteRecipientPreset(preset.id)}
+                            disabled={isDeleting}
                           >
                             {t('addresseeGenerator.addressee.presets.recipientSection.delete')}
                           </button>
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
 
@@ -905,6 +1011,7 @@ const handleCopyAll = useCallback(async () => {
                     type="button"
                     className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--compact"
                     onClick={handleSaveRecipientPreset}
+                    disabled={presetBusy.recipientSave}
                   >
                     <Icon name="bookmark" size={14} />
                     {t('addresseeGenerator.addressee.presets.recipientSection.save')}
@@ -980,13 +1087,16 @@ const handleCopyAll = useCallback(async () => {
                     <p className="addr-gen-presets-empty">{t('addresseeGenerator.addressee.presets.senderSection.empty')}</p>
                   ) : (
                     <div className="addr-gen-presets-list">
-                      {senderPresets.map((preset) => (
+                      {senderPresets.map((preset) => {
+                        const isDeleting = presetBusy.senderDelete === preset.id
+                        return (
                         <div key={preset.id} className="addr-gen-preset-row">
                           <span className="addr-gen-preset-label">{preset.label}</span>
                           <button
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny"
                             onClick={() => handleApplySenderPreset(preset.id)}
+                            disabled={isDeleting}
                           >
                             {t('addresseeGenerator.addressee.presets.senderSection.apply')}
                           </button>
@@ -994,11 +1104,13 @@ const handleCopyAll = useCallback(async () => {
                             type="button"
                             className="addr-gen-btn addr-gen-btn--tiny addr-gen-btn--danger"
                             onClick={() => handleDeleteSenderPreset(preset.id)}
+                            disabled={isDeleting}
                           >
                             {t('addresseeGenerator.addressee.presets.senderSection.delete')}
                           </button>
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
 
@@ -1006,6 +1118,7 @@ const handleCopyAll = useCallback(async () => {
                     type="button"
                     className="addr-gen-btn addr-gen-btn--secondary addr-gen-btn--compact"
                     onClick={handleSaveSenderPreset}
+                    disabled={presetBusy.senderSave}
                   >
                     <Icon name="bookmark" size={14} />
                     {t('addresseeGenerator.addressee.presets.senderSection.save')}
@@ -1375,14 +1488,11 @@ const handleCopyAll = useCallback(async () => {
                       </div>
                     )}
 
-{result.explanations && result.explanations.length > 0 && (
+                    {result.explanations && result.explanations.length > 0 && (
                       <div className="addr-gen-trust-panel addr-gen-explanations">
                         <h4>{t('addresseeGenerator.addressee.trust.explanations.title')}</h4>
                         <div className="addr-gen-explanation-list">
                           {result.explanations.map((explanation, idx) => {
-                            const relatedLabel = explanation.relatedField
-                              ? getAddresseeFieldLabel(explanation.relatedField, t)
-                              : ''
                             return (
                               <details
                                 className="addr-gen-explanation-card"
@@ -1396,7 +1506,6 @@ const handleCopyAll = useCallback(async () => {
                               >
                                 <summary id={`addr-exp-${idx}`}>
                                   <span>{explanation.title}</span>
-                                  {relatedLabel && <span>{relatedLabel}</span>}
                                 </summary>
                                 <p>{explanation.text}</p>
                               </details>

@@ -161,6 +161,37 @@ trustKeys.forEach((key) => {
   check(`G2: en ${fullKey} exists`, getLocaleValue(en, fullKey) !== null);
 });
 
+const trustValueChecks = [
+  ['trust.confidence.high.title', 'Высокая уверенность'],
+  ['trust.confidence.medium.title', 'Средняя уверенность'],
+  ['trust.confidence.low.title', 'Нужна ручная проверка'],
+  ['trust.confidence.high.description', 'Данные выглядят достаточно полными, но официальный документ всё равно стоит проверить.'],
+  ['trust.confidence.medium.description', 'Есть спорные места — проверьте предупреждения перед использованием.'],
+  ['trust.confidence.low.description', 'Результат можно использовать как черновик, но формы нужно проверить вручную.'],
+  ['trust.warning.suggestionPrefix', 'Совет:'],
+  ['fields.general', 'Общее'],
+  ['fields.recipient.fullName', 'ФИО получателя'],
+  ['fields.recipient.gender', 'Род получателя'],
+  ['fields.sender.fullName', 'ФИО отправителя'],
+  ['fields.format.documentTemplate', 'Шаблон документа'],
+  ['profiles.RU_OFFICIAL_STANDARD', 'официальный RU'],
+  ['profiles.RU_SIMPLE_BUSINESS', 'деловой RU'],
+  ['profiles.unknown', 'неизвестный профиль'],
+  ['scenarios.application', 'заявление'],
+  ['scenarios.businessLetter', 'деловое письмо'],
+  ['scenarios.custom', 'свой вариант'],
+];
+
+trustValueChecks.forEach(([key, expected]) => {
+  const fullKey = `${addresseePath}.${key}`;
+  check(`G3: ru ${fullKey} has expected copy`, getLocaleValue(ru, fullKey) === expected);
+});
+
+['INCOMPLETE_NAME', 'UNKNOWN_GENDER', 'NAME_CASE_UNCERTAIN', 'TEMPLATE_REVIEW'].forEach((code) => {
+  check(`G4: ru warning suggestion ${code} exists`, getLocaleValue(ru, `${addresseePath}.warningSuggestions.${code}`) !== null);
+  check(`G5: en warning suggestion ${code} exists`, getLocaleValue(en, `${addresseePath}.warningSuggestions.${code}`) !== null);
+});
+
 console.log('\n=== Results ===\n');
 console.log(`Total: ${pass}/${pass + fail}`);
 if (fail === 0) {

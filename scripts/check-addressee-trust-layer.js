@@ -42,26 +42,27 @@ function run() {
   console.log('\n=== Addressee Trust Layer Checks ===\n');
 
   const t = makeT({
-    'addressee.trust.confidence.high.title': 'High confidence',
-    'addressee.trust.confidence.high.description': 'Looks complete.',
-    'addressee.trust.confidence.medium.title': 'Medium confidence',
-    'addressee.trust.confidence.medium.description': 'Review warnings.',
-    'addressee.trust.confidence.low.title': 'Manual review needed',
-    'addressee.trust.confidence.low.description': 'Use as a draft.',
-    'addressee.trust.severity.warning': 'Warning',
-    'addressee.fields.recipient.fullName': 'Recipient full name',
-    'addressee.fields.recipient.position': 'Recipient position',
-    'addressee.fields.recipient.gender': 'Recipient gender',
-    'addressee.fields.general': 'General',
-    'addressee.profiles.RU_OFFICIAL_STANDARD': 'Russian official profile',
-    'addressee.profiles.RU_SIMPLE_BUSINESS': 'Russian business profile',
-    'addressee.profiles.unknown': 'profile',
-    'addressee.scenarios.application': 'application',
-    'addressee.scenarios.custom': 'custom document',
-    'addressee.trust.manualReview.reasons.unknownGender': 'The salutation form may be uncertain.',
-    'addressee.trust.manualReview.reasons.unknownPosition': 'The position wording needs review.',
-    'addressee.trust.manualReview.reasons.nameCase': 'The name form may be ambiguous.',
-    'addressee.trust.manualReview.reasons.generic': 'This result needs a manual check.',
+    'addresseeGenerator.addressee.trust.confidence.high.title': 'High confidence',
+    'addresseeGenerator.addressee.trust.confidence.high.description': 'Looks complete.',
+    'addresseeGenerator.addressee.trust.confidence.medium.title': 'Medium confidence',
+    'addresseeGenerator.addressee.trust.confidence.medium.description': 'Review warnings.',
+    'addresseeGenerator.addressee.trust.confidence.low.title': 'Manual review needed',
+    'addresseeGenerator.addressee.trust.confidence.low.description': 'Use as a draft.',
+    'addresseeGenerator.addressee.trust.severity.warning': 'Warning',
+    'addresseeGenerator.addressee.fields.recipient.fullName': 'Recipient full name',
+    'addresseeGenerator.addressee.fields.recipient.position': 'Recipient position',
+    'addresseeGenerator.addressee.fields.recipient.gender': 'Recipient gender',
+    'addresseeGenerator.addressee.fields.general': 'General',
+    'addresseeGenerator.addressee.profiles.RU_OFFICIAL_STANDARD': 'Russian official profile',
+    'addresseeGenerator.addressee.profiles.RU_SIMPLE_BUSINESS': 'Russian business profile',
+    'addresseeGenerator.addressee.profiles.unknown': 'unknown profile',
+    'addresseeGenerator.addressee.scenarios.application': 'application',
+    'addresseeGenerator.addressee.scenarios.custom': 'custom document',
+    'addresseeGenerator.addressee.warningSuggestions.UNKNOWN_GENDER': 'Choose gender if needed.',
+    'addresseeGenerator.addressee.trust.manualReview.reasons.unknownGender': 'The salutation form may be uncertain.',
+    'addresseeGenerator.addressee.trust.manualReview.reasons.unknownPosition': 'The position wording needs review.',
+    'addresseeGenerator.addressee.trust.manualReview.reasons.nameCase': 'The name form may be ambiguous.',
+    'addresseeGenerator.addressee.trust.manualReview.reasons.generic': 'This result needs a manual check.',
   });
 
   console.log('A. Formatter enhanced data');
@@ -91,7 +92,7 @@ function run() {
   assert(getAddresseeFieldLabel('unknown.technical.path', t) === 'General', 'B8: unknown field does not expose technical path');
   assert(getProfileDisplayLabel({ id: 'RU_OFFICIAL_STANDARD', enabled: true }, t) === 'Russian official profile', 'B9: known profile gets label');
   assert(getProfileDisplayLabel({ id: 'EN_BUSINESS_LETTER', enabled: false, status: 'future' }, t) === '', 'B10: future EN profile is not exposed');
-  assert(getProfileDisplayLabel({ id: 'UNKNOWN', enabled: true }, t) === 'profile', 'B11: unknown profile falls back safely');
+  assert(getProfileDisplayLabel({ id: 'UNKNOWN', enabled: true }, t) === 'unknown profile', 'B11: unknown profile falls back safely');
   assert(getScenarioDisplayLabel({ id: 'application' }, t) === 'application', 'B12: known scenario gets label');
   assert(getScenarioDisplayLabel({ id: 'unknownScenario' }, t) === 'custom document', 'B13: unknown scenario falls back safely');
   assert(shouldShowTrustLayer(riskyResult), 'B14: shouldShowTrustLayer returns true for formatter result');
@@ -138,10 +139,14 @@ function run() {
   assert(cssSource.includes('.addr-gen-explanation-card'), 'C11: CSS has explanation card styles');
   assert(helperSource.includes('export function getConfidenceUi'), 'C12: helper exports getConfidenceUi');
   assert(helperSource.includes('export function buildManualReviewItems'), 'C13: helper exports buildManualReviewItems');
-  assert(Boolean(ruLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C14: RU trust locale exists');
-  assert(Boolean(enLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C15: EN trust locale exists');
-  assert(enLocale.addresseeGenerator?.addressee?.profiles?.RU_OFFICIAL_STANDARD?.includes('Russian'), 'C16: EN labels are honest about RU profile');
-  assert(!JSON.stringify(enLocale.addresseeGenerator?.addressee || {}).includes('EN standards mode'), 'C17: EN locale does not promise finished EN standards mode');
+  assert(helperSource.includes("ADDRESSEE_LOCALE_PREFIX = 'addresseeGenerator.addressee'") && helperSource.includes('.trust.confidence'), 'C14: helper uses current addressee locale path');
+  assert(!helperSource.includes('addressee.trust.'), 'C15: helper no longer uses legacy trust locale path');
+  assert(Boolean(ruLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C16: RU trust locale exists');
+  assert(Boolean(enLocale.addresseeGenerator?.addressee?.trust?.confidence?.high?.title), 'C17: EN trust locale exists');
+  assert(Boolean(ruLocale.addresseeGenerator?.addressee?.warningSuggestions?.UNKNOWN_GENDER), 'C18: RU warning suggestion locale exists');
+  assert(Boolean(enLocale.addresseeGenerator?.addressee?.warningSuggestions?.UNKNOWN_GENDER), 'C19: EN warning suggestion locale exists');
+  assert(enLocale.addresseeGenerator?.addressee?.profiles?.RU_OFFICIAL_STANDARD?.includes('Russian'), 'C20: EN labels are honest about RU profile');
+  assert(!JSON.stringify(enLocale.addresseeGenerator?.addressee || {}).includes('EN standards mode'), 'C21: EN locale does not promise finished EN standards mode');
 
   if (failed > 0) {
     console.error(`\nAddressee trust layer checks failed: ${failed}/${passed + failed}`);

@@ -125,6 +125,24 @@ export function getPresetLabel(type, data) {
   return type === 'recipient' ? 'Адресат' : 'Отправитель';
 }
 
+function normalizePresetValue(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function getPresetDataSignature(type, data) {
+  const sanitized = sanitizePresetData(type, data);
+  const fields = type === 'recipient'
+    ? ['fullName', 'position', 'organization', 'gender', 'recipientDativeName']
+    : ['senderFullName', 'senderPosition', 'senderOrganization', 'senderGenitiveName'];
+
+  return fields.map((field) => `${field}:${normalizePresetValue(sanitized[field])}`).join('|');
+}
+
+function findDuplicatePresetIndex(type, presets, data) {
+  const signature = getPresetDataSignature(type, data);
+  return presets.findIndex((preset) => getPresetDataSignature(type, preset.data) === signature);
+}
+
 export function buildRecipientPresetFromInput(input) {
   const sanitized = sanitizePresetData('recipient', input);
   const hasData = sanitized.fullName || sanitized.position || sanitized.organization;
@@ -210,16 +228,32 @@ export function saveAddresseePreset(type, presetData) {
   }
 
   const store = getAddresseePresetStore();
+  const data = sanitizePresetData(type, presetData.data);
 
   const preset = {
     id: generateId(),
-    label: presetData.label || getPresetLabel(type, presetData.data),
+    label: presetData.label || getPresetLabel(type, data),
     createdAt: presetData.createdAt || Date.now(),
     updatedAt: Date.now(),
-    data: sanitizePresetData(type, presetData.data),
+    data,
   };
 
   if (type === 'recipient') {
+    const duplicateIndex = findDuplicatePresetIndex(type, store.recipients, data);
+    if (duplicateIndex !== -1) {
+      store.recipients[duplicateIndex] = {
+        ...store.recipients[duplicateIndex],
+        label: preset.label,
+        updatedAt: Date.now(),
+        data,
+      };
+      const persisted = persistStore(store);
+      if (!persisted) {
+        return { success: false, error: 'storage_failed' };
+      }
+      return { success: true, preset: store.recipients[duplicateIndex], duplicate: true };
+    }
+
     if (store.recipients.length >= RECIPIENT_LIMIT) {
       return { success: false, error: 'limit_reached', limit: RECIPIENT_LIMIT };
     }
@@ -228,6 +262,21 @@ export function saveAddresseePreset(type, presetData) {
     }
     store.recipients.push(preset);
   } else if (type === 'sender') {
+    const duplicateIndex = findDuplicatePresetIndex(type, store.senders, data);
+    if (duplicateIndex !== -1) {
+      store.senders[duplicateIndex] = {
+        ...store.senders[duplicateIndex],
+        label: preset.label,
+        updatedAt: Date.now(),
+        data,
+      };
+      const persisted = persistStore(store);
+      if (!persisted) {
+        return { success: false, error: 'storage_failed' };
+      }
+      return { success: true, preset: store.senders[duplicateIndex], duplicate: true };
+    }
+
     if (store.senders.length >= SENDER_LIMIT) {
       return { success: false, error: 'limit_reached', limit: SENDER_LIMIT };
     }

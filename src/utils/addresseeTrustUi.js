@@ -10,18 +10,19 @@ function getId(value) {
   return '';
 }
 
+const ADDRESSEE_LOCALE_PREFIX = 'addresseeGenerator.addressee';
 const CONFIDENCE_IDS = new Set(['high', 'medium', 'low']);
 
 export function getConfidenceUi(confidenceLabel, t) {
   const id = CONFIDENCE_IDS.has(confidenceLabel) ? confidenceLabel : 'low';
   return {
     id,
-    title: translate(t, `addressee.trust.confidence.${id}.title`, {
+    title: translate(t, `${ADDRESSEE_LOCALE_PREFIX}.trust.confidence.${id}.title`, {
       high: 'High confidence',
       medium: 'Medium confidence',
       low: 'Manual review needed',
     }[id]),
-    description: translate(t, `addressee.trust.confidence.${id}.description`, {
+    description: translate(t, `${ADDRESSEE_LOCALE_PREFIX}.trust.confidence.${id}.description`, {
       high: 'The data looks complete, but formal documents should still be checked.',
       medium: 'There are ambiguous details. Review warnings before using the result.',
       low: 'Use the result as a draft and check the forms manually.',
@@ -34,7 +35,7 @@ export function getWarningSeverityUi(severity, t) {
   const id = ['info', 'warning', 'error', 'review'].includes(severity) ? severity : 'warning';
   return {
     id,
-    label: translate(t, `addressee.trust.severity.${id}`, {
+    label: translate(t, `${ADDRESSEE_LOCALE_PREFIX}.trust.severity.${id}`, {
       info: 'Info',
       warning: 'Warning',
       error: 'Error',
@@ -47,18 +48,18 @@ export function getWarningSeverityUi(severity, t) {
 export function getAddresseeFieldLabel(field, t) {
   const normalized = typeof field === 'string' && field.trim() ? field.trim() : 'general';
   const map = {
-    'recipient.fullName': 'addressee.fields.recipient.fullName',
-    'recipient.position': 'addressee.fields.recipient.position',
-    'recipient.organization': 'addressee.fields.recipient.organization',
-    'recipient.gender': 'addressee.fields.recipient.gender',
-    'sender.fullName': 'addressee.fields.sender.fullName',
-    'sender.position': 'addressee.fields.sender.position',
-    'sender.organization': 'addressee.fields.sender.organization',
-    'manualCases': 'addressee.fields.manualCases',
-    'manualCases.recipientDativeName': 'addressee.fields.manualCases.recipientDativeName',
-    'manualCases.senderGenitiveName': 'addressee.fields.manualCases.senderGenitiveName',
-    'format.documentTemplate': 'addressee.fields.format.documentTemplate',
-    'general': 'addressee.fields.general',
+    'recipient.fullName': `${ADDRESSEE_LOCALE_PREFIX}.fields.recipient.fullName`,
+    'recipient.position': `${ADDRESSEE_LOCALE_PREFIX}.fields.recipient.position`,
+    'recipient.organization': `${ADDRESSEE_LOCALE_PREFIX}.fields.recipient.organization`,
+    'recipient.gender': `${ADDRESSEE_LOCALE_PREFIX}.fields.recipient.gender`,
+    'sender.fullName': `${ADDRESSEE_LOCALE_PREFIX}.fields.sender.fullName`,
+    'sender.position': `${ADDRESSEE_LOCALE_PREFIX}.fields.sender.position`,
+    'sender.organization': `${ADDRESSEE_LOCALE_PREFIX}.fields.sender.organization`,
+    'manualCases': `${ADDRESSEE_LOCALE_PREFIX}.fields.manualCases`,
+    'manualCases.recipientDativeName': `${ADDRESSEE_LOCALE_PREFIX}.fields.manualCaseForms.recipientDativeName`,
+    'manualCases.senderGenitiveName': `${ADDRESSEE_LOCALE_PREFIX}.fields.manualCaseForms.senderGenitiveName`,
+    'format.documentTemplate': `${ADDRESSEE_LOCALE_PREFIX}.fields.format.documentTemplate`,
+    'general': `${ADDRESSEE_LOCALE_PREFIX}.fields.general`,
   };
   return translate(t, map[normalized] || map.general, normalized === 'general' ? 'General' : 'General');
 }
@@ -70,31 +71,31 @@ export function getProfileDisplayLabel(profile, t) {
 
   const id = getId(profile);
   const map = {
-    RU_OFFICIAL_STANDARD: 'addressee.profiles.RU_OFFICIAL_STANDARD',
-    RU_SIMPLE_BUSINESS: 'addressee.profiles.RU_SIMPLE_BUSINESS',
+    RU_OFFICIAL_STANDARD: `${ADDRESSEE_LOCALE_PREFIX}.profiles.RU_OFFICIAL_STANDARD`,
+    RU_SIMPLE_BUSINESS: `${ADDRESSEE_LOCALE_PREFIX}.profiles.RU_SIMPLE_BUSINESS`,
   };
-  return translate(t, map[id] || 'addressee.profiles.unknown', 'profile');
+  return translate(t, map[id] || `${ADDRESSEE_LOCALE_PREFIX}.profiles.unknown`, 'profile');
 }
 
 export function getScenarioDisplayLabel(scenario, t) {
   const id = getId(scenario);
   const map = {
-    application: 'addressee.scenarios.application',
-    complaint: 'addressee.scenarios.complaint',
-    request: 'addressee.scenarios.request',
-    memo: 'addressee.scenarios.memo',
-    businessLetter: 'addressee.scenarios.businessLetter',
-    custom: 'addressee.scenarios.custom',
-    applicationDirector: 'addressee.scenarios.applicationDirector',
-    csvBulk: 'addressee.scenarios.csvBulk',
+    application: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.application`,
+    complaint: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.complaint`,
+    request: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.request`,
+    memo: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.memo`,
+    businessLetter: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.businessLetter`,
+    custom: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.custom`,
+    applicationDirector: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.applicationDirector`,
+    csvBulk: `${ADDRESSEE_LOCALE_PREFIX}.scenarios.csvBulk`,
   };
-  return translate(t, map[id] || 'addressee.scenarios.custom', 'custom document');
+  return translate(t, map[id] || `${ADDRESSEE_LOCALE_PREFIX}.scenarios.custom`, 'custom document');
 }
 
 export function getWarningSuggestionText(warning, t) {
   if (!warning) return '';
   const code = warning.code || '';
-  const localized = code ? translate(t, `addressee.warningSuggestions.${code}`, '') : '';
+  const localized = code ? translate(t, `${ADDRESSEE_LOCALE_PREFIX}.warningSuggestions.${code}`, '') : '';
   return localized || warning.suggestion || '';
 }
 
@@ -118,7 +119,7 @@ function getManualReviewReason(warning, t) {
   const category = categoryByCode[code] || 'generic';
   return translate(
     t,
-    `addressee.trust.manualReview.reasons.${category}`,
+    `${ADDRESSEE_LOCALE_PREFIX}.trust.manualReview.reasons.${category}`,
     'This part needs a manual check.'
   );
 }
@@ -146,7 +147,7 @@ export function buildManualReviewItems(result, t) {
     items.push({
       key: 'manual-review',
       label: getAddresseeFieldLabel('general', t),
-      reason: translate(t, 'addressee.trust.manualReview.reasons.generic', 'This result needs a manual check.'),
+      reason: translate(t, `${ADDRESSEE_LOCALE_PREFIX}.trust.manualReview.reasons.generic`, 'This result needs a manual check.'),
     });
   }
 
