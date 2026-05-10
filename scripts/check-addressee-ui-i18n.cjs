@@ -96,7 +96,7 @@ const rawKeys = [...rawScenarioKeys, ...rawPresetKeys].map((s) => {
 
 const missingKeys = rawKeys.filter((key) => {
   const parts = key.split('.');
-  let val = ru.addresseeGenerator;
+  let val = ru;
   for (const p of parts) {
     if (!val || typeof val !== 'object') return true;
     val = val[p];
