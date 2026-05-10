@@ -456,6 +456,11 @@
   background: var(--bg-elevated);
 }
 
+.addr-gen-bulk--active {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.04);
+}
+
 .addr-gen-bulk-header {
   display: grid;
   gap: 0.35rem;

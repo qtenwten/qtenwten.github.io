@@ -180,10 +180,10 @@ async function run() {
   assert((jsxSource.match(/result\.warnings\.map/g) || []).length === 1, 'E7: warnings are not rendered twice');
   assert(cssSource.includes('.addr-gen-scenario-card'), 'E8: CSS contains scenario card styles');
   assert(cssSource.includes('.addr-gen-bulk--active'), 'E9: CSS contains bulk highlight style');
-  assert(Boolean(ruLocale.addressee?.scenarioUx?.options?.applicationDirector?.label), 'E10: RU scenario locale exists');
-  assert(Boolean(enLocale.addressee?.scenarioUx?.options?.businessLetter?.label), 'E11: EN scenario locale exists');
-  assert(enLocale.addressee.scenarioUx.options.businessLetter.label.includes('Russian'), 'E12: EN scenario label is honest about Russian mode');
-  assert(!JSON.stringify(enLocale.addressee.scenarioUx).includes('EN business letter'), 'E13: EN future modes are not presented as ready');
+  assert(Boolean(ruLocale.addresseeGenerator?.addressee?.scenarioUx?.options?.applicationDirector?.label), 'E10: RU scenario locale exists');
+  assert(Boolean(enLocale.addresseeGenerator?.addressee?.scenarioUx?.options?.businessLetter?.label), 'E11: EN scenario locale exists');
+  assert(enLocale.addresseeGenerator.addressee.scenarioUx.options.businessLetter.label.includes('Russian'), 'E12: EN scenario label is honest about Russian mode');
+  assert(!JSON.stringify(enLocale.addresseeGenerator.addressee.scenarioUx).includes('EN business letter'), 'E13: EN future modes are not presented as ready');
   assert(!routeRegistrySource.includes('scenario='), 'E14: routeRegistry has no scenario query route changes');
   assert(!routeSeoSource.includes('?scenario='), 'E15: routeSeo has no scenario canonical/SEO query changes');
 
