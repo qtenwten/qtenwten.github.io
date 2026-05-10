@@ -48,8 +48,13 @@ function scheduleRouteModuleReload(error) {
 function createLazyPage(importer) {
   let LoadedComponent = null
   let loadPromise = null
+  let loadError = null
 
   function load() {
+    if (loadError) {
+      return Promise.reject(loadError)
+    }
+
     if (!loadPromise) {
       loadPromise = importer()
         .then((module) => {
@@ -59,6 +64,7 @@ function createLazyPage(importer) {
           }
 
           LoadedComponent = Component
+          loadError = null
           clearRouteModuleReloadFlag()
           return module
         })
@@ -69,6 +75,7 @@ function createLazyPage(importer) {
             return new Promise(() => {})
           }
 
+          loadError = error
           throw error
         })
     }
@@ -79,6 +86,10 @@ function createLazyPage(importer) {
   function PreloadablePage(props) {
     if (LoadedComponent) {
       return createElement(LoadedComponent, props)
+    }
+
+    if (loadError) {
+      throw loadError
     }
 
     throw load()
