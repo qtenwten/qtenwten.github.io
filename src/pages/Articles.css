@@ -777,6 +777,7 @@
 }
 
 .article-content-card {
+  min-width: 0;
   padding: 1.6rem 1.75rem;
   border-radius: 28px;
   border: 1px solid var(--border);
