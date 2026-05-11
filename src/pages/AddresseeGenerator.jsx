@@ -76,6 +76,7 @@ import {
   trackAddresseeBulkApproachingLimit,
   trackAddresseeExportFormatInterest,
 } from '../utils/addresseeAnalytics'
+import { ADDRESSEE_DOC_PACKS, getDocPack } from '../utils/addresseeDocxPacks'
 import {
   GENDER_MALE,
   GENDER_FEMALE,
@@ -904,6 +905,41 @@ const handleCopyAll = useCallback(async () => {
                     )}
                   </div>
                 )}
+              </div>
+            </section>
+
+            <section className="addr-gen-packs" aria-labelledby="addrPacksTitle">
+              <div className="addr-gen-packs-head">
+                <span className="addr-gen-panel-kicker">{t('addresseeGenerator.addressee.packs.kicker')}</span>
+                <h3 id="addrPacksTitle">{t('addresseeGenerator.addressee.packs.title')}</h3>
+              </div>
+              <div className="addr-gen-packs-grid" role="list" aria-label={t('addresseeGenerator.addressee.packs.title')}>
+                {ADDRESSEE_DOC_PACKS.map((pack) => {
+                  const lang = language === 'en' ? 'en' : 'ru';
+                  const packContent = pack.pack[lang];
+                  return (
+                    <button
+                      key={pack.id}
+                      type="button"
+                      className="addr-gen-pack-card"
+                      onClick={() => {
+                        const newForm = {
+                          ...form,
+                          documentTemplate: pack.documentTemplate,
+                          scenario: pack.scenarioId,
+                        };
+                        setForm(newForm);
+                      }}
+                      aria-pressed={form.documentTemplate === pack.documentTemplate}
+                    >
+                      <span className="addr-gen-pack-card-title">{packContent.title}</span>
+                      <span className="addr-gen-pack-card-desc">{packContent.shortDescription}</span>
+                      {pack.premiumHookLabelKey && (
+                        <span className="addr-gen-pack-card-hook">{t(pack.premiumHookLabelKey)}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </section>
 

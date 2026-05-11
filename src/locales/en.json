@@ -143,7 +143,7 @@
     "categoryRandom": "Random choice",
     "toolsWithGuidesTitle": "Tools with guides",
     "toolsWithGuidesCount": "articles",
-    "latestTitle": "Recent publications",
+    "latestTitle": "Recent posts",
     "collectionsTitle": "Curated collections",
     "collectionForDocs": "For documents",
     "collectionForBusiness": "For business",
@@ -155,7 +155,6 @@
     "coverAlt": "Article cover",
     "featuredLabel": "Featured read",
     "readFeatured": "Read feature",
-    "latestTitle": "Recent posts",
     "editorialEyebrow": "Editorial pick",
     "editorialTitle": "Useful articles, not a content dump",
     "editorialDescription": "A tighter editorial hub with practical content about tools, automation, and real-world web workflows.",
@@ -1177,61 +1176,35 @@
     }
   },
   "seoAudit": {
-    "title": "Free SEO Audit Tool",
-    "subtitle": "Check titles, headings, images, and metadata in seconds",
-    "urlLabel": "Website URL",
-    "emptyUrl": "Enter a URL to analyze",
-    "analyzeError": "An error occurred during the analysis. Check the URL and try again.",
-    "limitation": "Limitation:",
-    "tip": "Tip:",
-    "corsTip": "This tool works only for websites without CORS restrictions. For full analysis of external sites, use the server-side SEO audit tool.",
-    "analyze": "Analyze",
-    "analyzing": "Analyzing...",
-    "score": "SEO Score",
-    "excellent": "Excellent optimization",
-    "good": "Good, but there is room to improve",
-    "poor": "Optimization is needed",
-    "issues": "Found issues",
-    "suggestions": "Recommendations",
-    "details": "Analysis details",
-    "missing": "Missing",
-    "h1": "H1 headings",
-    "h2": "H2 headings",
-    "images": "Images",
-    "withoutAlt": "without alt",
-    "ogReady": "Configured",
-    "ogMissing": "Missing",
-    "structuredYes": "Present",
-    "structuredNo": "Missing",
-    "structuredData": "Structured data",
-    "infoTitle": "A fast on-page SEO check for one URL",
-    "infoDescription": "Use this free SEO audit tool to review the most important on-page signals on a page. It is designed for quick checks before publishing, updating metadata, or reviewing basic page quality.",
-    "checksTitle": "What this SEO checker reviews:",
-    "checks": {
-      "titles": "Title tags and meta descriptions",
-      "headings": "Heading structure such as H1, H2, and H3",
-      "images": "Image alt attributes",
-      "og": "Open Graph tags for social sharing",
-      "structured": "Structured data where it is available"
-    },
-    "limitsTitle": "When to use this version:",
-    "limitsText": "This fast browser-based audit is useful for basic checks. For deeper checks on external websites, use the full audit tool.",
-    "ratingTitle": "How to read the score:",
-    "rating": {
-      "high": "80-100 points - strong baseline SEO",
-      "mid": "60-79 points - decent, but there is room to improve",
-      "low": "0-59 points - important on-page issues need attention"
-    },
-    "faqTitle": "FAQ",
-    "faq": {
-      "q1": "How do I audit a page for SEO online?",
-      "a1": "Enter the page URL and the tool will check basic on-page elements such as titles, descriptions, headings, images, and social tags.",
-      "q2": "What does this SEO audit tool check?",
-      "a2": "It checks common on-page SEO elements like title tags, meta descriptions, heading structure, alt text, and Open Graph markup.",
-      "q3": "Is this a full technical SEO crawl?",
-      "a3": "No. This tool is meant for quick page-level checks rather than a full site crawl.",
-      "q4": "Can I use it before publishing a page?",
-      "a4": "Yes. It is useful for reviewing important on-page SEO elements before launch or after an edit."
+    "messages": {
+      "invalidProtocol": "URL must start with http:// or https://",
+      "cors": "Unable to analyze this website because of CORS restrictions. Use a browser extension or the server-side audit tool for external websites.",
+      "missingTitle": "Missing <title> tag",
+      "addTitle": "Add a unique page title (50-60 characters)",
+      "shortTitle": "<title> tag is too short",
+      "extendTitle": "Increase the title length to 50-60 characters",
+      "longTitle": "<title> tag is too long",
+      "reduceTitle": "Shorten the title to 50-60 characters",
+      "missingDescription": "Missing meta description",
+      "addDescription": "Add a page description (150-160 characters)",
+      "shortDescription": "Meta description is too short",
+      "extendDescription": "Increase the description to 150-160 characters",
+      "longDescription": "Meta description is too long",
+      "reduceDescription": "Shorten the description to 150-160 characters",
+      "missingH1": "Missing <h1> tag",
+      "addH1": "Add one main H1 heading to the page",
+      "manyH1": "Found multiple <h1> tags",
+      "oneH1": "Use only one H1 on the page",
+      "missingH2": "Missing <h2> tags",
+      "addH2": "Add H2 subheadings to structure the content",
+      "imagesWithoutAlt": "images without alt attributes",
+      "addAlt": "Add descriptive alt attributes to all images",
+      "missingOgTitle": "Missing og:title",
+      "addOg": "Add Open Graph tags for social sharing",
+      "missingOgDescription": "Missing og:description",
+      "missingOgImage": "Missing og:image",
+      "missingStructuredData": "Missing structured data (JSON-LD)",
+      "addStructuredData": "Add Schema.org markup to improve search appearance"
     }
   },
   "seoAuditPro": {
@@ -1437,38 +1410,6 @@
     "seoTitle": "Page not found | QSEN.RU",
     "seoDescription": "This page could not be found. Return to the homepage and continue with the most popular online tools."
   },
-  "seoAudit": {
-    "messages": {
-      "invalidProtocol": "URL must start with http:// or https://",
-      "cors": "Unable to analyze this website because of CORS restrictions. Use a browser extension or the server-side audit tool for external websites.",
-      "missingTitle": "Missing <title> tag",
-      "addTitle": "Add a unique page title (50-60 characters)",
-      "shortTitle": "<title> tag is too short",
-      "extendTitle": "Increase the title length to 50-60 characters",
-      "longTitle": "<title> tag is too long",
-      "reduceTitle": "Shorten the title to 50-60 characters",
-      "missingDescription": "Missing meta description",
-      "addDescription": "Add a page description (150-160 characters)",
-      "shortDescription": "Meta description is too short",
-      "extendDescription": "Increase the description to 150-160 characters",
-      "longDescription": "Meta description is too long",
-      "reduceDescription": "Shorten the description to 150-160 characters",
-      "missingH1": "Missing <h1> tag",
-      "addH1": "Add one main H1 heading to the page",
-      "manyH1": "Found multiple <h1> tags",
-      "oneH1": "Use only one H1 on the page",
-      "missingH2": "Missing <h2> tags",
-      "addH2": "Add H2 subheadings to structure the content",
-      "imagesWithoutAlt": "images without alt attributes",
-      "addAlt": "Add descriptive alt attributes to all images",
-      "missingOgTitle": "Missing og:title",
-      "addOg": "Add Open Graph tags for social sharing",
-      "missingOgDescription": "Missing og:description",
-      "missingOgImage": "Missing og:image",
-      "missingStructuredData": "Missing structured data (JSON-LD)",
-      "addStructuredData": "Add Schema.org markup to improve search appearance"
-    }
-  },
   "addresseeGenerator": {
     "heroEyebrow": "Document helper",
     "title": "Addressee & Salutation Generator",
@@ -1558,7 +1499,7 @@
       "example": "Load Example",
       "copyAll": "Copy all",
       "copiedAll": "Copied all",
-"exportCsv": "Export CSV",
+      "exportCsv": "Export CSV",
       "exportTxt": "Download TXT",
       "exportHtml": "Download HTML",
       "downloadDocx": "Download DOCX",
@@ -1626,7 +1567,7 @@
       "medium": "medium",
       "low": "check required"
     },
-"bulk": {
+    "bulk": {
       "title": "Bulk CSV Processing",
       "description": "Paste up to 50 rows with full name, position and organization. The tool will process the data in your browser and show a preview.",
       "proHint": "You can process up to 50 rows at a time. Larger batch processing may be added to an expanded plan later.",
@@ -1910,6 +1851,51 @@
         "businessLetter": "business letter",
         "custom": "custom document",
         "csvBulk": "CSV / bulk"
+      },
+      "packs": {
+        "kicker": "Popular Templates",
+        "title": "Quick Start",
+        "description": "Select a template and fill in the fields",
+        "school-director-application": {
+          "label": "School Director Application",
+          "description": "Application to the head of an educational institution",
+          "hook": "Enhanced formatting"
+        },
+        "employer-application": {
+          "label": "Employer Application",
+          "description": "Application to the organization head",
+          "hook": "Enhanced formatting"
+        },
+        "management-company-application": {
+          "label": "Management Company Application",
+          "description": "Application to management company or HOA",
+          "hook": "Enhanced formatting"
+        },
+        "administration-application": {
+          "label": "Administration Application",
+          "description": "Application to local government",
+          "hook": "Enhanced formatting"
+        },
+        "complaint-to-organization": {
+          "label": "Complaint to Organization",
+          "description": "Complaint against organization actions",
+          "hook": "Enhanced formatting"
+        },
+        "request-to-organization": {
+          "label": "Request to Organization",
+          "description": "Request for information or documents",
+          "hook": "Enhanced formatting"
+        },
+        "memo-to-manager": {
+          "label": "Memo to Manager",
+          "description": "Memo to director or department head",
+          "hook": "Enhanced formatting"
+        },
+        "business-letter-to-partner": {
+          "label": "Business Letter",
+          "description": "Business letter to partner or contractor",
+          "hook": "Enhanced formatting"
+        }
       }
     }
   }
