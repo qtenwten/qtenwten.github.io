@@ -14,6 +14,10 @@ import {
   VerticalPositionAlign,
 } from 'docx';
 
+import {
+  getSalutationPolicy,
+} from './addresseeDocumentText.js';
+
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
 const MARGIN_TOP_MM = 20;
@@ -82,7 +86,7 @@ function makeSignatureBlock() {
     }),
     new Paragraph({
       children: [
-        new TextRun({ text: 'Дата: ____________        Подпись: ____________', size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
+        new TextRun({ text: '"_" __________ 20 г. ____________ /Фамилия И.О./', size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
       ],
       alignment: AlignmentType.RIGHT,
       spacing: { after: 0, line: Math.round(LINE_SPACING_MAIN * 240), lineRule: 'auto' },
@@ -213,8 +217,8 @@ function getDocumentTitleKey(documentTemplate) {
 }
 
 function shouldIncludeGreeting(documentTemplate) {
-  const noGreetingTemplates = ['powerOfAttorney', 'order'];
-  return !noGreetingTemplates.includes(documentTemplate);
+  const policy = getSalutationPolicy(documentTemplate);
+  return policy.includeByDefault;
 }
 
 function buildSectionParagraph(label, content) {

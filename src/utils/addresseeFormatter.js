@@ -39,6 +39,14 @@ import {
   buildEnhancedResult,
 } from './addresseeAdapter.js';
 import { mapScenarioToDocumentTemplate } from './addresseeProfiles.js';
+import {
+  getCleanBodyPlaceholders,
+  getDocumentTitle,
+  getSalutationPolicy,
+  getSensitiveNote,
+  buildSignatureDisplay,
+  containsForbiddenLegalWords,
+} from './addresseeDocumentText.js';
 
 function getWarningSeverityForCode(code) {
   switch (code) {
@@ -461,7 +469,6 @@ function buildFromBlock(senderFullName, senderPosition, senderOrganization, send
 
 const DOCUMENT_SECTION_PLACEHOLDER = '____________________________';
 const DOCUMENT_SIGNATURE_LINE = 'Дата: ____________        Подпись: ____________';
-const SENSITIVE_TEMPLATE_NOTE = 'Примечание для редактирования: это заготовка, а не юридическая консультация. Перед отправкой проверьте факты, реквизиты и формулировки.';
 
 function cleanDocumentLine(value) {
   return String(value || '').trim();
@@ -517,131 +524,135 @@ function buildDocumentDraft({
   return sections.filter(Boolean).join('\n\n');
 }
 
-function buildDocumentText({ template, to, from, greeting }) {
-  const safeTemplate = template || DOCUMENT_TEMPLATE_BUSINESS_LETTER;
+function buildDocumentText({ template, to, from, greeting, senderFullName }) {
+  const rawTemplate = template || DOCUMENT_TEMPLATE_BUSINESS_LETTER;
+  const safeTemplate = Object.values({
+    DOCUMENT_TEMPLATE_APPLICATION,
+    DOCUMENT_TEMPLATE_COMPLAINT,
+    DOCUMENT_TEMPLATE_REQUEST,
+    DOCUMENT_TEMPLATE_MEMO,
+    DOCUMENT_TEMPLATE_BUSINESS_LETTER,
+    DOCUMENT_TEMPLATE_EXPLANATORY_NOTE,
+    DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY,
+    DOCUMENT_TEMPLATE_COMMERCIAL_OFFER,
+    DOCUMENT_TEMPLATE_ORDER,
+  }).includes(rawTemplate)
+    ? rawTemplate
+    : DOCUMENT_TEMPLATE_BUSINESS_LETTER;
+  const bodyPlaceholders = getCleanBodyPlaceholders(safeTemplate);
+  const docTitle = getDocumentTitle(safeTemplate);
+  const sensitiveNote = getSensitiveNote(safeTemplate);
+  const salutationPolicy = getSalutationPolicy(safeTemplate);
+  const sigDisplay = buildSignatureDisplay(senderFullName, safeTemplate);
+
+  const noteLines = sensitiveNote ? [sensitiveNote] : [];
+
+  const includeGreeting = salutationPolicy.includeByDefault && greeting;
 
   if (safeTemplate === DOCUMENT_TEMPLATE_APPLICATION) {
     return buildDocumentDraft({
-      title: 'ЗАЯВЛЕНИЕ',
+      title: docTitle || 'ЗАЯВЛЕНИЕ',
       to,
       from,
       greeting,
-      bodyLines: [
-        'Прошу рассмотреть настоящее заявление по указанному вопросу.',
-        'Сведения, основания и желаемый результат укажите в этом разделе.',
-      ],
-      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_POWER_OF_ATTORNEY) {
     return buildDocumentDraft({
-      title: 'ДОВЕРЕННОСТЬ',
+      title: docTitle || 'ДОВЕРЕННОСТЬ',
       to,
       from,
       greeting,
       includeGreeting: false,
-      bodyLines: [
-        'Настоящий текст является редактируемой заготовкой доверенности для дальнейшего заполнения.',
-        'Укажите представителя, перечень полномочий, срок действия и реквизиты документов.',
-      ],
-      noteLines: [
-        'Примечание для редактирования: это заготовка, а не юридическая консультация. Перед использованием проверьте требования к форме доверенности и необходимость удостоверения.',
-      ],
+      bodyLines: bodyPlaceholders,
+      noteLines,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_ORDER) {
     return buildDocumentDraft({
-      title: 'ПРИКАЗ',
+      title: docTitle || 'ПРИКАЗ',
       to,
       from,
       greeting,
       includeGreeting: false,
-      bodyLines: [
-        'О подготовке документа',
-        'Проект приказа для внутреннего оформления решения.',
-        'Содержание поручения, ответственных лиц, сроки и основание укажите в этом разделе.',
-      ],
+      bodyLines: bodyPlaceholders,
+      noteLines,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_MEMO) {
     return buildDocumentDraft({
-      title: 'СЛУЖЕБНАЯ ЗАПИСКА',
+      title: docTitle || 'СЛУЖЕБНАЯ ЗАПИСКА',
       to,
       from,
       greeting,
-      bodyLines: [
-        'Довожу до сведения информацию по рабочему вопросу.',
-        'Предлагаемые действия, ответственных лиц и сроки укажите в этом разделе.',
-      ],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_COMPLAINT) {
     return buildDocumentDraft({
-      title: 'ЖАЛОБА',
+      title: docTitle || 'ЖАЛОБА',
       to,
       from,
       greeting,
-      bodyLines: [
-        'Прошу рассмотреть жалобу по указанной ситуации.',
-        'Описание обстоятельств, даты, номера документов и желаемый способ ответа укажите в этом разделе.',
-      ],
-      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_REQUEST) {
     return buildDocumentDraft({
-      title: 'ЗАПРОС',
+      title: docTitle || 'ЗАПРОС',
       to,
       from,
       greeting,
-      bodyLines: [
-        'Прошу предоставить информацию или документы по указанному вопросу.',
-        'Перечень запрашиваемых сведений, срок ответа и удобный способ связи укажите в этом разделе.',
-      ],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_EXPLANATORY_NOTE) {
     return buildDocumentDraft({
-      title: 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА',
+      title: docTitle || 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА',
       to,
       from,
       greeting,
-      bodyLines: [
-        'По существу указанной ситуации сообщаю следующее.',
-        'Описание обстоятельств, даты и подтверждающие материалы укажите в этом разделе.',
-      ],
-      noteLines: [SENSITIVE_TEMPLATE_NOTE],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   if (safeTemplate === DOCUMENT_TEMPLATE_COMMERCIAL_OFFER) {
     return buildDocumentDraft({
-      title: 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ',
+      title: docTitle || 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ',
       to,
       from,
       greeting,
-      bodyLines: [
-        'Предлагаем рассмотреть условия сотрудничества по указанному направлению.',
-        'Описание товара или услуги, стоимость, сроки, условия оплаты и контакты укажите в этом разделе.',
-      ],
+      bodyLines: bodyPlaceholders,
+      noteLines,
+      includeGreeting,
     });
   }
 
   return buildDocumentDraft({
-    title: 'ДЕЛОВОЕ ПИСЬМО',
+    title: docTitle || 'ДЕЛОВОЕ ПИСЬМО',
     to,
     from,
     greeting,
-    bodyLines: [
-      'Сообщаем информацию по указанному вопросу и просим рассмотреть её в рабочем порядке.',
-      'При необходимости дополните письмо деталями, сроками и приложениями.',
-    ],
+    bodyLines: bodyPlaceholders,
+    noteLines,
+    includeGreeting,
   });
 }
 
