@@ -921,7 +921,7 @@ const handleCopyAll = useCallback(async () => {
                     <button
                       key={pack.id}
                       type="button"
-                      className="addr-gen-pack-card"
+                      className={`addr-gen-pack-card ${form.documentTemplate === pack.documentTemplate ? 'addr-gen-pack-card--selected' : ''}`.trim()}
                       onClick={() => {
                         const newForm = {
                           ...form,

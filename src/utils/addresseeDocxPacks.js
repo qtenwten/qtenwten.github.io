@@ -28,7 +28,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.APPLICATION,
-    premiumHookLabelKey: 'addresseeGenerator.packs.schoolDirectorApplication.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.school-director-application.hook',
     pack: {
       ru: {
         title: 'Заявление директору школы',
@@ -51,7 +51,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.APPLICATION,
-    premiumHookLabelKey: 'addresseeGenerator.packs.employerApplication.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.employer-application.hook',
     pack: {
       ru: {
         title: 'Заявление работодателю',
@@ -74,7 +74,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.APPLICATION,
-    premiumHookLabelKey: 'addresseeGenerator.packs.managementCompanyApplication.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.management-company-application.hook',
     pack: {
       ru: {
         title: 'Заявление в управляющую компанию',
@@ -97,7 +97,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_APPLICATION,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.APPLICATION,
-    premiumHookLabelKey: 'addresseeGenerator.packs.administrationApplication.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.administration-application.hook',
     pack: {
       ru: {
         title: 'Заявление в администрацию',
@@ -120,7 +120,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_COMPLAINT,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.COMPLAINT,
-    premiumHookLabelKey: 'addresseeGenerator.packs.complaintToOrganization.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.complaint-to-organization.hook',
     pack: {
       ru: {
         title: 'Жалоба в организацию',
@@ -143,7 +143,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_REQUEST,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.REQUEST,
-    premiumHookLabelKey: 'addresseeGenerator.packs.requestToOrganization.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.request-to-organization.hook',
     pack: {
       ru: {
         title: 'Запрос в организацию',
@@ -166,7 +166,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_MEMO,
     profileId: PROFILE_IDS.RU_OFFICIAL_STANDARD,
     scenarioId: SCENARIO_IDS.MEMO,
-    premiumHookLabelKey: 'addresseeGenerator.packs.memoToManager.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.memo-to-manager.hook',
     pack: {
       ru: {
         title: 'Служебная записка руководителю',
@@ -189,7 +189,7 @@ export const ADDRESSEE_DOC_PACKS = [
     documentTemplate: DOCUMENT_TEMPLATE_BUSINESS_LETTER,
     profileId: PROFILE_IDS.RU_SIMPLE_BUSINESS,
     scenarioId: SCENARIO_IDS.BUSINESS_LETTER,
-    premiumHookLabelKey: 'addresseeGenerator.packs.businessLetterToPartner.hook',
+    premiumHookLabelKey: 'addresseeGenerator.addressee.packs.business-letter-to-partner.hook',
     pack: {
       ru: {
         title: 'Деловое письмо партнёру',
