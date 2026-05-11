@@ -4,18 +4,13 @@ import {
   Paragraph,
   AlignmentType,
   Packer,
-  Table,
-  TableRow,
-  TableCell,
   WidthType,
   BorderStyle,
-  TableAnchorType,
-  HorizontalPositionAlign,
-  VerticalPositionAlign,
 } from 'docx';
 
 import {
   getSalutationPolicy,
+  getCleanBodyPlaceholders,
 } from './addresseeDocumentText.js';
 
 const A4_WIDTH_MM = 210;
@@ -82,7 +77,7 @@ function makeSignatureBlock() {
   return [
     new Paragraph({
       children: [new TextRun({ text: '' })],
-      spacing: { after: 400 },
+      spacing: { after: 300 },
     }),
     new Paragraph({
       children: [
@@ -94,108 +89,74 @@ function makeSignatureBlock() {
   ];
 }
 
-function buildCleanHeaderTable(toContent, fromContent) {
-  const cellWidthPercent = 50;
-  const emptyCellWidthPercent = 50;
-
-  const toLines = toContent ? toContent.split('\n').filter((l) => l.trim()) : [];
-  const fromLines = fromContent ? fromContent.split('\n').filter((l) => l.trim()) : [];
-
-  const buildRightCellContent = (lines) => {
-    if (lines.length === 0) return [makeEmptyParagraph(80)];
-    return lines.map((line) =>
-      new Paragraph({
-        children: [
-          new TextRun({ text: line, size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
-        ],
-        alignment: AlignmentType.RIGHT,
-        spacing: { after: 60, before: 0, line: Math.round(LINE_SPACING_TIGHT * 240), lineRule: 'auto' },
-      })
-    );
-  };
-
-  const leftCell = new TableCell({
-    width: { size: emptyCellWidthPercent, type: WidthType.PERCENTAGE },
-    children: [makeEmptyParagraph(80)],
-    margins: { top: 0, bottom: 0, left: 0, right: 0 },
-  });
-
-  const rightLines = [];
-  if (toLines.length > 0) {
-    rightLines.push(...toLines);
-  }
-  if (fromLines.length > 0) {
-    rightLines.push(...fromLines);
-  }
-
-  const rightCell = new TableCell({
-    width: { size: cellWidthPercent, type: WidthType.PERCENTAGE },
-    children: rightLines.length > 0 ? buildRightCellContent(rightLines) : [makeEmptyParagraph(80)],
-    margins: { top: 0, bottom: 0, left: 0, right: 0 },
-  });
-
-  const table = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    layout: TableAnchorType.HORIZONTAL_ANCHOR,
-    floating: {
-      horizontal: {
-        align: HorizontalPositionAlign.RIGHT,
-        offset: mmToTwip(MARGIN_RIGHT_MM),
-      },
-      vertical: {
-        align: VerticalPositionAlign.TOP,
-      },
-    },
-    rows: [
-      new TableRow({
-        children: [leftCell, rightCell],
-        height: { value: 0, rule: 'auto' },
-      }),
-    ],
-    borders: {
-      top: { style: BorderStyle.NONE },
-      bottom: { style: BorderStyle.NONE },
-      left: { style: BorderStyle.NONE },
-      right: { style: BorderStyle.NONE },
-      insideH: { style: BorderStyle.NONE },
-      insideV: { style: BorderStyle.NONE },
-    },
-  });
-
-  return table;
-}
-
-function buildCleanDocumentBody(docTextContent) {
+function buildPremiumHeaderBlock(toContent, fromContent) {
   const paragraphs = [];
 
-  paragraphs.push(makeEmptyParagraph(240));
-
-  const docLines = docTextContent ? docTextContent.split('\n') : [];
-  let mainTextStarted = false;
-  let skipNextEmpty = false;
-
-  for (let i = 0; i < docLines.length; i++) {
-    const line = docLines[i];
-    const trimmed = line.trim();
-
-    if (!trimmed) {
-      if (skipNextEmpty) continue;
-      paragraphs.push(makeEmptyParagraph(120));
-      skipNextEmpty = true;
-      continue;
+  if (toContent) {
+    const toLines = toContent.split('\n').filter(l => l.trim());
+    for (const line of toLines) {
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: line, size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
+          ],
+          alignment: AlignmentType.RIGHT,
+          spacing: { after: 60, before: 0, line: Math.round(LINE_SPACING_TIGHT * 240), lineRule: 'auto' },
+        })
+      );
     }
+  }
 
-    skipNextEmpty = false;
-
-    if (!mainTextStarted) {
-      mainTextStarted = true;
+  if (fromContent) {
+    const fromLines = fromContent.split('\n').filter(l => l.trim());
+    for (const line of fromLines) {
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: line, size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
+          ],
+          alignment: AlignmentType.RIGHT,
+          spacing: { after: 60, before: 0, line: Math.round(LINE_SPACING_TIGHT * 240), lineRule: 'auto' },
+        })
+      );
     }
+  }
 
-    if (trimmed === 'Дата: ____________        Подпись: ____________') {
-      continue;
+  return paragraphs;
+}
+
+function buildPremiumBody(bodyContent, placeholders) {
+  const paragraphs = [];
+
+  paragraphs.push(makeEmptyParagraph(200));
+
+  if (placeholders && placeholders.length > 0) {
+    for (const placeholder of placeholders) {
+      paragraphs.push(makeBodyLine(placeholder, { indent: true, spacingAfter: 160 }));
     }
+    paragraphs.push(makeEmptyParagraph(120));
+  } else if (bodyContent && bodyContent.trim()) {
+    const lines = bodyContent.split('\n');
+    let firstLine = true;
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) continue;
 
-    paragraphs.push(makeBodyLine(trimmed, { indent: mainTextStarted }));
+      if (line === 'Дата: ____________        Подпись: ____________') {
+        continue;
+      }
+
+      if (line.startsWith('ДЕЛОВОЕ ПИСЬМО') ||
+          line.startsWith('ЗАЯВЛЕНИЕ') ||
+          line.startsWith('ЖАЛОБА') ||
+          line.startsWith('ЗАПРОС') ||
+          line.startsWith('СЛУЖЕБНАЯ ЗАПИСКА')) {
+        continue;
+      }
+
+      paragraphs.push(makeBodyLine(line, { indent: firstLine, spacingAfter: 160 }));
+      firstLine = false;
+    }
   }
 
   return paragraphs;
@@ -216,72 +177,42 @@ function getDocumentTitleKey(documentTemplate) {
   return titleMap[documentTemplate] || 'addresseeGenerator.export.docTitleDefault';
 }
 
+function getDocumentTitle(documentTemplate, t, docTitleKey) {
+  if (documentTemplate === 'businessLetter') {
+    return null;
+  }
+  const translated = t(docTitleKey);
+  if (translated && translated !== docTitleKey) {
+    return translated;
+  }
+  return getFallbackTitle(documentTemplate);
+}
+
+function getFallbackTitle(documentTemplate) {
+  const map = {
+    application: 'ЗАЯВЛЕНИЕ',
+    complaint: 'ЖАЛОБА',
+    request: 'ЗАПРОС',
+    memo: 'СЛУЖЕБНАЯ ЗАПИСКА',
+    explanatoryNote: 'ОБЪЯСНИТЕЛЬНАЯ ЗАПИСКА',
+    powerOfAttorney: 'ДОВЕРЕННОСТЬ',
+    commercialOffer: 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ',
+    order: 'ПРИКАЗ',
+  };
+  return map[documentTemplate] || null;
+}
+
 function shouldIncludeGreeting(documentTemplate) {
   const policy = getSalutationPolicy(documentTemplate);
   return policy.includeByDefault;
 }
 
-function buildSectionParagraph(label, content) {
-  const paragraphs = [];
-  if (!label && !content) return paragraphs;
-
-  if (label) {
-    paragraphs.push(
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: label,
-            bold: true,
-          }),
-        ],
-        spacing: { after: 120 },
-      })
-    );
-  }
-
-  if (content) {
-    const lines = content.split('\n').filter((l) => l.trim().length > 0);
-    for (const line of lines) {
-      paragraphs.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: line,
-            }),
-          ],
-          spacing: { after: 60 },
-        })
-      );
-    }
-    if (lines.length > 0) {
-      paragraphs.push(new Paragraph({ children: [], spacing: { after: 160 } }));
-    }
-  }
-
-  return paragraphs;
-}
-
 export async function generateAddresseeDocxBlob(result, options = {}) {
   const { t, cleanExport = false } = options;
   const blocks = result?.blocks || {};
-  const warnings = result?.warnings || [];
   const documentTemplate = result?.exportData?.documentTemplate || result?.documentTemplate || 'businessLetter';
 
   const docTitleKey = getDocumentTitleKey(documentTemplate);
-  const docLabel = cleanExport && t
-    ? t(docTitleKey) || 'Документ'
-    : (t?.('addresseeGenerator.export.docxDocumentLabel') || 'Документ');
-
-  const addresseeLabel = cleanExport ? '' : (t?.('addresseeGenerator.export.addressee') || 'Адресат');
-  const senderLabel = cleanExport ? '' : (t?.('addresseeGenerator.export.sender') || 'Отправитель');
-  const greetingLabel = cleanExport ? '' : (t?.('addresseeGenerator.export.greeting') || 'Обращение');
-  const templateLabel = cleanExport ? '' : (t?.('addresseeGenerator.export.documentTemplate') || 'Готовый шаблон документа');
-  const warningsLabel = cleanExport ? '' : (t?.('addresseeGenerator.export.warningsSection') || 'Предупреждения');
-
-  const toSection = blocks.to || '';
-  const fromSection = blocks.from || '';
-  const greetingSection = blocks.greeting || '';
-  const docTextSection = blocks.documentText || '';
 
   const pageWidthTwip = mmToTwip(A4_WIDTH_MM);
   const pageHeightTwip = mmToTwip(A4_HEIGHT_MM);
@@ -293,30 +224,55 @@ export async function generateAddresseeDocxBlob(result, options = {}) {
   const children = [];
 
   if (cleanExport) {
-    children.push(buildCleanHeaderTable(toSection, fromSection));
+    const toSection = blocks.to || '';
+    const fromSection = blocks.from || '';
+    const greetingSection = blocks.greeting || '';
 
-    children.push(makeTitleParagraph(docLabel));
+    const headerParagraphs = buildPremiumHeaderBlock(toSection, fromSection);
+    children.push(...headerParagraphs);
 
-    if (shouldIncludeGreeting(documentTemplate) && greetingSection) {
-      const greetingLines = greetingSection.split('\n').filter((l) => l.trim());
-      for (const line of greetingLines) {
-        children.push(
-          new Paragraph({
-            children: [
-              new TextRun({ text: line, size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
-            ],
-            spacing: { after: 200, before: 0, line: Math.round(LINE_SPACING_MAIN * 240), lineRule: 'auto' },
-          })
-        );
-      }
-      children.push(makeEmptyParagraph(160));
+    const docTitle = getDocumentTitle(documentTemplate, t, docTitleKey);
+    if (docTitle) {
+      children.push(makeTitleParagraph(docTitle));
     }
 
-    const bodyParagraphs = buildCleanDocumentBody(docTextSection);
+    const policy = getSalutationPolicy(documentTemplate);
+    if (shouldIncludeGreeting(documentTemplate) && greetingSection) {
+      const greetingLines = greetingSection.split('\n').filter(l => l.trim());
+      for (const line of greetingLines) {
+        if (line.trim()) {
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: line, size: FONT_SIZE_MAIN_PT, font: 'Times New Roman' }),
+              ],
+              spacing: { after: 160, before: 0, line: Math.round(LINE_SPACING_MAIN * 240), lineRule: 'auto' },
+            })
+          );
+        }
+      }
+      children.push(makeEmptyParagraph(120));
+    }
+
+    const placeholders = getCleanBodyPlaceholders(documentTemplate);
+    const bodyParagraphs = buildPremiumBody(null, placeholders);
     children.push(...bodyParagraphs);
 
     children.push(...makeSignatureBlock());
   } else {
+    const docLabel = t?.(docTitleKey) || t?.('addresseeGenerator.export.docxDocumentLabel') || 'Документ';
+    const addresseeLabel = t?.('addresseeGenerator.export.addressee') || 'Адресат';
+    const senderLabel = t?.('addresseeGenerator.export.sender') || 'Отправитель';
+    const greetingLabel = t?.('addresseeGenerator.export.greeting') || 'Обращение';
+    const templateLabel = t?.('addresseeGenerator.export.documentTemplate') || 'Готовый шаблон документа';
+    const warningsLabel = t?.('addresseeGenerator.export.warningsSection') || 'Предупреждения';
+
+    const toSection = blocks.to || '';
+    const fromSection = blocks.from || '';
+    const greetingSection = blocks.greeting || '';
+    const docTextSection = blocks.documentText || '';
+    const warnings = result?.warnings || [];
+
     children.push(
       new Paragraph({
         children: [
@@ -332,34 +288,105 @@ export async function generateAddresseeDocxBlob(result, options = {}) {
     );
 
     if (toSection) {
-      for (const p of buildSectionParagraph(addresseeLabel, toSection)) {
-        children.push(p);
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: addresseeLabel, bold: true }),
+          ],
+          spacing: { after: 120 },
+        })
+      );
+      const toLines = toSection.split('\n').filter(l => l.trim());
+      for (const line of toLines) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: line })],
+            spacing: { after: 60 },
+          })
+        );
       }
+      children.push(new Paragraph({ children: [], spacing: { after: 160 } }));
     }
 
     if (fromSection) {
-      for (const p of buildSectionParagraph(senderLabel, fromSection)) {
-        children.push(p);
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: senderLabel, bold: true }),
+          ],
+          spacing: { after: 120 },
+        })
+      );
+      const fromLines = fromSection.split('\n').filter(l => l.trim());
+      for (const line of fromLines) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: line })],
+            spacing: { after: 60 },
+          })
+        );
       }
+      children.push(new Paragraph({ children: [], spacing: { after: 160 } }));
     }
 
     if (greetingSection) {
-      for (const p of buildSectionParagraph(greetingLabel, greetingSection)) {
-        children.push(p);
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: greetingLabel, bold: true }),
+          ],
+          spacing: { after: 120 },
+        })
+      );
+      const greetingLines = greetingSection.split('\n').filter(l => l.trim());
+      for (const line of greetingLines) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: line })],
+            spacing: { after: 60 },
+          })
+        );
       }
+      children.push(new Paragraph({ children: [], spacing: { after: 160 } }));
     }
 
     if (docTextSection) {
-      for (const p of buildSectionParagraph(templateLabel, docTextSection)) {
-        children.push(p);
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: templateLabel, bold: true }),
+          ],
+          spacing: { after: 120 },
+        })
+      );
+      const docLines = docTextSection.split('\n').filter(l => l.trim());
+      for (const line of docLines) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: line })],
+            spacing: { after: 60 },
+          })
+        );
       }
+      children.push(new Paragraph({ children: [], spacing: { after: 160 } }));
     }
 
     if (warnings && warnings.length > 0) {
-      const warningTexts = warnings.map((w) => w.message || String(w));
-      const warningContent = warningTexts.join('\n');
-      for (const p of buildSectionParagraph(warningsLabel, warningContent)) {
-        children.push(p);
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: warningsLabel, bold: true }),
+          ],
+          spacing: { after: 120 },
+        })
+      );
+      for (const w of warnings) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: w.message || String(w) })],
+            spacing: { after: 60 },
+          })
+        );
       }
     }
   }
