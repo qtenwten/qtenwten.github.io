@@ -8,6 +8,10 @@ const SCENARIO_FOCUS_MAP = {
   'application-header-example': { scenario: 'application-director', focus: null },
   'addressee-to-field-application': { scenario: 'application', focus: 'to' },
   'addressee-from-field-application': { scenario: 'application', focus: 'from' },
+  'school-director-application': { scenario: 'application', focus: 'to' },
+  'employer-application': { scenario: 'application', focus: 'to' },
+  'management-company-application': { scenario: 'application', focus: 'to' },
+  'memo-to-manager-addressee': { scenario: 'memo', focus: 'to' },
 }
 
 const EN_SLUGS = new Set([
@@ -124,12 +128,20 @@ function checkDrafts(drafts) {
       continue
     }
 
-    const ctaScenarioLower = (cta.scenario || '').toLowerCase()
+const ctaScenarioLower = (cta.scenario || '').toLowerCase()
     const ctaFocusLower = (cta.focus || '').toLowerCase()
-    if (FUTURE_EN_MODES.has(ctaScenarioLower) || FUTURE_EN_MODES.has(cta.scenario)) {
+    if (isEn && FUTURE_EN_MODES.has(ctaScenarioLower)) {
       results.fail++
-      results.errors.push(`${slug}: uses future EN mode scenario="${cta.scenario}"`)
+      errors.push(`${slug}: EN article uses unsupported scenario="${cta.scenario}"`)
       continue
+    }
+    if (!isEn && FUTURE_EN_MODES.has(ctaScenarioLower)) {
+      const ruSupportedScenarios = new Set(['memo', 'complaint', 'request'])
+      if (!ruSupportedScenarios.has(ctaScenarioLower)) {
+        results.fail++
+        errors.push(`${slug}: non-EN mode scenario="${cta.scenario}" is not supported for RU`)
+        continue
+      }
     }
 
     results.pass++
