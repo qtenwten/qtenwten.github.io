@@ -1,0 +1,20 @@
+{
+  "language": "en",
+  "translation_key": "employer-application",
+  "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "employer-application"
+  },
+  "slug": "russian-employer-application-to-from-fields",
+  "title": "Russian Employer Application — How to Fill \"To\" and \"From\"",
+  "excerpt": "How to write a Russian employer application header: \"Кому\" for the director or CEO, \"От кого\" for the employee, and ready templates for workplace documents.",
+  "content": "# Russian Employer Application — How to Fill \"To\" and \"From\"\n\n[Open the Addressee Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=employer-application)\n\nA Russian employer application is a formal letter from an employee or job applicant to the management of an organization. The header must follow Russian business letter rules: recipient in the dative case, sender in the genitive case.\n\n## The Application Header\n\nStandard structure for an employer application:\n\n1. **\"Кому\"** (To) — recipient (position, organization, full name)\n2. **\"От кого\"** (From) — sender (full name, sometimes position)\n3. **Date** — right-aligned\n\n### Who Goes in the \"To\" Field\n\nThe \"Кому\" line is always in the dative case:\n\n- `Генеральному директору ООО [company name] [full name]`\n- `Директору [company name] [full name]`\n- `Руководителю [company name] [full name]`\n\nExample for a CEO:\n```\nГенеральному директору ООО \"StroyMir\"\nSokolov Alexey Petrovich\n```\n\n## Header Template\n\n```\nГенеральному директору ООО \"StroyMir\"\nSokolov Alexey Petrovich\n\nFrom project manager\nIvanova Natalia Sergeevna\n\n                                          15 May 2026\n```\n\n## Common Mistakes\n\n1. **Wrong case** — \"Директору\" (dative) vs \"Директора\" (accusative). Always use dative: \"Генеральному директору\".\n2. **Extra prepositions** — \"На имя генерального директора\". Use simply: \"Генеральному директору\".\n3. **Informal job titles** — \"gen. директору\" instead of full \"Генеральному директору\".\n\n## Checklist\n\n- [ ] \"Кому\" — dative case\n- [ ] \"От кого\" — genitive case\n- [ ] Date is right-aligned\n- [ ] No extra prepositions\n- [ ] Job title and company name match official documents\n\n## Online Generator\n\nTo format an employer application header without errors — use the generator. Select \"Employer\" or \"Director\" scenario and the system will fill in the correct grammatical forms.\n\n[Open the Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=employer-application)\n\nNote: Russian grammatical cases follow strict patterns. The generator provides standard forms. For unusual or complex titles, verify the result against a Russian grammar reference.",
+  "status": "draft",
+  "author": "Ars",
+  "cover_image": null,
+  "seo_title": "Russian Employer Application Header — \"Кому\" and \"От кого\" Templates",
+  "seo_description": "Russian employer application: header template for CEO or director, dative case for \"Кому\", genitive for \"От кого\", common mistakes and generator link."
+}

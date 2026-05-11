@@ -18,13 +18,16 @@ const EN_SLUGS = new Set([
   'how-to-write-to-field-in-russian-application',
   'how-to-format-from-field-in-russian-documents',
   'russian-application-header-example',
+  'russian-school-director-application-header',
+  'russian-employer-application-to-from-fields',
+  'russian-management-company-application-header',
+  'russian-internal-memo-to-from-header',
 ])
 
 const FUTURE_EN_MODES = new Set([
   'businessLetter',
   'business-letter',
   'enBusinessLetter',
-  'memo',
   'complaint',
   'request',
   'custom',
@@ -132,14 +135,14 @@ const ctaScenarioLower = (cta.scenario || '').toLowerCase()
     const ctaFocusLower = (cta.focus || '').toLowerCase()
     if (isEn && FUTURE_EN_MODES.has(ctaScenarioLower)) {
       results.fail++
-      errors.push(`${slug}: EN article uses unsupported scenario="${cta.scenario}"`)
+      results.errors.push(`${slug}: EN article uses unsupported scenario="${cta.scenario}"`)
       continue
     }
     if (!isEn && FUTURE_EN_MODES.has(ctaScenarioLower)) {
       const ruSupportedScenarios = new Set(['memo', 'complaint', 'request'])
       if (!ruSupportedScenarios.has(ctaScenarioLower)) {
         results.fail++
-        errors.push(`${slug}: non-EN mode scenario="${cta.scenario}" is not supported for RU`)
+        results.errors.push(`${slug}: non-EN mode scenario="${cta.scenario}" is not supported for RU`)
         continue
       }
     }

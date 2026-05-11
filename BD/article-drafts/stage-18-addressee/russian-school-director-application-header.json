@@ -1,0 +1,20 @@
+{
+  "language": "en",
+  "translation_key": "school-director-application",
+  "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "school-director-application"
+  },
+  "slug": "russian-school-director-application-header",
+  "title": "Russian School Director Application Header — How to Write \"To\" and \"From\"",
+  "excerpt": "How to write a school director application header in Russian: \"Кому\" in the dative case, \"От кого\" in the genitive case, common mistakes, and ready templates for parents.",
+  "content": "# Russian School Director Application Header — How to Write \"To\" and \"From\"\n\n[Open the Addressee Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=school-director-application)\n\nA Russian school director application is a formal letter from a parent or legal representative regarding school or administrative matters. The header follows strict business letter rules: recipient in the dative case, sender in the genitive case, and a right-aligned date.\n\n## The Application Header\n\nThe header contains three required elements:\n\n1. **\"Кому\"** (To) — the recipient (director)\n2. **\"От кого\"** (From) — the sender (parent or representative)\n3. **Date** — day, month, year\n\n### Who Goes in the \"To\" Field\n\nThe \"Кому\" line is always in the dative case. For a school, this typically looks like:\n\n- `Директору ГБОУ [number] [school name] [full name]`\n- `Руководителю [institution name] [full name]`\n\nExample:\n```\nДиректору ГБОУ \"School No. 47\"\nSmirnova Olga Nikolaevna\n```\n\n## Header Template\n\n```\nДиректору ГБОУ \"School No. 47\"\nSmirnova Olga Nikolaevna\n\nFrom the parent of student in 2 \"A\" class\nIvanova Maria Sergeevna\n\n                                          15 May 2026\n```\n\n## Common Mistakes\n\n1. **Wrong grammatical case** — using \"Директору\" (dative) vs \"Директора\" (accusative). Always use dative: \"Директору\".\n2. **Extra prepositions** — \"На имя директора\" instead of just \"Директору\".\n3. **Informal school name** — \"School\" instead of the official institution name.\n\n## Quick Checklist\n\n- [ ] Header is centered\n- [ ] \"Кому\" — dative case\n- [ ] \"От кого\" — genitive case\n- [ ] Date is right-aligned\n- [ ] Text is free of errors\n\n## Online Generator\n\nTo format a school director application header with correct cases — use the generator. Select the \"School Director\" scenario and the system will fill in the correct forms.\n\n[Open the Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=school-director-application)\n\nNote: Russian grammatical cases can be complex. The generator uses standard forms and example templates. For rare or unusual positions, verify the final result or consult a Russian grammar reference.",
+  "status": "draft",
+  "author": "Ars",
+  "cover_image": null,
+  "seo_title": "Russian School Director Application Header — \"Кому\" and \"От кого\" in Correct Cases",
+  "seo_description": "Russian school director application header: dative case for \"Кому\", genitive for \"От кого\", ready template for parents. Common mistakes and generator link."
+}

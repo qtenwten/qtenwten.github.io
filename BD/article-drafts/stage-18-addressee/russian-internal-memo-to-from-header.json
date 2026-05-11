@@ -1,0 +1,20 @@
+{
+  "language": "en",
+  "translation_key": "memo-to-manager-addressee",
+  "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "memo",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "memo-to-manager-addressee"
+  },
+  "slug": "russian-internal-memo-to-from-header",
+  "title": "Russian Internal Memo — How to Write \"To\" and \"From\"",
+  "excerpt": "Russian internal memo header: how to write \"Кому\" and \"От кого\" in the correct grammatical case, common mistakes, and ready templates for office documents.",
+  "content": "# Russian Internal Memo — How to Write \"To\" and \"From\"\n\n[Open the Addressee Generator →](/en/generator-adresata/?scenario=memo&focus=to&source=article&article=memo-to-manager-addressee)\n\nA Russian internal memo (служебная записка) is an internal company document for communication between departments or employees. Unlike an application, the memo has its own formatting specifics: the \"Кому\" block is centered or left-aligned, and the document has a fixed structure.\n\n## The Memo Header\n\nHeader structure:\n\n1. **\"Кому\"** (To) — recipient (position and full name)\n2. **\"От кого\"** (From) — sender (position and full name)\n3. **Date and number** — usually left-aligned or centered\n\n### Who Goes in the \"To\" Field\n\nThe \"Кому\" line is always in the dative case:\n\n- `Директору [department name] [full name]`\n- `Руководителю [department name] [full name]`\n- `Начальнику [department name] [full name]`\n\nExample:\n```\nДиректору of HR Department\nLLC \"Logistics\"\nVolkov Igor Konstantinovich\n```\n\n### Who Goes in the \"From\" Field\n\nThe \"От кого\" line is in the genitive case:\n\n- `От sales manager [full name]`\n- `От specialist of [department name] [full name]`\n\nExample:\n```\nFrom sales manager\nPavlova Elena Vladimirovna\n```\n\n## Header Template\n\n```\nДиректору of HR Department\nLLC \"Logistics\"\nVolkov Igor Konstantinovich\n\nFrom sales manager\nPavlova Elena Vladimirovna\n\n                                          15 May 2026\n```\n\n## Common Mistakes\n\n1. **Wrong case** — \"Директору\" (dative) vs \"Директора\" (accusative). Always use dative: \"Директору\", \"Начальнику\".\n2. **Incorrect alignment** — while centered layout is allowed, the \"Кому\" / \"От кого\" block is typically left-aligned in memos.\n3. **Informal job titles** — \"нач. отдела\" instead of full \"Начальнику отдела\".\n\n## Checklist\n\n- [ ] \"Кому\" — dative case (директору, начальнику, руководителю)\n- [ ] \"От кого\" — genitive case\n- [ ] Date is left-aligned or right-aligned\n- [ ] Memo number (if any) — below the date\n\n## Online Generator\n\nTo format a memo header with correct cases — use the generator. Select the \"Memo\" scenario and the system will fill in the correct grammatical forms.\n\n[Open the Generator →](/en/generator-adresata/?scenario=memo&focus=to&source=article&article=memo-to-manager-addressee)\n\nNote: Russian grammatical cases follow specific patterns. The generator provides standard forms based on common job titles. For rare or composite titles (\"deputy head of department\", \"director of development\"), verify the result against a Russian grammar reference.",
+  "status": "draft",
+  "author": "Ars",
+  "cover_image": null,
+  "seo_title": "Russian Internal Memo Header — \"Кому\" and \"От кого\" in Correct Cases",
+  "seo_description": "Russian internal memo header: dative case for \"Кому\", genitive for \"От кого\", templates and common mistakes. Generator link included."
+}

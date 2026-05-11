@@ -1,0 +1,20 @@
+{
+  "language": "en",
+  "translation_key": "management-company-application",
+  "tool_slug": "generator-adresata",
+  "scenarioCta": {
+    "scenario": "application",
+    "focus": "to",
+    "source": "article",
+    "translation_key": "management-company-application"
+  },
+  "slug": "russian-management-company-application-header",
+  "title": "Russian Management Company Application — Header and Addressee Format",
+  "excerpt": "How to write a Russian management company or HOA application header: \"Кому\" in dative case, \"От кого\" in genitive case, ready templates for property owners.",
+  "content": "# Russian Management Company Application — Header and Addressee Format\n\n[Open the Addressee Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=management-company-application)\n\nA Russian management company or homeowners association (HOA/TJS) application is a formal letter from a property owner or tenant regarding building maintenance and repair issues. The header follows standard Russian business letter format.\n\n## The Application Header\n\nHeader structure:\n\n1. **\"Кому\"** (To) — recipient (director or chairman)\n2. **\"От кого\"** (From) — sender (owner or tenant)\n3. **Date**\n\n### Who Goes in the \"To\" Field\n\nThe \"Кому\" line is always in the dative case:\n\n- `Директору ОOO \"[management company name]\" [full name]`\n- `Председателю ТСЖ \"[name]\" [full name]`\n- `Руководителю OOO \"[name]\" [full name]`\n\nExample for a management company director:\n```\nДиректору OOO \"UK Dom-Servis\"\nPavlova Elena Alexandrovna\n```\n\nExample for an HOA chairman:\n```\nПредседателю ТСЖ \"Our Home\"\nKrasnikov Dmitry Sergeevich\n```\n\n## Header Template\n\n```\nДиректору OOO \"UK Dom-Servis\"\nPavlova Elena Alexandrovna\n\nFrom the owner of apartment No. 47\nat: Moscow, Sadovaya Street, bld. 12\nSmirnova Anastasia Viktorovna\n\n                                          15 May 2026\n```\n\n## Common Mistakes\n\n1. **Wrong case** — \"Директору\" (dative) vs \"Директора\" (accusative). Always use dative: \"Директору\", \"Председателю\".\n2. **Informal company name** — \"Управляющей компании\" instead of the official name from the contract.\n3. **Extra preposition** — \"На имя директора\" instead of just \"Директору\".\n\n## Checklist\n\n- [ ] \"Кому\" — dative case\n- [ ] \"От кого\" — genitive case\n- [ ] Management company / HOA name matches founding documents\n- [ ] Date is right-aligned\n\n## Online Generator\n\nTo format a management company application header without errors — use the generator. Select \"Organization Director\" scenario and the system will fill in the correct forms.\n\n[Open the Generator →](/en/generator-adresata/?scenario=application&focus=to&source=article&article=management-company-application)\n\nNote: The generator provides standard grammatical forms based on common patterns. For specific company names, verify the final result or use a Russian grammar reference for unusual cases.",
+  "status": "draft",
+  "author": "Ars",
+  "cover_image": null,
+  "seo_title": "Russian Management Company Application Header — Template for Property Owners",
+  "seo_description": "Russian management company or HOA application header: dative case for \"Кому\", templates for director or chairman, common mistakes and generator link."
+}
