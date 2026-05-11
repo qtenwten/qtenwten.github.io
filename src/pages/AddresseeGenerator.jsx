@@ -68,13 +68,18 @@ import {
   trackAddresseeExplanationOpened,
   trackAddresseeCopyClicked,
   trackAddresseeExportClicked,
+  trackAddresseeExportSuccess,
   trackAddresseeCsvImportStarted,
   trackAddresseeCsvImportCompleted,
+  trackAddresseeCsvExportSuccess,
   trackAddresseePresetAction,
   trackAddresseePremiumIntent,
   trackAddresseePresetLimitReached,
   trackAddresseeBulkApproachingLimit,
   trackAddresseeExportFormatInterest,
+  trackAddresseePackView,
+  trackAddresseePackSelect,
+  trackAddresseeLanguageSwitch,
 } from '../utils/addresseeAnalytics'
 import { ADDRESSEE_DOC_PACKS, getDocPack } from '../utils/addresseeDocxPacks'
 import {
@@ -212,6 +217,7 @@ function AddresseeGenerator() {
     senderDelete: '',
   })
   const toolOpenedRef = useRef(false)
+  const packViewedRef = useRef(false)
   const draftRestoredRef = useRef(false)
   const saveTimerRef = useRef(null)
 

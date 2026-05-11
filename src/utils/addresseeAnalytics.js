@@ -8,10 +8,15 @@ export const ADDRESSEE_ANALYTICS_EVENTS = {
   EXPLANATION_OPENED: 'addressee_explanation_opened',
   COPY_CLICKED: 'addressee_copy_clicked',
   EXPORT_CLICKED: 'addressee_export_clicked',
+  EXPORT_SUCCESS: 'addressee_export_success',
   CSV_IMPORT_STARTED: 'addressee_csv_import_started',
   CSV_IMPORT_COMPLETED: 'addressee_csv_import_completed',
+  CSV_EXPORT_SUCCESS: 'addressee_csv_export_success',
   PRESET_ACTION: 'addressee_preset_action',
   PREMIUM_INTENT: 'addressee_premium_intent',
+  PACK_VIEW: 'addressee_pack_view',
+  PACK_SELECT: 'addressee_pack_select',
+  LANGUAGE_SWITCH: 'addressee_language_switch',
 }
 
 const FORBIDDEN_KEYS = [
@@ -230,4 +235,46 @@ export function trackAddresseeScenarioChange(scenarioId, profile, language) {
     profile: profile,
     language: language,
   })
+}
+
+export function trackAddresseeExportSuccess(input, result, exportType, extra = {}) {
+  const payload = buildAddresseeAnalyticsPayload(input, result, {
+    export_type: exportType,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.EXPORT_SUCCESS, payload)
+}
+
+export function trackAddresseeCsvExportSuccess(rowCount, extra = {}) {
+  const payload = {
+    csv_rows_bucket: getCsvRowsBucket(rowCount),
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.CSV_EXPORT_SUCCESS, payload)
+}
+
+let lastPackViewLanguage = null
+
+export function trackAddresseePackView(extra = {}) {
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PACK_VIEW, extra)
+}
+
+export function trackAddresseePackSelect(packId, documentTemplate, extra = {}) {
+  const payload = {
+    pack_id: packId,
+    document_type: documentTemplate,
+    ...extra,
+  }
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PACK_SELECT, payload)
+}
+
+let lastLanguage = null
+
+export function trackAddresseeLanguageSwitch(newLanguage, extra = {}) {
+  const payload = {
+    language: newLanguage,
+    ...extra,
+  }
+  lastLanguage = newLanguage
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.LANGUAGE_SWITCH, payload)
 }
