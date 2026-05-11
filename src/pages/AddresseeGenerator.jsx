@@ -170,6 +170,7 @@ function createEmptyAddresseeForm() {
     senderOrganization: '',
     recipientDativeName: '',
     senderGenitiveName: '',
+    selectedPackId: null,
   }
 }
 
@@ -403,7 +404,7 @@ function AddresseeGenerator() {
   }, [form, scheduleDraftSave])
 
   const handleScenarioChange = useCallback((scenarioId) => {
-    setForm((prev) => applyScenarioToInput(prev, scenarioId))
+    setForm((prev) => ({ ...applyScenarioToInput(prev, scenarioId), selectedPackId: null }))
     setActiveExampleKey('')
     setBulkError(null)
     const scenarioConfig = getScenarioUiConfig(scenarioId, t, language)
@@ -927,16 +928,17 @@ const handleCopyAll = useCallback(async () => {
                     <button
                       key={pack.id}
                       type="button"
-                      className={`addr-gen-pack-card ${form.documentTemplate === pack.documentTemplate ? 'addr-gen-pack-card--selected' : ''}`.trim()}
+                      className={`addr-gen-pack-card ${form.selectedPackId === pack.id ? 'addr-gen-pack-card--selected' : ''}`.trim()}
                       onClick={() => {
                         const newForm = {
                           ...form,
+                          selectedPackId: pack.id,
                           documentTemplate: pack.documentTemplate,
                           scenario: pack.scenarioId,
                         };
                         setForm(newForm);
                       }}
-                      aria-pressed={form.documentTemplate === pack.documentTemplate}
+                      aria-pressed={form.selectedPackId === pack.id}
                     >
                       <span className="addr-gen-pack-card-title">{packContent.title}</span>
                       <span className="addr-gen-pack-card-desc">{packContent.shortDescription}</span>

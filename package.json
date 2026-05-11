@@ -31,6 +31,7 @@
     "check:addressee:launch-polish": "node scripts/check-addressee-launch-polish.cjs",
     "check:seo-urls": "node scripts/check-seo-url-consistency.cjs",
     "check:article-funnel": "node scripts/check-article-funnel.cjs",
+    "check:article-artifacts": "node scripts/check-article-markdown-artifacts.mjs",
     "check:articles-hub": "node scripts/check-articles-hub.mjs",
     "check:production-seo-health": "node scripts/check-production-seo-health.cjs",
     "indexnow:prepare": "node scripts/prepare-indexnow-submit.cjs",

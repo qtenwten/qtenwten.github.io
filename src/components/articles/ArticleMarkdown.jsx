@@ -10,6 +10,9 @@ function parseMarkdown(content = '') {
   let codeLines = []
   let codeLanguage = ''
   let inCodeBlock = false
+  let tableRows = []
+  let inTable = false
+  let tableAligns = []
 
   const flushParagraph = () => {
     if (!paragraphLines.length) {
@@ -63,6 +66,19 @@ function parseMarkdown(content = '') {
     codeLanguage = ''
   }
 
+  const flushTable = () => {
+    if (!tableRows.length) {
+      tableRows = []
+      tableAligns = []
+      inTable = false
+      return
+    }
+    blocks.push({ type: 'table', rows: tableRows, aligns: tableAligns })
+    tableRows = []
+    tableAligns = []
+    inTable = false
+  }
+
   lines.forEach((line) => {
     if (line.startsWith('```')) {
       if (inCodeBlock) {
@@ -72,6 +88,7 @@ function parseMarkdown(content = '') {
         flushParagraph()
         flushList()
         flushOrderedList()
+        flushTable()
         codeLanguage = line.slice(3).trim()
         inCodeBlock = true
       }
@@ -97,6 +114,7 @@ function parseMarkdown(content = '') {
       flushParagraph()
       flushList()
       flushOrderedList()
+      flushTable()
       blocks.push({
         type: 'heading',
         level: headingMatch[1].length,
@@ -109,6 +127,7 @@ function parseMarkdown(content = '') {
     if (unorderedListMatch) {
       flushParagraph()
       flushOrderedList()
+      flushTable()
       listItems.push(unorderedListMatch[1].trim())
       return
     }
@@ -117,6 +136,7 @@ function parseMarkdown(content = '') {
     if (orderedListMatch) {
       flushParagraph()
       flushList()
+      flushTable()
       orderedListItems.push(orderedListMatch[1].trim())
       return
     }
@@ -131,12 +151,46 @@ function parseMarkdown(content = '') {
       return
     }
 
+    const isTableSeparator = trimmedLine.match(/^\|[\s:-]+\|[\s:-]+\|[\s:-]*\|?\s*$/)
+    const isTableRow = trimmedLine.startsWith('|') && trimmedLine.endsWith('|')
+
+    if (isTableRow) {
+      flushParagraph()
+      flushList()
+      flushOrderedList()
+      if (isTableSeparator) {
+        const cells = trimmedLine.split('|').slice(1, -1)
+        tableAligns = cells.map((cell) => {
+          const trimmed = cell.trim()
+          if (trimmed.startsWith(':') && trimmed.endsWith(':')) return 'center'
+          if (trimmed.endsWith(':')) return 'right'
+          return 'left'
+        })
+        inTable = true
+      } else {
+        const cells = trimmedLine.split('|').slice(1, -1).map((c) => c.trim())
+        if (cells.some((c) => c.includes('---'))) {
+          flushTable()
+        } else {
+          if (inTable || tableRows.length > 0) {
+            tableRows.push(cells)
+          } else {
+            blocks.push({ type: 'paragraph', text: paragraphLines.join(' ').trim() })
+            paragraphLines = []
+          }
+        }
+      }
+      return
+    }
+
+    flushTable()
     paragraphLines.push(trimmedLine)
   })
 
   flushParagraph()
   flushList()
   flushOrderedList()
+  flushTable()
 
   if (inCodeBlock) {
     flushCodeBlock()
@@ -384,6 +438,44 @@ function ArticleMarkdown({ content, title = '', lead = '' }) {
             <pre key={`code-${index}`} className="article-code-block">
               <code>{block.code}</code>
             </pre>
+          )
+        }
+
+        if (block.type === 'table') {
+          const headerRow = block.rows[0] || []
+          const dataRows = block.rows.slice(1)
+          const aligns = block.aligns || []
+          return (
+            <div key={`table-${index}`} className="article-table-wrap">
+              <table className="article-table">
+                <thead>
+                  <tr>
+                    {headerRow.map((cell, i) => {
+                      const align = aligns[i] || 'left'
+                      return (
+                        <th key={`th-${i}`} style={{ textAlign: align }}>
+                          {renderInline(cell)}
+                        </th>
+                      )
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataRows.map((row, rowIndex) => (
+                    <tr key={`tr-${rowIndex}`}>
+                      {row.map((cell, i) => {
+                        const align = aligns[i] || 'left'
+                        return (
+                          <td key={`td-${rowIndex}-${i}`} style={{ textAlign: align }}>
+                            {renderInline(cell)}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )
         }
 
