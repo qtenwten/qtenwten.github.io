@@ -29,7 +29,7 @@ function ArticleToolCta({ cta }) {
 
   return (
     <section className="article-tool-cta">
-      <div>
+      <div className="article-tool-cta__content">
         <h2 className="article-tool-cta__title">{cta.title}</h2>
         <p className="article-tool-cta__text">{cta.text}</p>
       </div>
