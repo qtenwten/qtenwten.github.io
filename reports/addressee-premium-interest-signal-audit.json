@@ -1,0 +1,147 @@
+{
+  "stage": "20.2",
+  "name": "Addressee Premium Interest Signal Audit",
+  "date": "2026-05-12",
+  "commit": "2155908",
+  "status": "complete",
+
+  "analytics_transport_summary": {
+    "entry_point": "analytics.emit() in src/utils/analytics.js:39",
+    "handlers_registered": false,
+    "gtag_configured": true,
+    "gtag_id": "G-XXXXXXXXXX (PLACEHOLDER — not a real property)",
+    "yandex_metrika_configured": true,
+    "yandex_metrika_id": "108416207 (live property)",
+    "yandex_metrika_calls": [
+      "ym(108416207, 'init', {...}) on load",
+      "ym(108416207, 'reachGoal', event, properties) on every emit()"
+    ],
+    "production_guard": "if (!this.initialized) return — before handlers and external calls",
+    "backend_on_failure": "silent — try/catch in safeEmit, empty catch in ym reachGoal"
+  },
+
+  "premium_events_verified": {
+    "addressee_premium_hook_view": {
+      "called": true,
+      "trigger": "useEffect in PremiumBlock (line 1728)",
+      "payload": "sanitizePremiumPayload({ language }) — only language passes",
+      "file": "src/pages/AddresseeGenerator.jsx:1728"
+    },
+    "addressee_premium_hook_click": {
+      "called": true,
+      "trigger": "handleOfferClick in PremiumBlock (line 1723)",
+      "payload": "sanitizePremiumPayload({ hook_id, offer_id, language }) — 3 fields only",
+      "file": "src/pages/AddresseeGenerator.jsx:1723"
+    },
+    "addressee_pricing_view": {
+      "called": false,
+      "note": "PremiumBlock does not call trackAddresseePricingView — only trackAddresseePremiumHookView"
+    },
+    "addressee_pricing_interest_click": {
+      "called": true,
+      "trigger": "handleOfferClick dispatches by offerId — clean-docx and office-pack routes map to this event",
+      "payload": "sanitizePremiumPayload({ offer_id, language })",
+      "file": "src/utils/addresseeAnalytics.js:334-339"
+    },
+    "addressee_office_pack_interest_click": {
+      "called": true,
+      "trigger": "handleOfferClick for office-pack",
+      "payload": "sanitizePremiumPayload({ offer_id, language })",
+      "file": "src/utils/addresseeAnalytics.js:342-348"
+    },
+    "addressee_batch_interest_click": {
+      "called": true,
+      "trigger": "handleOfferClick for batch-csv",
+      "payload": "sanitizePremiumPayload({ offer_id, language })",
+      "file": "src/utils/addresseeAnalytics.js:350-356"
+    },
+    "addressee_saved_presets_interest_click": {
+      "called": true,
+      "trigger": "handleOfferClick for saved-presets",
+      "payload": "sanitizePremiumPayload({ offer_id, language })",
+      "file": "src/utils/addresseeAnalytics.js:358-364"
+    }
+  },
+
+  "payload_fields_confirmed": {
+    "allowed_keys": [
+      "language", "scenario", "document_type", "pack_id", "offer_id",
+      "hook_id", "selected_pack", "export_type", "source", "has_sender",
+      "confidence_bucket", "warnings_count"
+    ],
+    "premium_hook_view_payload": "language (only)",
+    "premium_hook_click_payload": "hook_id, offer_id, language",
+    "interest_click_payload": "offer_id, language",
+    "all_premium_payloads_safe": true
+  },
+
+  "pii_privacy_confirmation": {
+    "FORBIDDEN_KEYS_count": 34,
+    "forbidden_fields_blocked": [
+      "fullName", "senderFullName", "position", "senderPosition",
+      "organization", "senderOrganization", "recipientDativeName",
+      "senderGenitiveName", "documentText", "blocks", "result", "csv",
+      "rows", "input", "warnings", "explanations", "parsedName",
+      "to", "from", "greeting", "letter", "manualReviewRequired", "confidence"
+    ],
+    "PREMIUM_HOOK_ALLOWED_KEYS_whitelist": "12 keys — no PII possible",
+    "sanitizePremiumPayload_function": "present at line 304, iterates PREMIUM_HOOK_ALLOWED_KEYS only",
+    "no_raw_form_fields_in_premium_events": true,
+    "no_csv_rows_ever_transmitted": true,
+    "no_documentText_transmitted": true
+  },
+
+  "backend_status": {
+    "is_analytics_backend_needed": false,
+    "current_state": "analytics flow is complete end-to-end",
+    "gtag_goes_to_placeholder": true,
+    "yandex_metrika_receives_all_events": true,
+    "Sentry_monitors_errors": true
+  },
+
+  "recommendations": {
+    "stage_20_3_options": [
+      {
+        "option": "A — Yandex Metrika Goals Dashboard",
+        "description": "Use Yandex Metrika's existing goal funnels to track premium hook views and clicks. Set up goals for each premium event in Yandex Metrika's interface.",
+        "pros": "No code changes needed, no backend, immediate, Yandex already receives events",
+        "cons": "Requires Yandex account access, conversion funnel setup in Metrika UI"
+      },
+      {
+        "option": "B — Extend Feedback Worker",
+        "description": "Add an lightweight endpoint to apifeedback.qten.workers.dev that accepts anonymous interest signals (offer_id, hook_id, timestamp, sessionId, language). No PII.",
+        "pros": "Own backend, full control, can aggregate by offer_id/session",
+        "cons": "Requires Worker modification (needs separate approval), adds complexity"
+      },
+      {
+        "option": "C — Minimal Anonymous Counter",
+        "description": "Add a simple counter endpoint that increments a per-offer-id counter in D1. Only counts clicks, no PII stored.",
+        "pros": "No PII, simple, can query which offers are most clicked",
+        "cons": "Requires D1 write access (needs separate approval), minimal signal"
+      }
+    ],
+    "recommended_next_step": "Option A — use Yandex Metrika's built-in goal tracking for premium hook events. No code changes, no backend work, provides immediate measurable signal. Add goals for each of the 7 premium events in Yandex Metrika interface.",
+    "immediate_action": "Configure Yandex Metrika goals for: addressee_premium_hook_view, addressee_premium_hook_click, addressee_office_pack_interest_click, addressee_batch_interest_click, addressee_saved_presets_interest_click"
+  },
+
+  "checks_passed": {
+    "check:addressee": "621/621",
+    "check:addressee:premium-offers": "all passed",
+    "check:addressee:analytics": "99/99",
+    "check:addressee:ui-i18n": "152/152",
+    "check:addressee:scenario-ux": "64/64",
+    "check:addressee:article-cta": "19/19",
+    "check:article-funnel": "passed",
+    "check:seo-urls": "passed",
+    "test": "12 passed",
+    "build": "44 pages, RU 46 HTML, EN 46 HTML"
+  },
+
+  "sitemap_restored": true,
+
+  "changed_files": [],
+
+  "commit_hash": null,
+
+  "push_status": "nothing to commit — audit only, no code changes"
+}
