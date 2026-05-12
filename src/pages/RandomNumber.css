@@ -1413,13 +1413,13 @@
   }
 
   .picker-input-panel .duration-custom-input {
-    width: 48px;
-    padding: 0.45rem 0.4rem;
-    font-size: 0.7rem;
+    width: 80px;
+    padding: 0.45rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .numbers-controls .duration-custom-input {
-    width: 52px;
+    width: 80px;
     padding: 0.4rem 0.5rem;
     font-size: 0.75rem;
   }
