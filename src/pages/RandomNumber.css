@@ -1185,14 +1185,40 @@
 /* Responsive */
 @media (max-width: 768px) {
   .mode-tabs {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+    padding: 0.2rem;
   }
 
   .mode-tab {
-    justify-content: flex-start;
-    padding: 0.55rem 0.75rem;
-    font-size: 0.8125rem;
+    justify-content: center;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  .mode-tab svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .numbers-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+  }
+
+  .numbers-controls {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .numbers-preview {
+    width: 100%;
+    min-width: 0;
+    padding: 0.75rem;
   }
 
   .picker-layout {
@@ -1200,9 +1226,14 @@
     gap: 1rem;
   }
 
+  .picker-input-panel {
+    padding: 1rem;
+  }
+
   .picker-wheel-panel {
     position: static;
     order: -1;
+    padding: 1rem;
   }
 
   .wheel-wrapper {
@@ -1215,10 +1246,6 @@
     height: 280px;
   }
 
-  .numbers-row {
-    grid-template-columns: 1fr;
-  }
-
   .picker-result__winner {
     font-size: 1.25rem;
   }
@@ -1229,6 +1256,100 @@
 }
 
 @media (max-width: 480px) {
+  .random-number-hero__title {
+    font-size: 1.5rem;
+  }
+
+  .random-number-hero__subtitle {
+    font-size: 0.875rem;
+  }
+
+  .mode-tabs {
+    padding: 0.15rem;
+    border-radius: 8px;
+  }
+
+  .mode-tab {
+    padding: 0.45rem 0.25rem;
+    font-size: 0.7rem;
+  }
+
+  .mode-tab svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .numbers-controls {
+    padding: 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .numbers-controls .numbers-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .field input[type="text"],
+  .field input[type="number"] {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .unique-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .duration-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .duration-btns {
+    flex-wrap: wrap;
+  }
+
+  .picker-layout {
+    gap: 0.75rem;
+  }
+
+  .picker-input-panel {
+    padding: 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .picker-input-header h3 {
+    font-size: 0.875rem;
+  }
+
+  .items-list {
+    gap: 0.35rem;
+  }
+
+  .item-input {
+    height: 38px;
+    font-size: 0.875rem;
+    padding: 0 0.625rem;
+  }
+
+  .item-number {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+  }
+
+  .add-item-btn {
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
+    min-height: 34px;
+  }
+
+  .picker-wheel-panel {
+    padding: 0.875rem;
+  }
+
   .wheel-wrapper {
     width: 260px;
     height: 260px;
@@ -1244,13 +1365,36 @@
     height: 50px;
   }
 
-  .picker-wheel-panel {
-    padding: 1rem;
+  .wheel-center svg {
+    width: 20px;
+    height: 20px;
   }
 
   .spin-btn {
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
+  }
+
+  .picker-result {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .picker-result__winner {
+    font-size: 1.125rem;
+  }
+
+  .picker-result__chance {
+    font-size: 0.8125rem;
+  }
+
+  .picker-result__actions {
+    gap: 0.5rem;
+  }
+
+  .picker-result__actions button {
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8125rem;
   }
 
   .duration-btn {
@@ -1260,7 +1404,24 @@
   }
 
   .duration-custom-input {
-    width: 52px;
+    width: 60px;
+  }
+
+  .history-section {
+    padding: 0.75rem;
+  }
+
+  .history-section h4 {
+    font-size: 0.8125rem;
+  }
+
+  .remaining-counter {
+    font-size: 0.8125rem;
+  }
+
+  .reset-history-btn {
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
   }
 }
 

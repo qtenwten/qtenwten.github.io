@@ -1,3 +1,32 @@
+let isAudioUnlocked = false
+
+function unlockAudioOnInteraction() {
+  if (isAudioUnlocked || typeof window === 'undefined') return
+  isAudioUnlocked = true
+
+  const unlockContext = () => {
+    const AudioContextConstructor = window.AudioContext || window.webkitAudioContext
+    if (!AudioContextConstructor) return
+
+    try {
+      const tempContext = new AudioContextConstructor()
+      if (tempContext.state === 'suspended') {
+        tempContext.resume().catch(() => {})
+      }
+      tempContext.close().catch(() => {})
+    } catch {}
+  }
+
+  const events = ['touchstart', 'touchend', 'click', 'keydown']
+  events.forEach((event) => {
+    window.addEventListener(event, unlockContext, { once: true, passive: true })
+  })
+}
+
+if (typeof window !== 'undefined') {
+  unlockAudioOnInteraction()
+}
+
 const MIN_GAIN = 0.001
 
 function getDefaultAudioContextConstructor() {
@@ -35,7 +64,7 @@ export function createWheelAudioController({
     const context = ensureContext()
     if (!context) return null
 
-    if (context.state === 'suspended' && typeof context.resume === 'function') {
+    if (context.state === 'suspended') {
       if (!resumePromise) {
         resumePromise = context.resume().catch(() => null).finally(() => {
           resumePromise = null
@@ -43,6 +72,10 @@ export function createWheelAudioController({
       }
 
       await resumePromise
+    }
+
+    if (context.state === 'running') {
+      isAudioUnlocked = true
     }
 
     return context.state === 'running' ? context : null
@@ -55,8 +88,24 @@ export function createWheelAudioController({
     duration = 0.04,
     fadeDuration = duration,
   } = {}) => {
-    const context = await warmUp()
-    if (!context) return false
+    let context = await warmUp()
+    if (!context) {
+      const AudioContextConstructor = getAudioContextConstructor()
+      if (!AudioContextConstructor) return false
+
+      try {
+        context = new AudioContextConstructor()
+        if (context.state === 'suspended') {
+          await context.resume()
+        }
+      } catch {
+        return false
+      }
+    }
+
+    if (context.state !== 'running') {
+      return false
+    }
 
     try {
       const oscillator = context.createOscillator()
@@ -86,7 +135,6 @@ export function createWheelAudioController({
       try {
         await context.close()
       } catch {
-        // The browser can reject close during shutdown; there is nothing useful to surface.
       }
     }
   }
