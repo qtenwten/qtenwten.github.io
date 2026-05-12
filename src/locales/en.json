@@ -18,11 +18,11 @@
     "helpfulGuide": "Helpful Guide"
   },
   "cookie": {
-    "title": "Cookie notice",
-    "message": "This website uses cookies. By continuing to use the site, you agree to the terms.",
+    "title": "We use cookies",
+    "message": "They help the site run reliably and improve the service.",
     "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "accept": "Accept"
+    "privacy": "Learn more",
+    "accept": "Accept cookies"
   },
   "header": {
     "title": "Utility Tools",

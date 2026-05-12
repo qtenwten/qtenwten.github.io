@@ -20,11 +20,7 @@ function getInitialTheme() {
     return savedTheme
   }
 
-  if (typeof window !== 'undefined' && window.matchMedia) {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-
-  return 'light'
+  return 'dark'
 }
 
 export function ThemeProvider({ children }) {

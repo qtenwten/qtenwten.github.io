@@ -23,6 +23,14 @@ function CookieConsent() {
     }
   }, [])
 
+  useEffect(() => {
+    document.body.classList.toggle('has-cookie-consent', visible)
+
+    return () => {
+      document.body.classList.remove('has-cookie-consent')
+    }
+  }, [visible])
+
   const handleAccept = () => {
     localStorage.setItem(STORAGE_KEY, String(Date.now()))
     setVisible(false)
@@ -33,23 +41,24 @@ function CookieConsent() {
   }
 
   return (
-    <div className="cookie-consent" role="dialog" aria-label={t('cookie.title')}>
+    <div className="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-message">
       <div className="cookie-consent__container">
-        <p className="cookie-consent__text">
-          {t('cookie.message')}
-          <span className="cookie-consent__links">
-            <Link to={`/${language}/terms/`} className="cookie-consent__link" target="_blank" rel="noopener">
-              {t('cookie.terms')}
-            </Link>
-            <span className="cookie-consent__separator">·</span>
-            <Link to={`/${language}/privacy/`} className="cookie-consent__link" target="_blank" rel="noopener">
-              {t('cookie.privacy')}
-            </Link>
-          </span>
-        </p>
-        <button className="cookie-consent__button" onClick={handleAccept}>
-          {t('cookie.accept')}
-        </button>
+        <div className="cookie-consent__content">
+          <h2 className="cookie-consent__title" id="cookie-consent-title">
+            {t('cookie.title')}
+          </h2>
+          <p className="cookie-consent__text" id="cookie-consent-message">
+            {t('cookie.message')}
+          </p>
+        </div>
+        <div className="cookie-consent__actions">
+          <Link to={`/${language}/privacy/`} className="cookie-consent__link" target="_blank" rel="noopener">
+            {t('cookie.privacy')}
+          </Link>
+          <button className="cookie-consent__button" onClick={handleAccept}>
+            {t('cookie.accept')}
+          </button>
+        </div>
       </div>
     </div>
   )

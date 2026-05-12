@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#15171b" />
     <meta name="yandex-verification" content="5edd40b97e956d2c" />
     <meta name="yandex-verification" content="95543c43b65cc6c5" />
     <meta name="description" content="Бесплатные онлайн-инструменты: калькулятор НДС, сумма прописью, QR-коды, случайные числа, графический калькулятор, сокращатель ссылок и SEO-аудит сайта." />
@@ -78,19 +78,20 @@
       (function() {
         try {
           var savedTheme = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
           var resolvedTheme = savedTheme === 'dark' || savedTheme === 'light'
             ? savedTheme
-            : (prefersDark ? 'dark' : 'light');
+            : 'dark';
+          var themeColorMeta = document.querySelector('meta[name="theme-color"]');
           window.__QSEN_INITIAL_THEME__ = resolvedTheme;
           document.documentElement.setAttribute('data-theme', resolvedTheme);
           document.documentElement.setAttribute('data-theme-init', 'true');
+          themeColorMeta && themeColorMeta.setAttribute('content', resolvedTheme === 'dark' ? '#15171b' : '#ffffff');
           document.body && document.body.setAttribute('data-theme', resolvedTheme);
         } catch (e) {
-          window.__QSEN_INITIAL_THEME__ = 'light';
-          document.documentElement.setAttribute('data-theme', 'light');
+          window.__QSEN_INITIAL_THEME__ = 'dark';
+          document.documentElement.setAttribute('data-theme', 'dark');
           document.documentElement.setAttribute('data-theme-init', 'true');
-          document.body && document.body.setAttribute('data-theme', 'light');
+          document.body && document.body.setAttribute('data-theme', 'dark');
         }
 
         // Detect initial language from URL path
