@@ -762,8 +762,11 @@
     "min": "Минимум",
     "max": "Максимум",
     "count": "Количество чисел",
+    "countOf": "Всего чисел",
     "unique": "Без повторений",
     "wheel": "Колесо",
+    "slotMachine": "Барабан",
+    "slotColumns": "Колонок",
     "generate": "Сгенерировать",
     "clear": "Очистить",
     "modes": {
@@ -797,7 +800,13 @@
     },
     "numbers": {
       "previewPlaceholder": "Нажмите сгенерировать",
-      "result": "Результат"
+      "result": "Результат",
+      "winningNumbers": "Выпавшие числа",
+      "chanceLabel": "Шанс",
+      "chanceOfOne": "1 из {{total}}",
+      "probability": "Вероятность",
+      "singleChance": "Шанс каждого",
+      "comboChance": "Шанс комбинации"
     },
     "errors": {
       "INVALID_PARAMS": "Некорректные параметры",

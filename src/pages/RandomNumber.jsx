@@ -1,11 +1,12 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import SEO from '../components/SEO'
 import CopyButton from '../components/CopyButton'
 import RelatedTools from '../components/RelatedTools'
 import Icon from '../components/Icon'
 import ToolDescriptionSection, { ToolFaq } from '../components/ToolDescriptionSection'
+import { CustomSelect } from '../components/CustomSelect'
 import {
   ToolHelp,
 } from '../components/ToolPageShell'
@@ -17,6 +18,7 @@ import {
   getWheelSelectionState,
 } from '../utils/randomGenerator'
 import { createWheelAudioController } from '../utils/wheelAudio'
+import { getSlotAudioController, closeSlotAudioController } from '../utils/slotAudio'
 import { filterNumberInput, handleNumberKeyDown } from '../utils/numberInput'
 import { safeGetItem, safeSetItem, safeRemoveItem, safeParseJSON } from '../utils/storage'
 import './RandomNumber.css'
@@ -140,6 +142,227 @@ class ConfettiSystem {
     }
 }
   }
+
+const SLOT_ITEM_HEIGHT = 72
+const SLOT_VISIBLE_ROWS = 3
+const SLOT_FAKE_ITEMS_COUNT = 36
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function createReelItems(min, max, finalValue) {
+  const range = max - min + 1
+  const fakeItems = Array.from({ length: SLOT_FAKE_ITEMS_COUNT }, () => {
+    return getRandomInt(min, max)
+  })
+  let nextPreviewValue = getRandomInt(min, max)
+  if (range > 1) {
+    while (nextPreviewValue === finalValue) {
+      nextPreviewValue = getRandomInt(min, max)
+    }
+  }
+  return [...fakeItems, finalValue, nextPreviewValue]
+}
+
+function SlotMachine({ reels, started, durationMs, trackRefs }) {
+  if (!reels.length) {
+    return (
+      <div className="random-slot-machine" style={{ '--slot-columns': 1 }}>
+        <SlotReelPlaceholder />
+        <div className="random-slot-marker-left" />
+        <div className="random-slot-marker-right" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="random-slot-machine" style={{ '--slot-columns': reels.length }}>
+      {reels.map((reel, index) => (
+        <SlotReel
+          key={reel.id}
+          items={reel.items}
+          started={started}
+          delay={index * 140}
+          durationMs={durationMs}
+          trackRef={(el) => {
+            if (trackRefs && trackRefs.current) {
+              trackRefs.current[index] = el
+            }
+          }}
+        />
+      ))}
+      <div className="random-slot-marker-left" />
+      <div className="random-slot-marker-right" />
+    </div>
+  )
+}
+
+function SlotReelPlaceholder() {
+  return (
+    <div className="random-slot-reel">
+      <div className="random-slot-track random-slot-track-placeholder">
+        {[...Array(SLOT_VISIBLE_ROWS)].map((_, i) => (
+          <div className="random-slot-item random-slot-item-placeholder" key={i}>
+            {i === 1 ? '—' : ''}
+          </div>
+        ))}
+      </div>
+      <div className="random-slot-center-highlight" />
+    </div>
+  )
+}
+
+function SlotReel({ items, started, delay, durationMs, trackRef }) {
+  const finalIndex = items.length - 2
+  const centerRow = Math.floor(SLOT_VISIBLE_ROWS / 2)
+  const translateY = -((finalIndex - centerRow) * SLOT_ITEM_HEIGHT)
+
+  return (
+    <div className="random-slot-reel">
+      <div
+        ref={trackRef}
+        className={`random-slot-track ${started ? 'is-spinning' : ''}`}
+        style={{
+          transform: `translateY(${started ? translateY : 0}px)`,
+          transitionDelay: `${delay}ms`,
+          transitionDuration: `${durationMs}ms`,
+        }}
+      >
+        {items.map((item, index) => (
+          <div
+            className={`random-slot-item ${index === finalIndex ? 'is-final' : ''}`}
+            key={`${item}-${index}`}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+
+      <div className="random-slot-center-highlight" />
+    </div>
+  )
+}
+
+function calculateSlotChance(min, max, columns, unique) {
+  const rangeSize = max - min + 1
+  if (rangeSize <= 0) return { chanceText: '—', probabilityText: '—' }
+
+  const formatter = new Intl.NumberFormat()
+
+  if (unique && columns <= rangeSize) {
+    let total = 1
+    for (let i = 0; i < columns; i++) {
+      total *= rangeSize - i
+    }
+    return {
+      chanceText: `1 / ${formatter.format(total)}`,
+      probabilityText: probabilityToText(100 / total),
+    }
+  }
+
+  const totalCombinations = Math.pow(rangeSize, columns)
+  const chanceText = `1 / ${formatter.format(totalCombinations)}`
+
+  return {
+    chanceText,
+    probabilityText: probabilityToText((1 / totalCombinations) * 100),
+  }
+}
+
+function probabilityToText(probability) {
+  if (probability < 0.000001) {
+    return '< 0.000001%'
+  }
+  if (probability < 1) {
+    return `${Number(probability.toPrecision(4))}%`
+  }
+  return `${probability.toFixed(2)}%`
+}
+
+function calculateNormalChance(min, max, count, unique) {
+  const rangeSize = max - min + 1
+  if (rangeSize <= 0) return null
+
+  const formatter = new Intl.NumberFormat()
+  const singleChanceText = `1 / ${formatter.format(rangeSize)}`
+  const singleProbability = probabilityToText(100 / rangeSize)
+
+  if (count <= 1) {
+    return {
+      singleChanceText,
+      singleProbability,
+      comboChanceText: null,
+      comboProbabilityText: null,
+    }
+  }
+
+  let totalCombinations
+  if (unique) {
+    totalCombinations = 1
+    for (let i = 0; i < count; i++) {
+      totalCombinations *= rangeSize - i
+    }
+  } else {
+    totalCombinations = Math.pow(rangeSize, count)
+  }
+
+  return {
+    singleChanceText,
+    singleProbability,
+    comboChanceText: `1 / ${formatter.format(totalCombinations)}`,
+    comboProbabilityText: probabilityToText((1 / totalCombinations) * 100),
+  }
+}
+
+function SlotResultBlock({ reels, min, max, unique, language, t }) {
+  if (!reels || reels.length === 0) return null
+
+  const winningNumbers = reels.map((reel) => reel.result)
+  const columns = reels.length
+  const { chanceText, probabilityText } = calculateSlotChance(min, max, columns, unique)
+
+  const numbersDisplay = winningNumbers.length === 1
+    ? String(winningNumbers[0])
+    : winningNumbers.join(', ')
+
+  return (
+    <div className="slot-result-block">
+      <div className="slot-result-label">{t('randomNumber.numbers.winningNumbers')}</div>
+      <div className="slot-result-value">{numbersDisplay}</div>
+      <div className="slot-result-chance">
+        <span className="slot-result-chance-label">{t('randomNumber.numbers.chanceLabel')}: </span>
+        <span className="slot-result-chance-value">{chanceText}</span>
+        <span className="slot-result-chance-separator"> · </span>
+        <span className="slot-result-chance-probability">{probabilityText}</span>
+      </div>
+    </div>
+  )
+}
+
+function NormalResultChance({ min, max, count, unique, t }) {
+  const chance = calculateNormalChance(min, max, count, unique)
+  if (!chance) return null
+
+  return (
+    <div className="normal-result-chance">
+      <div className="normal-chance-row">
+        <span className="normal-chance-label">{t('randomNumber.numbers.singleChance')}:</span>
+        <span className="normal-chance-value">{chance.singleChanceText}</span>
+        <span className="normal-chance-sep"> · </span>
+        <span className="normal-chance-prob">{chance.singleProbability}</span>
+      </div>
+      {chance.comboChanceText && (
+        <div className="normal-chance-row">
+          <span className="normal-chance-label">{t('randomNumber.numbers.comboChance')}:</span>
+          <span className="normal-chance-value">{chance.comboChanceText}</span>
+          <span className="normal-chance-sep"> · </span>
+          <span className="normal-chance-prob">{chance.comboProbabilityText}</span>
+        </div>
+      )}
+    </div>
+  )
+}
 
   function WheelWithSpin({ items, result, onSpinEnd, soundEnabled, duration, placeholder, getAudioController, t }) {
     const [isSpinning, setIsSpinning] = useState(false)
@@ -681,6 +904,7 @@ function RandomNumber() {
   const { t, language } = useLanguage()
   const { mode: urlMode } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const validModes = ['numbers', 'picker', 'sequence']
   const [mode, setMode] = useState(urlMode && validModes.includes(urlMode) ? urlMode : 'numbers')
 
@@ -701,6 +925,31 @@ function RandomNumber() {
   const [history, setHistory] = useState([])
   const [excludeChosen, setExcludeChosen] = useState(true)
   const [wheelItemsSnapshot, setWheelItemsSnapshot] = useState(null)
+
+  const [slotColumns, setSlotColumns] = useState(1)
+  const [slotReels, setSlotReels] = useState([])
+  const [slotSpinning, setSlotSpinning] = useState(false)
+  const [slotStarted, setSlotStarted] = useState(false)
+  const [slotReelDurationMs, setSlotReelDurationMs] = useState(1800)
+  const [isMobile, setIsMobile] = useState(false)
+
+  const slotTrackRefs = useRef([])
+  const slotTickObserverRef = useRef(null)
+  const slotLastStepsRef = useRef([])
+
+  const isMainRandomNumberPage = /\/random-number\/?$/.test(location.pathname)
+  const shouldShowSlotMachine = isMainRandomNumberPage && wheelEnabled
+  const shouldShowClassicWheel = !isMainRandomNumberPage && wheelEnabled
+  const effectiveSlotColumns = isMobile ? 1 : Math.min(3, Math.max(1, slotColumns))
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 640)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const confettiCanvasRef = useRef(null)
   const confettiRef = useRef(null)
@@ -744,10 +993,147 @@ function RandomNumber() {
       if (audioControllerRef.current) {
         void audioControllerRef.current.close()
       }
+      closeSlotAudioController()
     }
   }, [])
 
+  const runSlotMachine = () => {
+    if (slotSpinning) return
+
+    if (slotTickObserverRef.current) {
+      cancelAnimationFrame(slotTickObserverRef.current)
+      slotTickObserverRef.current = null
+    }
+
+    const minNumber = Number(min)
+    const maxNumber = Number(max)
+    const columns = effectiveSlotColumns
+
+    const selectedDurationMs = finalDuration * 1000
+    const columnDelayMs = 140
+    const maxColumnDelayMs = columnDelayMs * (columns - 1)
+    const reelDurationMs = Math.max(600, selectedDurationMs - maxColumnDelayMs)
+    const totalSpinMs = selectedDurationMs
+
+    const nextReels = Array.from({ length: columns }, (_, index) => {
+      const result = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber
+      return {
+        id: `${Date.now()}-${index}`,
+        result,
+        items: createReelItems(minNumber, maxNumber, result),
+      }
+    })
+
+    slotTrackRefs.current = new Array(columns).fill(null)
+    slotLastStepsRef.current = new Array(columns).fill(-1)
+
+    setSlotSpinning(true)
+    setSlotStarted(false)
+    setSlotReelDurationMs(reelDurationMs)
+    setSlotReels(nextReels)
+
+    if (soundEnabled) {
+      void getSlotAudioController().warmUp()
+    }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setSlotStarted(true)
+
+        if (soundEnabled) {
+          startSlotTickObserver({
+            trackRefs: slotTrackRefs.current,
+            itemHeight: SLOT_ITEM_HEIGHT,
+            totalDurationMs: totalSpinMs,
+            columnDelayMs,
+            audioController: getSlotAudioController(),
+          })
+        }
+
+        slotTickObserverRef.current = window.setTimeout(() => {
+          if (slotTickObserverRef.current) {
+            cancelAnimationFrame(slotTickObserverRef.current)
+            slotTickObserverRef.current = null
+          }
+          if (soundEnabled) {
+            void getSlotAudioController().playFinalClick()
+          }
+          setSlotSpinning(false)
+          const results = nextReels.map((reel) => reel.result)
+          setResult(results.length === 1 ? results : results)
+          safeSetItem('randomNumber', JSON.stringify({ min, max, count, unique }))
+        }, totalSpinMs)
+      })
+    })
+  }
+
+  const startSlotTickObserver = ({ trackRefs, itemHeight, totalDurationMs, columnDelayMs, audioController }) => {
+    let lastTickTime = 0
+    const minTickInterval = 30
+
+    const parseTranslateY = (transformValue) => {
+      if (!transformValue || transformValue === 'none') return 0
+      const match = transformValue.match(/matrix(?:3d)?\(([^)]+)\)/)
+      if (!match) return 0
+      const values = match[1].split(', ')
+      if (values.length >= 6) {
+        return parseFloat(values[5]) || 0
+      }
+      return 0
+    }
+
+    const tick = () => {
+      const now = performance.now()
+      if (now - lastTickTime < minTickInterval) return
+      lastTickTime = now
+      audioController.playTick()
+    }
+
+    let animationId = null
+    const animate = () => {
+      let anyMoving = false
+
+      for (let i = 0; i < trackRefs.length; i++) {
+        const track = trackRefs[i]
+        if (!track) continue
+
+        const transform = window.getComputedStyle(track).transform
+        const currentY = parseTranslateY(transform)
+        const step = Math.floor(Math.abs(currentY) / itemHeight)
+
+        if (step !== slotLastStepsRef.current[i]) {
+          slotLastStepsRef.current[i] = step
+          tick()
+          anyMoving = true
+        }
+
+        if (!track.classList.contains('is-spinning')) continue
+        const delay = i * columnDelayMs
+        const elapsed = performance.now() - startTime - delay
+        if (elapsed < 0) continue
+        if (elapsed < totalDurationMs) {
+          anyMoving = true
+        }
+      }
+
+      if (anyMoving) {
+        animationId = requestAnimationFrame(animate)
+        slotTickObserverRef.current = animationId
+      }
+    }
+
+    const startTime = performance.now()
+    animationId = requestAnimationFrame(animate)
+    slotTickObserverRef.current = animationId
+  }
+
+
   const handleGenerate = () => {
+    if (shouldShowSlotMachine) {
+      runSlotMachine()
+      return
+    }
+
     const res = generateRandomNumbers(min, max, count, unique)
     if (res.error) {
       setError(t('randomNumber.errors.' + res.error))
@@ -1013,37 +1399,55 @@ function RandomNumber() {
                 </div>
               </div>
 
-              <div className="field">
-                <label htmlFor="count">{t('randomNumber.count')}</label>
-                <input
-                  id="count"
-                  type="text"
-                  value={count}
-                  onChange={(e) => setCount(filterNumberInput(e.target.value))}
-                  onKeyDown={handleNumberKeyDown}
-                  placeholder="1"
-                />
-              </div>
+              {!shouldShowSlotMachine && (
+                <div className="field">
+                  <label htmlFor="count">{t('randomNumber.count')}</label>
+                  <input
+                    id="count"
+                    type="text"
+                    value={count}
+                    onChange={(e) => setCount(filterNumberInput(e.target.value))}
+                    onKeyDown={handleNumberKeyDown}
+                    placeholder="1"
+                  />
+                </div>
+              )}
 
-              <div className="field unique-row">
-                <label className="field-checkbox">
+              <div className="unique-row">
+                <label className="numbers-option-card">
                   <input
                     id="unique"
                     type="checkbox"
                     checked={unique}
                     onChange={(e) => setUnique(e.target.checked)}
                   />
-                  {t('randomNumber.unique')}
+                  <span>{t('randomNumber.unique')}</span>
                 </label>
-                <label className="field-checkbox">
+                <label className="numbers-option-card">
                   <input
                     id="wheelEnabled"
                     type="checkbox"
                     checked={wheelEnabled}
                     onChange={(e) => setWheelEnabled(e.target.checked)}
                   />
-                  {t('randomNumber.wheel')}
+                  <span>{isMainRandomNumberPage ? t('randomNumber.slotMachine') : t('randomNumber.wheel')}</span>
                 </label>
+                {isMainRandomNumberPage && wheelEnabled && (
+                  <div className="slot-reels-control">
+                    <span className="slot-reels-label">{t('randomNumber.slotColumns')}</span>
+                    <CustomSelect
+                      value={slotColumns}
+                      onChange={(e) => setSlotColumns(Number(e.target.value))}
+                      disabled={slotSpinning}
+                      options={[
+                        { value: 1, label: '1' },
+                        { value: 2, label: '2' },
+                        { value: 3, label: '3' },
+                      ]}
+                      aria-label={t('randomNumber.slotColumns')}
+                    />
+                  </div>
+                )}
               </div>
 
               {wheelEnabled && (
@@ -1088,10 +1492,31 @@ function RandomNumber() {
                   </button>
                 </div>
               )}
+              {shouldShowSlotMachine && (
+                <div className="btn-group">
+                  <button onClick={handleGenerate} className="primary" disabled={slotSpinning}>
+                    {slotSpinning ? t('randomNumber.picker.spinning') : t('randomNumber.generate')}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="numbers-preview">
-              {wheelEnabled ? (
+              {shouldShowSlotMachine ? (
+                <>
+                  <SlotMachine reels={slotReels} started={slotStarted} durationMs={slotReelDurationMs} trackRefs={slotTrackRefs} />
+                  {!slotSpinning && slotReels.length > 0 && (
+                    <SlotResultBlock
+                      reels={slotReels}
+                      min={parseInt(min) || 1}
+                      max={parseInt(max) || 100}
+                      unique={unique}
+                      language={language}
+                      t={t}
+                    />
+                  )}
+                </>
+              ) : wheelEnabled ? (
                 <div className="numbers-preview-wheel">
                   <WheelWithSpin
                     items={(() => {
@@ -1122,7 +1547,23 @@ function RandomNumber() {
               ) : (
                 <div className="numbers-simple-result">
                   <div className="numbers-simple-label">{t('randomNumber.numbers.result')}</div>
-                  <div className="numbers-simple-value">{result ? result[0] : '—'}</div>
+                  <div className="numbers-simple-value">
+                    {result && result.length === 1 ? result[0] : (result ? result.join(', ') : '—')}
+                  </div>
+                  {result && result.length > 1 && (
+                    <div className="numbers-preview-count">
+                      {t('randomNumber.countOf')} {result.length}
+                    </div>
+                  )}
+                  {result && !shouldShowSlotMachine && (
+                    <NormalResultChance
+                      min={parseInt(min) || 1}
+                      max={parseInt(max) || 100}
+                      count={result.length}
+                      unique={unique}
+                      t={t}
+                    />
+                  )}
                 </div>
               )}
             </div>
