@@ -28,6 +28,7 @@
     "check:addressee:ui-i18n": "node scripts/check-addressee-ui-i18n.cjs",
     "check:addressee:article-cta": "node scripts/check-addressee-article-cta.cjs",
     "check:addressee:docx-premium-layout": "node scripts/check-addressee-docx-premium-layout.mjs",
+    "check:addressee:premium-offers": "node scripts/check-addressee-premium-offers.cjs",
     "check:addressee:launch-polish": "node scripts/check-addressee-launch-polish.cjs",
     "check:seo-urls": "node scripts/check-seo-url-consistency.cjs",
     "check:article-funnel": "node scripts/check-article-funnel.cjs",

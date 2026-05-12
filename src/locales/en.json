@@ -1604,6 +1604,41 @@
     "exportNote": "CSV, TXT, HTML and DOCX exports are now available.",
     "exportPremiumHint": "DOCX template download may become available with an expanded plan.",
     "freeForeverNotice": "Copy is free and unlimited.",
+    "premium": {
+      "blockTitle": "Extended Features",
+      "blockSubtitle": "For office and mass mailings",
+      "offers": {
+        "cleanDocx": {
+          "title": "Clean DOCX for Print",
+          "description": "Neat DOCX template with To, From and Salutation blocks — ready to print.",
+          "features": "No extra elements",
+          "cta": "Interested",
+          "badge": "Coming Soon"
+        },
+        "officePack": {
+          "title": "Office Pack",
+          "description": "Ready templates for typical situations: application, complaint, memo.",
+          "features": "5 ready templates",
+          "cta": "I Want This",
+          "badge": "Coming Soon"
+        },
+        "batchCsv": {
+          "title": "Batch CSV Processing",
+          "description": "Process large lists without limits. Upload CSV with unlimited rows.",
+          "features": "No row limit",
+          "cta": "Notify Me",
+          "badge": "Coming Soon"
+        },
+        "savedPresets": {
+          "title": "Saved Templates",
+          "description": "Save ready To and From blocks for quick access in future documents.",
+          "features": "No limit on number",
+          "cta": "Interested",
+          "badge": "Coming Soon"
+        }
+      },
+      "interestNoted": "Interest noted"
+    },
     "statusMessages": {
       "resultGenerated": "Result generated.",
       "copied": "Result copied.",

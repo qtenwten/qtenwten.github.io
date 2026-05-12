@@ -1722,8 +1722,109 @@
 
   .addr-gen-btn--edit,
   .addr-gen-btn--save,
-  .addr-gen-btn--cancel {
+.addr-gen-btn--cancel {
     width: auto;
     min-height: 32px;
+  }
+}
+
+.addr-gen-premium-block {
+  margin-top: 1.25rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--addr-gen-inner-radius);
+  background: var(--bg-elevated);
+}
+
+.addr-gen-premium-header {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.addr-gen-premium-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.addr-gen-premium-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.addr-gen-premium-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-page);
+}
+
+.addr-gen-premium-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.addr-gen-premium-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.addr-gen-premium-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.addr-gen-premium-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.addr-gen-premium-card-features {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.addr-gen-btn--premium {
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.addr-gen-btn--premium:hover:not(:disabled) {
+  background: rgba(var(--primary-rgb), 0.18);
+}
+
+.addr-gen-btn--premium-soon {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .addr-gen-premium-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -17,6 +17,13 @@ export const ADDRESSEE_ANALYTICS_EVENTS = {
   PACK_VIEW: 'addressee_pack_view',
   PACK_SELECT: 'addressee_pack_select',
   LANGUAGE_SWITCH: 'addressee_language_switch',
+  PREMIUM_HOOK_VIEW: 'addressee_premium_hook_view',
+  PREMIUM_HOOK_CLICK: 'addressee_premium_hook_click',
+  PRICING_VIEW: 'addressee_pricing_view',
+  PRICING_INTEREST_CLICK: 'addressee_pricing_interest_click',
+  OFFICE_PACK_INTEREST_CLICK: 'addressee_office_pack_interest_click',
+  BATCH_INTEREST_CLICK: 'addressee_batch_interest_click',
+  SAVED_PRESETS_INTEREST_CLICK: 'addressee_saved_presets_interest_click',
 }
 
 const FORBIDDEN_KEYS = [
@@ -277,4 +284,81 @@ export function trackAddresseeLanguageSwitch(newLanguage, extra = {}) {
   }
   lastLanguage = newLanguage
   safeEmit(ADDRESSEE_ANALYTICS_EVENTS.LANGUAGE_SWITCH, payload)
+}
+
+const PREMIUM_HOOK_ALLOWED_KEYS = [
+  'language',
+  'scenario',
+  'document_type',
+  'pack_id',
+  'offer_id',
+  'hook_id',
+  'selected_pack',
+  'export_type',
+  'source',
+  'has_sender',
+  'confidence_bucket',
+  'warnings_count',
+]
+
+function sanitizePremiumPayload(input) {
+  if (!input || typeof input !== 'object') return {}
+  const sanitized = {}
+  for (const key of PREMIUM_HOOK_ALLOWED_KEYS) {
+    if (key in input && input[key] !== undefined && input[key] !== null) {
+      sanitized[key] = input[key]
+    }
+  }
+  return sanitized
+}
+
+export function trackAddresseePremiumHookView(extra = {}) {
+  const payload = sanitizePremiumPayload(extra)
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_HOOK_VIEW, payload)
+}
+
+export function trackAddresseePremiumHookClick(hookId, offerId, extra = {}) {
+  const payload = sanitizePremiumPayload({
+    hook_id: hookId,
+    offer_id: offerId,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PREMIUM_HOOK_CLICK, payload)
+}
+
+export function trackAddresseePricingView(extra = {}) {
+  const payload = sanitizePremiumPayload(extra)
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PRICING_VIEW, payload)
+}
+
+export function trackAddresseePricingInterestClick(offerId, extra = {}) {
+  const payload = sanitizePremiumPayload({
+    offer_id: offerId,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.PRICING_INTEREST_CLICK, payload)
+}
+
+export function trackAddresseeOfficePackInterestClick(offerId, extra = {}) {
+  const payload = sanitizePremiumPayload({
+    offer_id: offerId,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.OFFICE_PACK_INTEREST_CLICK, payload)
+}
+
+export function trackAddresseeBatchInterestClick(offerId, extra = {}) {
+  const payload = sanitizePremiumPayload({
+    offer_id: offerId,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.BATCH_INTEREST_CLICK, payload)
+}
+
+export function trackAddresseeSavedPresetsInterestClick(offerId, extra = {}) {
+  const payload = sanitizePremiumPayload({
+    offer_id: offerId,
+    ...extra,
+  })
+  safeEmit(ADDRESSEE_ANALYTICS_EVENTS.SAVED_PRESETS_INTEREST_CLICK, payload)
 }

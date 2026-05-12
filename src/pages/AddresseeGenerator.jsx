@@ -80,7 +80,10 @@ import {
   trackAddresseePackView,
   trackAddresseePackSelect,
   trackAddresseeLanguageSwitch,
+  trackAddresseePremiumHookView,
+  trackAddresseePremiumHookClick,
 } from '../utils/addresseeAnalytics'
+import { PREMIUM_OFFERS, OFFER_STATUS } from '../utils/addresseePremiumOffers'
 import { ADDRESSEE_DOC_PACKS, getDocPack } from '../utils/addresseeDocxPacks'
 import {
   GENDER_MALE,
@@ -1672,6 +1675,7 @@ const handleCopyAll = useCallback(async () => {
                 </div>
                 <p className="addr-gen-export-note">{t('addresseeGenerator.exportNote')}</p>
                 <p className="addr-gen-export-premium-hint">{t('addresseeGenerator.exportPremiumHint')}</p>
+                <PremiumBlock />
               </div>
             )}
           </ToolResult>
@@ -1708,6 +1712,67 @@ const handleCopyAll = useCallback(async () => {
         </ToolRelated>
       </ToolPageShell>
     </>
+  )
+}
+
+function PremiumBlock() {
+  const { t, language } = useLanguage()
+  const [clickedOffer, setClickedOffer] = useState(null)
+
+  const handleOfferClick = useCallback((offerId, hookId) => {
+    trackAddresseePremiumHookClick(hookId, offerId, { language })
+    setClickedOffer(offerId)
+  }, [language])
+
+  const handleBlockView = useCallback(() => {
+    trackAddresseePremiumHookView({ language })
+  }, [language])
+
+  useEffect(() => {
+    handleBlockView()
+  }, [handleBlockView])
+
+  useEffect(() => {
+    if (clickedOffer) {
+      const timer = setTimeout(() => setClickedOffer(null), 2500)
+      return () => clearTimeout(timer)
+    }
+  }, [clickedOffer])
+
+  const visibleOffers = PREMIUM_OFFERS.slice(0, 3)
+
+  return (
+    <section className="addr-gen-premium-block" aria-label={t('addresseeGenerator.premium.blockTitle')}>
+      <div className="addr-gen-premium-header">
+        <span className="addr-gen-panel-kicker">{t('addresseeGenerator.premium.blockTitle')}</span>
+        <h3 className="addr-gen-premium-title">{t('addresseeGenerator.premium.blockSubtitle')}</h3>
+      </div>
+      <div className="addr-gen-premium-grid">
+        {visibleOffers.map((offer) => {
+          const isComingSoon = offer.status === OFFER_STATUS.COMING_SOON
+          const isClicked = clickedOffer === offer.id
+          return (
+            <div key={offer.id} className="addr-gen-premium-card">
+              <div className="addr-gen-premium-card-top">
+                <span className="addr-gen-premium-card-title">{t(offer.titleKey)}</span>
+                {isComingSoon && (
+                  <span className="addr-gen-premium-badge">{t(offer.badgeLabelKey)}</span>
+                )}
+              </div>
+              <p className="addr-gen-premium-card-desc">{t(offer.descriptionKey)}</p>
+              <p className="addr-gen-premium-card-features">{t(offer.featuresKey)}</p>
+              <button
+                type="button"
+                className={`addr-gen-btn addr-gen-btn--premium${isComingSoon ? ' addr-gen-btn--premium-soon' : ''}`}
+                onClick={() => handleOfferClick(offer.id, offer.id)}
+              >
+                {isClicked ? t('addresseeGenerator.premium.interestNoted') : t(offer.ctaLabelKey)}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    </section>
   )
 }
 
