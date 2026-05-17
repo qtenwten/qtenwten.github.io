@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+  schedule:
+    # 06:45 UTC = 09:45 Europe/Moscow. This refreshes article prerender after
+    # the daily 09:00 publishing agent updates Cloudflare D1.
+    - cron: '45 6 * * *'
 
 permissions:
   contents: read
