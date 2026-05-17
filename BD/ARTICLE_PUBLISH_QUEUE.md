@@ -62,6 +62,24 @@ Rules:
 - Do not use `BD/content-staging/` for the GitHub queue.
 - Do not touch `gh-pages`.
 
+## Small test batch
+
+For a one-time publishing smoke test, use a directory whose name starts with
+`test-`:
+
+```text
+BD/article-publish-queue/test-YYYY-MM-DD-short-topic/
+```
+
+Test batches must contain exactly:
+
+- 1 RU JSON article
+- 1 EN JSON article
+- 1 RU/EN pair with one shared `translation_key`
+
+The GitHub Actions workflow detects `test-*` directories and validates them as
+1 RU + 1 EN. Normal `daily-*` directories are still validated as 3 RU + 3 EN.
+
 ## Manual test command
 
 The queue uses the same validator/publisher:

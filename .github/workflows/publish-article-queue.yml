@@ -109,7 +109,12 @@ jobs:
           printf '%s\n' "$BATCH_DIRS" | while IFS= read -r batch_dir; do
             [ -n "$batch_dir" ] || continue
             echo "::group::Publishing $batch_dir"
-            node scripts/article-agent/publish-daily-batch.mjs --dir "$batch_dir" --publish --skip-existing
+            batch_name="$(basename "$batch_dir")"
+            if [[ "$batch_name" == test-* ]]; then
+              node scripts/article-agent/publish-daily-batch.mjs --dir "$batch_dir" --publish --skip-existing --expect-ru 1 --expect-en 1
+            else
+              node scripts/article-agent/publish-daily-batch.mjs --dir "$batch_dir" --publish --skip-existing
+            fi
             echo "::endgroup::"
           done
 
