@@ -70,13 +70,19 @@ jobs:
           fi
 
           if [ ! -s /tmp/qsen-article-batches.txt ]; then
-            echo "No article queue batches found." >&2
-            exit 1
+            echo "No article queue batches found. Nothing to publish."
+            echo "has_batches=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "dirs<<EOF"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           echo "Resolved batches:"
           cat /tmp/qsen-article-batches.txt
 
+          echo "has_batches=true" >> "$GITHUB_OUTPUT"
           {
             echo "dirs<<EOF"
             cat /tmp/qsen-article-batches.txt
@@ -84,6 +90,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish queued batches
+        if: steps.batches.outputs.has_batches == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -103,19 +110,24 @@ jobs:
           EOF
 
       - name: Build
+        if: steps.batches.outputs.has_batches == 'true'
         run: npm run build
 
       - name: Verify article HTML files
+        if: steps.batches.outputs.has_batches == 'true'
         run: npm run verify:articles-html
 
       - name: Setup Pages
+        if: steps.batches.outputs.has_batches == 'true'
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
+        if: steps.batches.outputs.has_batches == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
       - name: Deploy to GitHub Pages
+        if: steps.batches.outputs.has_batches == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
