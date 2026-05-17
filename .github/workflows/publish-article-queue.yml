@@ -66,7 +66,11 @@ jobs:
             fi
             printf '%s\n' "$INPUT_BATCH_DIR" > /tmp/qsen-article-batches.txt
           else
-            find BD/article-publish-queue -mindepth 1 -maxdepth 1 -type d | sort > /tmp/qsen-article-batches.txt
+            if [ -d BD/article-publish-queue ]; then
+              find BD/article-publish-queue -mindepth 1 -maxdepth 1 -type d | sort > /tmp/qsen-article-batches.txt
+            else
+              : > /tmp/qsen-article-batches.txt
+            fi
           fi
 
           if [ ! -s /tmp/qsen-article-batches.txt ]; then
@@ -92,6 +96,8 @@ jobs:
       - name: Publish queued batches
         if: steps.batches.outputs.has_batches == 'true'
         shell: bash
+        env:
+          BATCH_DIRS: ${{ steps.batches.outputs.dirs }}
         run: |
           set -euo pipefail
 
@@ -100,14 +106,12 @@ jobs:
             exit 1
           fi
 
-          while IFS= read -r batch_dir; do
+          printf '%s\n' "$BATCH_DIRS" | while IFS= read -r batch_dir; do
             [ -n "$batch_dir" ] || continue
             echo "::group::Publishing $batch_dir"
             node scripts/article-agent/publish-daily-batch.mjs --dir "$batch_dir" --publish --skip-existing
             echo "::endgroup::"
-          done <<'EOF'
-          ${{ steps.batches.outputs.dirs }}
-          EOF
+          done
 
       - name: Build
         if: steps.batches.outputs.has_batches == 'true'
