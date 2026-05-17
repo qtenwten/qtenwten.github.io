@@ -27,6 +27,8 @@ deploys GitHub Pages from `main`.
 
 ## Daily batch rules
 
+All article text must follow `BD/ARTICLE_EDITORIAL_STANDARD.md`.
+
 Each queue directory must contain exactly:
 
 - 3 RU JSON articles
@@ -103,9 +105,17 @@ Tell the agent:
 
 ```text
 Use fresh main only.
-Read BD/ARTICLE_PUBLISH_QUEUE.md and BD/DAILY_ARTICLE_AUTOMATION.md.
+Read BD/ARTICLE_PUBLISH_QUEUE.md, BD/DAILY_ARTICLE_AUTOMATION.md, and BD/ARTICLE_EDITORIAL_STANDARD.md.
 Create exactly 3 RU + 3 EN articles in BD/article-publish-queue/daily-YYYY-MM-DD/.
 Commit and push those JSON files to main.
 Do not touch BD/content-staging, BD/article-publisher.env, or gh-pages.
 Do not ask for ARTICLE_ADMIN_TOKEN; GitHub Actions owns publishing secrets.
 ```
+
+## Fully automated daily mode
+
+The queue is only for external agents that need to commit prepared JSON files.
+For hands-off publishing, `.github/workflows/daily-article-agent.yml` generates
+the JSON in a temporary GitHub runner directory and publishes it directly. That
+workflow needs `OPENAI_API_KEY`, `ARTICLE_API_BASE_URL`, and
+`ARTICLE_ADMIN_TOKEN` as repository secrets.

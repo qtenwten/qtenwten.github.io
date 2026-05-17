@@ -32,6 +32,7 @@ The only valid branch is `main`. If the branch is not `main`, stop.
 - `BD/ARTICLE_WORKFLOW.md`
 - `BD/ARTICLE_PUBLISHING_RUNBOOK.md`
 - `BD/ARTICLE_PROMPT_SHORTCUTS.md`
+- `BD/ARTICLE_EDITORIAL_STANDARD.md`
 
 3. Do not reveal, print, commit, or copy secrets:
 
@@ -64,6 +65,28 @@ BD/article-publish-queue/daily-YYYY-MM-DD/
 
 That path is published by `.github/workflows/publish-article-queue.yml` after the
 agent commits the JSON files to `main`. See `BD/ARTICLE_PUBLISH_QUEUE.md`.
+
+For fully automated daily publishing, no queue directory needs to be committed.
+GitHub Actions runs `.github/workflows/daily-article-agent.yml` every day at
+09:00 Europe/Moscow. It generates articles into a temporary runner directory,
+validates them, publishes them through the Worker API, builds the site, and
+deploys GitHub Pages from `main`.
+
+Required GitHub repository secrets for the full automation:
+
+```text
+ARTICLE_API_BASE_URL
+ARTICLE_ADMIN_TOKEN
+OPENAI_API_KEY
+```
+
+Optional GitHub repository variables:
+
+```text
+OPENAI_ARTICLE_MODEL
+OPENAI_REASONING_EFFORT
+OPENAI_MAX_OUTPUT_TOKENS
+```
 
 Recommended filename format:
 

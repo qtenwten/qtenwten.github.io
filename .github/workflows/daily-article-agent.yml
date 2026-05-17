@@ -1,0 +1,99 @@
+name: Daily Qsen article agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:00 UTC = 09:00 Europe/Moscow.
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ARTICLE_API_BASE_URL: ${{ secrets.ARTICLE_API_BASE_URL }}
+  ARTICLE_ADMIN_TOKEN: ${{ secrets.ARTICLE_ADMIN_TOKEN }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  OPENAI_ARTICLE_MODEL: ${{ vars.OPENAI_ARTICLE_MODEL || 'gpt-5.4' }}
+  OPENAI_REASONING_EFFORT: ${{ vars.OPENAI_REASONING_EFFORT || 'medium' }}
+  OPENAI_MAX_OUTPUT_TOKENS: ${{ vars.OPENAI_MAX_OUTPUT_TOKENS || '24000' }}
+
+jobs:
+  generate-publish-deploy:
+    name: Generate, publish, and deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in ARTICLE_API_BASE_URL ARTICLE_ADMIN_TOKEN OPENAI_API_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "$name is required." >&2
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Generate daily article JSON
+        env:
+          GENERATED_DIR: ${{ runner.temp }}/qsen-daily-articles/daily-${{ github.run_id }}
+        run: |
+          node scripts/article-agent/generate-daily-articles.mjs --out-dir "$GENERATED_DIR"
+          echo "GENERATED_DIR=$GENERATED_DIR" >> "$GITHUB_ENV"
+
+      - name: Validate generated batch
+        run: node scripts/article-agent/publish-daily-batch.mjs --dir "$GENERATED_DIR" --dry-run
+
+      - name: Upload generated article JSON artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qsen-daily-articles-${{ github.run_id }}
+          path: ${{ env.GENERATED_DIR }}
+          retention-days: 30
+
+      - name: Publish generated batch
+        run: node scripts/article-agent/publish-daily-batch.mjs --dir "$GENERATED_DIR" --publish --skip-existing
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify article HTML files
+        run: npm run verify:articles-html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
