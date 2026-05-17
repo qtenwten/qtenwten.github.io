@@ -1,0 +1,121 @@
+name: Publish queued Qsen articles
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'BD/article-publish-queue/**/*.json'
+      - 'scripts/article-agent/publish-daily-batch.mjs'
+      - '.github/workflows/publish-article-queue.yml'
+  workflow_dispatch:
+    inputs:
+      batch_dir:
+        description: 'Batch directory, for example BD/article-publish-queue/daily-2026-05-17. Empty means all queue batches.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ARTICLE_API_BASE_URL: ${{ secrets.ARTICLE_API_BASE_URL }}
+  ARTICLE_ADMIN_TOKEN: ${{ secrets.ARTICLE_ADMIN_TOKEN }}
+  INPUT_BATCH_DIR: ${{ github.event.inputs.batch_dir || '' }}
+
+jobs:
+  publish:
+    name: Publish queue and deploy Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve article batches
+        id: batches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -n "$INPUT_BATCH_DIR" ]; then
+            if [ ! -d "$INPUT_BATCH_DIR" ]; then
+              echo "Batch directory not found: $INPUT_BATCH_DIR" >&2
+              exit 1
+            fi
+            printf '%s\n' "$INPUT_BATCH_DIR" > /tmp/qsen-article-batches.txt
+          else
+            find BD/article-publish-queue -mindepth 1 -maxdepth 1 -type d | sort > /tmp/qsen-article-batches.txt
+          fi
+
+          if [ ! -s /tmp/qsen-article-batches.txt ]; then
+            echo "No article queue batches found." >&2
+            exit 1
+          fi
+
+          echo "Resolved batches:"
+          cat /tmp/qsen-article-batches.txt
+
+          {
+            echo "dirs<<EOF"
+            cat /tmp/qsen-article-batches.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish queued batches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "${ARTICLE_API_BASE_URL:-}" ] || [ -z "${ARTICLE_ADMIN_TOKEN:-}" ]; then
+            echo "ARTICLE_API_BASE_URL and ARTICLE_ADMIN_TOKEN GitHub secrets are required." >&2
+            exit 1
+          fi
+
+          while IFS= read -r batch_dir; do
+            [ -n "$batch_dir" ] || continue
+            echo "::group::Publishing $batch_dir"
+            node scripts/article-agent/publish-daily-batch.mjs --dir "$batch_dir" --publish --skip-existing
+            echo "::endgroup::"
+          done <<'EOF'
+          ${{ steps.batches.outputs.dirs }}
+          EOF
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify article HTML files
+        run: npm run verify:articles-html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -55,6 +55,16 @@ BD/content-staging/daily-YYYY-MM-DD/
 
 Put exactly 6 JSON files there.
 
+For external agents that cannot reach the Worker API directly, use the tracked
+GitHub publish queue instead:
+
+```text
+BD/article-publish-queue/daily-YYYY-MM-DD/
+```
+
+That path is published by `.github/workflows/publish-article-queue.yml` after the
+agent commits the JSON files to `main`. See `BD/ARTICLE_PUBLISH_QUEUE.md`.
+
 Recommended filename format:
 
 ```text

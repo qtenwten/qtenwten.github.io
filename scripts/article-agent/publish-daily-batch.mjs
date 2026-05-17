@@ -31,6 +31,7 @@ function parseArgs(argv) {
     expectEn: 3,
     publicBaseUrl: defaultPublicBaseUrl,
     skipRemoteDuplicateCheck: false,
+    skipExisting: false,
   }
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -56,6 +57,8 @@ function parseArgs(argv) {
       i += 1
     } else if (arg === '--skip-remote-duplicate-check') {
       options.skipRemoteDuplicateCheck = true
+    } else if (arg === '--skip-existing') {
+      options.skipExisting = true
     } else if (arg === '--help' || arg === '-h') {
       printUsage()
       process.exit(0)
@@ -88,6 +91,7 @@ Options:
   --dry-run                         Validate only (default)
   --env-file <path>                 Optional env file, defaults to BD/article-publisher.env
   --skip-remote-duplicate-check     Skip public API duplicate scan
+  --skip-existing                   Treat already-published identical articles as success
 `)
 }
 
@@ -307,8 +311,17 @@ async function fetchAllRemoteArticles(apiBase) {
   return articles
 }
 
-async function validateRemoteDuplicates(files, apiBase) {
+function articleIdentityMatches(remoteArticle, article) {
+  return remoteArticle
+    && remoteArticle.slug === article.slug
+    && remoteArticle.language === article.language
+    && remoteArticle.translation_key === article.translation_key
+    && remoteArticle.tool_slug === article.tool_slug
+}
+
+async function getRemoteDuplicateState(files, apiBase) {
   const issues = []
+  const existingFiles = []
   const remote = await fetchAllRemoteArticles(apiBase)
   const remoteSlugs = new Map()
   const remoteTranslationLang = new Map()
@@ -321,20 +334,60 @@ async function validateRemoteDuplicates(files, apiBase) {
   }
 
   for (const { name, article } of files) {
-    if (remoteSlugs.has(article.slug)) {
-      issues.push(`${name}: slug already exists in Worker API: ${article.slug}`)
-    }
+    const slugMatch = remoteSlugs.get(article.slug)
     const key = `${article.translation_key}:${article.language}`
-    if (remoteTranslationLang.has(key)) {
-      issues.push(`${name}: translation_key+language already exists in Worker API: ${key}`)
+    const keyMatch = remoteTranslationLang.get(key)
+
+    if (!slugMatch && !keyMatch) {
+      continue
+    }
+
+    const matches = [slugMatch, keyMatch].filter(Boolean)
+    const identities = new Set(matches.map((item) => item.id || `${item.slug}:${item.language}:${item.translation_key}`))
+    const isSameArticle = matches.every((item) => articleIdentityMatches(item, article)) && identities.size === 1
+
+    if (isSameArticle) {
+      existingFiles.push({ name, article, remoteArticle: matches[0] })
+    } else {
+      issues.push(`${name}: conflicts with existing Worker API record for slug or translation_key+language`)
     }
   }
 
-  return issues
+  return { issues, existingFiles }
 }
 
-async function publishAndCheck(files, apiBase, token) {
+async function validatePublishedArticle(article, apiBase) {
+  const checkResponse = await requestJson(`${apiBase}/articles/${encodeURIComponent(article.slug)}`)
+  const checkIssues = []
+
+  if (checkResponse.language !== article.language) checkIssues.push('language mismatch')
+  if (checkResponse.translation_key !== article.translation_key) checkIssues.push('translation_key mismatch')
+  if (checkResponse.tool_slug !== article.tool_slug) checkIssues.push('tool_slug mismatch')
+  if (checkResponse.status !== 'published') checkIssues.push(`status is ${checkResponse.status || '(missing)'}`)
+
+  if (checkIssues.length > 0) {
+    throw new Error(`${article.slug}: public check failed: ${checkIssues.join(', ')}`)
+  }
+
+  return checkResponse
+}
+
+async function publishAndCheck(files, apiBase, token, existingFiles = []) {
   const results = []
+
+  for (const file of existingFiles) {
+    const checkResponse = await validatePublishedArticle(file.article, apiBase)
+    results.push({
+      action: 'skipped-existing',
+      id: checkResponse?.id || file.remoteArticle?.id || null,
+      language: file.article.language,
+      translation_key: file.article.translation_key,
+      tool_slug: file.article.tool_slug,
+      slug: file.article.slug,
+      title: file.article.title,
+      status: checkResponse.status,
+    })
+  }
 
   for (const file of files) {
     const { article, raw } = file
@@ -347,19 +400,10 @@ async function publishAndCheck(files, apiBase, token) {
       body: raw,
     })
 
-    const checkResponse = await requestJson(`${apiBase}/articles/${encodeURIComponent(article.slug)}`)
-    const checkIssues = []
-
-    if (checkResponse.language !== article.language) checkIssues.push('language mismatch')
-    if (checkResponse.translation_key !== article.translation_key) checkIssues.push('translation_key mismatch')
-    if (checkResponse.tool_slug !== article.tool_slug) checkIssues.push('tool_slug mismatch')
-    if (checkResponse.status !== 'published') checkIssues.push(`status is ${checkResponse.status || '(missing)'}`)
-
-    if (checkIssues.length > 0) {
-      throw new Error(`${article.slug}: published but public check failed: ${checkIssues.join(', ')}`)
-    }
+    const checkResponse = await validatePublishedArticle(article, apiBase)
 
     results.push({
+      action: 'published',
       id: publishResponse?.id || checkResponse?.id || null,
       language: article.language,
       translation_key: article.translation_key,
@@ -390,6 +434,7 @@ async function main() {
   const apiBase = (process.env.ARTICLE_API_BASE_URL || '').replace(/\/+$/, '')
   const token = process.env.ARTICLE_ADMIN_TOKEN || ''
   const files = readBatch(options.dir)
+  let existingFiles = []
 
   printBatchSummary(files, options)
 
@@ -402,13 +447,27 @@ async function main() {
   console.log('\nLocal validation: PASS')
 
   if (apiBase && !options.skipRemoteDuplicateCheck) {
-    const remoteIssues = await validateRemoteDuplicates(files, apiBase)
-    if (remoteIssues.length > 0) {
+    const remoteState = await getRemoteDuplicateState(files, apiBase)
+    if (remoteState.issues.length > 0) {
       console.error('\nREMOTE DUPLICATE CHECK FAILED')
-      for (const issue of remoteIssues) console.error(`- ${issue}`)
+      for (const issue of remoteState.issues) console.error(`- ${issue}`)
       process.exit(1)
     }
-    console.log('Remote duplicate check: PASS')
+
+    if (remoteState.existingFiles.length > 0) {
+      if (!options.skipExisting) {
+        console.error('\nREMOTE DUPLICATE CHECK FAILED')
+        for (const file of remoteState.existingFiles) {
+          console.error(`- ${file.name}: identical article already exists in Worker API: ${file.article.slug}`)
+        }
+        process.exit(1)
+      }
+
+      existingFiles = remoteState.existingFiles
+      console.log(`Remote duplicate check: PASS (${existingFiles.length} identical existing articles will be skipped)`)
+    } else {
+      console.log('Remote duplicate check: PASS')
+    }
   } else {
     console.log('Remote duplicate check: SKIPPED')
   }
@@ -422,10 +481,12 @@ async function main() {
     throw new Error('ARTICLE_API_BASE_URL and ARTICLE_ADMIN_TOKEN are required for --publish')
   }
 
-  const results = await publishAndCheck(files, apiBase, token)
+  const existingNames = new Set(existingFiles.map((file) => file.name))
+  const filesToPublish = files.filter((file) => !existingNames.has(file.name))
+  const results = await publishAndCheck(filesToPublish, apiBase, token, existingFiles)
   console.log('\nPublish/check results:')
   for (const result of results) {
-    console.log(`- id=${result.id || '(unknown)'} ${result.language} ${result.translation_key} ${result.slug} status=${result.status}`)
+    console.log(`- ${result.action} id=${result.id || '(unknown)'} ${result.language} ${result.translation_key} ${result.slug} status=${result.status}`)
   }
 
   console.log('\nRESULT: PASS')
