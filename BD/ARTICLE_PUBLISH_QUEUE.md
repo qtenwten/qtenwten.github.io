@@ -115,7 +115,10 @@ Do not ask for ARTICLE_ADMIN_TOKEN; GitHub Actions owns publishing secrets.
 ## Fully automated daily mode
 
 The queue is only for external agents that need to commit prepared JSON files.
-For hands-off publishing, `.github/workflows/daily-article-agent.yml` generates
-the JSON in a temporary GitHub runner directory and publishes it directly. That
-workflow needs `OPENAI_API_KEY`, `ARTICLE_API_BASE_URL`, and
-`ARTICLE_ADMIN_TOKEN` as repository secrets.
+For hands-off publishing without OpenAI API, use the dated publish calendar in
+`BD/article-publish-calendar/YYYY-MM-DD/`. The scheduled workflow
+`.github/workflows/daily-article-agent.yml` publishes the current Moscow date
+folder automatically through the Worker API.
+
+See `BD/ARTICLE_PUBLISH_CALENDAR.md`. This calendar mode needs only
+`ARTICLE_API_BASE_URL` and `ARTICLE_ADMIN_TOKEN` as repository secrets.

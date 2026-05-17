@@ -66,27 +66,27 @@ BD/article-publish-queue/daily-YYYY-MM-DD/
 That path is published by `.github/workflows/publish-article-queue.yml` after the
 agent commits the JSON files to `main`. See `BD/ARTICLE_PUBLISH_QUEUE.md`.
 
-For fully automated daily publishing, no queue directory needs to be committed.
+For fully automated daily publishing without OpenAI API, use the dated
+article calendar instead of generated runner output:
+
+```text
+BD/article-publish-calendar/YYYY-MM-DD/
+```
+
 GitHub Actions runs `.github/workflows/daily-article-agent.yml` every day at
-09:00 Europe/Moscow. It generates articles into a temporary runner directory,
-validates them, publishes them through the Worker API, builds the site, and
+09:00 Europe/Moscow. It resolves the current Moscow date, validates the matching
+calendar folder, publishes it through the Worker API, builds the site, and
 deploys GitHub Pages from `main`.
 
-Required GitHub repository secrets for the full automation:
+Required GitHub repository secrets for the calendar automation:
 
 ```text
 ARTICLE_API_BASE_URL
 ARTICLE_ADMIN_TOKEN
-OPENAI_API_KEY
 ```
 
-Optional GitHub repository variables:
-
-```text
-OPENAI_ARTICLE_MODEL
-OPENAI_REASONING_EFFORT
-OPENAI_MAX_OUTPUT_TOKENS
-```
+`OPENAI_API_KEY` is not required for this calendar mode because the article JSON
+files are written ahead of time. See `BD/ARTICLE_PUBLISH_CALENDAR.md`.
 
 Recommended filename format:
 
