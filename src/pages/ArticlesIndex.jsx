@@ -38,6 +38,8 @@ const CATEGORY_KEYS = {
   random: 'categoryRandom',
 }
 
+const FALLBACK_CATEGORY_KEYS = ['documents', 'finance', 'qr-links', 'security', 'seo', 'dates', 'random']
+
 function pickCoverAlt(article, language, t) {
   if (article?.title) {
     return article.title
@@ -84,6 +86,17 @@ function getToolsWithArticleCounts(articles, language, t) {
     .sort((a, b) => b.count - a.count)
 }
 
+function getFallbackHubTools(t) {
+  return ROUTE_REGISTRY
+    .filter((entry) => entry.showOnHome && entry.path !== '/seo-audit')
+    .slice(0, 9)
+    .map((entry) => ({
+      slug: entry.path,
+      title: t(entry.titleKey),
+      icon: entry.icon,
+    }))
+}
+
 function ArticlesIndex() {
   const { t, language } = useLanguage()
   const { articles, status, error, refetch } = useArticlesIndex(language)
@@ -100,21 +113,62 @@ function ArticlesIndex() {
   const categoriesOrder = ['documents', 'finance', 'qr-links', 'security', 'seo', 'dates', 'random']
   const activeCategories = categoriesOrder.filter((c) => categoryMap[c] && categoryMap[c].length > 0)
   const hubTools = toolsWithCounts.slice(0, 8)
+  const fallbackHubTools = getFallbackHubTools(t)
+  const hasLocalizedArticles = localizedArticles.length > 0
+  const showEmptyHub = status === 'success' && !hasLocalizedArticles
 
   const featuredArticle = articles[0] || null
   const sidebarArticles = articles.slice(1, 4)
   const editorialArticles = articles.slice(1)
 
-  if (articles.length === 0 && status === 'success') {
+  if (showEmptyHub) {
     return (
       <>
         <SEO title={t('seo.articles.title')} description={t('seo.articles.description')} keywords={t('seo.articles.keywords')} path={`/${language}/articles`} />
         <ToolPageShell className="articles-page">
           <ToolPageHero eyebrow={t('articles.eyebrow')} title={t('articles.title')} subtitle={t('articles.subtitle')} note={t('articles.note')} className="articles-hero" />
-          <section className="articles-list-state">
-            <h2>{t('articles.emptyTitle')}</h2>
-            <p>{t('articles.emptyDescription')}</p>
-          </section>
+          <div className="articles-hub articles-hub--empty">
+            <section className="hub-intro-section" aria-labelledby="hub-intro-heading">
+              <div className="hub-intro-section__content">
+                <h2 id="hub-intro-heading" className="hub-intro-section__title">{t('articles.hubIntroHeading')}</h2>
+                <p className="hub-intro-section__text">{t('articles.hubIntroText1')}</p>
+                <p className="hub-intro-section__text">{t('articles.hubIntroText2')}</p>
+              </div>
+            </section>
+
+            <section className="hub-categories-section" aria-labelledby="hub-categories-heading">
+              <h2 id="hub-categories-heading" className="hub-section-title">{t('articles.categoriesTitle')}</h2>
+              <div className="hub-categories-grid">
+                {FALLBACK_CATEGORY_KEYS.map((catKey) => (
+                  <div key={catKey} className="hub-category-card">
+                    <span className="hub-category-card__label">{t(`articles.${CATEGORY_KEYS[catKey]}`)}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="hub-tools-section" aria-labelledby="hub-tools-heading">
+              <h2 id="hub-tools-heading" className="hub-section-title">{t('articles.emptyToolsTitle')}</h2>
+              <div className="hub-tools-grid">
+                {fallbackHubTools.map((tool) => (
+                  <Link key={tool.slug} to={`/${language}${tool.slug}/`} className="hub-tool-card">
+                    <Icon name={tool.icon} size={16} />
+                    <span className="hub-tool-card__title">{tool.title}</span>
+                    <span className="hub-tool-card__count">{t('articles.emptyToolCardHint')}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section className="articles-empty-hub" aria-labelledby="articles-empty-heading">
+              <div>
+                <p className="articles-empty-hub__eyebrow">{t('articles.emptyEyebrow')}</p>
+                <h2 id="articles-empty-heading">{t('articles.emptyTitle')}</h2>
+                <p>{t('articles.emptyDescription')}</p>
+              </div>
+              <Link to={`/${language}/`} className="articles-primary-link">{t('articles.hubCtaButton')}</Link>
+            </section>
+          </div>
         </ToolPageShell>
       </>
     )
