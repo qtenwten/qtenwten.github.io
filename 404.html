@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+      // Don't redirect static HTML files
+      const path = location.pathname;
+      if (path.endsWith('.html') && (
+        path.includes('debug.html') ||
+        path.includes('clear-cache.html') ||
+        path.includes('test-mobile.html')
+      )) {
+        // Let the static file load normally
+        document.write('<p>If you see this, the file does not exist.</p>');
+      } else {
+        // Redirect to React app
+        sessionStorage.redirect = location.href;
+        window.location.href = '/';
+      }
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0;URL='/'">
+    </noscript>
+  </head>
+  <body>
+  </body>
+</html>

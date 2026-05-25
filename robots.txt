@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /debug.html
+Disallow: /fix.html
+Disallow: /test-mobile.html
+Disallow: /clear-cache.html
+Disallow: /search/
+
+Sitemap: https://qsen.ru/sitemap.xml

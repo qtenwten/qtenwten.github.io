@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Test - QSEN.RU</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile Diagnostics</h1>
+
+    <div class="test-box">
+        <h2>Basic Info</h2>
+        <p>User Agent: <span id="ua"></span></p>
+        <p>Screen: <span id="screen"></span></p>
+        <p>Viewport: <span id="viewport"></span></p>
+    </div>
+
+    <div class="test-box">
+        <h2>JavaScript Test</h2>
+        <p id="js-test" class="error">JavaScript NOT working</p>
+    </div>
+
+    <div class="test-box">
+        <h2>Resource Loading</h2>
+        <p>Main CSS: <span id="css-test">Testing...</span></p>
+        <p>Main JS: <span id="js-bundle">Testing...</span></p>
+        <p>Fonts: <span id="fonts-test">Testing...</span></p>
+    </div>
+
+    <div class="test-box">
+        <h2>Console Log</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        // Capture console logs
+        const logDiv = document.getElementById('log');
+        function addLog(msg, type = 'log') {
+            const line = document.createElement('div');
+            line.textContent = `[${type}] ${new Date().toLocaleTimeString()}: ${msg}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function(...args) {
+            addLog(args.join(' '), 'LOG');
+            originalLog.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            addLog(args.join(' '), 'ERROR');
+            originalError.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            addLog(args.join(' '), 'WARN');
+            originalWarn.apply(console, args);
+        };
+
+        // Catch all errors
+        window.addEventListener('error', (e) => {
+            addLog(`ERROR: ${e.message} at ${e.filename}:${e.lineno}`, 'ERROR');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            addLog(`UNHANDLED REJECTION: ${e.reason}`, 'ERROR');
+        });
+
+        // Basic info
+        document.getElementById('ua').textContent = navigator.userAgent;
+        document.getElementById('screen').textContent = `${screen.width}x${screen.height}`;
+        document.getElementById('viewport').textContent = `${window.innerWidth}x${window.innerHeight}`;
+
+        // JS test
+        document.getElementById('js-test').textContent = 'JavaScript is working!';
+        document.getElementById('js-test').className = 'success';
+        addLog('JavaScript initialized');
+
+        // Test resource loading
+        async function testResources() {
+            // Test CSS
+            try {
+                const cssResponse = await fetch('/assets/index-DORtaN37.css');
+                if (cssResponse.ok) {
+                    document.getElementById('css-test').textContent = '✓ Loaded';
+                    document.getElementById('css-test').className = 'success';
+                    addLog('CSS loaded successfully');
+                } else {
+                    throw new Error(`Status: ${cssResponse.status}`);
+                }
+            } catch (e) {
+                document.getElementById('css-test').textContent = '✗ Failed: ' + e.message;
+                document.getElementById('css-test').className = 'error';
+                addLog('CSS failed: ' + e.message, 'ERROR');
+            }
+
+            // Test JS bundle
+            try {
+                const jsResponse = await fetch('/assets/index-pkiOKo-I.js');
+                if (jsResponse.ok) {
+                    document.getElementById('js-bundle').textContent = '✓ Loaded';
+                    document.getElementById('js-bundle').className = 'success';
+                    addLog('JS bundle loaded successfully');
+                } else {
+                    throw new Error(`Status: ${jsResponse.status}`);
+                }
+            } catch (e) {
+                document.getElementById('js-bundle').textContent = '✗ Failed: ' + e.message;
+                document.getElementById('js-bundle').className = 'error';
+                addLog('JS bundle failed: ' + e.message, 'ERROR');
+            }
+
+            document.getElementById('fonts-test').textContent = '✓ Not required';
+            document.getElementById('fonts-test').className = 'success';
+            addLog('External icon fonts are no longer required');
+        }
+
+        testResources();
+
+        // Test localStorage
+        try {
+            localStorage.setItem('test', '1');
+            localStorage.removeItem('test');
+            addLog('localStorage is available');
+        } catch (e) {
+            addLog('localStorage NOT available: ' + e.message, 'ERROR');
+        }
+
+        // Test sessionStorage
+        try {
+            sessionStorage.setItem('test', '1');
+            sessionStorage.removeItem('test');
+            addLog('sessionStorage is available');
+        } catch (e) {
+            addLog('sessionStorage NOT available: ' + e.message, 'ERROR');
+        }
+
+        addLog('All tests completed');
+    </script>
+</body>
+</html>

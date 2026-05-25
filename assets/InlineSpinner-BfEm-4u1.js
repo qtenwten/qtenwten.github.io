@@ -1,0 +1,1 @@
+import{j as n}from"./react-vendor-xyWZpFXc.js";function r({label:s="Loading"}){return n.jsxs(n.Fragment,{children:[n.jsx("span",{className:"inline-spinner","aria-hidden":"true"}),n.jsx("span",{className:"sr-only",children:s})]})}export{r as I};

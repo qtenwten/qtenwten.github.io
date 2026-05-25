@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030609" />
+    <meta name="yandex-verification" content="5edd40b97e956d2c" />
+    <meta name="yandex-verification" content="95543c43b65cc6c5" />
+    <!-- Open Graph (общие теги, остальные устанавливаются через SEO компонент) -->
+    <!-- Favicon -->
+    <link rel="canonical" href="https://qsen.ru/ru/" />
+    <script>window.location.replace('https://qsen.ru/ru/' + window.location.search + window.location.hash)</script>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <title>Redirecting to QSEN.RU</title>
+
+    <!-- JSON-LD -->
+    
+
+    <!-- Security Meta Tags (cannot replace server headers but provide baseline protection) -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSP Meta Tag (fallback when server header not available) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru https://mc.yandex.com https://yastatic.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://mc.yandex.ru https://mc.yandex.com wss://mc.yandex.ru wss://mc.yandex.com https://yandex.ru https://fancy-scene-deeb.qten.workers.dev https://is.gd https://apifeedback.qten.workers.dev https://seo-audit-api.qten.workers.dev; font-src 'self';" />
+    <style>
+      html, body, #root {
+        background: #ffffff;
+      }
+
+      html[data-theme='dark'],
+      html[data-theme='dark'] body {
+        background: #030609;
+      }
+
+      html[data-theme='dark'] #root {
+        background: transparent;
+      }
+
+      html[data-theme='dark'] .theme-switcher .theme-switcher__thumb {
+        transform: translateX(100%);
+      }
+
+      body {
+        margin: 0;
+      }
+
+      /* Disable theme switcher transitions during initial hydration */
+      html[data-theme-init='true'] .theme-switcher__thumb,
+      html[data-theme-init='true'] .language-switcher__thumb {
+        transition: none !important;
+      }
+    </style>
+    <script>
+      (function() {
+        try {
+          var savedTheme = localStorage.getItem('theme');
+          var resolvedTheme = savedTheme === 'dark' || savedTheme === 'light'
+            ? savedTheme
+            : 'dark';
+          var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+          window.__QSEN_INITIAL_THEME__ = resolvedTheme;
+          document.documentElement.setAttribute('data-theme', resolvedTheme);
+          document.documentElement.setAttribute('data-theme-init', 'true');
+          themeColorMeta && themeColorMeta.setAttribute('content', resolvedTheme === 'dark' ? '#030609' : '#ffffff');
+          document.body && document.body.setAttribute('data-theme', resolvedTheme);
+        } catch (e) {
+          window.__QSEN_INITIAL_THEME__ = 'dark';
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.setAttribute('data-theme-init', 'true');
+          document.body && document.body.setAttribute('data-theme', 'dark');
+        }
+
+        // Detect initial language from URL path
+        var pathLang = location.pathname.split('/')[1];
+        window.__QSEN_INITIAL_LANGUAGE__ = (pathLang === 'ru' || pathLang === 'en') ? pathLang : 'ru';
+
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-dh4ws8tF.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-xyWZpFXc.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-dom-vendor-DQKJroMK.js">
+    <link rel="modulepreload" crossorigin href="/assets/router-vendor-DGHyZCwF.js">
+    <link rel="modulepreload" crossorigin href="/assets/helmet-Ds69DUTq.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-BwiLtCPL.css">
+  </head>
+  <body>
+    <script>document.body && document.body.setAttribute('data-theme', window.__QSEN_INITIAL_THEME__)</script>
+    <noscript>
+      <div><img src="https://mc.yandex.ru/watch/108416207" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+    <div id="root"><noscript><meta http-equiv="refresh" content="0; url=https://qsen.ru/ru/" /></noscript></div>
+
+    <!-- Service Worker Registration -->
+    <script>
+      window.addEventListener('load', async () => {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations()
+          for (const reg of registrations) {
+            await reg.unregister()
+          }
+        }
+
+        if ('caches' in window) {
+          const keys = await caches.keys()
+          for (const key of keys) {
+            await caches.delete(key)
+          }
+        }
+
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          console.log('Service worker disabled for reliability')
+        }
+      })
+
+      // Enhanced error logging for mobile debugging
+      window.addEventListener('error', (e) => {
+        console.error('Global error:', e.message, 'at', e.filename, e.lineno, e.colno)
+        if (window.location.search.includes('debug')) {
+          const errorDiv = document.createElement('div')
+          errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:10px;z-index:99999;font-size:12px;'
+          errorDiv.textContent = 'ERROR: ' + e.message
+          document.body.appendChild(errorDiv)
+        }
+      })
+
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled rejection:', e.reason)
+        if (window.location.search.includes('debug')) {
+          const errorDiv = document.createElement('div')
+          errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:orange;color:white;padding:10px;z-index:99999;font-size:12px;'
+          errorDiv.textContent = 'PROMISE ERROR: ' + (e.reason?.message || e.reason)
+          document.body.appendChild(errorDiv)
+        }
+      })
+    </script>
+
+    <!-- Google Analytics 4 placeholder — add real ID to enable -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
+
+    <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
+    <!-- Yandex.Metrika counter — init deferred to not block TTI -->
+    <script>
+        window.ym = window.ym || function() {
+            var ymArgs = Array.prototype.slice.call(arguments);
+            ymArgs.push(Date.now());
+            if (window.ym.a) window.ym.a.push(ymArgs);
+            else window.ym.a = [ymArgs];
+            return window.ym.f && window.ym.f.apply(window.ym.f, ymArgs);
+        };
+        window.ym.l = window.ym.l || Date.now();
+    </script>
+    <script async src="https://mc.yandex.ru/metrika/tag.js?id=108416207"></script>
+    <script>
+        window.addEventListener('load', function() {
+            var checkCount = 0;
+            function tryInit() {
+                checkCount++;
+                if (window.ym && window.ym.a) {
+                    ym(108416207, 'init', {
+                        ssr: true,
+                        webvisor: true,
+                        clickmap: true,
+                        ecommerce: 'dataLayer',
+                        referrer: document.referrer,
+                        url: location.href,
+                        accurateTrackBounce: true,
+                        trackLinks: true
+                    });
+                } else if (checkCount < 20) {
+                    setTimeout(tryInit, 200);
+                }
+            }
+            setTimeout(tryInit, 1500);
+        }, { once: true });
+    </script>
+    <!-- /Yandex.Metrika counter -->
+  </body>
+</html>
