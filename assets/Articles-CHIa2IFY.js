@@ -1,4 +1,4 @@
-import{e as V,k as I,n as q,R as F}from"./index-HcIOyEjQ.js";import{r as O,j as c}from"./react-vendor-xyWZpFXc.js";/**
+import{e as V,k as I,n as q,R as F}from"./index-MGw-_9lz.js";import{r as O,j as c}from"./react-vendor-xyWZpFXc.js";/**
  * @license lucide-react v1.8.0 - ISC
  *
  * This source code is licensed under the ISC license.
