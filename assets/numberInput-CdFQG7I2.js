@@ -1,1 +1,0 @@
-function t(e){return e.replace(/[^\d.,-]/g,"")}function n(e){if([8,9,27,13,46].includes(e.keyCode)||(e.ctrlKey||e.metaKey)&&[65,67,86,88].includes(e.keyCode)||e.keyCode>=35&&e.keyCode<=40)return;const r=e.key;/[\d.,-]/.test(r)||e.preventDefault()}export{t as f,n as h};
