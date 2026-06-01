@@ -1,9 +1,0 @@
-{
-  "version": "2",
-  "api_version": 1,
-  "layout": {
-    "logo": "https://qsen.ru/yandex-tableau-logo.png",
-    "color": "#050505",
-    "show_title": false
-  }
-}
