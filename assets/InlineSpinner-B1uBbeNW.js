@@ -1,0 +1,1 @@
+import{t as e}from"./react-vendor-DKdBMi_L.js";var t=e();function n({label:e=`Loading`}){return(0,t.jsxs)(t.Fragment,{children:[(0,t.jsx)(`span`,{className:`inline-spinner`,"aria-hidden":`true`}),(0,t.jsx)(`span`,{className:`sr-only`,children:e})]})}export{n as t};
