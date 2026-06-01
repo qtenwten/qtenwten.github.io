@@ -379,6 +379,60 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-v-prihodnom-ordere/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-v-prihodnom-ordere/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/cash-receipt-order-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-v-prihodnom-ordere/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/summa-propisyu-v-akte-dostavki/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-v-akte-dostavki/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/delivery-act-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-v-akte-dostavki/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/kompensatsiya-propisyu-v-zayavlenii/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kompensatsiya-propisyu-v-zayavlenii/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compensation-request-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kompensatsiya-propisyu-v-zayavlenii/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/delivery-act-amount-in-words/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-v-akte-dostavki/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/delivery-act-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-v-akte-dostavki/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/compensation-request-amount-in-words/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kompensatsiya-propisyu-v-zayavlenii/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/compensation-request-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/kompensatsiya-propisyu-v-zayavlenii/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/cash-receipt-order-amount-in-words/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-propisyu-v-prihodnom-ordere/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/cash-receipt-order-amount-in-words/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/summa-propisyu-v-prihodnom-ordere/" />
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/summa-predoplaty-propisyu-v-schete/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-predoplaty-propisyu-v-schete/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/prepayment-invoice-amount-in-words/" />
