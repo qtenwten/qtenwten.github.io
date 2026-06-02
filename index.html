@@ -97,12 +97,34 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/assets/index-BJhJY6zF.js"></script>
+    <script>
+      (function() {
+        async function cleanupStaleServiceWorkersAndCaches() {
+          try {
+            if ('serviceWorker' in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations()
+              await Promise.all(registrations.map((reg) => reg.unregister()))
+            }
+
+            if ('caches' in window) {
+              const keys = await caches.keys()
+              await Promise.all(keys.map((key) => caches.delete(key)))
+            }
+          } catch (error) {
+            console.warn('QSEN stale cache cleanup failed:', error)
+          }
+        }
+
+        window.__QSEN_CLEANUP_STALE_CACHES__ = cleanupStaleServiceWorkersAndCaches
+        cleanupStaleServiceWorkersAndCaches()
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-DGSsHCC4.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-aKtaBQYM.js">
     <link rel="modulepreload" crossorigin href="/assets/react-dom-vendor-Bo5ZO0yf.js">
     <link rel="modulepreload" crossorigin href="/assets/react-vendor-DKdBMi_L.js">
-    <link rel="modulepreload" crossorigin href="/assets/LanguageContext-Yoym5aaq.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-CJ3tP2oa.css">
+    <link rel="modulepreload" crossorigin href="/assets/LanguageContext-BE1R_2fo.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-6EfHoUq1.css">
   </head>
   <body>
     <script>document.body && document.body.setAttribute('data-theme', window.__QSEN_INITIAL_THEME__)</script>
@@ -111,23 +133,10 @@
     </noscript>
     <div id="root"><noscript><meta http-equiv="refresh" content="0; url=https://qsen.ru/ru/" /></noscript></div>
 
-    <!-- Service Worker Registration -->
+    <!-- Stale Service Worker Cleanup -->
     <script>
-      window.addEventListener('load', async () => {
-        if ('serviceWorker' in navigator) {
-          const registrations = await navigator.serviceWorker.getRegistrations()
-          for (const reg of registrations) {
-            await reg.unregister()
-          }
-        }
-
-        if ('caches' in window) {
-          const keys = await caches.keys()
-          for (const key of keys) {
-            await caches.delete(key)
-          }
-        }
-
+      window.addEventListener('load', () => {
+        window.__QSEN_CLEANUP_STALE_CACHES__?.()
         if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
           console.log('Service worker disabled for reliability')
         }
