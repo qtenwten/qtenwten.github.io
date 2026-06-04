@@ -379,6 +379,60 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-table-ordering/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-registratsii-na-meropriyatie/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-registratsii-na-meropriyatie/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-event-registration/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-registratsii-na-meropriyatie/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-instruktsii-k-tovaru/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-instruktsii-k-tovaru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-product-instructions/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-instruktsii-k-tovaru/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-table-ordering/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-table-ordering/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-product-instructions/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-instruktsii-k-tovaru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-product-instructions/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-instruktsii-k-tovaru/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-event-registration/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-registratsii-na-meropriyatie/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-event-registration/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-registratsii-na-meropriyatie/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/summa-vozvrata-propisyu-v-zayavlenii/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/summa-vozvrata-propisyu-v-zayavlenii/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/refund-request-amount-in-words/" />
