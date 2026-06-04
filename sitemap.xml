@@ -343,6 +343,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/about/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/about/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/about/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/about/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/about/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/about/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/about/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/about/" />
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/terms/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/terms/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/terms/" />
