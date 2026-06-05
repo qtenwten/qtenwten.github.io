@@ -397,6 +397,60 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-shemy-proezda/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-shemy-proezda/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-directions-map/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-shemy-proezda/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-eksponata/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-eksponata/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-museum-exhibit/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-eksponata/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/ru/articles/qr-kod-dlya-domashnego-zadaniya/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-domashnego-zadaniya/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-homework-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-domashnego-zadaniya/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-museum-exhibit/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-eksponata/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-museum-exhibit/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-eksponata/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-homework-link/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-domashnego-zadaniya/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-homework-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-domashnego-zadaniya/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/qr-code-for-directions-map/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-shemy-proezda/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-directions-map/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/qr-kod-dlya-shemy-proezda/" />
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/qr-kod-dlya-zakaza-za-stolom/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/qr-code-for-table-ordering/" />
