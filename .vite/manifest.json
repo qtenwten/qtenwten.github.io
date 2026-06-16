@@ -1,10 +1,6 @@
 {
-  "_Articles-CNrboOSd.css": {
-    "file": "assets/Articles-CNrboOSd.css",
-    "src": "_Articles-CNrboOSd.css"
-  },
-  "_Articles-D5ZCEbCh.js": {
-    "file": "assets/Articles-D5ZCEbCh.js",
+  "_Articles-BwTeqhio.js": {
+    "file": "assets/Articles-BwTeqhio.js",
     "name": "Articles",
     "imports": [
       "_rolldown-runtime-aKtaBQYM.js",
@@ -30,8 +26,12 @@
       "assets/calculator-percent-DvXarIrE.webp"
     ]
   },
-  "_CopyButton-DWBOGZf3.js": {
-    "file": "assets/CopyButton-DWBOGZf3.js",
+  "_Articles-CNrboOSd.css": {
+    "file": "assets/Articles-CNrboOSd.css",
+    "src": "_Articles-CNrboOSd.css"
+  },
+  "_CopyButton-yBYn4RBh.js": {
+    "file": "assets/CopyButton-yBYn4RBh.js",
     "name": "CopyButton",
     "imports": [
       "_rolldown-runtime-aKtaBQYM.js",
@@ -66,8 +66,8 @@
       "_react-vendor-DKdBMi_L.js"
     ]
   },
-  "_RelatedTools-4hgFjAIn.js": {
-    "file": "assets/RelatedTools-4hgFjAIn.js",
+  "_RelatedTools-Bg626MAe.js": {
+    "file": "assets/RelatedTools-Bg626MAe.js",
     "name": "RelatedTools",
     "imports": [
       "index.html",
@@ -95,12 +95,8 @@
     "file": "assets/ResultSection-B4y399f9.css",
     "src": "_ResultSection-B4y399f9.css"
   },
-  "_ToolDescriptionSection-DZpbibqJ.css": {
-    "file": "assets/ToolDescriptionSection-DZpbibqJ.css",
-    "src": "_ToolDescriptionSection-DZpbibqJ.css"
-  },
-  "_ToolDescriptionSection-io8jZ0zM.js": {
-    "file": "assets/ToolDescriptionSection-io8jZ0zM.js",
+  "_ToolDescriptionSection-D0uxIggw.js": {
+    "file": "assets/ToolDescriptionSection-D0uxIggw.js",
     "name": "ToolDescriptionSection",
     "imports": [
       "_rolldown-runtime-aKtaBQYM.js",
@@ -112,12 +108,16 @@
       "assets/ToolDescriptionSection-DZpbibqJ.css"
     ]
   },
+  "_ToolDescriptionSection-DZpbibqJ.css": {
+    "file": "assets/ToolDescriptionSection-DZpbibqJ.css",
+    "src": "_ToolDescriptionSection-DZpbibqJ.css"
+  },
   "_ToolPageShell-CN6lKyjq.css": {
     "file": "assets/ToolPageShell-CN6lKyjq.css",
     "src": "_ToolPageShell-CN6lKyjq.css"
   },
-  "_ToolPageShell-D0LLaMTI.js": {
-    "file": "assets/ToolPageShell-D0LLaMTI.js",
+  "_ToolPageShell-Caj0v8ES.js": {
+    "file": "assets/ToolPageShell-Caj0v8ES.js",
     "name": "ToolPageShell",
     "imports": [
       "_rolldown-runtime-aKtaBQYM.js",
@@ -133,8 +133,8 @@
     "file": "assets/addresseeDocumentText-VcfpBw4z.js",
     "name": "addresseeDocumentText"
   },
-  "_mathParser-Dlbz82u4.js": {
-    "file": "assets/mathParser-Dlbz82u4.js",
+  "_mathParser-fiLzyh5z.js": {
+    "file": "assets/mathParser-fiLzyh5z.js",
     "name": "mathParser",
     "imports": [
       "index.html"
@@ -185,7 +185,7 @@
     ]
   },
   "index.html": {
-    "file": "assets/index-CwIxeAOx.js",
+    "file": "assets/index-CZcYDqDh.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -478,7 +478,7 @@
     "src": "src/assets/qsen-bronze/qsen-premium-wide-background.webp"
   },
   "src/components/calculator/GraphPanel.jsx": {
-    "file": "assets/GraphPanel-DQ1QLT91.js",
+    "file": "assets/GraphPanel-C-yjXrJv.js",
     "name": "GraphPanel",
     "src": "src/components/calculator/GraphPanel.jsx",
     "isDynamicEntry": true,
@@ -487,7 +487,7 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_mathParser-Dlbz82u4.js"
+      "_mathParser-fiLzyh5z.js"
     ]
   },
   "src/locales/en.json": {
@@ -503,21 +503,21 @@
     "isDynamicEntry": true
   },
   "src/pages/About.jsx": {
-    "file": "assets/About-gTfa9mqr.js",
+    "file": "assets/About-CSWDe7ck.js",
     "name": "About",
     "src": "src/pages/About.jsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-DKdBMi_L.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/About-BmqbbkZv.css"
     ]
   },
   "src/pages/AddresseeGenerator.jsx": {
-    "file": "assets/AddresseeGenerator-dFdLFeSR.js",
+    "file": "assets/AddresseeGenerator-BWTK49G1.js",
     "name": "AddresseeGenerator",
     "src": "src/pages/AddresseeGenerator.jsx",
     "isDynamicEntry": true,
@@ -526,11 +526,11 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_addresseeDocumentText-VcfpBw4z.js"
     ],
     "dynamicImports": [
@@ -541,7 +541,7 @@
     ]
   },
   "src/pages/ArticlePage.jsx": {
-    "file": "assets/ArticlePage-CfKH6Rvx.js",
+    "file": "assets/ArticlePage-gRYjxeW0.js",
     "name": "ArticlePage",
     "src": "src/pages/ArticlePage.jsx",
     "isDynamicEntry": true,
@@ -550,12 +550,12 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_Articles-D5ZCEbCh.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_Articles-BwTeqhio.js",
+      "_ToolPageShell-Caj0v8ES.js"
     ]
   },
   "src/pages/ArticlesIndex.jsx": {
-    "file": "assets/ArticlesIndex-CgN_plgZ.js",
+    "file": "assets/ArticlesIndex-BXIe6Fqm.js",
     "name": "ArticlesIndex",
     "src": "src/pages/ArticlesIndex.jsx",
     "isDynamicEntry": true,
@@ -564,15 +564,15 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_Articles-D5ZCEbCh.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_Articles-BwTeqhio.js",
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "assets": [
       "assets/article-CLY6GX0b.png"
     ]
   },
   "src/pages/Calculator.jsx": {
-    "file": "assets/Calculator-CrGyqj6M.js",
+    "file": "assets/Calculator-Df9Nfe6r.js",
     "name": "Calculator",
     "src": "src/pages/Calculator.jsx",
     "isDynamicEntry": true,
@@ -581,10 +581,10 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_RelatedTools-4hgFjAIn.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
-      "_mathParser-Dlbz82u4.js"
+      "_RelatedTools-Bg626MAe.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
+      "_mathParser-fiLzyh5z.js"
     ],
     "dynamicImports": [
       "src/components/calculator/GraphPanel.jsx"
@@ -594,7 +594,7 @@
     ]
   },
   "src/pages/CompoundInterest.jsx": {
-    "file": "assets/CompoundInterest-AC2sEOyG.js",
+    "file": "assets/CompoundInterest-Bpp7_rpV.js",
     "name": "CompoundInterest",
     "src": "src/pages/CompoundInterest.jsx",
     "isDynamicEntry": true,
@@ -603,15 +603,15 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_numberInput-DPFJQ-DG.js"
     ]
   },
   "src/pages/DateDifferenceCalculator.jsx": {
-    "file": "assets/DateDifferenceCalculator-Bf3CFNL4.js",
+    "file": "assets/DateDifferenceCalculator-BGePj56h.js",
     "name": "DateDifferenceCalculator",
     "src": "src/pages/DateDifferenceCalculator.jsx",
     "isDynamicEntry": true,
@@ -620,18 +620,18 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/DateDifferenceCalculator-DfhV3uIB.css"
     ]
   },
   "src/pages/Feedback.jsx": {
-    "file": "assets/Feedback-C4gSHkQS.js",
+    "file": "assets/Feedback-BKg_Tdv6.js",
     "name": "Feedback",
     "src": "src/pages/Feedback.jsx",
     "isDynamicEntry": true,
@@ -641,7 +641,7 @@
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
       "_InlineSpinner-B1uBbeNW.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_useAsyncRequest-xXZAElOn.js"
     ],
     "css": [
@@ -649,7 +649,7 @@
     ]
   },
   "src/pages/MetaTagsGenerator.jsx": {
-    "file": "assets/MetaTagsGenerator-By8eRRzP.js",
+    "file": "assets/MetaTagsGenerator-C66IYF-i.js",
     "name": "MetaTagsGenerator",
     "src": "src/pages/MetaTagsGenerator.jsx",
     "isDynamicEntry": true,
@@ -658,28 +658,28 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js"
     ]
   },
   "src/pages/NotFound.jsx": {
-    "file": "assets/NotFound-BhhCOvDn.js",
+    "file": "assets/NotFound-BNErFGvR.js",
     "name": "NotFound",
     "src": "src/pages/NotFound.jsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-DKdBMi_L.js",
-      "_RelatedTools-4hgFjAIn.js"
+      "_RelatedTools-Bg626MAe.js"
     ],
     "css": [
       "assets/NotFound-CussQEhH.css"
     ]
   },
   "src/pages/NumberToWords.jsx": {
-    "file": "assets/NumberToWords-BSejh2_Q.js",
+    "file": "assets/NumberToWords-D2NB0cso.js",
     "name": "NumberToWords",
     "src": "src/pages/NumberToWords.jsx",
     "isDynamicEntry": true,
@@ -688,11 +688,11 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_numberInput-DPFJQ-DG.js"
     ],
     "css": [
@@ -700,7 +700,7 @@
     ]
   },
   "src/pages/PasswordGenerator.jsx": {
-    "file": "assets/PasswordGenerator-DCfeL1TX.js",
+    "file": "assets/PasswordGenerator-C5ZOmY3l.js",
     "name": "PasswordGenerator",
     "src": "src/pages/PasswordGenerator.jsx",
     "isDynamicEntry": true,
@@ -709,32 +709,32 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/PasswordGenerator-NTDO6i7i.css"
     ]
   },
   "src/pages/Privacy.jsx": {
-    "file": "assets/Privacy-DSIKATxy.js",
+    "file": "assets/Privacy-BHOm0c5K.js",
     "name": "Privacy",
     "src": "src/pages/Privacy.jsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-DKdBMi_L.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/Privacy-D9VV5q11.css"
     ]
   },
   "src/pages/QRCodeGenerator.jsx": {
-    "file": "assets/QRCodeGenerator-BijcBsCb.js",
+    "file": "assets/QRCodeGenerator-D097OVOZ.js",
     "name": "QRCodeGenerator",
     "src": "src/pages/QRCodeGenerator.jsx",
     "isDynamicEntry": true,
@@ -745,10 +745,10 @@
       "_react-vendor-DKdBMi_L.js",
       "_CustomSelect-DcBJ_-AE.js",
       "_InlineSpinner-B1uBbeNW.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_useAsyncRequest-xXZAElOn.js"
     ],
     "dynamicImports": [
@@ -760,7 +760,7 @@
     ]
   },
   "src/pages/RandomNumber.jsx": {
-    "file": "assets/RandomNumber-kkeIdCER.js",
+    "file": "assets/RandomNumber-gIz_kjCQ.js",
     "name": "RandomNumber",
     "src": "src/pages/RandomNumber.jsx",
     "isDynamicEntry": true,
@@ -769,16 +769,16 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
+      "_CopyButton-yBYn4RBh.js",
       "_CustomSelect-DcBJ_-AE.js",
-      "_RelatedTools-4hgFjAIn.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_RelatedTools-Bg626MAe.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_numberInput-DPFJQ-DG.js"
     ]
   },
   "src/pages/SEOAudit.jsx": {
-    "file": "assets/SEOAudit-DLOMgQ8f.js",
+    "file": "assets/SEOAudit-DtArzc3X.js",
     "name": "SEOAudit",
     "src": "src/pages/SEOAudit.jsx",
     "isDynamicEntry": true,
@@ -788,15 +788,15 @@
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
       "_InlineSpinner-B1uBbeNW.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_seoAudit-AJCS1hYZ.js"
     ]
   },
   "src/pages/SEOAuditPro.jsx": {
-    "file": "assets/SEOAuditPro-RBGM6SJE.js",
+    "file": "assets/SEOAuditPro-BdKlELtr.js",
     "name": "SEOAuditPro",
     "src": "src/pages/SEOAuditPro.jsx",
     "isDynamicEntry": true,
@@ -806,10 +806,10 @@
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
       "_InlineSpinner-B1uBbeNW.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_useAsyncRequest-xXZAElOn.js",
       "_seoAudit-AJCS1hYZ.js"
     ],
@@ -818,7 +818,7 @@
     ]
   },
   "src/pages/SearchResults.jsx": {
-    "file": "assets/SearchResults-CFdkEw-_.js",
+    "file": "assets/SearchResults-24V9Bz_h.js",
     "name": "SearchResults",
     "src": "src/pages/SearchResults.jsx",
     "isDynamicEntry": true,
@@ -827,28 +827,28 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/SearchResults-P66UhrGR.css"
     ]
   },
   "src/pages/Terms.jsx": {
-    "file": "assets/Terms-DHP3xcpt.js",
+    "file": "assets/Terms-DnpwsM6R.js",
     "name": "Terms",
     "src": "src/pages/Terms.jsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-DKdBMi_L.js",
-      "_ToolPageShell-D0LLaMTI.js"
+      "_ToolPageShell-Caj0v8ES.js"
     ],
     "css": [
       "assets/Terms-CRWIHEY2.css"
     ]
   },
   "src/pages/URLShortener.jsx": {
-    "file": "assets/URLShortener-D9_9lVov.js",
+    "file": "assets/URLShortener-BQMhldqh.js",
     "name": "URLShortener",
     "src": "src/pages/URLShortener.jsx",
     "isDynamicEntry": true,
@@ -857,17 +857,17 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
+      "_CopyButton-yBYn4RBh.js",
       "_InlineSpinner-B1uBbeNW.js",
-      "_RelatedTools-4hgFjAIn.js",
+      "_RelatedTools-Bg626MAe.js",
       "_ResultSection-3e27sVLX.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_useAsyncRequest-xXZAElOn.js"
     ]
   },
   "src/pages/VATCalculator.jsx": {
-    "file": "assets/VATCalculator-D-gCno-0.js",
+    "file": "assets/VATCalculator-EZDhuSxO.js",
     "name": "VATCalculator",
     "src": "src/pages/VATCalculator.jsx",
     "isDynamicEntry": true,
@@ -876,10 +876,10 @@
       "index.html",
       "_react-dom-vendor-Bo5ZO0yf.js",
       "_react-vendor-DKdBMi_L.js",
-      "_CopyButton-DWBOGZf3.js",
-      "_RelatedTools-4hgFjAIn.js",
-      "_ToolDescriptionSection-io8jZ0zM.js",
-      "_ToolPageShell-D0LLaMTI.js",
+      "_CopyButton-yBYn4RBh.js",
+      "_RelatedTools-Bg626MAe.js",
+      "_ToolDescriptionSection-D0uxIggw.js",
+      "_ToolPageShell-Caj0v8ES.js",
       "_numberInput-DPFJQ-DG.js"
     ]
   },
