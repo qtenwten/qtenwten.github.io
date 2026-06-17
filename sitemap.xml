@@ -397,6 +397,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/parol-dlya-uchebnogo-stenda/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-uchebnogo-stenda/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/training-stand-password/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-uchebnogo-stenda/" />
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/training-stand-password/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-uchebnogo-stenda/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/training-stand-password/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-uchebnogo-stenda/" />
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/vremennyy-parol-admina-na-odin-den/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/vremennyy-parol-admina-na-odin-den/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/one-day-admin-password/" />
