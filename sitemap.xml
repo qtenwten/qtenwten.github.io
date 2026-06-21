@@ -199,24 +199,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qsen.ru/ru/seo-audit/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit/" />
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://qsen.ru/en/seo-audit/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/seo-audit/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/seo-audit/" />
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://qsen.ru/ru/meta-tags-generator/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/meta-tags-generator/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/meta-tags-generator/" />
