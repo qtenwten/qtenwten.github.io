@@ -73,6 +73,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/salary-calculator/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/salary-calculator/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/salary-calculator/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/salary-calculator/" />
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/salary-calculator/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/salary-calculator/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/salary-calculator/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/salary-calculator/" />
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/random-number/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/random-number/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/random-number/" />
