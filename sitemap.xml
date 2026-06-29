@@ -397,6 +397,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/parol-dlya-wifi-s-qr-kodom/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-s-qr-kodom/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-qr-password/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-s-qr-kodom/" />
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/wifi-qr-password/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/parol-dlya-wifi-s-qr-kodom/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/wifi-qr-password/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/parol-dlya-wifi-s-qr-kodom/" />
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/odnorazovyy-parol-kotoryy-legko-prochitat/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/odnorazovyy-parol-kotoryy-legko-prochitat/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/readable-one-time-password/" />
