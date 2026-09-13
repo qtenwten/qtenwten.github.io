@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/skolko-dney-mezhdu-publikatsiyami/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-mezhdu-publikatsiyami/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/content-calendar-interval/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-mezhdu-publikatsiyami/" />
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/content-calendar-interval/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/skolko-dney-mezhdu-publikatsiyami/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/content-calendar-interval/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/skolko-dney-mezhdu-publikatsiyami/" />
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/kak-poschitat-dni-prebyvaniya/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/kak-poschitat-dni-prebyvaniya/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/visa-stay-days/" />
