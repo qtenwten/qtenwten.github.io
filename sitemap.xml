@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/invoice-vat-rounding-check/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/" />
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/invoice-vat-rounding-check/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/invoice-vat-rounding-check/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/" />
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/nds-v-stroke-dostavki-kak-poschitat/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-v-stroke-dostavki-kak-poschitat/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/delivery-line-vat/" />
