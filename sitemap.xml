@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/nds-v-akte-uslug-kak-proverit-itog/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-v-akte-uslug-kak-proverit-itog/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/service-act-vat-total/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-v-akte-uslug-kak-proverit-itog/" />
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/service-act-vat-total/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/nds-v-akte-uslug-kak-proverit-itog/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/service-act-vat-total/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/nds-v-akte-uslug-kak-proverit-itog/" />
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/okruglenie-nds-v-schete-kak-proverit/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/invoice-vat-rounding-check/" />
