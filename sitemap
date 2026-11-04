@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-telefonnyh-prodazh/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-telefonnyh-prodazh/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/phone-sales-short-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-telefonnyh-prodazh/" />
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/phone-sales-short-link/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-telefonnyh-prodazh/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/phone-sales-short-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-telefonnyh-prodazh/" />
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-plakata-na-meropriyatii/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/korotkaya-ssylka-dlya-plakata-na-meropriyatii/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/event-poster-short-link/" />
