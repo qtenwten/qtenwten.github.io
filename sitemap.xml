@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/korotkaya-ssylka-v-pismo-podderzhki/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/korotkaya-ssylka-v-pismo-podderzhki/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/support-ticket-short-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/korotkaya-ssylka-v-pismo-podderzhki/" />
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/support-ticket-short-link/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/korotkaya-ssylka-v-pismo-podderzhki/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/support-ticket-short-link/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/korotkaya-ssylka-v-pismo-podderzhki/" />
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/title-description-dlya-kartochki-tovara/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/title-description-dlya-kartochki-tovara/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/product-card-meta-tags/" />
