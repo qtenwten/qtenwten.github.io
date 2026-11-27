@@ -385,6 +385,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://qsen.ru/ru/articles/seo-audit-starogo-lendinga/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-starogo-lendinga/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/old-landing-seo-audit/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-starogo-lendinga/" />
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qsen.ru/en/articles/old-landing-seo-audit/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/seo-audit-starogo-lendinga/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/old-landing-seo-audit/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qsen.ru/ru/articles/seo-audit-starogo-lendinga/" />
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://qsen.ru/ru/articles/title-description-dlya-stranitsy-kategorii/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://qsen.ru/ru/articles/title-description-dlya-stranitsy-kategorii/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://qsen.ru/en/articles/category-page-meta-tags/" />
